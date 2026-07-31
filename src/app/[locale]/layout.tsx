@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { AppHeader } from "@/components/AppHeader";
+import { MobileNavigation } from "@/components/MobileNavigation";
 import { routing, type AppLocale } from "@/i18n/routing";
 
 type LocaleLayoutProps = Readonly<{
@@ -36,6 +37,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           <a className="skip-link" href="#main-content">{t("skipToContent")}</a>
           <AppHeader locale={locale as AppLocale} />
           {children}
+          <MobileNavigation />
         </NextIntlClientProvider>
       </body>
     </html>
