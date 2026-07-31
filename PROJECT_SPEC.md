@@ -23,7 +23,7 @@ The active experience profile is children aged 6–10, with Spanish as the defau
 
 Home → mission map → three-round comparison tutorial → individual post verification case → results. The future tutorial will use “Imagen hecha con IA / Foto tomada con cámara” and “Image made with AI / Photo taken with a camera”, never “real versus AI”. Its rounds introduce visible clues, source/purpose questions, and uncertainty when inspection is insufficient.
 
-This stage provides the home, mission-map preview, localized placeholders, accessibility foundations, and feature contracts only. It deliberately does not implement playable rounds, media, scores, achievements, persistence, PWA/offline caching, or final mascot artwork.
+Stage 2 implements the introductory tutorial as exactly three comparison rounds: a visible-clue observation, a source-and-purpose prompt, and an uncertainty lesson. It uses temporary local placeholders solely to test layout and flow; they are not evidence of how AI-generated or camera-captured media looks. Each media entry carries provenance and a separate origin value. Scores, achievements, persistence, PWA/offline caching, and final mascot artwork remain out of scope.
 
 ## Accessibility
 
@@ -45,11 +45,11 @@ An original mascot has not been selected. The code exposes a small `MascotSlot` 
 
 - Locale routes `/es` and `/en`, safe unsupported-locale handling, and equivalent-route language switching work.
 - Every implemented interface string exists in both message files.
-- The responsive home and mission map are complete; only Initial Training links to a placeholder.
-- Tutorial, case, results, settings and teacher pages are honest placeholders with safe navigation.
-- Linting, strict type checking and a production build succeed after dependencies are installed.
+- The responsive home and mission map are complete; Initial Training leads to the localized three-round tutorial.
+- The tutorial has validated localized content, deterministic non-persistent state, supportive feedback, and no scoring.
+- Case, results, settings and teacher pages remain honest placeholders with safe navigation.
+- Tests, linting, strict type checking and a production build succeed after dependencies are installed.
 
 ## Explicitly outside this MVP stage
 
 Functional game play; detection claims; media packages; scoring; storage; accounts; personal data; teacher/student registration; camera/QR; analytics; notifications; chatbots; PWA; caching; audio; motion libraries; networking; and final mascot work are not implemented here.
-

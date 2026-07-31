@@ -1,0 +1,153 @@
+{
+  "id": "introductory-tutorial-v1",
+  "rounds": [
+    {
+      "id": "round-visible-clue",
+      "order": 1,
+      "learningGoal": "visible-clue",
+      "promptKey": "question",
+      "choices": [
+        {
+          "id": "round-1-left",
+          "position": "left",
+          "media": {
+            "id": "garden-poster-camera-placeholder",
+            "src": "/media/tutorial/placeholders/garden-poster.svg",
+            "altKey": "media.round1LeftAlt",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-placeholder",
+              "sourceName": "UNESCO Youth Hackathon temporary media team",
+              "licenseStatus": "Project placeholder; not for final use",
+              "temporary": true
+            }
+          }
+        },
+        {
+          "id": "round-1-right",
+          "position": "right",
+          "media": {
+            "id": "word-poster-ai-placeholder",
+            "src": "/media/tutorial/placeholders/word-poster.svg",
+            "altKey": "media.round1RightAlt",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-placeholder",
+              "sourceName": "UNESCO Youth Hackathon temporary media team",
+              "licenseStatus": "Project placeholder; not for final use",
+              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only.",
+              "temporary": true
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "round-1-right",
+      "feedback": {
+        "observationKey": "rounds.round1.observation",
+        "explanationKey": "rounds.round1.explanation"
+      }
+    },
+    {
+      "id": "round-source-purpose",
+      "order": 2,
+      "learningGoal": "source-and-purpose",
+      "promptKey": "question",
+      "choices": [
+        {
+          "id": "round-2-left",
+          "position": "left",
+          "media": {
+            "id": "library-camera-placeholder",
+            "src": "/media/tutorial/placeholders/library-scene.svg",
+            "altKey": "media.round2LeftAlt",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-placeholder",
+              "sourceName": "UNESCO Youth Hackathon temporary media team",
+              "licenseStatus": "Project placeholder; not for final use",
+              "temporary": true
+            }
+          }
+        },
+        {
+          "id": "round-2-right",
+          "position": "right",
+          "media": {
+            "id": "festival-scene-ai-placeholder",
+            "src": "/media/tutorial/placeholders/festival-scene.svg",
+            "altKey": "media.round2RightAlt",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-placeholder",
+              "sourceName": "UNESCO Youth Hackathon temporary media team",
+              "licenseStatus": "Project placeholder; not for final use",
+              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only.",
+              "temporary": true
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "round-2-right",
+      "feedback": {
+        "observationKey": "rounds.round2.observation",
+        "questionKey": "rounds.round2.question",
+        "explanationKey": "rounds.round2.explanation"
+      }
+    },
+    {
+      "id": "round-uncertainty",
+      "order": 3,
+      "learningGoal": "uncertainty",
+      "promptKey": "question",
+      "choices": [
+        {
+          "id": "round-3-left",
+          "position": "left",
+          "media": {
+            "id": "night-market-ai-placeholder",
+            "src": "/media/tutorial/placeholders/night-market.svg",
+            "altKey": "media.round3LeftAlt",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-placeholder",
+              "sourceName": "UNESCO Youth Hackathon temporary media team",
+              "licenseStatus": "Project placeholder; not for final use",
+              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only.",
+              "temporary": true
+            }
+          }
+        },
+        {
+          "id": "round-3-right",
+          "position": "right",
+          "media": {
+            "id": "market-camera-placeholder",
+            "src": "/media/tutorial/placeholders/market-scene.svg",
+            "altKey": "media.round3RightAlt",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-placeholder",
+              "sourceName": "UNESCO Youth Hackathon temporary media team",
+              "licenseStatus": "Project placeholder; not for final use",
+              "temporary": true
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "round-3-left",
+      "feedback": {
+        "observationKey": "rounds.round3.observation",
+        "questionKey": "rounds.round3.question",
+        "verificationKey": "rounds.round3.verification",
+        "uncertaintyKey": "rounds.round3.uncertainty",
+        "explanationKey": "rounds.round3.explanation"
+      }
+    }
+  ]
+}

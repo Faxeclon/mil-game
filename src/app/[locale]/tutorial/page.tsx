@@ -1,10 +1,11 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { PlaceholderPage } from "@/components/PlaceholderPage";
+import { TutorialClient } from "@/components/TutorialClient";
+import { PageContainer } from "@/components/PageContainer";
+import { introductoryTutorialPack } from "@/content/packs/introductoryTutorial";
 
 export default async function TutorialPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations("placeholder");
-  return <PlaceholderPage title={t("tutorial.title")} description={t("tutorial.description")} actionLabel={t("backToMissions")} href="/worlds" />;
+  await getTranslations("tutorial");
+  return <main id="main-content"><PageContainer className="tutorial-shell"><TutorialClient pack={introductoryTutorialPack} /></PageContainer></main>;
 }
-
