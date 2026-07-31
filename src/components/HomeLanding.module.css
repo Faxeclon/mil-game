@@ -1,0 +1,222 @@
+/*
+ * Landing screen styles. Kept in a module so the shared globals.css stays untouched
+ * while the mission map is edited in parallel.
+ *
+ * Palette taken from the Roqui mascot: warm orange for the brand, the mascot's tech
+ * blue for anything about AI, and a deep navy for text.
+ */
+
+.landing {
+  --h-ink: #1f2a44;
+  --h-ink-soft: #5b6780;
+  --h-paper: #ffffff;
+  --h-hairline: #ece7e6;
+  --h-hairline-strong: #d5cfcd;
+  --h-accent: #ea4b16;
+  --h-accent-strong: #c93c0b;
+  --h-accent-ink: #b8380a;
+  --h-accent-soft: #ffece4;
+  --h-blue: #1878f0;
+  --h-blue-ink: #1660c8;
+  --h-blue-soft: #e6f0fe;
+  --h-shadow: 0 1px 2px rgba(31, 42, 68, 0.05), 0 12px 28px rgba(31, 42, 68, 0.08);
+  --h-ease: cubic-bezier(0.22, 0.8, 0.36, 1);
+
+  width: min(100%, 46rem);
+  margin: 0 auto;
+  padding-bottom: 2rem;
+  color: var(--h-ink);
+}
+
+/* Full-bleed tint, painted from the module so globals.css is not involved. */
+.landing::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background: #fff7f3;
+  content: "";
+  pointer-events: none;
+}
+
+.landing > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* --------------------------------------------------------------------- Hero */
+
+.hero {
+  display: grid;
+  justify-items: center;
+  padding-top: clamp(0.75rem, 4vw, 2rem);
+}
+
+/* The mascot leads and the bubble follows it, like a character speaking. */
+.mascotRow {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: clamp(0.5rem, 2vw, 1.25rem);
+}
+
+.mascot {
+  width: clamp(8rem, 34vw, 15rem);
+  display: block;
+  justify-self: end;
+}
+
+.mascot img {
+  width: 100%;
+  height: auto;
+}
+
+.bubble {
+  position: relative;
+  margin: 0 0 clamp(1rem, 6vw, 3rem);
+  padding: clamp(0.9rem, 3.5vw, 1.4rem) clamp(1rem, 4vw, 1.6rem);
+  display: grid;
+  gap: 0.3rem;
+  border: 1px solid var(--h-hairline);
+  border-radius: 1.35rem;
+  background: var(--h-paper);
+  box-shadow: var(--h-shadow);
+}
+
+/* Tail pointing towards the mascot. */
+.bubble::after {
+  width: 1.15rem;
+  height: 1.15rem;
+  position: absolute;
+  right: -0.6rem;
+  bottom: 1.6rem;
+  border-right: 1px solid var(--h-hairline);
+  border-bottom: 1px solid var(--h-hairline);
+  background: var(--h-paper);
+  content: "";
+  transform: rotate(-45deg);
+}
+
+.greeting {
+  color: var(--h-accent-ink);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hook {
+  font-size: clamp(1.5rem, 5.5vw, 2.35rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.promise {
+  color: var(--h-ink-soft);
+  font-size: clamp(0.95rem, 2.6vw, 1.05rem);
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.65rem;
+  margin-top: clamp(1.25rem, 4vw, 2rem);
+}
+
+.primaryAction,
+.secondaryAction {
+  min-height: 3.5rem;
+  padding: 0.7rem 1.7rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border-radius: 999px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: transform 150ms var(--h-ease), background-color 150ms ease;
+}
+
+.primaryAction {
+  background: var(--h-accent-strong);
+  color: #fff;
+}
+
+.primaryAction:hover {
+  transform: translateY(-1px);
+  background: var(--h-accent-ink);
+}
+
+.secondaryAction {
+  border: 1px solid var(--h-hairline-strong);
+  color: var(--h-ink);
+}
+
+.secondaryAction:hover {
+  transform: translateY(-1px);
+  background: var(--h-accent-soft);
+}
+
+/* ------------------------------------------------------------------- Tools */
+
+.toolRow {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0;
+  margin: clamp(1.75rem, 6vw, 2.75rem) 0 0;
+  list-style: none;
+}
+
+.tool {
+  min-height: 2.5rem;
+  padding: 0.35rem 0.9rem 0.35rem 0.45rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid var(--h-hairline);
+  border-radius: 999px;
+  background: var(--h-paper);
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.toolIcon {
+  width: 1.85rem;
+  height: 1.85rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--h-blue-soft);
+  color: var(--h-blue-ink);
+}
+
+/* --------------------------------------------------------------- Responsive */
+
+@media (max-width: 420px) {
+  .mascotRow {
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .bubble {
+    margin-bottom: 0.5rem;
+  }
+
+  .bubble::after {
+    bottom: 1.1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryAction,
+  .secondaryAction {
+    transition: none;
+  }
+}

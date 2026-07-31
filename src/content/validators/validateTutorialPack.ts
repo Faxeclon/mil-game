@@ -1,7 +1,7 @@
 import type { MediaOrigin } from "@/types";
 import {
+  primaryFeedbackKeyByGoal,
   tutorialLearningGoals,
-  type EducationalFeedback,
   type MediaChoice,
   type TutorialPack,
   type TutorialRound
@@ -23,10 +23,7 @@ export class TutorialPackValidationError extends Error {
 
 export type LocalizationKeyChecker = (key: string) => boolean;
 
-const requiredFeedbackKeys: (keyof EducationalFeedback)[] = [
-  "observationKey",
-  "explanationKey"
-];
+const optionalFeedbackKeys = ["observationKey", "questionKey", "verificationKey"] as const;
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new TutorialPackValidationError(message);
@@ -89,8 +86,10 @@ function validateRound(round: unknown, index: number, roundIds: Set<string>, has
   assert(correctChoice?.media.origin === "ai-generated", `${path}.correctChoiceId must reference the AI-generated learning choice.`);
 
   assert(isRecord(round.feedback), `${path}.feedback is required.`);
-  for (const key of requiredFeedbackKeys) validateKey(round.feedback[key], `${path}.feedback.${key}`, hasLocalizationKey);
-  for (const key of ["questionKey", "verificationKey", "uncertaintyKey"] as const) {
+  const primaryKey = primaryFeedbackKeyByGoal[round.learningGoal as TutorialRound["learningGoal"]];
+  validateKey(round.feedback[primaryKey], `${path}.feedback.${primaryKey}`, hasLocalizationKey);
+  validateKey(round.feedback.uncertaintyKey, `${path}.feedback.uncertaintyKey`, hasLocalizationKey);
+  for (const key of optionalFeedbackKeys) {
     if (round.feedback[key] !== undefined) validateKey(round.feedback[key], `${path}.feedback.${key}`, hasLocalizationKey);
   }
 }
@@ -112,10 +111,9 @@ export function collectTutorialLocalizationKeys(pack: TutorialPack): string[] {
   return pack.rounds.flatMap((round) => [
     round.promptKey,
     ...round.choices.map((choice) => choice.media.altKey),
-    round.feedback.observationKey,
-    round.feedback.explanationKey,
+    ...(round.feedback.observationKey ? [round.feedback.observationKey] : []),
     ...(round.feedback.questionKey ? [round.feedback.questionKey] : []),
     ...(round.feedback.verificationKey ? [round.feedback.verificationKey] : []),
-    ...(round.feedback.uncertaintyKey ? [round.feedback.uncertaintyKey] : [])
+    round.feedback.uncertaintyKey
   ]);
 }

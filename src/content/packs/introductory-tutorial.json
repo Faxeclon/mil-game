@@ -46,7 +46,7 @@
       "correctChoiceId": "round-1-right",
       "feedback": {
         "observationKey": "rounds.round1.observation",
-        "explanationKey": "rounds.round1.explanation"
+        "uncertaintyKey": "rounds.round1.remember"
       }
     },
     {
@@ -93,9 +93,8 @@
       ],
       "correctChoiceId": "round-2-right",
       "feedback": {
-        "observationKey": "rounds.round2.observation",
         "questionKey": "rounds.round2.question",
-        "explanationKey": "rounds.round2.explanation"
+        "uncertaintyKey": "rounds.round2.remember"
       }
     },
     {
@@ -142,11 +141,8 @@
       ],
       "correctChoiceId": "round-3-left",
       "feedback": {
-        "observationKey": "rounds.round3.observation",
-        "questionKey": "rounds.round3.question",
         "verificationKey": "rounds.round3.verification",
-        "uncertaintyKey": "rounds.round3.uncertainty",
-        "explanationKey": "rounds.round3.explanation"
+        "uncertaintyKey": "rounds.round3.remember"
       }
     }
   ]

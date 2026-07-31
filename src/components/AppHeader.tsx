@@ -1,19 +1,36 @@
 import { Accessibility, Map } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
+import styles from "./AppHeader.module.css";
 
 export async function AppHeader({ locale }: { locale: AppLocale }) {
   const t = await getTranslations({ locale, namespace: "header" });
+  const tHome = await getTranslations({ locale, namespace: "home" });
+
   return (
-    <header className="app-header">
-      <div className="header-inner">
-        <Link className="brand" href="/" aria-label={t("home")}><span className="brand-mark">MD</span><span className="brand-label">{t("brand")}</span></Link>
-          <nav aria-label={t("primaryNavigation")} className="header-nav">
-            <Link href="/worlds" aria-label={t("worlds")}><Map aria-hidden="true" size={19} /><span>{t("worlds")}</span></Link>
-            <Link href="/settings" aria-label={t("accessibility")}><Accessibility aria-hidden="true" size={19} /><span>{t("accessibility")}</span></Link>
-          </nav>
+    /* "app-header" is only a hook for the existing global rule that hides the bar
+       during a tutorial round; all styling lives in the module. */
+    <header className={`${styles.header} app-header`}>
+      <div className={styles.inner}>
+        <Link aria-label={t("home")} className={styles.brand} href="/">
+          <MascotSlot alt="" className={styles.brandMark} mood="welcoming" size={96} />
+          <span className={styles.brandName}>{tHome("productTitle")}</span>
+        </Link>
+
+        <nav aria-label={t("primaryNavigation")} className={styles.nav}>
+          <Link aria-label={t("worlds")} className={styles.navLink} href="/worlds">
+            <Map aria-hidden="true" size={19} />
+            <span>{t("worlds")}</span>
+          </Link>
+          <Link aria-label={t("accessibility")} className={styles.navLink} href="/settings">
+            <Accessibility aria-hidden="true" size={19} />
+            <span>{t("accessibility")}</span>
+          </Link>
+        </nav>
+
         <LanguageSwitcher />
       </div>
     </header>

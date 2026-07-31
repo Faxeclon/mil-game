@@ -1,0 +1,20 @@
+/*
+ * The artwork ships as a square icon with a coloured tile and a white margin around it.
+ * The frame crops that margin away so the tile sits flush inside a rounded avatar.
+ */
+
+.frame {
+  aspect-ratio: 1;
+  display: block;
+  overflow: hidden;
+  border-radius: 27%;
+  line-height: 0;
+}
+
+.art {
+  width: 118%;
+  height: 118%;
+  display: block;
+  margin: -9%;
+  object-fit: contain;
+}
