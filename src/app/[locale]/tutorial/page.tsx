@@ -7,5 +7,5 @@ export default async function TutorialPage({ params }: { params: Promise<{ local
   const { locale } = await params;
   setRequestLocale(locale);
   await getTranslations("tutorial");
-  return <main id="main-content"><PageContainer className="tutorial-shell"><TutorialClient pack={introductoryTutorialPack} /></PageContainer></main>;
+  return <main id="main-content"><PageContainer className="tutorial-shell tutorial-game-shell"><TutorialClient pack={introductoryTutorialPack} /></PageContainer></main>;
 }
