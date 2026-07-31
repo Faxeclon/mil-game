@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { useReducer } from "react";
-import { Accessibility, Check, ChevronLeft, Lightbulb, LockKeyhole, Sparkles, Target } from "lucide-react";
+import { Accessibility, Check, ChevronLeft, LockKeyhole, Sparkles, Target } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LookAskCheck } from "@/components/LookAskCheck";
+import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { Link } from "@/i18n/navigation";
 import type { TutorialPack } from "@/content/schemas/tutorial";
 import { initialTutorialState, tutorialReducer } from "@/features/game/tutorialState";
@@ -33,15 +34,20 @@ export function TutorialClient({ pack }: TutorialClientProps) {
   if (state.status === "intro") {
     return (
       <section aria-labelledby="tutorial-title" className={styles.briefing}>
-        <p className={styles.briefingChip}>
-          <Target aria-hidden="true" size={14} />
-          {t("missionChip")}
-        </p>
-        <h1 className={styles.briefingTitle} id="tutorial-title">
-          {t("introTitle")}
-        </h1>
-        <p className={styles.briefingLead}>{t("introLead")}</p>
-        <p className={styles.briefingHint}>{t("introHint")}</p>
+        <div className={styles.briefingRow}>
+          <div className={styles.bubble}>
+            <p className={styles.briefingChip}>
+              <Target aria-hidden="true" size={13} />
+              {t("missionChip")}
+            </p>
+            <h1 className={styles.briefingTitle} id="tutorial-title">
+              {t("introTitle")}
+            </h1>
+            <p className={styles.briefingLead}>{t("introLead")}</p>
+            <p className={styles.briefingHint}>{t("introHint")}</p>
+          </div>
+          <MascotSlot alt={t("mascotAlt")} className={styles.briefingMascot} mood="welcoming" priority />
+        </div>
         <p className={styles.briefingMeta}>{t("introMeta")}</p>
         <button className={styles.primaryButton} type="button" onClick={() => dispatch({ type: "start" })}>
           {t("start")}
@@ -53,11 +59,11 @@ export function TutorialClient({ pack }: TutorialClientProps) {
   if (state.status === "completed") {
     return (
       <section aria-labelledby="completion-title" className={styles.completion}>
-        <span aria-hidden="true" className={styles.completionBadge}>
-          <Check size={36} strokeWidth={3} />
-          <span className={`${styles.spark} ${styles.sparkOne}`} />
-          <span className={`${styles.spark} ${styles.sparkTwo}`} />
-          <span className={`${styles.spark} ${styles.sparkThree}`} />
+        <span className={styles.completionBadge}>
+          <MascotSlot alt={t("mascotAlt")} className={styles.completionMascot} mood="celebrating" />
+          <span aria-hidden="true" className={`${styles.spark} ${styles.sparkOne}`} />
+          <span aria-hidden="true" className={`${styles.spark} ${styles.sparkTwo}`} />
+          <span aria-hidden="true" className={`${styles.spark} ${styles.sparkThree}`} />
         </span>
         <h1 className={styles.completionTitle} id="completion-title">
           {t("completionTitle")}
@@ -220,28 +226,28 @@ export function TutorialClient({ pack }: TutorialClientProps) {
         {state.answerSubmitted && (
           <div className={styles.panelDock}>
             <section aria-labelledby="feedback-title" aria-live="polite" className={styles.panel}>
-            <header className={styles.panelHeader}>
-              <span
-                aria-hidden="true"
-                className={`${styles.reaction} ${selectedIsCorrect ? styles.reactionCorrect : styles.reactionRetry}`}
-              >
-                {selectedIsCorrect ? <Check size={17} strokeWidth={3} /> : <Lightbulb size={16} />}
-              </span>
-              <p className={styles.panelTitle} id="feedback-title">
-                {selectedIsCorrect ? t("correct") : t("tryAgain")}
-              </p>
-            </header>
-
-            <LookAskCheck compact states={getLearningStepStates(round.learningGoal)} />
-
-            <div className={styles.panelBody}>
-              {feedbackBlocks.map((block) => (
-                <p className={styles.clue} key={block.labelKey}>
-                  <span className={styles.clueLabel}>{t(block.labelKey)}</span>
-                  <span className={styles.clueText}>{t(block.textKey)}</span>
+              <header className={styles.panelHeader}>
+                <MascotSlot
+                  alt=""
+                  className={`${styles.reaction} ${selectedIsCorrect ? styles.reactionCorrect : styles.reactionRetry}`}
+                  mood={selectedIsCorrect ? "encouraging" : "thinking"}
+                  size={96}
+                />
+                <p className={styles.panelTitle} id="feedback-title">
+                  {selectedIsCorrect ? t("correct") : t("tryAgain")}
                 </p>
-              ))}
-            </div>
+              </header>
+
+              <LookAskCheck compact states={getLearningStepStates(round.learningGoal)} />
+
+              <div className={styles.panelBody}>
+                {feedbackBlocks.map((block) => (
+                  <p className={styles.clue} key={block.labelKey}>
+                    <span className={styles.clueLabel}>{t(block.labelKey)}</span>
+                    <span className={styles.clueText}>{t(block.textKey)}</span>
+                  </p>
+                ))}
+              </div>
 
               <footer className={styles.panelFooter}>
                 <button

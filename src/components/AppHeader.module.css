@@ -1,0 +1,149 @@
+/*
+ * App header. Kept in a module so globals.css stays untouched. Palette taken from the
+ * Roqui mascot; the bar stays quiet so the page content leads.
+ */
+
+.header {
+  --a-ink: #1f2a44;
+  --a-ink-soft: #5b6780;
+  --a-paper: #ffffff;
+  --a-hairline: #eadfd9;
+  --a-accent: #ea4b16;
+  --a-accent-ink: #b8380a;
+  --a-accent-soft: #ffece4;
+
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  border-bottom: 1px solid var(--a-hairline);
+  background: rgba(255, 247, 243, 0.88);
+  backdrop-filter: blur(12px);
+}
+
+.inner {
+  width: min(100% - 1.5rem, 68rem);
+  min-height: 3.75rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* -------------------------------------------------------------------- Brand */
+
+.brand {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--a-ink);
+  text-decoration: none;
+}
+
+.brandMark {
+  width: 2.4rem;
+  flex: 0 0 auto;
+}
+
+.brandName {
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+/* ---------------------------------------------------------------- Navigation */
+
+.nav {
+  min-width: 0;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.navLink {
+  min-height: 2.75rem;
+  padding: 0.4rem 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  color: var(--a-ink-soft);
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.navLink:hover {
+  background: var(--a-accent-soft);
+  color: var(--a-accent-ink);
+}
+
+/* --------------------------------------------------------- Language switcher */
+
+.language {
+  min-height: 2.5rem;
+  flex: 0 0 auto;
+  padding: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  border: 1px solid var(--a-hairline);
+  border-radius: 999px;
+  background: var(--a-paper);
+  text-decoration: none;
+}
+
+.languageOption {
+  min-width: 2.1rem;
+  min-height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--a-ink-soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.languageActive {
+  background: var(--a-accent);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------- Responsive */
+
+@media (max-width: 560px) {
+  .inner {
+    width: min(100% - 1rem, 68rem);
+    min-height: 3.4rem;
+  }
+
+  .brandMark {
+    width: 2.15rem;
+    height: 2.15rem;
+  }
+
+  .brandName {
+    font-size: 1.02rem;
+  }
+
+  .navLink span {
+    display: none;
+  }
+
+  .navLink {
+    min-width: 2.75rem;
+    justify-content: center;
+    padding: 0.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navLink {
+    transition: none;
+  }
+}

@@ -1,11 +1,12 @@
 /* Compact, non-interactive progress indicator for Look - Ask - Check. */
 
 .track {
-  --lac-ink: #1a1a2e;
-  --lac-muted: #9aa0b4;
-  --lac-hairline: #e6e8f0;
-  --lac-done: #0f9d76;
-  --lac-active: #5b5bd6;
+  /* Same Roqui palette as the tutorial: green for done, brand orange for current. */
+  --lac-ink: #1f2a44;
+  --lac-muted: #98a0b0;
+  --lac-hairline: #ece7e6;
+  --lac-done: #1f7a28;
+  --lac-active: #d34410;
 
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -82,6 +83,7 @@
   border-color: var(--lac-active);
   background: var(--lac-active);
   color: #fff;
+  box-shadow: 0 0 0 3px rgba(211, 68, 16, 0.16);
   animation: markerIn 200ms cubic-bezier(0.22, 0.8, 0.36, 1) 1;
 }
 

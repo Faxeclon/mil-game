@@ -9,21 +9,28 @@
 .briefing,
 .round,
 .completion {
-  --t-ink: #1a1a2e;
-  --t-ink-soft: #6b7280;
+  /* Palette taken from the Roqui mascot: warm orange for the brand, the mascot's
+     tech blue for anything about AI, green for success and a deep navy for text. */
+  --t-ink: #1f2a44;
+  --t-ink-soft: #5b6780;
   --t-paper: #ffffff;
-  --t-hairline: #e6e8f0;
-  --t-hairline-strong: #cdd2e2;
-  --t-accent: #5b5bd6;
-  --t-accent-soft: #eeeefc;
-  --t-mint: #0f9d76;
-  --t-mint-soft: #e7f7f1;
-  --t-coral: #e0644a;
-  --t-coral-soft: #fdeeeb;
-  --t-amber: #b57d13;
-  --t-amber-soft: #fdf5e3;
-  --t-shadow: 0 1px 2px rgba(26, 26, 46, 0.05), 0 12px 28px rgba(26, 26, 46, 0.07);
-  --t-shadow-lift: 0 2px 4px rgba(26, 26, 46, 0.06), 0 18px 38px rgba(26, 26, 46, 0.1);
+  --t-hairline: #ece7e6;
+  --t-hairline-strong: #d5cfcd;
+  --t-accent: #ea4b16;
+  --t-accent-strong: #c93c0b;
+  --t-accent-ink: #b8380a;
+  --t-accent-soft: #ffece4;
+  --t-blue: #1878f0;
+  --t-blue-ink: #1660c8;
+  --t-blue-soft: #e6f0fe;
+  --t-mint: #1f7a28;
+  --t-mint-soft: #e8f6e9;
+  --t-coral: #d9432a;
+  --t-coral-soft: #ffe9e4;
+  --t-amber: #a9700d;
+  --t-amber-soft: #fdf3e0;
+  --t-shadow: 0 1px 2px rgba(31, 42, 68, 0.05), 0 12px 28px rgba(31, 42, 68, 0.08);
+  --t-shadow-lift: 0 2px 4px rgba(31, 42, 68, 0.07), 0 18px 38px rgba(31, 42, 68, 0.11);
   --t-ease: cubic-bezier(0.22, 0.8, 0.36, 1);
 }
 
@@ -41,7 +48,7 @@
      below its own content, which is lifted to z-index 1 just underneath. */
   z-index: 0;
   inset: 0;
-  background: #f4f1fd;
+  background: #fff7f3;
   content: "";
   pointer-events: none;
 }
@@ -64,7 +71,7 @@
   justify-content: center;
   border: 0;
   border-radius: 999px;
-  background: var(--t-ink);
+  background: var(--t-accent-strong);
   color: #fff;
   cursor: pointer;
   font: inherit;
@@ -76,7 +83,7 @@
 
 .primaryButton:hover:not(:disabled) {
   transform: translateY(-1px);
-  background: #2c2c4a;
+  background: var(--t-accent-ink);
 }
 
 .primaryButton:active:not(:disabled) {
@@ -106,7 +113,7 @@
 
 .primaryLink {
   border: 0;
-  background: var(--t-ink);
+  background: var(--t-accent-strong);
   color: #fff;
 }
 
@@ -129,8 +136,8 @@
 /* --------------------------------------------------------- Mission briefing */
 
 .briefing {
-  max-width: 27rem;
-  margin: clamp(1.5rem, 8vw, 4.5rem) auto;
+  max-width: 40rem;
+  margin: clamp(0.75rem, 5vw, 2.5rem) auto;
   padding: 0;
   display: grid;
   justify-items: center;
@@ -139,45 +146,90 @@
   text-align: center;
 }
 
+/* The mascot introduces the mission, the bubble carries the words. */
+.briefingRow {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: clamp(0.4rem, 2vw, 1rem);
+}
+
+.briefingMascot {
+  width: clamp(6.5rem, 26vw, 11rem);
+  height: auto;
+  justify-self: end;
+}
+
+.bubble {
+  position: relative;
+  margin-bottom: clamp(0.75rem, 4vw, 2rem);
+  padding: clamp(0.85rem, 3vw, 1.3rem) clamp(0.95rem, 3.5vw, 1.5rem);
+  display: grid;
+  justify-items: start;
+  gap: 0.4rem;
+  border: 1px solid var(--t-hairline);
+  border-radius: 1.3rem;
+  background: var(--t-paper);
+  box-shadow: var(--t-shadow);
+  text-align: left;
+}
+
+/* Tail pointing towards the mascot. */
+.bubble::after {
+  width: 1.1rem;
+  height: 1.1rem;
+  position: absolute;
+  right: -0.58rem;
+  bottom: 1.5rem;
+  border-right: 1px solid var(--t-hairline);
+  border-bottom: 1px solid var(--t-hairline);
+  background: var(--t-paper);
+  content: "";
+  transform: rotate(-45deg);
+}
+
 .briefingChip {
   margin: 0;
-  padding: 0.3rem 0.75rem;
+  padding: 0.26rem 0.7rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.32rem;
   border-radius: 999px;
   background: var(--t-accent-soft);
-  color: var(--t-accent);
-  font-size: 0.74rem;
+  color: var(--t-accent-ink);
+  font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.09em;
   text-transform: uppercase;
 }
 
 .briefingTitle {
-  max-width: 14ch;
-  margin: 1.1rem 0 0;
+  max-width: 15ch;
+  margin: 0.35rem 0 0;
   color: var(--t-ink);
-  font-size: clamp(2rem, 7vw, 2.75rem);
+  font-size: clamp(1.5rem, 5.5vw, 2.3rem);
   font-weight: 800;
   line-height: 1.06;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.038em;
+  text-align: left;
+  text-wrap: balance;
 }
 
 .briefingLead {
-  max-width: 32ch;
-  margin: 0.9rem 0 0;
+  max-width: 34ch;
+  margin: 0.35rem 0 0;
   color: var(--t-ink);
-  font-size: 1.02rem;
-  line-height: 1.45;
+  font-size: 0.98rem;
+  line-height: 1.4;
 }
 
 .briefingHint {
-  max-width: 30ch;
-  margin: 0.7rem 0 0;
+  max-width: 32ch;
+  margin: 0.15rem 0 0;
   color: var(--t-ink-soft);
-  font-size: 0.95rem;
-  line-height: 1.45;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
 .briefingMeta {
@@ -274,7 +326,7 @@
   padding: 0.26rem 0.7rem;
   border-radius: 999px;
   background: var(--t-accent-soft);
-  color: var(--t-accent);
+  color: var(--t-accent-ink);
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.09em;
@@ -334,8 +386,8 @@
 }
 
 .cardAi {
-  border-color: var(--t-accent);
-  box-shadow: var(--t-shadow), 0 0 0 2px var(--t-accent);
+  border-color: var(--t-blue);
+  box-shadow: var(--t-shadow), 0 0 0 2px var(--t-blue);
   animation: cardPulse 420ms var(--t-ease) 1;
 }
 
@@ -412,8 +464,8 @@
 }
 
 .labelAi {
-  background: var(--t-accent-soft);
-  color: var(--t-accent);
+  background: var(--t-blue-soft);
+  color: var(--t-blue-ink);
 }
 
 .labelChoiceRight {
@@ -494,23 +546,20 @@
   gap: 0.55rem;
 }
 
+/* Roqui reacts to the answer; the ring colour reinforces the mood. */
 .reaction {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 2.7rem;
   flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
+  border: 2px solid transparent;
+  box-shadow: 0 0 0 2px var(--t-paper);
 }
 
 .reactionCorrect {
-  background: var(--t-mint-soft);
-  color: var(--t-mint);
+  border-color: var(--t-mint);
 }
 
 .reactionRetry {
-  background: var(--t-amber-soft);
-  color: var(--t-amber);
+  border-color: var(--t-amber);
 }
 
 .panelTitle {
@@ -547,7 +596,7 @@
 }
 
 .clueLabel {
-  color: var(--t-accent);
+  color: var(--t-accent-ink);
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -587,15 +636,16 @@
 }
 
 .completionBadge {
-  width: 4rem;
-  height: 4rem;
+  width: clamp(8rem, 34vw, 12rem);
   position: relative;
   display: grid;
   place-items: center;
-  border-radius: 50%;
-  background: var(--t-mint-soft);
-  color: var(--t-mint);
   animation: badgeIn 380ms var(--t-ease) 1;
+}
+
+.completionMascot {
+  width: 100%;
+  height: auto;
 }
 
 .completionTitle {
@@ -641,7 +691,7 @@
   padding: 0.15rem 0.5rem;
   border-radius: 999px;
   background: var(--t-accent-soft);
-  color: var(--t-accent);
+  color: var(--t-accent-ink);
   font-size: 0.72rem;
   font-weight: 800;
 }
