@@ -32,13 +32,23 @@ export type MediaChoice = {
   media: TutorialMediaAsset;
 };
 
+/**
+ * Feedback stays deliberately short for children aged 6-10: one prompt matching the
+ * round's learning goal, plus one closing reminder. Longer explanations are avoided.
+ */
 export type EducationalFeedback = {
-  observationKey: string;
-  explanationKey: string;
+  observationKey?: string;
   questionKey?: string;
   verificationKey?: string;
-  uncertaintyKey?: string;
+  uncertaintyKey: string;
 };
+
+/** The single prompt each learning goal must provide before its reminder. */
+export const primaryFeedbackKeyByGoal = {
+  "visible-clue": "observationKey",
+  "source-and-purpose": "questionKey",
+  uncertainty: "verificationKey"
+} as const satisfies Record<TutorialLearningGoal, keyof EducationalFeedback>;
 
 export type TutorialRound = {
   id: string;

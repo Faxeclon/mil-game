@@ -1,0 +1,137 @@
+/* Compact, non-interactive progress indicator for Look - Ask - Check. */
+
+.track {
+  --lac-ink: #1a1a2e;
+  --lac-muted: #9aa0b4;
+  --lac-hairline: #e6e8f0;
+  --lac-done: #0f9d76;
+  --lac-active: #5b5bd6;
+
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.step {
+  min-width: 0;
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.25rem;
+  color: var(--lac-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: default;
+}
+
+/* Connector between steps: the progression reads as one track, not three buttons. */
+.step + .step::before {
+  width: 0.8rem;
+  height: 2px;
+  position: absolute;
+  left: -0.4rem;
+  border-radius: 999px;
+  background: var(--lac-hairline);
+  content: "";
+}
+
+.marker {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--lac-hairline);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--lac-muted);
+  transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease;
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* States differ by fill, icon and label, never by colour alone. */
+.completed {
+  color: var(--lac-ink);
+}
+
+.completed .marker {
+  border-color: var(--lac-done);
+  background: var(--lac-done);
+  color: #fff;
+}
+
+.completed + .step::before,
+.active + .step::before {
+  background: var(--lac-done);
+}
+
+.active {
+  color: var(--lac-ink);
+}
+
+.active .marker {
+  border-color: var(--lac-active);
+  background: var(--lac-active);
+  color: #fff;
+  animation: markerIn 200ms cubic-bezier(0.22, 0.8, 0.36, 1) 1;
+}
+
+.inactive {
+  opacity: 0.6;
+}
+
+.srOnly {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Completion screen: the three steps light up one after another, once. */
+.sequential .marker {
+  animation: markerIn 280ms cubic-bezier(0.22, 0.8, 0.36, 1) both;
+  animation-delay: calc(var(--step-index, 0) * 140ms);
+}
+
+.compact .step {
+  padding: 0.22rem 0.2rem;
+  font-size: 0.72rem;
+}
+
+.compact .marker {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
+@keyframes markerIn {
+  from {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marker {
+    transition: none;
+  }
+
+  .active .marker,
+  .sequential .marker {
+    animation: none;
+  }
+}
