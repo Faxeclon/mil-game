@@ -1,4 +1,4 @@
-/* A compact game-level path: scenery first, the route next, levels last. */
+/* A compact game-level path: backdrop first, the route next, levels last. */
 
 .map {
   --m-ink: #1f2a44;
@@ -52,6 +52,33 @@
   min-width: 0;
   position: relative;
   isolation: isolate;
+}
+
+.environment {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  display: none;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.environment::before {
+  width: min(96%, 46rem);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  display: block;
+  content: "";
+  background:
+    radial-gradient(ellipse 72% 25% at 37% 17%, rgb(222 203 181 / 17%) 0, rgb(222 203 181 / 9%) 45%, transparent 79%),
+    radial-gradient(ellipse 76% 29% at 64% 51%, rgb(179 214 203 / 15%) 0, rgb(179 214 203 / 8%) 46%, transparent 80%),
+    radial-gradient(ellipse 74% 27% at 42% 84%, rgb(185 201 219 / 16%) 0, rgb(185 201 219 / 8%) 47%, transparent 80%),
+    radial-gradient(ellipse 78% 68% at 50% 51%, rgb(150 166 182 / 8%) 0, transparent 79%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 9%, #000 91%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 9%, #000 91%, transparent 100%);
+  transform: translateX(-50%);
 }
 
 .trail {
@@ -136,7 +163,7 @@
 }
 
 .trail {
-  z-index: 1;
+  z-index: 2;
   filter: drop-shadow(0 2px 2px rgb(31 42 68 / 7%));
 }
 
@@ -162,6 +189,7 @@
 
 .path {
   position: relative;
+  z-index: 3;
   display: grid;
   gap: clamp(2.55rem, 8vw, 4.25rem);
   padding: 0;
@@ -192,7 +220,7 @@
 .nodeStage {
   min-width: 0;
   position: relative;
-  z-index: 2;
+  z-index: 1;
   display: grid;
 }
 
@@ -354,7 +382,7 @@
 /* One guide unit is anchored to whichever level is currently open. */
 .guide {
   position: absolute;
-  z-index: 3;
+  z-index: 2;
   display: grid;
   justify-items: center;
   gap: 0.35rem;
@@ -485,18 +513,26 @@
 }
 
 @media (min-width: 700px) {
+  .environment {
+    display: block;
+  }
+
   .trail .routeSegment {
     stroke-width: 13;
   }
 
+  .path {
+    gap: 2.75rem;
+  }
+
   .step:nth-child(odd) {
-    --step-node-offset: clamp(1.1rem, 12vw, 7.5rem);
+    --step-node-offset: 5rem;
 
     padding-left: var(--step-node-offset);
   }
 
   .step:nth-child(even) {
-    --step-node-offset: clamp(1.1rem, 12vw, 7.5rem);
+    --step-node-offset: 5rem;
 
     padding-right: var(--step-node-offset);
   }
@@ -510,21 +546,21 @@
   }
 
   .markerTraining {
-    width: clamp(3.75rem, 5vw, 4.5rem);
+    width: 4rem;
   }
 
   .markerSource,
   .markerShare {
-    width: clamp(4rem, 5.5vw, 4.75rem);
+    width: 4.25rem;
   }
 
   .markerContext {
-    width: clamp(4.25rem, 6vw, 5rem);
+    width: 4.5rem;
   }
 
   .markerVoices,
   .markerVideos {
-    width: clamp(3.5rem, 4.5vw, 4.25rem);
+    width: 3.75rem;
   }
 
   .guideAtLeftNode {
@@ -544,6 +580,44 @@
   .guideTip {
     width: 9.25rem;
   }
+}
+
+@media (min-width: 1100px) {
+  .path {
+    gap: 2.1rem;
+  }
+
+  .step:nth-child(odd),
+  .step:nth-child(even) {
+    --step-node-offset: 5.25rem;
+  }
+
+  .orb {
+    width: 7.75rem;
+  }
+
+  .available {
+    --guide-orb-size: 10rem;
+  }
+
+  .markerTraining {
+    width: 4.25rem;
+  }
+
+  .markerSource,
+  .markerShare {
+    width: 4.5rem;
+  }
+
+  .markerContext {
+    width: 4.75rem;
+  }
+
+  .markerVoices,
+  .markerVideos {
+    width: 4rem;
+  }
+
 }
 
 @media (prefers-reduced-motion: reduce) {

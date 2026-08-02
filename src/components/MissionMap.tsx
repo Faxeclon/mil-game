@@ -87,6 +87,7 @@ export function MissionMap({ missions, labels }: MissionMapProps) {
       <p className={styles.greeting}>{labels.greeting}</p>
 
       <div className={styles.journey}>
+        <MapEnvironment />
         <MissionTrail missions={missions} />
         <ol aria-label={labels.mapAria} className={styles.path}>
           {missions.map((mission, index) => {
@@ -145,6 +146,10 @@ export function MissionMap({ missions, labels }: MissionMapProps) {
       </div>
     </div>
   );
+}
+
+function MapEnvironment() {
+  return <div aria-hidden="true" className={styles.environment} />;
 }
 
 function MissionTrail({ missions }: Pick<MissionMapProps, "missions">) {
