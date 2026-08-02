@@ -31,10 +31,11 @@ export async function HomeLanding() {
           <span className={styles.mascot}>
             <Image
               alt={t("mascotAlt")}
-              height={320}
+              height={1024}
               priority
-              src="/media/mascot/roqui.png"
-              width={320}
+              sizes="(max-width: 420px) 34vw, (max-width: 768px) 15rem, 15rem"
+              src="/media/mascot/roqui-detective.png"
+              width={1024}
             />
           </span>
         </div>

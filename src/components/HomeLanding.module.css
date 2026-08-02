@@ -69,6 +69,8 @@
 .mascot img {
   width: 100%;
   height: auto;
+  object-fit: contain;
+  object-position: center bottom;
 }
 
 .bubble {
@@ -102,7 +104,6 @@
   font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
 }
 
 .hook {
