@@ -1,37 +1,32 @@
-/*
- * Mission map: a trail of floating worlds, alternating left and right down the page.
- * Large round targets sized for a child's finger. Palette taken from the Roqui mascot.
- */
+/* A compact game-level path: scenery first, the route next, levels last. */
 
 .map {
   --m-ink: #1f2a44;
   --m-ink-soft: #5b6780;
   --m-paper: #ffffff;
-  --m-hairline: #ece7e6;
-  --m-hairline-strong: #d0c9c6;
-  --m-accent: #ea4b16;
-  --m-accent-strong: #c93c0b;
-  --m-accent-ink: #b8380a;
-  --m-accent-soft: #ffd9c6;
-  --m-blue: #1878f0;
-  --m-blue-ink: #1660c8;
-  --m-blue-soft: #d9e8fe;
+  --m-hairline: #e7e0dc;
+  --m-accent: #f47719;
+  --m-accent-strong: #d95b0f;
+  --m-accent-ink: #b84308;
+  --m-blue-ink: #53637d;
   --m-mint: #1f7a28;
   --m-mint-soft: #d6f0d9;
   --m-ease: cubic-bezier(0.22, 0.8, 0.36, 1);
 
-  width: min(100%, 34rem);
+  width: min(100%, 48rem);
   margin: 0 auto;
-  padding-bottom: 2.5rem;
+  padding-bottom: clamp(3.5rem, 10vw, 5.5rem);
   color: var(--m-ink);
 }
 
-/* Full-bleed tint, painted from the module so globals.css is not involved. */
 .map::before {
   position: fixed;
   z-index: 0;
   inset: 0;
-  background: #fff7f3;
+  background:
+    radial-gradient(circle at 12% 23%, rgb(244 119 25 / 5%), transparent 19rem),
+    radial-gradient(circle at 88% 67%, rgb(244 119 25 / 4%), transparent 20rem),
+    #fff9f6;
   content: "";
   pointer-events: none;
 }
@@ -53,115 +48,232 @@
 
 /* --------------------------------------------------------------------- Path */
 
+.journey {
+  min-width: 0;
+  position: relative;
+  isolation: isolate;
+}
+
+.trail {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.marker {
+  position: absolute;
+  z-index: 0;
+  display: block;
+  pointer-events: none;
+}
+
+.marker img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.markerPrimary,
+.markerSecondary {
+  display: block;
+}
+
+.markerTraining,
+.markerContext,
+.markerVideos {
+  top: calc(-1 * clamp(2.45rem, 10vw, 3.2rem));
+  left: clamp(0.1rem, 1.5vw, 0.85rem);
+}
+
+.markerSource,
+.markerVoices,
+.markerShare {
+  top: calc(-1 * clamp(2.45rem, 10vw, 3.2rem));
+  right: clamp(0.1rem, 1.5vw, 0.85rem);
+}
+
+.markerTraining {
+  width: clamp(3.25rem, 16vw, 3.75rem);
+  aspect-ratio: 1;
+}
+
+.markerSource {
+  width: clamp(3.5rem, 17vw, 4rem);
+  aspect-ratio: 1;
+}
+
+.markerContext {
+  width: clamp(3.75rem, 18vw, 4.25rem);
+  aspect-ratio: 1;
+}
+
+.markerVoices,
+.markerVideos {
+  width: clamp(3rem, 15vw, 3.5rem);
+  aspect-ratio: 1;
+}
+
+.markerShare {
+  width: clamp(3.5rem, 17vw, 4rem);
+  aspect-ratio: 1;
+}
+
+.markerShare .markerPrimary {
+  width: 100%;
+  height: 100%;
+}
+
+.markerShare .markerSecondary {
+  width: 45%;
+  height: 45%;
+  position: absolute;
+  right: -8%;
+  bottom: -4%;
+}
+
+.trail {
+  z-index: 1;
+  filter: drop-shadow(0 2px 2px rgb(31 42 68 / 7%));
+}
+
+.trail .routeSegment {
+  fill: none;
+  stroke: #b8bec7;
+  stroke-width: 11;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.trail .completedRouteSegment {
+  stroke: url(#completed-route);
+  stroke-dasharray: 1;
+  animation: routeReveal 520ms var(--m-ease) both;
+  filter: drop-shadow(0 3px 2px rgb(202 71 9 / 16%));
+}
+
+.desktopTrail {
+  display: none;
+}
+
 .path {
+  position: relative;
   display: grid;
-  gap: clamp(1.5rem, 5vw, 2.25rem);
+  gap: clamp(2.55rem, 8vw, 4.25rem);
   padding: 0;
-  margin: clamp(1.25rem, 5vw, 2rem) 0 0;
+  margin: clamp(1.35rem, 5vw, 2.25rem) 0 0;
   list-style: none;
 }
 
 .step {
+  --step-node-offset: clamp(0.75rem, 6vw, 3rem);
+
+  min-width: 0;
   position: relative;
   display: flex;
   justify-content: center;
 }
 
-/* Worlds drift left and right down the trail instead of sitting in one column. */
-.step:nth-child(3n + 1) {
+/* The broad left-right swing gives the route enough room to visibly bend. */
+.step:nth-child(odd) {
   justify-content: flex-start;
-  padding-left: clamp(0.5rem, 6vw, 3rem);
+  padding-left: var(--step-node-offset);
 }
 
-.step:nth-child(3n + 3) {
+.step:nth-child(even) {
   justify-content: flex-end;
-  padding-right: clamp(0.5rem, 6vw, 3rem);
+  padding-right: var(--step-node-offset);
 }
 
-/* Dotted trail linking one world to the next. */
-.step + .step::before {
-  width: clamp(4rem, 22vw, 7rem);
-  height: 1.1rem;
-  position: absolute;
-  top: calc(-1 * clamp(1.5rem, 5vw, 2.25rem) / 2 - 0.55rem);
-  left: 50%;
-  background-image: radial-gradient(circle, var(--m-hairline-strong) 32%, transparent 34%);
-  background-position: center;
-  background-repeat: repeat-x;
-  background-size: 1.1rem 1.1rem;
-  content: "";
-  transform: translateX(-50%) rotate(-14deg);
-}
-
-.step:nth-child(3n + 3)::before,
-.step:nth-child(3n + 1)::before {
-  transform: translateX(-50%) rotate(14deg);
+.nodeStage {
+  min-width: 0;
+  position: relative;
+  z-index: 2;
+  display: grid;
 }
 
 /* -------------------------------------------------------------------- World */
 
 .world {
+  min-width: 0;
+  position: relative;
+  z-index: 2;
   display: grid;
   justify-items: center;
-  gap: 0.55rem;
+  gap: 0.6rem;
   color: inherit;
   text-decoration: none;
   transition: transform 180ms var(--m-ease);
 }
 
 .orb {
-  width: clamp(5.5rem, 24vw, 7rem);
+  width: clamp(5.55rem, 24vw, 7.2rem);
   aspect-ratio: 1;
   position: relative;
   display: grid;
   place-items: center;
+  border: 8px solid rgb(255 255 255 / 97%);
   border-radius: 50%;
-  background: var(--m-blue-soft);
+  background: linear-gradient(145deg, #f7f6f5 0%, #e5e3e1 100%);
+  box-shadow:
+    0 0 0 1px rgb(55 66 83 / 7%),
+    0 9px 0 rgb(58 67 83 / 7%),
+    0 16px 26px rgb(31 42 68 / 13%);
   color: var(--m-blue-ink);
-  /* The long soft shadow is what makes the world read as floating. */
-  box-shadow: 0 10px 0 rgba(31, 42, 68, 0.08), 0 18px 30px rgba(31, 42, 68, 0.16);
+}
+
+.orb > * {
+  position: relative;
+  z-index: 1;
 }
 
 .orbNumber {
+  min-width: 1.85rem;
+  min-height: 1.85rem;
   position: absolute;
-  top: -0.35rem;
-  left: -0.35rem;
-  min-width: 1.7rem;
-  min-height: 1.7rem;
+  top: -0.55rem;
+  left: -0.55rem;
   display: grid;
   place-items: center;
-  border: 3px solid #fff7f3;
+  border: 3px solid var(--m-paper);
   border-radius: 50%;
   background: var(--m-paper);
+  box-shadow: 0 4px 10px rgb(31 42 68 / 12%);
   color: var(--m-ink);
-  font-size: 0.82rem;
-  font-weight: 800;
+  font-size: 0.86rem;
+  font-weight: 900;
 }
 
 .lock {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 1.9rem;
+  height: 1.9rem;
   position: absolute;
-  right: -0.15rem;
-  bottom: -0.15rem;
+  right: -0.35rem;
+  bottom: -0.35rem;
   display: grid;
   place-items: center;
-  border: 3px solid #fff7f3;
+  border: 3px solid var(--m-paper);
   border-radius: 50%;
   background: var(--m-ink-soft);
+  box-shadow: 0 4px 10px rgb(31 42 68 / 16%);
   color: #fff;
 }
 
 .playBadge {
   position: absolute;
-  bottom: -0.85rem;
+  bottom: -0.92rem;
   padding: 0.28rem 0.8rem;
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  border: 3px solid #fff7f3;
+  border: 3px solid var(--m-paper);
   border-radius: 999px;
   background: var(--m-accent-strong);
+  box-shadow: 0 4px 10px rgb(201 60 11 / 18%);
   color: #fff;
   font-size: 0.82rem;
   font-weight: 800;
@@ -172,7 +284,7 @@
   max-width: 13ch;
   display: grid;
   justify-items: center;
-  gap: 0.05rem;
+  gap: 0.08rem;
   text-align: center;
 }
 
@@ -185,19 +297,37 @@
 
 .state {
   color: var(--m-ink-soft);
-  font-size: 0.78rem;
-  font-weight: 700;
+  font-size: 0.8rem;
+  font-weight: 800;
 }
 
 /* ------------------------------------------------------------------ States */
 
-/* The one world a child can enter is the largest and brightest target on screen. */
+.available {
+  --guide-orb-size: clamp(7.2rem, 33vw, 9.3rem);
+}
+
 .available .orb {
-  width: clamp(7rem, 32vw, 9rem);
-  background: radial-gradient(circle at 32% 28%, #ff8a5c 0 34%, var(--m-accent) 100%);
+
+  width: var(--guide-orb-size);
+  border-width: 9px;
+  background: var(--m-accent);
+  box-shadow:
+    0 0 0 9px rgb(244 119 25 / 12%),
+    0 8px 0 rgb(201 60 11 / 20%),
+    0 17px 28px rgb(201 60 11 / 22%);
   color: #fff;
-  box-shadow: 0 12px 0 rgba(201, 60, 11, 0.22), 0 22px 38px rgba(201, 60, 11, 0.3);
-  animation: float 3.2s ease-in-out infinite;
+  animation: float 3.8s ease-in-out infinite;
+}
+
+.available .orb::after {
+  position: absolute;
+  z-index: 0;
+  inset: -17px;
+  border: 2px solid rgb(244 119 25 / 35%);
+  border-radius: inherit;
+  content: "";
+  animation: readyRing 3.8s ease-out infinite;
 }
 
 .available .playBadge {
@@ -205,7 +335,7 @@
 }
 
 .available .caption {
-  margin-top: 0.6rem;
+  margin-top: 0.62rem;
 }
 
 .available .title {
@@ -214,35 +344,38 @@
 
 .available .state {
   color: var(--m-accent-ink);
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .available .world:hover {
   transform: translateY(-4px);
 }
 
-/* Roqui stands next to the world that is open and says where to start. */
+/* One guide unit is anchored to whichever level is currently open. */
 .guide {
   position: absolute;
-  bottom: 1.25rem;
+  z-index: 3;
   display: grid;
   justify-items: center;
   gap: 0.35rem;
   pointer-events: none;
+  animation: guideEnter 280ms var(--m-ease) both;
 }
 
 .guideMascot {
-  width: clamp(3.5rem, 16vw, 5rem);
+  width: 4.5rem;
+  height: auto;
+  animation: guideIdle 4.4s ease-in-out 400ms infinite;
 }
 
 .guideTip {
+  width: 8.25rem;
   position: relative;
-  max-width: 9rem;
   padding: 0.4rem 0.7rem;
   border: 1px solid var(--m-hairline);
   border-radius: 0.9rem;
   background: var(--m-paper);
-  box-shadow: 0 1px 2px rgba(31, 42, 68, 0.05), 0 8px 18px rgba(31, 42, 68, 0.1);
+  box-shadow: 0 1px 2px rgb(31 42 68 / 5%), 0 8px 18px rgb(31 42 68 / 10%);
   color: var(--m-ink);
   font-size: 0.82rem;
   font-weight: 800;
@@ -251,7 +384,6 @@
   text-wrap: balance;
 }
 
-/* Tail pointing down at the mascot. */
 .guideTip::after {
   width: 0.65rem;
   height: 0.65rem;
@@ -265,16 +397,14 @@
   transform: translateX(-50%) rotate(45deg);
 }
 
-.step:nth-child(3n + 1) .guide {
-  right: clamp(0.25rem, 4vw, 2.5rem);
+.guideAtLeftNode {
+  top: 0.35rem;
+  left: calc(100% + 0.75rem);
 }
 
-.step:nth-child(3n + 3) .guide {
-  left: clamp(0.25rem, 4vw, 2.5rem);
-}
-
-.step:nth-child(3n + 2) .guide {
-  right: clamp(0.25rem, 3vw, 1.5rem);
+.guideAtRightNode {
+  top: 0.35rem;
+  right: calc(100% + 0.75rem);
 }
 
 .completed .orb {
@@ -287,9 +417,7 @@
 }
 
 .locked .orb {
-  background: var(--m-hairline);
-  color: var(--m-ink-soft);
-  box-shadow: 0 8px 0 rgba(31, 42, 68, 0.05), 0 14px 22px rgba(31, 42, 68, 0.09);
+  color: var(--m-blue-ink);
 }
 
 .locked .title,
@@ -304,13 +432,123 @@
   100% {
     transform: translateY(0);
   }
+
   50% {
-    transform: translateY(-6px);
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes readyRing {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.94);
+  }
+
+  50% {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes routeReveal {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes guideEnter {
+  from {
+    opacity: 0;
+    transform: translateY(5px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes guideIdle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@media (min-width: 700px) {
+  .trail .routeSegment {
+    stroke-width: 13;
+  }
+
+  .step:nth-child(odd) {
+    --step-node-offset: clamp(1.1rem, 12vw, 7.5rem);
+
+    padding-left: var(--step-node-offset);
+  }
+
+  .step:nth-child(even) {
+    --step-node-offset: clamp(1.1rem, 12vw, 7.5rem);
+
+    padding-right: var(--step-node-offset);
+  }
+
+  .mobileTrail {
+    display: none;
+  }
+
+  .desktopTrail {
+    display: initial;
+  }
+
+  .markerTraining {
+    width: clamp(3.75rem, 5vw, 4.5rem);
+  }
+
+  .markerSource,
+  .markerShare {
+    width: clamp(4rem, 5.5vw, 4.75rem);
+  }
+
+  .markerContext {
+    width: clamp(4.25rem, 6vw, 5rem);
+  }
+
+  .markerVoices,
+  .markerVideos {
+    width: clamp(3.5rem, 4.5vw, 4.25rem);
+  }
+
+  .guideAtLeftNode {
+    top: 0.5rem;
+    left: calc(100% + 1rem);
+  }
+
+  .guideAtRightNode {
+    top: 0.5rem;
+    right: calc(100% + 1rem);
+  }
+
+  .guideMascot {
+    width: 5.25rem;
+  }
+
+  .guideTip {
+    width: 9.25rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .available .orb {
+  .available .orb,
+  .available .orb::after {
     animation: none;
   }
 
@@ -320,5 +558,14 @@
 
   .available .world:hover {
     transform: none;
+  }
+
+  .trail .completedRouteSegment {
+    animation: none;
+  }
+
+  .guide,
+  .guideMascot {
+    animation: none;
   }
 }
