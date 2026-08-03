@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
-import styles from "./AppHeader.module.css";
+import styles from "./LanguageSwitcher.module.css";
 
 /** Two-state toggle: the current language is filled, the other one is the target. */
 export function LanguageSwitcher() {

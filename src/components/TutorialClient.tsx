@@ -1,14 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useReducer } from "react";
-import { Accessibility, Check, ChevronLeft, LockKeyhole, Sparkles, Target } from "lucide-react";
+import { useEffect, useReducer, useState } from "react";
+import { Accessibility, Check, ChevronLeft, Sparkles, Target, Timer as TimerIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import type { TutorialPack } from "@/content/schemas/tutorial";
-import { initialTutorialState, tutorialReducer } from "@/features/game/tutorialState";
+import { useProgress } from "@/features/progress/ProgressProvider";
+import { createInitialTutorialState, tutorialReducer } from "@/features/game/tutorialState";
 import {
   getChoicePresentation,
   getFeedbackBlocks,
@@ -17,7 +18,21 @@ import {
 } from "@/features/game/tutorialPresentation";
 import styles from "./TutorialClient.module.css";
 
-type TutorialClientProps = { pack: TutorialPack };
+type TutorialClientProps = {
+  pack: TutorialPack;
+  /** Which mission of the map this run belongs to. */
+  levelId: string;
+  /** Label of the chip shown during play, for example "Animales · Misión 1". */
+  chipLabel: string;
+  /** What the mission asks, shown on the entry card: the mode name. */
+  entryTitle: string;
+  /** Difficulty, and the time limit when the mode has one. */
+  entryMeta: string;
+  /** Only the very first mission of the game explains itself before starting. */
+  showBriefing?: boolean;
+  /** Seconds allowed per round. Set only by timed missions; omit for an untimed one. */
+  secondsPerRound?: number;
+};
 
 const cardStateClass: Record<ChoiceVisualState, string> = {
   idle: "",
@@ -27,65 +42,141 @@ const cardStateClass: Record<ChoiceVisualState, string> = {
   neutral: styles.cardNeutral
 };
 
-export function TutorialClient({ pack }: TutorialClientProps) {
+/** The tutorial is the first mission of the map. */
+const TUTORIAL_MISSION_ID = "training" as const;
+
+export function TutorialClient({
+  pack,
+  levelId,
+  chipLabel,
+  entryTitle,
+  entryMeta,
+  showBriefing = false,
+  secondsPerRound
+}: TutorialClientProps) {
   const t = useTranslations("tutorial");
-  const [state, dispatch] = useReducer(tutorialReducer, initialTutorialState);
+  const router = useRouter();
+  const { completeLevel } = useProgress();
+  const [state, dispatch] = useReducer(tutorialReducer, createInitialTutorialState(showBriefing));
+  const [briefingIndex, setBriefingIndex] = useState(0);
+
+  const briefingLines = t.raw("briefing") as string[];
+  const isFinished = state.status === "completed";
+  const correctRounds = state.status === "completed" ? state.correctRounds : 0;
+  const totalRounds = pack.rounds.length;
+
+  const isPlaying = state.status === "playing";
+  const roundIndex = state.status === "playing" ? state.roundIndex : -1;
+  const answerSubmitted = state.status === "playing" ? state.answerSubmitted : false;
+  const isRoundTimed = Boolean(secondsPerRound) && isPlaying && !answerSubmitted;
+
+  /*
+   * A timed round is locked by a single timer rather than a per-second counter: the
+   * visible bar is a CSS animation, so nothing re-renders while it drains.
+   */
+  useEffect(() => {
+    if (!isRoundTimed || !secondsPerRound) return;
+    const timer = setTimeout(() => dispatch({ type: "timeout" }), secondsPerRound * 1000);
+    return () => clearTimeout(timer);
+  }, [isRoundTimed, roundIndex, secondsPerRound]);
+
+  // Finishing the last round records the mission and hands over to the results screen.
+  useEffect(() => {
+    if (!isFinished) return;
+    completeLevel(levelId, {
+      missionId: TUTORIAL_MISSION_ID,
+      correctRounds,
+      totalRounds
+    });
+    router.replace("/results");
+  }, [completeLevel, correctRounds, isFinished, levelId, router, totalRounds]);
+
+  if (state.status === "intro" && !showBriefing) {
+    /*
+     * Every mission announces itself before it starts, so a child always knows what they
+     * are about to enter. Only the very first one replaces this with the long briefing.
+     */
+    return (
+      <button
+        className={`${styles.intro} app-chrome-hidden`}
+        type="button"
+        onClick={() => dispatch({ type: "start" })}
+      >
+        <span className={styles.introStage}>
+          <span className={styles.introChip}>
+            <Target aria-hidden="true" size={13} />
+            {chipLabel}
+          </span>
+
+          <span className={styles.introBubble}>
+            <span className={styles.entryLabel}>{t("entering")}</span>
+            <span className={styles.introLine}>{entryTitle}</span>
+            <span className={styles.entryMeta}>{entryMeta}</span>
+          </span>
+
+          <MascotSlot alt={t("mascotAlt")} className={styles.introMascot} mood="welcoming" priority />
+
+          <span aria-hidden="true" className={styles.introHint}>
+            {t("tapToStart")}
+          </span>
+        </span>
+      </button>
+    );
+  }
 
   if (state.status === "intro") {
+    const isLastLine = briefingIndex >= briefingLines.length - 1;
+
     return (
-      <section aria-labelledby="tutorial-title" className={styles.briefing}>
-        <div className={styles.briefingRow}>
-          <div className={styles.bubble}>
-            <p className={styles.briefingChip}>
-              <Target aria-hidden="true" size={13} />
-              {t("missionChip")}
-            </p>
-            <h1 className={styles.briefingTitle} id="tutorial-title">
-              {t("introTitle")}
-            </h1>
-            <p className={styles.briefingLead}>{t("introLead")}</p>
-            <p className={styles.briefingHint}>{t("introHint")}</p>
-          </div>
-          <MascotSlot alt={t("mascotAlt")} className={styles.briefingMascot} mood="welcoming" priority />
-        </div>
-        <p className={styles.briefingMeta}>{t("introMeta")}</p>
-        <button className={styles.primaryButton} type="button" onClick={() => dispatch({ type: "start" })}>
-          {t("start")}
-        </button>
-      </section>
+      /* Same full-screen conversation as the home intro: Roqui takes the middle of the
+         screen, a tap anywhere moves on, and the last one starts round one. */
+      <button
+        aria-label={t("briefingAria", { current: briefingIndex + 1, total: briefingLines.length })}
+        className={`${styles.intro} app-chrome-hidden`}
+        type="button"
+        onClick={() =>
+          isLastLine ? dispatch({ type: "start" }) : setBriefingIndex((index) => index + 1)
+        }
+      >
+        <span className={styles.introStage}>
+          <span className={styles.introChip}>
+            <Target aria-hidden="true" size={13} />
+            {chipLabel}
+          </span>
+
+          <span className={styles.introBubble} key={briefingIndex}>
+            <span className={styles.introLine}>{briefingLines[briefingIndex]}</span>
+          </span>
+
+          <MascotSlot alt={t("mascotAlt")} className={styles.introMascot} mood="welcoming" priority />
+
+          <span aria-hidden="true" className={styles.introDots}>
+            {briefingLines.map((line, index) => (
+              <span
+                className={`${styles.introDot} ${index <= briefingIndex ? styles.introDotSeen : ""}`}
+                key={line}
+              />
+            ))}
+          </span>
+
+          <span aria-hidden="true" className={styles.introHint}>
+            {isLastLine ? t("tapToStart") : t("tapHint")}
+          </span>
+        </span>
+
+        <span aria-live="polite" className={styles.srOnly}>
+          {briefingLines[briefingIndex]}
+        </span>
+      </button>
     );
   }
 
   if (state.status === "completed") {
+    // The results screen owns the celebration; this is only the hand-over moment.
     return (
-      <section aria-labelledby="completion-title" className={styles.completion}>
-        <span className={styles.completionBadge}>
-          <MascotSlot alt={t("mascotAlt")} className={styles.completionMascot} mood="celebrating" />
-          <span aria-hidden="true" className={`${styles.spark} ${styles.sparkOne}`} />
-          <span aria-hidden="true" className={`${styles.spark} ${styles.sparkTwo}`} />
-          <span aria-hidden="true" className={`${styles.spark} ${styles.sparkThree}`} />
-        </span>
-        <h1 className={styles.completionTitle} id="completion-title">
-          {t("completionTitle")}
-        </h1>
-        <p className={styles.completionText}>{t("completionDescription")}</p>
-        <LookAskCheck sequential states={{ look: "completed", ask: "completed", check: "completed" }} />
-        <p className={styles.nextMission}>
-          <span>{t("nextMissionTitle")}</span>
-          <span className={styles.nextMissionStatus}>
-            <LockKeyhole aria-hidden="true" size={13} />
-            {t("nextMissionStatus")}
-          </span>
-        </p>
-        <div className={styles.completionActions}>
-          <Link className={styles.primaryLink} href="/worlds">
-            {t("returnToMissions")}
-          </Link>
-          <button className={styles.secondaryButton} type="button" onClick={() => dispatch({ type: "restart" })}>
-            {t("replay")}
-          </button>
-        </div>
-      </section>
+      <p className={styles.handover} role="status">
+        {t("savingResult")}
+      </p>
     );
   }
 
@@ -115,10 +206,27 @@ export function TutorialClient({ pack }: TutorialClientProps) {
         <span style={{ width: `${(round.order / pack.rounds.length) * 100}%` }} />
       </div>
 
+      {secondsPerRound && (
+        <div className={styles.timer}>
+          <span className={styles.timerIcon}>
+            <TimerIcon aria-hidden="true" size={15} />
+          </span>
+          <span aria-hidden="true" className={styles.timerTrack}>
+            {/* Keyed on the round so the bar restarts, and paused once the answer is in. */}
+            <span
+              className={`${styles.timerFill} ${state.answerSubmitted ? styles.timerFillPaused : ""}`}
+              key={round.id}
+              style={{ animationDuration: `${secondsPerRound}s` }}
+            />
+          </span>
+          <span className={styles.srOnly}>{t("timeLimit", { seconds: secondsPerRound })}</span>
+        </div>
+      )}
+
       <div className={`${styles.gameplay} ${state.answerSubmitted ? styles.gameplayFeedback : ""}`}>
         {/* Keying on the round id replays the entrance transition once per round. */}
         <div className={styles.board} key={round.id}>
-          <p className={styles.missionChip}>{t("missionChip")}</p>
+          <p className={styles.missionChip}>{chipLabel}</p>
           <h1 className={styles.question} id="tutorial-question">
             {t(round.promptKey)}
           </h1>
@@ -215,7 +323,7 @@ export function TutorialClient({ pack }: TutorialClientProps) {
                 className={styles.primaryButton}
                 disabled={state.selectedChoiceId === null}
                 type="button"
-                onClick={() => dispatch({ type: "submit" })}
+                onClick={() => dispatch({ type: "submit", correct: selectedIsCorrect })}
               >
                 {t("submit")}
               </button>

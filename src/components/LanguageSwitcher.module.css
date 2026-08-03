@@ -1,0 +1,40 @@
+/*
+ * Self-contained so the toggle looks identical inside the header and on the account
+ * screen, where the header is hidden and its colour tokens are not available.
+ */
+
+.language {
+  --l-ink-soft: #5b6780;
+  --l-hairline: #eadfd9;
+  --l-paper: #ffffff;
+  --l-accent: #ea4b16;
+
+  min-height: 2.5rem;
+  flex: 0 0 auto;
+  padding: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  border: 1px solid var(--l-hairline);
+  border-radius: 999px;
+  background: var(--l-paper);
+  text-decoration: none;
+}
+
+.languageOption {
+  min-width: 2.1rem;
+  min-height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--l-ink-soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.languageActive {
+  background: var(--l-accent);
+  color: #fff;
+}

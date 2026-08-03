@@ -99,6 +99,540 @@
   transform: rotate(-45deg);
 }
 
+/* The bubble doubles as the control that moves the conversation forward. */
+.bubbleButton {
+  width: 100%;
+  border-width: 1px;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: transform 150ms var(--h-ease);
+}
+
+.bubbleButton:hover {
+  transform: translateY(-2px);
+}
+
+.bubbleButton:active {
+  transform: translateY(1px);
+}
+
+.line {
+  font-size: clamp(1.15rem, 4.2vw, 1.6rem);
+  font-weight: 800;
+  line-height: 1.22;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.nextHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-top: 0.5rem;
+  color: var(--h-accent-ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* Progress through the conversation, so a child sees it has an end. */
+.dots {
+  display: flex;
+  gap: 0.35rem;
+  padding: 0;
+  margin: 1.1rem 0 0;
+  list-style: none;
+}
+
+.dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--h-hairline-strong);
+  transition: background-color 200ms var(--h-ease);
+}
+
+.dotSeen {
+  background: var(--h-accent);
+}
+
+.srOnly {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------ Roqui intro */
+
+/*
+ * Full-screen moment. It sits above the header and the bottom navigation on purpose:
+ * while Roqui is talking there is nothing else to press and nowhere else to go.
+ */
+.splash {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  background: #fff7f3;
+}
+
+.intro {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  /* A tall message scrolls inside the overlay instead of pushing the page around. */
+  overflow-x: clip;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: clamp(1rem, 5vw, 2.5rem);
+  border: 0;
+  background: radial-gradient(circle at 50% 32%, #fffdfc 0 38%, #ffeade 100%);
+  color: var(--h-ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: center;
+}
+
+.introStage {
+  width: min(100%, 30rem);
+  display: grid;
+  justify-items: center;
+  gap: 0;
+}
+
+.introBubble {
+  position: relative;
+  min-height: 7.5rem;
+  width: 100%;
+  padding: clamp(1rem, 4vw, 1.5rem) clamp(1.1rem, 4vw, 1.75rem);
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--h-hairline);
+  border-radius: 1.5rem;
+  background: var(--h-paper);
+  box-shadow: var(--h-shadow);
+}
+
+/* Tail pointing down at the mascot. */
+.introBubble::after {
+  width: 1.15rem;
+  height: 1.15rem;
+  position: absolute;
+  bottom: -0.62rem;
+  left: 50%;
+  border-right: 1px solid var(--h-hairline);
+  border-bottom: 1px solid var(--h-hairline);
+  background: var(--h-paper);
+  content: "";
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.introMascot {
+  width: clamp(11rem, 46vw, 17rem);
+  margin-top: 1.1rem;
+  display: block;
+}
+
+.introMascot img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.introHint {
+  margin-top: 0.85rem;
+  color: var(--h-accent-ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  animation: hintPulse 2s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .introHint {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* ------------------------------------------------------- Detective profile */
+
+.profile {
+  max-width: 26rem;
+  margin: clamp(0.75rem, 3vw, 1.5rem) auto clamp(1rem, 5vw, 2.5rem);
+  padding: clamp(1.25rem, 4vw, 1.85rem);
+  display: grid;
+  justify-items: center;
+  gap: 0;
+  border: 1px solid var(--h-hairline);
+  border-radius: 1.5rem;
+  background: var(--h-paper);
+  box-shadow: var(--h-shadow);
+  text-align: center;
+}
+
+/* The app header is hidden here, so the language toggle needs its own place. */
+.accountLanguage {
+  width: min(100%, 26rem);
+  margin: clamp(0.75rem, 4vw, 1.5rem) auto 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.profileTitle {
+  margin: 0 0 1.35rem;
+  font-size: clamp(1.5rem, 5.5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.field {
+  width: 100%;
+  padding: 0;
+  margin: 0 0 1.35rem;
+  border: 0;
+}
+
+.fieldLabel {
+  padding: 0;
+  margin: 0 auto 0.6rem;
+  color: var(--h-ink-soft);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.badge {
+  width: 3.6rem;
+  height: 3.6rem;
+  position: relative;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--h-hairline);
+  border-radius: 1.1rem;
+  background: var(--h-blue-soft);
+  color: var(--h-blue-ink);
+  cursor: pointer;
+  transition: transform 150ms var(--h-ease), border-color 150ms ease;
+}
+
+.badge:hover {
+  transform: translateY(-2px);
+}
+
+.badgeSelected {
+  border-color: var(--h-accent);
+  background: var(--h-accent-soft);
+  color: var(--h-accent-ink);
+}
+
+.badgeCheck {
+  width: 1.25rem;
+  height: 1.25rem;
+  position: absolute;
+  top: -0.35rem;
+  right: -0.35rem;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--h-paper);
+  border-radius: 50%;
+  background: var(--h-accent-strong);
+  color: #fff;
+}
+
+.names {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.name {
+  min-height: 2.6rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--h-hairline-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--h-ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 800;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.nameSelected {
+  border-color: var(--h-accent);
+  background: var(--h-accent-soft);
+  color: var(--h-accent-ink);
+}
+
+.nameInput {
+  width: 100%;
+  min-height: 3.1rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--h-hairline-strong);
+  border-radius: 1rem;
+  background: #fffdfc;
+  color: var(--h-ink);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.nameInput::placeholder {
+  color: #a7aebd;
+  font-weight: 600;
+}
+
+.nameInput:focus-visible {
+  border-color: var(--h-accent);
+  outline: 3px solid rgb(234 75 22 / 22%);
+  outline-offset: 1px;
+}
+
+.profileNote {
+  max-width: 30ch;
+  margin: 1rem 0 0;
+  color: var(--h-ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.signIn {
+  margin: 1.1rem 0 0;
+  color: var(--h-ink-soft);
+  font-size: 0.88rem;
+}
+
+.signInAction {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--h-accent-ink);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: underline;
+}
+
+.backAction {
+  min-height: 2.75rem;
+  margin-top: 0.65rem;
+  padding: 0 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 0;
+  background: transparent;
+  color: var(--h-ink-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.backAction:hover {
+  color: var(--h-ink);
+}
+
+/* ------------------------------------------------------------ Player home */
+
+.hub {
+  max-width: 30rem;
+  margin: clamp(1rem, 4vw, 2rem) auto;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.hubHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hubGreeting {
+  margin: 0;
+  font-size: clamp(1.4rem, 5.5vw, 1.9rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.hubMascot {
+  width: clamp(4.5rem, 22vw, 6.5rem);
+  display: block;
+  justify-self: end;
+}
+
+.hubMascot img {
+  width: 100%;
+  height: auto;
+}
+
+.hubNext {
+  padding: clamp(1rem, 4vw, 1.4rem);
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+  border: 1px solid var(--h-hairline);
+  border-radius: 1.35rem;
+  background: var(--h-paper);
+  box-shadow: var(--h-shadow);
+  text-align: center;
+}
+
+.hubNextLabel {
+  margin: 0;
+  padding: 0.22rem 0.7rem;
+  border-radius: 999px;
+  background: var(--h-accent-soft);
+  color: var(--h-accent-ink);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hubNextTitle {
+  margin: 0.35rem 0 0.9rem;
+  font-size: clamp(1.2rem, 4.5vw, 1.5rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.hubStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.hubStat {
+  min-width: 0;
+  padding: 0.85rem 0.5rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.2rem;
+  border: 1px solid var(--h-hairline);
+  border-radius: 1.1rem;
+  background: var(--h-paper);
+  text-align: center;
+}
+
+.hubStatIcon {
+  width: 2.4rem;
+  height: 2.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.hubStatRank {
+  background: #fff2d6;
+  color: #a9700d;
+}
+
+.hubStatStreak {
+  background: var(--h-accent-soft);
+  color: var(--h-accent-ink);
+}
+
+.hubStatFriends {
+  background: var(--h-blue-soft);
+  color: var(--h-blue-ink);
+}
+
+.hubStatLabel {
+  color: var(--h-ink-soft);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hubStatValue {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.hubStatSoon {
+  color: var(--h-ink-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------- Progress */
+
+.progress {
+  width: min(100%, 24rem);
+  margin: clamp(1.75rem, 6vw, 2.75rem) auto 0;
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+}
+
+.progressLabel {
+  color: var(--h-ink-soft);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--h-hairline);
+}
+
+.progressFill {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: var(--h-accent);
+  transition: width 340ms var(--h-ease);
+}
+
+.progressValue {
+  color: var(--h-ink);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
 .greeting {
   color: var(--h-accent-ink);
   font-size: 0.82rem;

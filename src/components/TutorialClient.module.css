@@ -242,6 +242,186 @@
   font-weight: 700;
 }
 
+/* ---------------------------------------------------- Full-screen briefing */
+
+/*
+ * Roqui explains the mission in the middle of the screen. It sits above the app chrome
+ * on purpose: while he is talking there is nothing else to press.
+ */
+.intro {
+  --t-ink: #1f2a44;
+  --t-ink-soft: #5b6780;
+  --t-paper: #ffffff;
+  --t-hairline: #ece7e6;
+  --t-accent: #ea4b16;
+  --t-accent-ink: #b8380a;
+  --t-accent-soft: #ffece4;
+  --t-ease: cubic-bezier(0.22, 0.8, 0.36, 1);
+
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  /* A tall message scrolls inside the overlay instead of pushing the page around. */
+  overflow-x: clip;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: clamp(1rem, 5vw, 2.5rem);
+  border: 0;
+  background: radial-gradient(circle at 50% 30%, #fffdfc 0 38%, #ffeade 100%);
+  color: var(--t-ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: center;
+}
+
+.introStage {
+  width: min(100%, 30rem);
+  display: grid;
+  justify-items: center;
+  gap: 0;
+}
+
+.introChip {
+  margin-bottom: 0.9rem;
+  padding: 0.28rem 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  border-radius: 999px;
+  background: var(--t-accent-soft);
+  color: var(--t-accent-ink);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.introBubble {
+  min-height: 7.5rem;
+  width: 100%;
+  position: relative;
+  padding: clamp(1rem, 4vw, 1.5rem) clamp(1.1rem, 4vw, 1.75rem);
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--t-hairline);
+  border-radius: 1.6rem;
+  background: var(--t-paper);
+  box-shadow: 0 1px 2px rgba(31, 42, 68, 0.05), 0 14px 30px rgba(31, 42, 68, 0.1);
+  /* Keyed on the line index, so every new message lands with a small turn. */
+  animation: bubbleIn 320ms var(--t-ease) 1;
+}
+
+/* Tail pointing down at the mascot. */
+.introBubble::after {
+  width: 1.15rem;
+  height: 1.15rem;
+  position: absolute;
+  bottom: -0.62rem;
+  left: 50%;
+  border-right: 1px solid var(--t-hairline);
+  border-bottom: 1px solid var(--t-hairline);
+  background: var(--t-paper);
+  content: "";
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.introLine {
+  font-size: clamp(1.15rem, 4.2vw, 1.55rem);
+  font-weight: 800;
+  line-height: 1.24;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.introMascot {
+  width: clamp(9rem, 40vw, 14rem);
+  margin-top: 1.15rem;
+}
+
+.introDots {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 1.1rem;
+}
+
+.introDot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: #d5cfcd;
+  transition: background-color 200ms var(--t-ease);
+}
+
+.introDotSeen {
+  background: var(--t-accent);
+}
+
+.introHint {
+  margin-top: 0.85rem;
+  color: var(--t-accent-ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  animation: hintPulse 2s ease-in-out infinite;
+}
+
+.srOnly {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@keyframes bubbleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) rotate(-2.5deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes hintPulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .introBubble {
+    animation: none;
+  }
+
+  .introHint {
+    animation: none;
+    opacity: 1;
+  }
+
+  .introDot {
+    transition: none;
+  }
+}
+
+/* Brief moment between the last round and the results screen. */
+.handover {
+  margin: clamp(2rem, 10vw, 5rem) auto;
+  color: var(--t-ink-soft);
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
 /* ------------------------------------------------------------ Round layout */
 
 .round {
@@ -305,6 +485,68 @@
   border-radius: inherit;
   background: var(--t-accent);
   transition: width 340ms var(--t-ease);
+}
+
+/* --------------------------------------------------------------- Round timer */
+
+.timer {
+  width: min(100%, 520px);
+  margin: -0.75rem auto 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.timerIcon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  color: var(--t-accent-ink);
+}
+
+.timerTrack {
+  flex: 1 1 auto;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--t-hairline);
+}
+
+.timerFill {
+  width: 100%;
+  height: 100%;
+  display: block;
+  transform-origin: left center;
+  border-radius: inherit;
+  background: var(--t-accent);
+  animation: timerDrain linear 1 forwards;
+}
+
+/* Once the answer is in, the bar stops where it was instead of running to zero. */
+.timerFillPaused {
+  animation-play-state: paused;
+}
+
+@keyframes timerDrain {
+  from {
+    transform: scaleX(1);
+    background: var(--t-mint);
+  }
+  60% {
+    background: var(--t-accent);
+  }
+  to {
+    transform: scaleX(0);
+    background: var(--t-coral);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The limit still applies; only the draining animation is removed. */
+  .timerFill {
+    animation: none;
+    background: var(--t-accent);
+  }
 }
 
 .gameplay {
@@ -938,4 +1180,20 @@
   .spark {
     display: none;
   }
+}
+
+/* Compact card that announces a mission before it starts. */
+.entryLabel {
+  color: var(--t-ink-soft);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.entryMeta {
+  margin-top: 0.35rem;
+  color: var(--t-ink-soft);
+  font-size: 0.88rem;
+  font-weight: 700;
 }

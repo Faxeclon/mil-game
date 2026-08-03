@@ -1,0 +1,312 @@
+/*
+ * Results screen. Same restrained language as the tutorial, with the mascot celebrating
+ * what the player just finished. Palette taken from the Roqui mascot.
+ */
+
+.results,
+.empty,
+.loading {
+  --r-ink: #1f2a44;
+  --r-ink-soft: #5b6780;
+  --r-paper: #ffffff;
+  --r-hairline: #ece7e6;
+  --r-hairline-strong: #d5cfcd;
+  --r-accent: #ea4b16;
+  --r-accent-strong: #c93c0b;
+  --r-accent-ink: #b8380a;
+  --r-accent-soft: #ffece4;
+  --r-mint: #1f7a28;
+  --r-mint-soft: #e8f6e9;
+  --r-ease: cubic-bezier(0.22, 0.8, 0.36, 1);
+
+  color: var(--r-ink);
+}
+
+/* Full-bleed tint, painted from the module so globals.css is not involved. */
+.results::before,
+.empty::before,
+.loading::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background: #fff7f3;
+  content: "";
+  pointer-events: none;
+}
+
+.results > *,
+.empty > * {
+  position: relative;
+  z-index: 1;
+}
+
+.results {
+  max-width: 30rem;
+  margin: clamp(1.25rem, 6vw, 3.5rem) auto;
+  display: grid;
+  justify-items: center;
+  gap: 0;
+  text-align: center;
+}
+
+.badge {
+  width: clamp(7rem, 30vw, 10rem);
+  position: relative;
+  display: grid;
+  place-items: center;
+  animation: badgeIn 380ms var(--r-ease) 1;
+}
+
+.mascot {
+  width: 100%;
+}
+
+.title {
+  max-width: 14ch;
+  margin: 1rem 0 0;
+  font-size: clamp(1.8rem, 6.5vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+}
+
+.text {
+  max-width: 26ch;
+  margin: 0.55rem 0 0;
+  color: var(--r-ink-soft);
+  font-size: 1rem;
+}
+
+.score {
+  margin: 1rem 0 1.25rem;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  background: var(--r-mint-soft);
+  color: var(--r-mint);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.results > ol {
+  width: min(100%, 20rem);
+}
+
+.nextMission {
+  width: 100%;
+  margin: 1.5rem 0 0;
+  padding: 0.85rem 1rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--r-hairline);
+  border-radius: 1rem;
+  background: var(--r-paper);
+}
+
+.nextMissionFlag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  background: var(--r-accent-soft);
+  color: var(--r-accent-ink);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.nextMissionTitle {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+}
+
+/* Countdown back to the map. Any touch or key press cancels it. */
+.autoAdvance {
+  width: min(100%, 14rem);
+  margin: 1.5rem 0 0;
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  color: var(--r-ink-soft);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.autoAdvanceBar {
+  width: 100%;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--r-hairline);
+}
+
+.autoAdvanceFill {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: var(--r-accent);
+  animation: autoAdvanceFill 4.5s linear 1 forwards;
+}
+
+@keyframes autoAdvanceFill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* -------------------------------------------------------------- Empty state */
+
+.empty {
+  max-width: 28rem;
+  margin: clamp(2rem, 10vw, 5rem) auto;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: clamp(1.5rem, 5.5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.emptyText {
+  max-width: 30ch;
+  margin: 0.65rem 0 1.6rem;
+  color: var(--r-ink-soft);
+  font-size: 1rem;
+}
+
+.loading {
+  margin: clamp(2rem, 10vw, 5rem) auto;
+  color: var(--r-ink-soft);
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------ Actions */
+
+.primaryLink,
+.secondaryLink {
+  min-height: 3.2rem;
+  padding: 0.65rem 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 0.98rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: transform 150ms var(--r-ease), background-color 150ms ease;
+}
+
+.primaryLink {
+  background: var(--r-accent-strong);
+  color: #fff;
+}
+
+.primaryLink:hover {
+  transform: translateY(-1px);
+  background: var(--r-accent-ink);
+}
+
+.secondaryLink {
+  border: 1px solid var(--r-hairline-strong);
+  color: var(--r-ink);
+}
+
+.secondaryLink:hover {
+  transform: translateY(-1px);
+  background: var(--r-accent-soft);
+}
+
+/* --------------------------------------------------------------- Decoration */
+
+.spark {
+  width: 0.34rem;
+  height: 0.34rem;
+  position: absolute;
+  border-radius: 50%;
+  background: var(--r-mint);
+  opacity: 0;
+  pointer-events: none;
+  animation: sparkOut 620ms ease-out 1 forwards;
+}
+
+.sparkOne {
+  top: 2%;
+  left: 4%;
+  animation-delay: 110ms;
+}
+
+.sparkTwo {
+  top: 10%;
+  right: 2%;
+  background: var(--r-accent);
+  animation-delay: 200ms;
+}
+
+.sparkThree {
+  bottom: 6%;
+  left: 16%;
+  background: #a9700d;
+  animation-delay: 290ms;
+}
+
+@keyframes badgeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes sparkOut {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .badge {
+    animation: none;
+  }
+
+  .primaryLink,
+  .secondaryLink {
+    transition: none;
+  }
+
+  .spark {
+    display: none;
+  }
+}

@@ -48,11 +48,22 @@ describe("tutorialReducer", () => {
       state = tutorialReducer(state, { type: "submit" });
       state = tutorialReducer(state, { type: "next", totalRounds: 3 });
     }
-    expect(state).toEqual({ status: "completed" });
+    expect(state).toEqual({ status: "completed", correctRounds: 0 });
   });
 
   it("restarts on round one", () => {
-    const restarted = tutorialReducer({ status: "completed" }, { type: "restart" });
-    expect(restarted).toMatchObject({ status: "playing", roundIndex: 0, selectedChoiceId: null, answerSubmitted: false });
+    const restarted = tutorialReducer({ status: "completed", correctRounds: 2 }, { type: "restart" });
+    expect(restarted).toMatchObject({ status: "playing", roundIndex: 0, selectedChoiceId: null, answerSubmitted: false, correctRounds: 0 });
+  });
+
+  it("counts only the rounds confirmed as correct", () => {
+    let state = tutorialReducer(initialTutorialState, { type: "start" });
+    const answers = [true, false, true];
+    for (const correct of answers) {
+      state = tutorialReducer(state, { type: "select", choiceId: "choice" });
+      state = tutorialReducer(state, { type: "submit", correct });
+      state = tutorialReducer(state, { type: "next", totalRounds: answers.length });
+    }
+    expect(state).toEqual({ status: "completed", correctRounds: 2 });
   });
 });

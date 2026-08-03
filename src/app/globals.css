@@ -46,7 +46,7 @@
 
 * { box-sizing: border-box; }
 html { background: var(--background); }
-body { margin: 0; min-width: 320px; background: var(--background); color: var(--text-primary); font-family: "Nunito", "Arial Rounded MT Bold", ui-rounded, system-ui, sans-serif; font-size: 18px; line-height: 1.5; }
+body { margin: 0; min-width: 320px; background: var(--background); color: var(--text-primary); font-family: var(--font-game), "Nunito", ui-rounded, system-ui, sans-serif; font-size: 18px; line-height: 1.5; }
 a { color: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
@@ -168,3 +168,13 @@ body:has(.tutorial-round) .app-header { display: none; }
   .detective-scene__case-file { width: 6.5rem; height: 8rem; }.detective-scene__case-file svg { width: 49px; height: 49px; }
   .detective-scene__lens { width: 6.1rem; height: 6.1rem; border-width: 8px; }.detective-scene__lens svg { width: 42px; height: 42px; }.detective-scene__lens::after { width: 3.05rem; right: -2.6rem; }
 }
+
+/* Screens that own the whole viewport: the app header and the bottom navigation are
+   hidden while a child is signing in, being introduced or seeing a mission result. */
+body:has(.app-chrome-hidden) { padding-bottom: 0; }
+body:has(.app-chrome-hidden) .app-header,
+body:has(.app-chrome-hidden) .mobile-bottom-nav { display: none; }
+
+/* Nothing may turn the page into a canvas that drags sideways. clip is used instead
+   of hidden so it does not create a scroll container and sticky positioning survives. */
+html, body { overflow-x: clip; max-width: 100%; }

@@ -1,37 +1,30 @@
+"use client";
+
 import {
   AudioLines,
   Clapperboard,
+  Cloud,
   FileSearch,
   Layers3,
+  Leaf,
   LockKeyhole,
+  Moon,
   Play,
   SearchCheck,
   Send,
+  Sparkles,
+  Star,
   type LucideIcon
 } from "lucide-react";
 import Image from "next/image";
+import type { CSSProperties } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { getMissionActionHref, type MissionBlueprint, type MissionKind } from "@/features/missions/missionMap";
+import { islands } from "@/features/levels/levelModel";
+import { getIslandState, type PlayState } from "@/features/levels/levelProgress";
+import type { MissionKind } from "@/features/missions/missionMap";
+import { useProgress } from "@/features/progress/ProgressProvider";
 import styles from "./MissionMap.module.css";
-
-type LocalizedMission = MissionBlueprint & {
-  title: string;
-  ariaLabel: string;
-};
-
-type MissionMapProps = {
-  missions: LocalizedMission[];
-  labels: {
-    mapAria: string;
-    greeting: string;
-    available: string;
-    comingSoon: string;
-    completed: string;
-    play: string;
-    tip: string;
-    mascotAlt: string;
-  };
-};
 
 const missionIcons: Record<MissionKind, LucideIcon> = {
   training: SearchCheck,
@@ -60,43 +53,74 @@ const guideAssetByNodeSide: Record<NodeSide, string> = {
 
 const getNodeSide = (index: number): NodeSide => (index % 2 === 0 ? "left" : "right");
 
-const mobileRouteSegments = [
-  "M 22 9 C 38 10, 76 15, 78 25",
-  "M 78 25 C 81 35, 26 34, 22 42",
-  "M 22 42 C 18 52, 75 51, 78 59",
-  "M 78 59 C 82 68, 26 68, 22 76",
-  "M 22 76 C 18 85, 67 87, 78 94"
-];
+/**
+ * Where each island sits on the map, in percentages of the journey box. The nodes and
+ * the trail both read from this one list, which is what keeps the path attached to the
+ * islands at every screen size: there is no second layout to drift out of step.
+ */
+function getNodePositions(count: number) {
+  return Array.from({ length: count }, (_, index) => ({
+    x: index % 2 === 0 ? 27 : 73,
+    y: ((index + 0.5) / count) * 100
+  }));
+}
 
-const desktopRouteSegments = [
-  "M 21 9 C 37 10, 75 15, 79 25",
-  "M 79 25 C 83 35, 25 34, 21 42",
-  "M 21 42 C 17 52, 75 51, 79 59",
-  "M 79 59 C 83 68, 25 68, 21 76",
-  "M 21 76 C 17 85, 68 87, 79 94"
-];
+/** A smooth S curve from one island to the next. */
+function buildSegment(from: { x: number; y: number }, to: { x: number; y: number }) {
+  const bend = (to.y - from.y) * 0.55;
+  return `M ${from.x} ${from.y} C ${from.x} ${from.y + bend}, ${to.x} ${to.y - bend}, ${to.x} ${to.y}`;
+}
 
 /**
  * A trail of floating worlds a child walks from top to bottom. Each world is one large
  * round target that either opens straight away or is visibly still closed: no menus and
  * no intermediate step between wanting to play and playing.
+ *
+ * Every state shown here is derived from stored progress, never from fixed data.
  */
-export function MissionMap({ missions, labels }: MissionMapProps) {
+export function MissionMap() {
+  const t = useTranslations("worlds");
+  const tIslands = useTranslations("islands");
+  const { progressState } = useProgress();
+
+  // Each island on the trail is a zone: a themed group of levels.
+  const missions = islands.map((zone) => ({
+    key: zone.key,
+    kind: zone.icon,
+    state: getIslandState(progressState, zone.key),
+    title: tIslands(`list.${zone.key}.title`)
+  }));
+
+  const positions = getNodePositions(missions.length);
+
+  const statusLabel = (state: PlayState) =>
+    state === "available" ? t("available") : state === "completed" ? t("completed") : t("comingSoon");
+
   return (
     <div className={styles.map}>
-      <p className={styles.greeting}>{labels.greeting}</p>
+      <p className={styles.greeting}>{t("title")}</p>
 
-      <div className={styles.journey}>
+      <div className={styles.journey} style={{ "--island-count": missions.length } as CSSProperties}>
         <MapEnvironment />
-        <MissionTrail missions={missions} />
-        <ol aria-label={labels.mapAria} className={styles.path}>
+        <MapSky />
+        <MissionTrail
+          completedFlags={missions.map((mission) => mission.state === "completed")}
+          nextSegmentIndex={missions.findIndex((mission) => mission.state === "available") - 1}
+          positions={positions}
+        />
+        <ol aria-label={t("pathAriaLabel")} className={styles.path}>
           {missions.map((mission, index) => {
             const Icon = missionIcons[mission.kind];
             const isAvailable = mission.state === "available";
             const isCompleted = mission.state === "completed";
-            const href = getMissionActionHref(mission);
+            const href = isAvailable || isCompleted ? `/island/${mission.key}` : null;
             const stateClass = isAvailable ? styles.available : isCompleted ? styles.completed : styles.locked;
             const nodeSide = getNodeSide(index);
+            const ariaLabel = t("nodeAria", {
+              number: index + 1,
+              title: mission.title,
+              status: statusLabel(mission.state)
+            });
 
             const world = (
               <>
@@ -111,33 +135,39 @@ export function MissionMap({ missions, labels }: MissionMapProps) {
                   {isAvailable && (
                     <span className={styles.playBadge}>
                       <Play aria-hidden="true" size={13} fill="currentColor" />
-                      {labels.play}
+                      {tIslands("available")}
                     </span>
                   )}
                 </span>
                 <span className={styles.caption}>
                   <span className={styles.title}>{mission.title}</span>
-                  <span className={styles.state}>
-                    {isAvailable ? labels.available : isCompleted ? labels.completed : labels.comingSoon}
-                  </span>
+                  <span className={styles.state}>{statusLabel(mission.state)}</span>
                 </span>
               </>
             );
 
             return (
-              <li className={`${styles.step} ${stateClass}`} key={mission.key}>
+              <li
+                className={`${styles.step} ${stateClass} ${nodeSide === "left" ? styles.stepLeft : styles.stepRight}`}
+                key={mission.key}
+                style={
+                  { "--node-x": `${positions[index].x}%`, "--node-y": `${positions[index].y}%` } as CSSProperties
+                }
+              >
                 <MissionMarker kind={mission.kind} />
                 <div className={styles.nodeStage}>
                   {href ? (
-                    <Link aria-label={mission.ariaLabel} className={styles.world} href={href}>
+                    <Link aria-label={ariaLabel} className={styles.world} href={href}>
                       {world}
                     </Link>
                   ) : (
-                    <span aria-label={mission.ariaLabel} className={styles.world} role="img">
+                    <span aria-label={ariaLabel} className={styles.world} role="img">
                       {world}
                     </span>
                   )}
-                  {isAvailable && <MissionGuide alt={labels.mascotAlt} nodeSide={nodeSide} tip={labels.tip} />}
+                  {isAvailable && (
+                    <MissionGuide alt={t("mascotAlt")} nodeSide={nodeSide} tip={t("mascotTip")} />
+                  )}
                 </div>
               </li>
             );
@@ -152,9 +182,48 @@ function MapEnvironment() {
   return <div aria-hidden="true" className={styles.environment} />;
 }
 
-function MissionTrail({ missions }: Pick<MissionMapProps, "missions">) {
-  const isSegmentCompleted = (index: number) => missions[index]?.state === "completed";
+/** Scattered decoration so the journey reads as a place rather than a flat list. */
+const skyIcons = [
+  { Icon: Star, className: styles.skyOne, size: 20 },
+  { Icon: Sparkles, className: styles.skyTwo, size: 17 },
+  { Icon: Cloud, className: styles.skyThree, size: 30 },
+  { Icon: Star, className: styles.skyFour, size: 14 },
+  { Icon: Leaf, className: styles.skyFive, size: 19 },
+  { Icon: Sparkles, className: styles.skySix, size: 22 },
+  { Icon: Cloud, className: styles.skySeven, size: 26 },
+  { Icon: Star, className: styles.skyEight, size: 17 },
+  { Icon: Moon, className: styles.skyNine, size: 18 },
+  { Icon: Sparkles, className: styles.skyTen, size: 15 },
+  { Icon: Leaf, className: styles.skyEleven, size: 16 },
+  { Icon: Star, className: styles.skyTwelve, size: 22 }
+] as const;
 
+function MapSky() {
+  return (
+    <div aria-hidden="true" className={styles.sky}>
+      {skyIcons.map(({ Icon, className, size }, index) => (
+        <span className={`${styles.skyIcon} ${className}`} key={index}>
+          <Icon size={size} strokeWidth={2.1} />
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * Segment `i` links island `i` to island `i + 1`, so it lights up once `i` is done.
+ * The segment that leads into the open island runs as moving dashes, pointing a child
+ * towards where to go next without any words.
+ */
+function MissionTrail({
+  positions,
+  completedFlags,
+  nextSegmentIndex
+}: {
+  positions: { x: number; y: number }[];
+  completedFlags: boolean[];
+  nextSegmentIndex: number;
+}) {
   return (
     <svg aria-hidden="true" className={styles.trail} preserveAspectRatio="none" viewBox="0 0 100 100">
       <defs>
@@ -164,19 +233,17 @@ function MissionTrail({ missions }: Pick<MissionMapProps, "missions">) {
           <stop offset="1" stopColor="#df5a0c" />
         </linearGradient>
       </defs>
-      {mobileRouteSegments.map((segment, index) => (
+      {positions.slice(0, -1).map((from, index) => (
         <path
-          className={`${styles.mobileTrail} ${styles.routeSegment} ${isSegmentCompleted(index) ? styles.completedRouteSegment : ""}`}
-          d={segment}
-          key={`mobile-${index}`}
-          pathLength="1"
-        />
-      ))}
-      {desktopRouteSegments.map((segment, index) => (
-        <path
-          className={`${styles.desktopTrail} ${styles.routeSegment} ${isSegmentCompleted(index) ? styles.completedRouteSegment : ""}`}
-          d={segment}
-          key={`desktop-${index}`}
+          className={[
+            styles.routeSegment,
+            completedFlags[index] === true ? styles.completedRouteSegment : "",
+            index === nextSegmentIndex ? styles.nextRouteSegment : ""
+          ]
+            .filter(Boolean)
+            .join(" ")}
+          d={buildSegment(from, positions[index + 1])}
+          key={index}
           pathLength="1"
         />
       ))}
