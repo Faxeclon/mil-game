@@ -5,6 +5,13 @@ export default async function CasePage({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations("placeholder");
-  return <PlaceholderPage title={t("case.title")} description={t("case.description")} actionLabel={t("backToMissions")} href="/worlds" />;
-}
 
+  return (
+    <PlaceholderPage
+      title={t("case.title")}
+      description={t("case.description")}
+      actionLabel={t("backToMissions")}
+      href="/worlds"
+    />
+  );
+}

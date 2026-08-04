@@ -1,0 +1,82 @@
+/* Screen shown when a mission is reached before it has been unlocked. */
+
+.locked,
+.loading {
+  --g-ink: #1f2a44;
+  --g-ink-soft: #5b6780;
+  --g-hairline: #ece7e6;
+  --g-accent-strong: #c93c0b;
+  --g-accent-ink: #b8380a;
+  --g-accent-soft: #ffece4;
+
+  color: var(--g-ink);
+}
+
+.locked::before,
+.loading::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background: #fff7f3;
+  content: "";
+  pointer-events: none;
+}
+
+.locked {
+  max-width: 28rem;
+  margin: clamp(2rem, 10vw, 5rem) auto;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
+
+.locked > * {
+  position: relative;
+  z-index: 1;
+}
+
+.icon {
+  width: 3.4rem;
+  height: 3.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--g-accent-soft);
+  color: var(--g-accent-ink);
+}
+
+.title {
+  margin: 1rem 0 0;
+  font-size: clamp(1.5rem, 5.5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+.text {
+  max-width: 32ch;
+  margin: 0.65rem 0 1.6rem;
+  color: var(--g-ink-soft);
+  font-size: 1rem;
+}
+
+.action {
+  min-height: 3.2rem;
+  padding: 0.65rem 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--g-accent-strong);
+  color: #fff;
+  font-size: 0.98rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.loading {
+  margin: clamp(2rem, 10vw, 5rem) auto;
+  color: var(--g-ink-soft);
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+}

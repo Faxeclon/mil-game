@@ -1,15 +1,28 @@
 import type { Metadata } from "next";
+import { Baloo_2 } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { AppHeader } from "@/components/AppHeader";
 import { MobileNavigation } from "@/components/MobileNavigation";
+import { ProgressProvider } from "@/features/progress/ProgressProvider";
 import { routing, type AppLocale } from "@/i18n/routing";
 
 type LocaleLayoutProps = Readonly<{
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }>;
+
+/**
+ * Rounded, friendly and heavy enough for the large headings this game uses.
+ * next/font self-hosts the files at build time, so nothing is fetched at runtime.
+ */
+const gameFont = Baloo_2({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-game",
+  display: "swap"
+});
 
 export async function generateMetadata({ params }: LocaleLayoutProps): Promise<Metadata> {
   const { locale } = await params;
@@ -31,13 +44,15 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   const t = await getTranslations({ locale, namespace: "accessibility" });
 
   return (
-    <html lang={locale}>
+    <html className={gameFont.variable} lang={locale}>
       <body>
         <NextIntlClientProvider messages={messages}>
-          <a className="skip-link" href="#main-content">{t("skipToContent")}</a>
-          <AppHeader locale={locale as AppLocale} />
-          {children}
-          <MobileNavigation />
+          <ProgressProvider>
+            <a className="skip-link" href="#main-content">{t("skipToContent")}</a>
+            <AppHeader locale={locale as AppLocale} />
+            {children}
+            <MobileNavigation />
+          </ProgressProvider>
         </NextIntlClientProvider>
       </body>
     </html>

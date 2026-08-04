@@ -1,0 +1,303 @@
+/* The inside of an island: categories as groups of linked sub-islands. */
+
+.island {
+  --i-ink: #1f2a44;
+  --i-ink-soft: #5b6780;
+  --i-paper: #ffffff;
+  --i-hairline: #ece7e6;
+  --i-hairline-strong: #d0c9c6;
+  --i-accent: #ea4b16;
+  --i-accent-strong: #c93c0b;
+  --i-accent-ink: #b8380a;
+  --i-accent-soft: #ffece4;
+  --i-mint: #1f7a28;
+  --i-mint-soft: #e8f6e9;
+  --i-shadow: 0 1px 2px rgba(31, 42, 68, 0.05), 0 12px 28px rgba(31, 42, 68, 0.08);
+  --i-ease: cubic-bezier(0.22, 0.8, 0.36, 1);
+
+  width: min(100%, 40rem);
+  margin: 0 auto;
+  padding-bottom: 3rem;
+  color: var(--i-ink);
+}
+
+.island::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background: #fff9f6;
+  content: "";
+  pointer-events: none;
+}
+
+.island > * {
+  position: relative;
+  z-index: 1;
+}
+
+.back {
+  min-height: 2.75rem;
+  margin-top: clamp(0.5rem, 3vw, 1.25rem);
+  padding: 0 0.6rem 0 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 999px;
+  color: var(--i-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back:hover {
+  color: var(--i-ink);
+}
+
+.title {
+  margin: 0.65rem 0 0;
+  font-size: clamp(1.6rem, 6vw, 2.2rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.038em;
+}
+
+.subtitle {
+  max-width: 36ch;
+  margin: 0.45rem 0 0;
+  color: var(--i-ink-soft);
+  font-size: 1rem;
+}
+
+/* ------------------------------------------------------------ Category group */
+
+.group {
+  margin-top: clamp(1.5rem, 5vw, 2.25rem);
+  padding: clamp(0.9rem, 3vw, 1.25rem);
+  border: 1px solid var(--i-hairline);
+  border-radius: 1.35rem;
+  background: var(--i-paper);
+  box-shadow: var(--i-shadow);
+}
+
+.group.locked {
+  background: transparent;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+.groupHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.groupTitle {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.groupCount {
+  margin: 0;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: var(--i-accent-soft);
+  color: var(--i-accent-ink);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.group.completed .groupCount {
+  background: var(--i-mint-soft);
+  color: var(--i-mint);
+}
+
+/* -------------------------------------------------- Chain of sub-islands */
+
+.chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  flex: 1 1 5.5rem;
+  min-width: 5rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* Dotted link between one sub-island and the next. */
+.step + .step::before {
+  width: 100%;
+  height: 3px;
+  position: absolute;
+  top: 1.55rem;
+  left: -50%;
+  background-image: radial-gradient(circle, var(--i-hairline-strong) 34%, transparent 36%);
+  background-position: center;
+  background-repeat: repeat-x;
+  background-size: 0.6rem 0.6rem;
+  content: "";
+}
+
+.step.completed + .step::before,
+.step.available + .step::before {
+  background-image: radial-gradient(circle, var(--i-accent) 34%, transparent 36%);
+}
+
+.mission {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  padding: 0 0.15rem;
+  color: inherit;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 160ms var(--i-ease);
+}
+
+.orb {
+  width: 3.2rem;
+  height: 3.2rem;
+  position: relative;
+  display: grid;
+  place-items: center;
+  border: 3px solid #fff9f6;
+  border-radius: 50%;
+  background: #e7eaf1;
+  color: var(--i-ink-soft);
+  /* The long shadow is what makes the sub-island read as floating. */
+  box-shadow: 0 6px 0 rgba(31, 42, 68, 0.07), 0 12px 20px rgba(31, 42, 68, 0.12);
+}
+
+.orbNumber {
+  min-width: 1.4rem;
+  min-height: 1.4rem;
+  position: absolute;
+  top: -0.4rem;
+  left: -0.4rem;
+  display: grid;
+  place-items: center;
+  border: 2px solid #fff9f6;
+  border-radius: 50%;
+  background: var(--i-paper);
+  color: var(--i-ink);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.caption {
+  max-width: 8rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.15rem;
+}
+
+.mode {
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+/* Difficulty is spelled out, never colour alone. */
+.difficulty {
+  padding: 0.08rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.easy {
+  background: #e8f6e9;
+  color: #1f7a28;
+}
+
+.medium {
+  background: #fdf3e0;
+  color: #a9700d;
+}
+
+.hard {
+  background: #ffe9e4;
+  color: #b3321a;
+}
+
+.timing,
+.soon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: var(--i-ink-soft);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------------ States */
+
+.step.available .orb {
+  width: 3.9rem;
+  height: 3.9rem;
+  background: radial-gradient(circle at 32% 28%, #ff8a5c 0 34%, var(--i-accent) 100%);
+  color: #fff;
+  box-shadow: 0 8px 0 rgba(201, 60, 11, 0.22), 0 16px 26px rgba(201, 60, 11, 0.28);
+  animation: float 3.2s ease-in-out infinite;
+}
+
+.step.available .mission:hover {
+  transform: translateY(-3px);
+}
+
+.step.available .mode {
+  color: var(--i-accent-ink);
+}
+
+.step.completed .orb {
+  background: var(--i-mint-soft);
+  color: var(--i-mint);
+}
+
+.step.locked .orb {
+  box-shadow: 0 4px 0 rgba(31, 42, 68, 0.05);
+}
+
+.step.locked .mode,
+.step.locked .caption {
+  color: var(--i-ink-soft);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step.available .orb {
+    animation: none;
+  }
+
+  .mission {
+    transition: none;
+  }
+
+  .step.available .mission:hover {
+    transform: none;
+  }
+}

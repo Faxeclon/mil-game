@@ -94,11 +94,12 @@ describe("getChoicePresentation", () => {
 describe("tutorial interface messages", () => {
   const requiredKeys = [
     "missionChip",
-    "introTitle",
-    "introLead",
     "introMeta",
-    "introHint",
     "start",
+    "timeRemaining",
+    "timeRemainingOne",
+    "timeWarning",
+    "timeExpired",
     "answerConfirmed",
     "yourChoice",
     "aiChoice",
@@ -106,9 +107,6 @@ describe("tutorial interface messages", () => {
     "stepCompleted",
     "completionTitle",
     "completionDescription",
-    "nextMissionTitle",
-    "nextMissionStatus",
-    "returnToMissions",
     "replay"
   ];
 
@@ -117,6 +115,17 @@ describe("tutorial interface messages", () => {
       expect(hasNestedKey(spanishMessages.tutorial, key)).toBe(true);
       expect(hasNestedKey(englishMessages.tutorial, key)).toBe(true);
     }
+  });
+
+  it("uses singular, plural, warning, and expiry countdown copy in both languages", () => {
+    expect(englishMessages.tutorial.timeRemaining).toBe("{seconds} seconds remaining");
+    expect(englishMessages.tutorial.timeRemainingOne).toBe("1 second remaining");
+    expect(englishMessages.tutorial.timeWarning).toBe("5 seconds remaining");
+    expect(englishMessages.tutorial.timeExpired).toBe("Time is up");
+    expect(spanishMessages.tutorial.timeRemaining).toBe("Quedan {seconds} segundos");
+    expect(spanishMessages.tutorial.timeRemainingOne).toBe("Queda 1 segundo");
+    expect(spanishMessages.tutorial.timeWarning).toBe("Quedan 5 segundos");
+    expect(spanishMessages.tutorial.timeExpired).toBe("Se acabó el tiempo");
   });
 
   it("no longer exposes the removed duplicated lock and long-explanation strings", () => {

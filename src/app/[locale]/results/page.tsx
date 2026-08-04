@@ -1,10 +1,19 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
-import { PlaceholderPage } from "@/components/PlaceholderPage";
+import { Suspense } from "react";
+import { setRequestLocale } from "next-intl/server";
+import { MissionResults } from "@/components/MissionResults";
+import { PageContainer } from "@/components/PageContainer";
 
 export default async function ResultsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations("placeholder");
-  return <PlaceholderPage title={t("results.title")} description={t("results.description")} actionLabel={t("backHome")} href="/" />;
-}
 
+  return (
+    <main id="main-content">
+      <PageContainer className="results-shell">
+        <Suspense fallback={null}>
+          <MissionResults />
+        </Suspense>
+      </PageContainer>
+    </main>
+  );
+}
