@@ -7,6 +7,16 @@ import { useTranslations } from "next-intl";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { ActiveResponseTimer } from "@/features/game/activeResponseTimer";
+import {
+  createRoundDeadline,
+  crossedFinalWarning,
+  getCountdownProgress,
+  getDisplayedRemainingSeconds,
+  getRemainingMs,
+  hasTimedOut,
+  RoundClosureGuard,
+  type RoundDeadline
+} from "@/features/game/roundCountdown";
 import { Link, useRouter } from "@/i18n/navigation";
 import type { TutorialPack } from "@/content/schemas/tutorial";
 import type { LevelId } from "@/features/levels/levelModel";
@@ -46,6 +56,9 @@ const cardStateClass: Record<ChoiceVisualState, string> = {
   neutral: styles.cardNeutral
 };
 
+type CountdownState = { roundId: string; remainingMs: number; progress: number };
+type TimerAnnouncement = { roundId: string; kind: "warning" | "expired" };
+
 function monotonicNow(): number {
   return typeof performance === "undefined" ? Date.now() : performance.now();
 }
@@ -65,8 +78,13 @@ export function TutorialClient({
   const [state, dispatch] = useReducer(tutorialReducer, createInitialTutorialState(showBriefing));
   const [briefingIndex, setBriefingIndex] = useState(0);
   const [responseTimer] = useState(() => new ActiveResponseTimer());
+  const [roundClosure] = useState(() => new RoundClosureGuard());
+  const [countdown, setCountdown] = useState<CountdownState | null>(null);
+  const [timerAnnouncement, setTimerAnnouncement] = useState<TimerAnnouncement | null>(null);
   const completionAttemptRef = useRef<LevelAttempt | null>(null);
   const hasRecordedCompletionRef = useRef(false);
+  const warningRoundRef = useRef<string | null>(null);
+  const roundDeadlineRef = useRef<RoundDeadline | null>(null);
 
   const briefingLines = t.raw("briefing") as string[];
   const isFinished = state.status === "completed";
@@ -76,27 +94,85 @@ export function TutorialClient({
   const isPlaying = state.status === "playing";
   const roundIndex = state.status === "playing" ? state.roundIndex : -1;
   const answerSubmitted = state.status === "playing" ? state.answerSubmitted : false;
-  const isRoundTimed = Boolean(secondsPerRound) && isPlaying && !answerSubmitted;
+  const activeRoundId = isPlaying ? pack.rounds[roundIndex].id : null;
+  const timedDurationMs = typeof secondsPerRound === "number" && Number.isFinite(secondsPerRound) && secondsPerRound > 0
+    ? Math.trunc(secondsPerRound * 1_000)
+    : null;
+  const isRoundTimed = timedDurationMs !== null && isPlaying && !answerSubmitted;
 
-  // A round starts counting only once its answer controls are interactive.
+  // A round starts counting only once its answer controls are interactive. Timed
+  // rounds use this same moment to create their fixed deadline.
   useEffect(() => {
-    if (!isPlaying || answerSubmitted) return;
-    responseTimer.startRound(pack.rounds[roundIndex].id, monotonicNow());
-  }, [answerSubmitted, isPlaying, pack.rounds, responseTimer, roundIndex]);
+    if (!isPlaying || answerSubmitted || !activeRoundId) return;
+    const startedAt = monotonicNow();
+    responseTimer.startRound(activeRoundId, startedAt);
 
-  /*
-   * A timed round is locked by a single timer rather than a per-second counter: the
-   * visible bar is a CSS animation, so nothing re-renders while it drains.
-   */
-  useEffect(() => {
-    if (!isRoundTimed || !secondsPerRound) return;
-    const roundId = pack.rounds[roundIndex].id;
-    const timer = setTimeout(() => {
-      responseTimer.finishTimedOutRound(roundId, secondsPerRound * 1000);
+    if (timedDurationMs === null) {
+      roundDeadlineRef.current = null;
+      roundClosure.startRound(activeRoundId);
+      warningRoundRef.current = null;
+      return;
+    }
+    const existingDeadline = roundDeadlineRef.current?.roundId === activeRoundId
+      ? roundDeadlineRef.current
+      : null;
+    const deadline = existingDeadline ?? createRoundDeadline(activeRoundId, startedAt, timedDurationMs);
+    if (!deadline) {
+      setCountdown(null);
+      return;
+    }
+    if (!existingDeadline) {
+      roundDeadlineRef.current = deadline;
+      roundClosure.startRound(activeRoundId);
+      warningRoundRef.current = null;
+    }
+
+    let mounted = true;
+    let previousRemainingMs: number | null = null;
+    let deadlineTimer: ReturnType<typeof setTimeout> | undefined;
+    const setSnapshot = (remainingMs: number) => {
+      if (!mounted) return;
+      setCountdown({
+        roundId: activeRoundId,
+        remainingMs,
+        progress: getCountdownProgress(deadline, deadline.deadlineMs - remainingMs)
+      });
+    };
+    const closeAsTimedOut = () => {
+      if (!mounted || !roundClosure.tryClose(activeRoundId)) return;
+      responseTimer.finishTimedOutRound(activeRoundId, timedDurationMs);
+      setSnapshot(0);
+      setTimerAnnouncement({ roundId: activeRoundId, kind: "expired" });
       dispatch({ type: "timeout" });
-    }, secondsPerRound * 1000);
-    return () => clearTimeout(timer);
-  }, [isRoundTimed, pack.rounds, responseTimer, roundIndex, secondsPerRound]);
+    };
+    const update = () => {
+      if (!mounted || roundClosure.isClosed(activeRoundId)) return;
+      const remainingMs = getRemainingMs(deadline, monotonicNow());
+      setSnapshot(remainingMs);
+      if (warningRoundRef.current !== activeRoundId && crossedFinalWarning(previousRemainingMs, remainingMs)) {
+        warningRoundRef.current = activeRoundId;
+        setTimerAnnouncement({ roundId: activeRoundId, kind: "warning" });
+      }
+      previousRemainingMs = remainingMs;
+      if (hasTimedOut(remainingMs)) closeAsTimedOut();
+    };
+    const scheduleDeadlineCheck = () => {
+      const remainingMs = getRemainingMs(deadline, monotonicNow());
+      deadlineTimer = setTimeout(() => {
+        update();
+        if (mounted && !roundClosure.isClosed(activeRoundId)) scheduleDeadlineCheck();
+      }, Math.max(0, remainingMs));
+    };
+
+    update();
+    const refreshTimer = setInterval(update, 250);
+    scheduleDeadlineCheck();
+    return () => {
+      mounted = false;
+      clearInterval(refreshTimer);
+      if (deadlineTimer) clearTimeout(deadlineTimer);
+    };
+  }, [activeRoundId, answerSubmitted, isPlaying, responseTimer, roundClosure, timedDurationMs]);
 
   // Finishing the last round records the mission and hands over to the results screen.
   useEffect(() => {
@@ -210,6 +286,9 @@ export function TutorialClient({
   const selectedIsCorrect = selectedChoice?.id === round.correctChoiceId;
   const isFinalRound = round.order === pack.rounds.length;
   const feedbackBlocks = getFeedbackBlocks(round);
+  const countdownForRound = countdown?.roundId === round.id ? countdown : null;
+  const announcementForRound = timerAnnouncement?.roundId === round.id ? timerAnnouncement.kind : null;
+  const visibleTimer = timedDurationMs !== null && (isRoundTimed || announcementForRound === "expired");
 
   return (
     // "tutorial-round" is only a hook for the existing global rule that hides the
@@ -231,21 +310,35 @@ export function TutorialClient({
         <span style={{ width: `${(round.order / pack.rounds.length) * 100}%` }} />
       </div>
 
-      {secondsPerRound && (
+      {visibleTimer && (
         <div className={styles.timer}>
           <span className={styles.timerIcon}>
             <TimerIcon aria-hidden="true" size={15} />
           </span>
+          <span className={styles.timerValue}>
+            {announcementForRound === "expired"
+              ? t("timeExpired")
+              : getDisplayedRemainingSeconds(countdownForRound?.remainingMs ?? timedDurationMs) === 1
+                ? t("timeRemainingOne")
+                : t("timeRemaining", { seconds: getDisplayedRemainingSeconds(countdownForRound?.remainingMs ?? timedDurationMs) })}
+          </span>
           <span aria-hidden="true" className={styles.timerTrack}>
-            {/* Keyed on the round so the bar restarts, and paused once the answer is in. */}
             <span
-              className={`${styles.timerFill} ${state.answerSubmitted ? styles.timerFillPaused : ""}`}
-              key={round.id}
-              style={{ animationDuration: `${secondsPerRound}s` }}
+              className={styles.timerFill}
+              style={{ width: `${(countdownForRound?.progress ?? (announcementForRound === "expired" ? 0 : 1)) * 100}%` }}
             />
           </span>
-          <span className={styles.srOnly}>{t("timeLimit", { seconds: secondsPerRound })}</span>
         </div>
+      )}
+      {timedDurationMs !== null && (
+        <>
+          <span aria-atomic="true" aria-live="polite" className={styles.srOnly}>
+            {announcementForRound === "warning" ? t("timeWarning") : ""}
+          </span>
+          <span aria-atomic="true" aria-live="assertive" className={styles.srOnly}>
+            {announcementForRound === "expired" ? t("timeExpired") : ""}
+          </span>
+        </>
       )}
 
       <div className={`${styles.gameplay} ${state.answerSubmitted ? styles.gameplayFeedback : ""}`}>
@@ -349,6 +442,7 @@ export function TutorialClient({
                 disabled={state.selectedChoiceId === null}
                 type="button"
                 onClick={() => {
+                  if (!roundClosure.tryClose(round.id)) return;
                   responseTimer.finishRound(round.id, monotonicNow());
                   dispatch({ type: "submit", correct: selectedIsCorrect });
                 }}

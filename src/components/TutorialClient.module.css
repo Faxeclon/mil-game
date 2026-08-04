@@ -504,6 +504,14 @@
   color: var(--t-accent-ink);
 }
 
+.timerValue {
+  min-width: 9.5rem;
+  color: var(--t-ink);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-align: right;
+}
+
 .timerTrack {
   flex: 1 1 auto;
   height: 8px;
@@ -519,33 +527,13 @@
   transform-origin: left center;
   border-radius: inherit;
   background: var(--t-accent);
-  animation: timerDrain linear 1 forwards;
-}
-
-/* Once the answer is in, the bar stops where it was instead of running to zero. */
-.timerFillPaused {
-  animation-play-state: paused;
-}
-
-@keyframes timerDrain {
-  from {
-    transform: scaleX(1);
-    background: var(--t-mint);
-  }
-  60% {
-    background: var(--t-accent);
-  }
-  to {
-    transform: scaleX(0);
-    background: var(--t-coral);
-  }
+  transition: width 180ms linear;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* The limit still applies; only the draining animation is removed. */
+  /* The deadline remains active; only decorative interpolation is removed. */
   .timerFill {
-    animation: none;
-    background: var(--t-accent);
+    transition: none;
   }
 }
 
