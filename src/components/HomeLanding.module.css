@@ -488,15 +488,21 @@
   text-wrap: balance;
 }
 
-.hubMascot {
+.hubApprentice {
   width: clamp(4.5rem, 22vw, 6.5rem);
+  aspect-ratio: 1;
   display: block;
+  padding: 1rem;
+  border: 3px solid var(--h-ink);
+  border-radius: 50%;
+  background: var(--h-accent-soft);
+  color: var(--h-accent-ink);
   justify-self: end;
 }
 
-.hubMascot img {
+.hubApprentice svg {
   width: 100%;
-  height: auto;
+  height: 100%;
 }
 
 .hubNext {

@@ -103,12 +103,16 @@ describe("progress storage", () => {
     expect(readProgressState().completedLevelIds).toEqual(["basics-1"]);
   });
 
-  it("keeps onboarding and a valid player name across a storage round trip", () => {
+  it("keeps onboarding, a valid player name, and the selected apprentice across a storage round trip", () => {
     const storage = createStorage();
     withWindow(storage);
 
-    writeProgressState(markOnboarded(initialProgressState, "Detective Eagle"));
+    writeProgressState(markOnboarded(initialProgressState, "Detective Eagle", "fox"));
 
-    expect(readProgressState()).toMatchObject({ onboarded: true, playerName: "Detective Eagle" });
+    expect(readProgressState()).toMatchObject({
+      onboarded: true,
+      playerName: "Detective Eagle",
+      apprenticeAvatarId: "fox"
+    });
   });
 });

@@ -1,4 +1,5 @@
 import { isLevelId, type LevelId } from "@/features/levels/levelModel";
+import { isApprenticeAvatarId, type ApprenticeAvatarId } from "@/features/profile/apprenticeAvatar";
 
 export const PROGRESS_VERSION = 1;
 
@@ -14,6 +15,8 @@ export type ProgressState = {
   onboarded?: boolean;
   /** The detective name the player chose for themselves at sign-up. */
   playerName: string | null;
+  /** The selected young apprentice; Roqui remains the game's guide. */
+  apprenticeAvatarId: ApprenticeAvatarId | null;
   lastResult?: LevelResult;
 };
 
@@ -30,7 +33,8 @@ export type LevelAttempt = Omit<LevelResult, "levelId">;
 export const initialProgressState: ProgressState = {
   version: PROGRESS_VERSION,
   completedLevelIds: [],
-  playerName: null
+  playerName: null,
+  apprenticeAvatarId: null
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -93,6 +97,9 @@ export function parseProgressState(value: unknown): ProgressState {
   ];
   const lastResult = parseResult(value.lastResult);
   const playerName = normalizePlayerName(value.playerName);
+  const apprenticeAvatarId = isApprenticeAvatarId(value.apprenticeAvatarId)
+    ? value.apprenticeAvatarId
+    : null;
 
   return {
     version: PROGRESS_VERSION,
@@ -102,6 +109,7 @@ export function parseProgressState(value: unknown): ProgressState {
       ? { onboarded: true }
       : {}),
     playerName: playerName ?? null,
+    apprenticeAvatarId,
     ...(lastResult ? { lastResult } : {})
   };
 }
@@ -115,11 +123,29 @@ export function normalizePlayerName(value: unknown): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
-/** Records that sign-up and the introduction are behind us, with the chosen name. */
-export function markOnboarded(state: ProgressState, playerName?: string): ProgressState {
+/** Records that sign-up and the introduction are behind us, with the chosen player identity. */
+export function markOnboarded(
+  state: ProgressState,
+  playerName?: string,
+  apprenticeAvatarId?: ApprenticeAvatarId
+): ProgressState {
   const name = normalizePlayerName(playerName);
-  if (state.onboarded === true && (name === undefined || name === state.playerName)) return state;
-  return { ...state, onboarded: true, ...(name ? { playerName: name } : {}) };
+  const avatarId = isApprenticeAvatarId(apprenticeAvatarId)
+    ? apprenticeAvatarId
+    : state.apprenticeAvatarId;
+  if (
+    state.onboarded === true &&
+    (name === undefined || name === state.playerName) &&
+    avatarId === state.apprenticeAvatarId
+  ) {
+    return state;
+  }
+  return {
+    ...state,
+    onboarded: true,
+    ...(name ? { playerName: name } : {}),
+    apprenticeAvatarId: avatarId
+  };
 }
 
 /**

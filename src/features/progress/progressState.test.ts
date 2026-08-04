@@ -12,8 +12,14 @@ import {
 
 describe("canonical level progress", () => {
   it("starts with the one canonical completion collection", () => {
-    expect(initialProgressState).toEqual({ version: PROGRESS_VERSION, completedLevelIds: [], playerName: null });
+    expect(initialProgressState).toEqual({
+      version: PROGRESS_VERSION,
+      completedLevelIds: [],
+      playerName: null,
+      apprenticeAvatarId: null
+    });
     expect(initialProgressState.playerName).toBeNull();
+    expect(initialProgressState.apprenticeAvatarId).toBeNull();
     expect("completedMissionIds" in initialProgressState).toBe(false);
     expect("completeMission" in progressState).toBe(false);
   });
@@ -70,6 +76,13 @@ describe("legacy migration", () => {
     expect(parseProgressState({ version: PROGRESS_VERSION, playerName: 42 }).playerName).toBeNull();
     expect(parseProgressState({ version: PROGRESS_VERSION, playerName: "   " }).playerName).toBeNull();
   });
+
+  it("restores only an authored apprentice avatar id", () => {
+    expect(parseProgressState({ version: PROGRESS_VERSION, apprenticeAvatarId: "owl" }).apprenticeAvatarId).toBe("owl");
+    expect(parseProgressState({ version: PROGRESS_VERSION }).apprenticeAvatarId).toBeNull();
+    expect(parseProgressState({ version: PROGRESS_VERSION, apprenticeAvatarId: "roqui" }).apprenticeAvatarId).toBeNull();
+    expect(parseProgressState({ version: PROGRESS_VERSION, apprenticeAvatarId: 42 }).apprenticeAvatarId).toBeNull();
+  });
 });
 
 describe("results", () => {
@@ -115,14 +128,14 @@ describe("results", () => {
 });
 
 describe("onboarding and reset", () => {
-  it("keeps the unrelated onboarding fields intact", () => {
-    const state = markOnboarded(initialProgressState, "Detective Eagle");
-    expect(state).toMatchObject({ onboarded: true, playerName: "Detective Eagle" });
+  it("keeps the selected apprentice separate from Roqui when onboarding", () => {
+    const state = markOnboarded(initialProgressState, "Detective Eagle", "owl");
+    expect(state).toMatchObject({ onboarded: true, playerName: "Detective Eagle", apprenticeAvatarId: "owl" });
     expect(markOnboarded(state)).toBe(state);
   });
 
   it("survives a JSON round trip with canonical progress, result, onboarding and name", () => {
-    const saved = completeLevel(markOnboarded(initialProgressState, "Detective Eagle"), "animals-1", {
+    const saved = completeLevel(markOnboarded(initialProgressState, "Detective Eagle", "rabbit"), "animals-1", {
       correctRounds: 2,
       totalRounds: 3
     });
@@ -133,5 +146,6 @@ describe("onboarding and reset", () => {
   it("returns to the initial canonical state on reset", () => {
     expect(resetProgressState()).toEqual(initialProgressState);
     expect(resetProgressState().playerName).toBeNull();
+    expect(resetProgressState().apprenticeAvatarId).toBeNull();
   });
 });

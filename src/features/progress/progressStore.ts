@@ -1,4 +1,5 @@
 import type { LevelId } from "@/features/levels/levelModel";
+import type { ApprenticeAvatarId } from "@/features/profile/apprenticeAvatar";
 import {
   completeLevel,
   initialProgressState,
@@ -53,8 +54,8 @@ export function completeLevelInStore(levelId: LevelId, result?: LevelAttempt): v
   publish({ hydrated: true, state: next });
 }
 
-export function markOnboardedInStore(playerName?: string): void {
-  const next = markOnboarded(snapshot.state, playerName);
+export function markOnboardedInStore(playerName?: string, apprenticeAvatarId?: ApprenticeAvatarId): void {
+  const next = markOnboarded(snapshot.state, playerName, apprenticeAvatarId);
   if (next === snapshot.state) return;
   writeProgressState(next);
   publish({ hydrated: true, state: next });

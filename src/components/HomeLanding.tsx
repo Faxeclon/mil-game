@@ -2,22 +2,34 @@
 
 import Image from "next/image";
 import { useId, useState } from "react";
-import { Bird, Cat, Check, Feather, Flame, Medal, Play, Rabbit, Turtle, Users, Wind } from "lucide-react";
+import { Bird, Cat, Check, Feather, Flame, Medal, Play, Rabbit, Turtle, Users, Wind, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { getNextMission, countCompletedMissions, countPlayableMissions } from "@/features/levels/levelProgress";
+import {
+  apprenticeAvatarIds,
+  defaultApprenticeAvatarId,
+  type ApprenticeAvatarId
+} from "@/features/profile/apprenticeAvatar";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link, useRouter } from "@/i18n/navigation";
 import styles from "./HomeLanding.module.css";
 
-const avatarIcons = [Bird, Wind, Rabbit, Turtle, Feather, Cat] as const;
+const apprenticeAvatarIcons: Record<ApprenticeAvatarId, LucideIcon> = {
+  eagle: Bird,
+  fox: Wind,
+  rabbit: Rabbit,
+  turtle: Turtle,
+  owl: Feather,
+  cat: Cat
+};
 
 /**
  * Entry point of the game, in two steps.
  *
- * First the account screen, a visual preview of the sign-up flow: nothing typed here is
- * sent or stored anywhere yet. Then Roqui takes over the whole screen and introduces the
- * problem one line at a time; a tap anywhere moves on, and the last one opens mission 1.
+ * First the player picks an apprentice and enters a local display name. Then Roqui takes
+ * over the whole screen and introduces the problem one line at a time; a tap anywhere
+ * moves on, and the last one opens mission 1.
  */
 export function HomeLanding() {
   const t = useTranslations("home");
@@ -29,15 +41,16 @@ export function HomeLanding() {
     onboarded,
     markOnboarded,
     progressState,
-    playerName: savedPlayerName
+    playerName: savedPlayerName,
+    apprenticeAvatarId: savedApprenticeAvatarId
   } = useProgress();
 
   const lines = t.raw("dialogue") as string[];
-  const avatars = t.raw("profileAvatars") as string[];
+  const apprenticeNames = t.raw("profileAvatars") as string[];
 
   const [step, setStep] = useState<"account" | "intro">("account");
   const [lineIndex, setLineIndex] = useState(0);
-  const [avatarIndex, setAvatarIndex] = useState(0);
+  const [apprenticeAvatarId, setApprenticeAvatarId] = useState<ApprenticeAvatarId>(defaultApprenticeAvatarId);
   const [playerName, setPlayerName] = useState("");
 
   // Nothing is rendered until the stored progress is known, so a returning player never
@@ -57,6 +70,8 @@ export function HomeLanding() {
     const nextMission = getNextMission(progressState);
     const ranks = t.raw("hubRanks") as string[];
     const rank = ranks[Math.min(Math.floor(done / 2), ranks.length - 1)];
+    const hubApprenticeAvatarId = savedApprenticeAvatarId ?? defaultApprenticeAvatarId;
+    const HubApprenticeIcon = apprenticeAvatarIcons[hubApprenticeAvatarId];
 
     return (
       <div className={styles.landing}>
@@ -65,15 +80,14 @@ export function HomeLanding() {
             <h1 className={styles.hubGreeting} id="hub-title">
               {savedPlayerName ? t("hubGreetingNamed", { name: savedPlayerName }) : t("hubGreeting")}
             </h1>
-            <span className={styles.hubMascot}>
-              <Image
-                alt={t("mascotAlt")}
-                height={1024}
-                priority
-                sizes="(max-width: 480px) 26vw, 8rem"
-                src="/media/mascot/roqui-detective.png"
-                width={1024}
-              />
+            <span
+              aria-label={t("profileAvatarAria", {
+                name: apprenticeNames[apprenticeAvatarIds.indexOf(hubApprenticeAvatarId)]
+              })}
+              className={styles.hubApprentice}
+              role="img"
+            >
+              <HubApprenticeIcon aria-hidden="true" strokeWidth={2} />
             </span>
           </div>
 
@@ -148,7 +162,7 @@ export function HomeLanding() {
             setLineIndex((index) => index + 1);
             return;
           }
-          markOnboarded(playerName || t("profileNamePlaceholder"));
+          markOnboarded(playerName || t("profileNamePlaceholder"), apprenticeAvatarId);
           router.push("/tutorial");
         }}
       >
@@ -202,17 +216,18 @@ export function HomeLanding() {
         <fieldset className={styles.field}>
           <legend className={styles.fieldLabel}>{t("profileAvatar")}</legend>
           <div className={styles.badges}>
-            {avatars.map((avatar, index) => {
-              const Icon = avatarIcons[index] ?? Bird;
-              const isSelected = index === avatarIndex;
+            {apprenticeAvatarIds.map((avatarId, index) => {
+              const Icon = apprenticeAvatarIcons[avatarId];
+              const avatar = apprenticeNames[index] ?? avatarId;
+              const isSelected = avatarId === apprenticeAvatarId;
               return (
                 <button
                   aria-label={t("profileAvatarAria", { name: avatar })}
                   aria-pressed={isSelected}
                   className={`${styles.badge} ${isSelected ? styles.badgeSelected : ""}`}
-                  key={avatar}
+                  key={avatarId}
                   type="button"
-                  onClick={() => setAvatarIndex(index)}
+                  onClick={() => setApprenticeAvatarId(avatarId)}
                 >
                   <Icon aria-hidden="true" size={26} strokeWidth={2.1} />
                   {isSelected && (

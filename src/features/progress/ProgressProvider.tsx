@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useMemo, useSyncExternalStore, type ReactNode } from "react";
 import type { LevelId } from "@/features/levels/levelModel";
+import type { ApprenticeAvatarId } from "@/features/profile/apprenticeAvatar";
 import {
   type LevelAttempt,
   type LevelResult,
@@ -26,7 +27,8 @@ export type ProgressApi = {
   completedLevelIds: LevelId[];
   completeLevel: (levelId: LevelId, result?: LevelAttempt) => void;
   playerName: string | null;
-  markOnboarded: (playerName?: string) => void;
+  apprenticeAvatarId: ApprenticeAvatarId | null;
+  markOnboarded: (playerName?: string, apprenticeAvatarId?: ApprenticeAvatarId) => void;
   resetProgress: () => void;
 };
 
@@ -47,6 +49,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       progressState: state,
       onboarded: state.onboarded === true,
       playerName: state.playerName,
+      apprenticeAvatarId: state.apprenticeAvatarId,
       completedLevelIds: state.completedLevelIds,
       completeLevel: completeLevelInStore,
       markOnboarded: markOnboardedInStore,
