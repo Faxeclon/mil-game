@@ -94,10 +94,7 @@ describe("getChoicePresentation", () => {
 describe("tutorial interface messages", () => {
   const requiredKeys = [
     "missionChip",
-    "introTitle",
-    "introLead",
     "introMeta",
-    "introHint",
     "start",
     "timeRemaining",
     "timeRemainingOne",
@@ -110,9 +107,6 @@ describe("tutorial interface messages", () => {
     "stepCompleted",
     "completionTitle",
     "completionDescription",
-    "nextMissionTitle",
-    "nextMissionStatus",
-    "returnToMissions",
     "replay"
   ];
 

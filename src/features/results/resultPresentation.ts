@@ -10,6 +10,14 @@ export type DurationLabels = {
   notRecorded: string;
 };
 
+type SearchParamsReader = Pick<URLSearchParams, "getAll">;
+
+/** Reads one URL attempt value; duplicate values are not a single unambiguous request. */
+export function getRequestedAttempt(searchParams: SearchParamsReader): string | undefined {
+  const attempts = searchParams.getAll("attempt");
+  return attempts.length === 1 ? attempts[0] : undefined;
+}
+
 /** Returns only the latest persisted result, and only for its exact valid URL attempt. */
 export function getFreshResult(
   lastResult: LevelResult | undefined,

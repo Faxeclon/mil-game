@@ -71,8 +71,6 @@ export function HomeLanding() {
     const done = countCompletedMissions(progressState);
     const total = countPlayableMissions();
     const nextMission = getNextMission(progressState);
-    const ranks = t.raw("hubRanks") as string[];
-    const rank = ranks[Math.min(Math.floor(done / 2), ranks.length - 1)];
     const hubApprenticeAvatarId = savedApprenticeAvatarId ?? defaultApprenticeAvatarId;
     const HubApprenticeIcon = apprenticeAvatarIcons[hubApprenticeAvatarId];
 
@@ -128,7 +126,7 @@ export function HomeLanding() {
                 <Medal aria-hidden="true" size={20} />
               </span>
               <span className={styles.hubStatLabel}>{t("hubRank")}</span>
-              <span className={styles.hubStatValue}>{rank}</span>
+              <span className={styles.hubStatSoon}>{t("hubSoon")}</span>
             </li>
             <li className={styles.hubStat}>
               <span className={`${styles.hubStatIcon} ${styles.hubStatStreak}`}>

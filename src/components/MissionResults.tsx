@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { Bird, Cat, Feather, Turtle, Wind, Rabbit, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LookAskCheck } from "@/components/LookAskCheck";
@@ -13,13 +14,9 @@ import {
 } from "@/features/profile/apprenticeAvatar";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { getContinuePath, getReplayPath } from "@/features/results/resultNavigation";
-import { formatElapsedTime, getFreshResult } from "@/features/results/resultPresentation";
+import { formatElapsedTime, getFreshResult, getRequestedAttempt } from "@/features/results/resultPresentation";
 import { Link } from "@/i18n/navigation";
 import styles from "./MissionResults.module.css";
-
-type MissionResultsProps = {
-  attempt?: string;
-};
 
 const apprenticeAvatarIcons: Record<ApprenticeAvatarId, LucideIcon> = {
   eagle: Bird,
@@ -31,11 +28,13 @@ const apprenticeAvatarIcons: Record<ApprenticeAvatarId, LucideIcon> = {
 };
 
 /** Shows only the latest persisted result when its URL names that exact attempt. */
-export function MissionResults({ attempt }: MissionResultsProps) {
+export function MissionResults() {
   const t = useTranslations("results");
   const tIslands = useTranslations("islands");
   const tHome = useTranslations("home");
   const { hydrated, lastResult, progressState, apprenticeAvatarId } = useProgress();
+  const searchParams = useSearchParams();
+  const attempt = getRequestedAttempt(searchParams);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const focusedResultRef = useRef<string | null>(null);
   const result = getFreshResult(lastResult, attempt);

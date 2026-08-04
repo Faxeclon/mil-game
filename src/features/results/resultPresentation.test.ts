@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { LevelResult } from "@/features/progress/progressState";
-import { formatElapsedTime, getFreshResult, type DurationLabels } from "./resultPresentation";
+import { formatElapsedTime, getFreshResult, getRequestedAttempt, type DurationLabels } from "./resultPresentation";
 
 const labels: DurationLabels = {
   second: "second",
@@ -21,6 +21,14 @@ const result: LevelResult = {
 };
 
 describe("fresh result matching", () => {
+  it("reads one client-side attempt query and treats direct or duplicate queries as empty", () => {
+    expect(getRequestedAttempt(new URLSearchParams("attempt=attempt_123e4567-e89b-12d3-a456-426614174000"))).toBe(
+      "attempt_123e4567-e89b-12d3-a456-426614174000"
+    );
+    expect(getRequestedAttempt(new URLSearchParams())).toBeUndefined();
+    expect(getRequestedAttempt(new URLSearchParams("attempt=one&attempt=two"))).toBeUndefined();
+  });
+
   it("exposes a result only for its exact valid attempt id", () => {
     expect(getFreshResult(result, result.attemptId)).toBe(result);
   });
