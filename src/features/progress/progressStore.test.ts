@@ -34,7 +34,7 @@ describe("progress store", () => {
   it("renders the empty snapshot on the server", () => {
     expect(getServerProgressSnapshot()).toEqual({
       hydrated: false,
-      state: { version: 1, completedLevelIds: [], playerName: null, apprenticeAvatarId: null }
+      state: { version: 1, completedLevelIds: [], localNickname: null, apprenticeAvatarId: null }
     });
   });
 

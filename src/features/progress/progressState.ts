@@ -1,5 +1,6 @@
 import { isLevelId, type LevelId } from "@/features/levels/levelModel";
 import { isApprenticeAvatarId, type ApprenticeAvatarId } from "@/features/profile/apprenticeAvatar";
+import { normalizeLocalNickname } from "@/features/profile/localNickname";
 
 export const PROGRESS_VERSION = 1;
 
@@ -11,10 +12,10 @@ export type ProgressState = {
   version: typeof PROGRESS_VERSION;
   /** Levels finished, in the order they were finished. */
   completedLevelIds: LevelId[];
-  /** True once the player has been through sign-up and the introduction. */
+  /** True once the player has completed local profile setup and the introduction. */
   onboarded?: boolean;
-  /** The detective name the player chose for themselves at sign-up. */
-  playerName: string | null;
+  /** A private display label stored only on this device. */
+  localNickname: string | null;
   /** The selected young apprentice; Roqui remains the game's guide. */
   apprenticeAvatarId: ApprenticeAvatarId | null;
   lastResult?: LevelResult;
@@ -33,7 +34,7 @@ export type LevelAttempt = Omit<LevelResult, "levelId">;
 export const initialProgressState: ProgressState = {
   version: PROGRESS_VERSION,
   completedLevelIds: [],
-  playerName: null,
+  localNickname: null,
   apprenticeAvatarId: null
 };
 
@@ -96,7 +97,9 @@ export function parseProgressState(value: unknown): ProgressState {
     ])
   ];
   const lastResult = parseResult(value.lastResult);
-  const playerName = normalizePlayerName(value.playerName);
+  // `playerName` was the pre-Phase-2B local label. Read it once during parsing so
+  // the next state write persists only the canonical `localNickname` field.
+  const localNickname = normalizeLocalNickname(value.localNickname) ?? normalizeLocalNickname(value.playerName);
   const apprenticeAvatarId = isApprenticeAvatarId(value.apprenticeAvatarId)
     ? value.apprenticeAvatarId
     : null;
@@ -108,34 +111,25 @@ export function parseProgressState(value: unknown): ProgressState {
     ...(value.onboarded === true || completedLevelIds.length > 0
       ? { onboarded: true }
       : {}),
-    playerName: playerName ?? null,
+    localNickname: localNickname ?? null,
     apprenticeAvatarId,
     ...(lastResult ? { lastResult } : {})
   };
 }
 
-/** Longest name the interface can show without wrapping awkwardly. */
-const MAX_PLAYER_NAME_LENGTH = 24;
-
-export function normalizePlayerName(value: unknown): string | undefined {
-  if (typeof value !== "string") return undefined;
-  const trimmed = value.trim().slice(0, MAX_PLAYER_NAME_LENGTH);
-  return trimmed.length > 0 ? trimmed : undefined;
-}
-
-/** Records that sign-up and the introduction are behind us, with the chosen player identity. */
+/** Records that local profile setup and the introduction are behind the player. */
 export function markOnboarded(
   state: ProgressState,
-  playerName?: string,
+  localNickname?: string,
   apprenticeAvatarId?: ApprenticeAvatarId
 ): ProgressState {
-  const name = normalizePlayerName(playerName);
+  const nickname = normalizeLocalNickname(localNickname);
   const avatarId = isApprenticeAvatarId(apprenticeAvatarId)
     ? apprenticeAvatarId
     : state.apprenticeAvatarId;
   if (
     state.onboarded === true &&
-    (name === undefined || name === state.playerName) &&
+    (nickname === undefined || nickname === state.localNickname) &&
     avatarId === state.apprenticeAvatarId
   ) {
     return state;
@@ -143,9 +137,14 @@ export function markOnboarded(
   return {
     ...state,
     onboarded: true,
-    ...(name ? { playerName: name } : {}),
+    ...(nickname ? { localNickname: nickname } : {}),
     apprenticeAvatarId: avatarId
   };
+}
+
+/** Returning players with saved progress need only finish their local profile, not replay Roqui's tutorial. */
+export function needsLocalNicknameCompletion(state: ProgressState): boolean {
+  return state.onboarded === true && state.localNickname === null;
 }
 
 /**

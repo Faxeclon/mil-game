@@ -426,21 +426,17 @@
   line-height: 1.4;
 }
 
-.signIn {
-  margin: 1.1rem 0 0;
+.profileHint,
+.profileError {
+  margin: 0.45rem 0 0;
   color: var(--h-ink-soft);
-  font-size: 0.88rem;
+  font-size: 0.8rem;
+  line-height: 1.35;
 }
 
-.signInAction {
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--h-accent-ink);
-  cursor: pointer;
-  font: inherit;
-  font-weight: 800;
-  text-decoration: underline;
+.profileError {
+  color: #b42318;
+  font-weight: 700;
 }
 
 .backAction {

@@ -54,8 +54,8 @@ export function completeLevelInStore(levelId: LevelId, result?: LevelAttempt): v
   publish({ hydrated: true, state: next });
 }
 
-export function markOnboardedInStore(playerName?: string, apprenticeAvatarId?: ApprenticeAvatarId): void {
-  const next = markOnboarded(snapshot.state, playerName, apprenticeAvatarId);
+export function markOnboardedInStore(localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId): void {
+  const next = markOnboarded(snapshot.state, localNickname, apprenticeAvatarId);
   if (next === snapshot.state) return;
   writeProgressState(next);
   publish({ hydrated: true, state: next });

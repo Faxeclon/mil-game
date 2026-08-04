@@ -11,6 +11,8 @@ import {
   defaultApprenticeAvatarId,
   type ApprenticeAvatarId
 } from "@/features/profile/apprenticeAvatar";
+import { normalizeLocalNickname } from "@/features/profile/localNickname";
+import { needsLocalNicknameCompletion } from "@/features/progress/progressState";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link, useRouter } from "@/i18n/navigation";
 import styles from "./HomeLanding.module.css";
@@ -41,7 +43,7 @@ export function HomeLanding() {
     onboarded,
     markOnboarded,
     progressState,
-    playerName: savedPlayerName,
+    localNickname: savedLocalNickname,
     apprenticeAvatarId: savedApprenticeAvatarId
   } = useProgress();
 
@@ -51,7 +53,8 @@ export function HomeLanding() {
   const [step, setStep] = useState<"account" | "intro">("account");
   const [lineIndex, setLineIndex] = useState(0);
   const [apprenticeAvatarId, setApprenticeAvatarId] = useState<ApprenticeAvatarId>(defaultApprenticeAvatarId);
-  const [playerName, setPlayerName] = useState("");
+  const [localNickname, setLocalNickname] = useState("");
+  const [nicknameError, setNicknameError] = useState(false);
 
   // Nothing is rendered until the stored progress is known, so a returning player never
   // sees the sign-up screen flash before their own home.
@@ -60,11 +63,11 @@ export function HomeLanding() {
   }
 
   /*
-   * A player who already signed up gets their own home instead of onboarding again.
+   * A player with a completed local profile gets their own home instead of onboarding again.
    * While the introduction is still on screen the hub must not take over: signing up
    * flips `onboarded` immediately, and the hub would flash before the route changes.
    */
-  if (onboarded && step !== "intro") {
+  if (onboarded && !needsLocalNicknameCompletion(progressState) && step !== "intro") {
     const done = countCompletedMissions(progressState);
     const total = countPlayableMissions();
     const nextMission = getNextMission(progressState);
@@ -78,7 +81,7 @@ export function HomeLanding() {
         <section aria-labelledby="hub-title" className={styles.hub}>
           <div className={styles.hubHeader}>
             <h1 className={styles.hubGreeting} id="hub-title">
-              {savedPlayerName ? t("hubGreetingNamed", { name: savedPlayerName }) : t("hubGreeting")}
+              {savedLocalNickname ? t("hubGreetingNamed", { name: savedLocalNickname }) : t("hubGreeting")}
             </h1>
             <span
               aria-label={t("profileAvatarAria", {
@@ -147,6 +150,62 @@ export function HomeLanding() {
     );
   }
 
+  if (needsLocalNicknameCompletion(progressState) && step !== "intro") {
+    return (
+      <div className={`${styles.landing} app-chrome-hidden`}>
+        <div className={styles.accountLanguage}>
+          <LanguageSwitcher />
+        </div>
+        <section aria-labelledby="nickname-completion-title" className={styles.profile}>
+          <h1 className={styles.profileTitle} id="nickname-completion-title">
+            {t("profileCompletionTitle")}
+          </h1>
+          <p className={styles.profileNote}>{t("profileLocalNote")}</p>
+          <div className={styles.field}>
+            <label className={styles.fieldLabel} htmlFor={nameFieldId}>
+              {t("profileNicknameLabel")}
+            </label>
+            <input
+              aria-describedby={`${nameFieldId}-hint${nicknameError ? ` ${nameFieldId}-error` : ""}`}
+              autoComplete="off"
+              className={styles.nameInput}
+              id={nameFieldId}
+              maxLength={24}
+              type="text"
+              value={localNickname}
+              onChange={(event) => {
+                setLocalNickname(event.target.value);
+                setNicknameError(false);
+              }}
+            />
+            <p className={styles.profileHint} id={`${nameFieldId}-hint`}>
+              {t("profileNicknameHint")}
+            </p>
+            {nicknameError && (
+              <p className={styles.profileError} id={`${nameFieldId}-error`} role="alert">
+                {t("profileNicknameRequired")}
+              </p>
+            )}
+          </div>
+          <button
+            className={styles.primaryAction}
+            type="button"
+            onClick={() => {
+              const nickname = normalizeLocalNickname(localNickname);
+              if (!nickname) {
+                setNicknameError(true);
+                return;
+              }
+              markOnboarded(nickname);
+            }}
+          >
+            {t("profileCompletionSubmit")}
+          </button>
+        </section>
+      </div>
+    );
+  }
+
   if (step === "intro") {
     const isLastLine = lineIndex >= lines.length - 1;
 
@@ -162,7 +221,7 @@ export function HomeLanding() {
             setLineIndex((index) => index + 1);
             return;
           }
-          markOnboarded(playerName || t("profileNamePlaceholder"), apprenticeAvatarId);
+          markOnboarded(localNickname, apprenticeAvatarId);
           router.push("/tutorial");
         }}
       >
@@ -201,15 +260,14 @@ export function HomeLanding() {
   }
 
   return (
-    /* The account screen is the entry point: there is no session and nothing to
-       navigate to yet, so the header and the bottom bar stay hidden. */
+    /* The local profile screen is the entry point, so the header and bottom bar stay hidden. */
     <div className={`${styles.landing} app-chrome-hidden`}>
       <div className={styles.accountLanguage}>
         <LanguageSwitcher />
       </div>
 
-      <section aria-labelledby="account-title" className={styles.profile}>
-        <h1 className={styles.profileTitle} id="account-title">
+      <section aria-labelledby="profile-title" className={styles.profile}>
+        <h1 className={styles.profileTitle} id="profile-title">
           {t("profileTitle")}
         </h1>
 
@@ -243,32 +301,48 @@ export function HomeLanding() {
 
         <div className={styles.field}>
           <label className={styles.fieldLabel} htmlFor={nameFieldId}>
-            {t("profileNameLabel")}
+            {t("profileNicknameLabel")}
           </label>
           <input
+            aria-describedby={`${nameFieldId}-hint${nicknameError ? ` ${nameFieldId}-error` : ""}`}
             autoComplete="off"
             className={styles.nameInput}
             id={nameFieldId}
             maxLength={24}
-            placeholder={t("profileNamePlaceholder")}
             type="text"
-            value={playerName}
-            onChange={(event) => setPlayerName(event.target.value)}
+            value={localNickname}
+            onChange={(event) => {
+              setLocalNickname(event.target.value);
+              setNicknameError(false);
+            }}
           />
+          <p className={styles.profileHint} id={`${nameFieldId}-hint`}>
+            {t("profileNicknameHint")}
+          </p>
+          {nicknameError && (
+            <p className={styles.profileError} id={`${nameFieldId}-error`} role="alert">
+              {t("profileNicknameRequired")}
+            </p>
+          )}
         </div>
 
-        <button className={styles.primaryAction} type="button" onClick={() => setStep("intro")}>
+        <button
+          className={styles.primaryAction}
+          type="button"
+          onClick={() => {
+            const nickname = normalizeLocalNickname(localNickname);
+            if (!nickname) {
+              setNicknameError(true);
+              return;
+            }
+            setLocalNickname(nickname);
+            setStep("intro");
+          }}
+        >
           {t("profileSubmit")}
         </button>
 
-        <p className={styles.profileNote}>{t("profileAdultNote")}</p>
-
-        <p className={styles.signIn}>
-          {t("profileHasAccount")}{" "}
-          <button className={styles.signInAction} type="button" onClick={() => setStep("intro")}>
-            {t("profileSignIn")}
-          </button>
-        </p>
+        <p className={styles.profileNote}>{t("profileLocalNote")}</p>
       </section>
     </div>
   );

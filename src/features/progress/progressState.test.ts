@@ -5,6 +5,7 @@ import {
   completeLevel,
   initialProgressState,
   markOnboarded,
+  needsLocalNicknameCompletion,
   parseProgressState,
   PROGRESS_VERSION,
   resetProgressState
@@ -15,10 +16,10 @@ describe("canonical level progress", () => {
     expect(initialProgressState).toEqual({
       version: PROGRESS_VERSION,
       completedLevelIds: [],
-      playerName: null,
+      localNickname: null,
       apprenticeAvatarId: null
     });
-    expect(initialProgressState.playerName).toBeNull();
+    expect(initialProgressState.localNickname).toBeNull();
     expect(initialProgressState.apprenticeAvatarId).toBeNull();
     expect("completedMissionIds" in initialProgressState).toBe(false);
     expect("completeMission" in progressState).toBe(false);
@@ -38,10 +39,10 @@ describe("canonical level progress", () => {
     expect(parseProgressState("not-an-object")).toEqual(initialProgressState);
     expect(parseProgressState({})).toEqual(initialProgressState);
     expect(parseProgressState({ version: 99, completedLevelIds: ["basics-1"] })).toEqual(initialProgressState);
-    expect(parseProgressState({ version: 99, completedLevelIds: ["basics-1"] }).playerName).toBeNull();
+    expect(parseProgressState({ version: 99, completedLevelIds: ["basics-1"] }).localNickname).toBeNull();
     expect(parseProgressState({ version: PROGRESS_VERSION, completedLevelIds: "basics-1" })).toEqual({
       ...initialProgressState,
-      playerName: null
+      localNickname: null
     });
   });
 });
@@ -68,13 +69,31 @@ describe("legacy migration", () => {
     expect(state.completedLevelIds).toEqual(["basics-2", "basics-1"]);
   });
 
-  it("restores a valid profile name and safely omits missing or malformed names", () => {
-    expect(
-      parseProgressState({ version: PROGRESS_VERSION, playerName: "  Detective Eagle  " }).playerName
-    ).toBe("Detective Eagle");
-    expect(parseProgressState({ version: PROGRESS_VERSION }).playerName).toBeNull();
-    expect(parseProgressState({ version: PROGRESS_VERSION, playerName: 42 }).playerName).toBeNull();
-    expect(parseProgressState({ version: PROGRESS_VERSION, playerName: "   " }).playerName).toBeNull();
+  it("migrates playerName to the canonical device-only local nickname without losing progress", () => {
+    const state = parseProgressState({
+      version: PROGRESS_VERSION,
+      playerName: "  Faxe  ",
+      completedLevelIds: ["animals-1"],
+      onboarded: true,
+      apprenticeAvatarId: "fox",
+      lastResult: { levelId: "animals-1", correctRounds: 2, totalRounds: 3 }
+    });
+
+    expect(state).toEqual({
+      version: PROGRESS_VERSION,
+      completedLevelIds: ["animals-1"],
+      onboarded: true,
+      localNickname: "Faxe",
+      apprenticeAvatarId: "fox",
+      lastResult: { levelId: "animals-1", correctRounds: 2, totalRounds: 3 }
+    });
+    expect("playerName" in state).toBe(false);
+  });
+
+  it("restores a valid canonical nickname and drops malformed legacy names", () => {
+    expect(parseProgressState({ version: PROGRESS_VERSION, localNickname: "  María  " }).localNickname).toBe("María");
+    expect(parseProgressState({ version: PROGRESS_VERSION, playerName: 42 }).localNickname).toBeNull();
+    expect(parseProgressState({ version: PROGRESS_VERSION, playerName: "   " }).localNickname).toBeNull();
   });
 
   it("restores only an authored apprentice avatar id", () => {
@@ -130,11 +149,11 @@ describe("results", () => {
 describe("onboarding and reset", () => {
   it("keeps the selected apprentice separate from Roqui when onboarding", () => {
     const state = markOnboarded(initialProgressState, "Detective Eagle", "owl");
-    expect(state).toMatchObject({ onboarded: true, playerName: "Detective Eagle", apprenticeAvatarId: "owl" });
+    expect(state).toMatchObject({ onboarded: true, localNickname: "Detective Eagle", apprenticeAvatarId: "owl" });
     expect(markOnboarded(state)).toBe(state);
   });
 
-  it("survives a JSON round trip with canonical progress, result, onboarding and name", () => {
+  it("survives a JSON round trip with canonical progress, result, onboarding and nickname", () => {
     const saved = completeLevel(markOnboarded(initialProgressState, "Detective Eagle", "rabbit"), "animals-1", {
       correctRounds: 2,
       totalRounds: 3
@@ -145,7 +164,24 @@ describe("onboarding and reset", () => {
 
   it("returns to the initial canonical state on reset", () => {
     expect(resetProgressState()).toEqual(initialProgressState);
-    expect(resetProgressState().playerName).toBeNull();
+    expect(resetProgressState().localNickname).toBeNull();
     expect(resetProgressState().apprenticeAvatarId).toBeNull();
+  });
+
+  it("requires only nickname completion for returning progress with no nickname", () => {
+    const returning = parseProgressState({
+      version: PROGRESS_VERSION,
+      completedLevelIds: ["basics-1"],
+      apprenticeAvatarId: "owl"
+    });
+    const completedProfile = markOnboarded(returning, "Luz");
+
+    expect(needsLocalNicknameCompletion(returning)).toBe(true);
+    expect(needsLocalNicknameCompletion(completedProfile)).toBe(false);
+    expect(completedProfile).toMatchObject({
+      completedLevelIds: ["basics-1"],
+      apprenticeAvatarId: "owl",
+      localNickname: "Luz"
+    });
   });
 });

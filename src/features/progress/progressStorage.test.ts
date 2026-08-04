@@ -103,7 +103,7 @@ describe("progress storage", () => {
     expect(readProgressState().completedLevelIds).toEqual(["basics-1"]);
   });
 
-  it("keeps onboarding, a valid player name, and the selected apprentice across a storage round trip", () => {
+  it("keeps onboarding, a local nickname, and the selected apprentice across a storage round trip", () => {
     const storage = createStorage();
     withWindow(storage);
 
@@ -111,8 +111,36 @@ describe("progress storage", () => {
 
     expect(readProgressState()).toMatchObject({
       onboarded: true,
-      playerName: "Detective Eagle",
+      localNickname: "Detective Eagle",
       apprenticeAvatarId: "fox"
     });
+  });
+
+  it("rewrites a migrated legacy playerName as the canonical localNickname", () => {
+    const storage = createStorage({
+      [PROGRESS_STORAGE_KEY]: JSON.stringify({
+        version: 1,
+        playerName: "Faxe",
+        completedLevelIds: ["animals-1"],
+        onboarded: true,
+        apprenticeAvatarId: "cat",
+        lastResult: { levelId: "animals-1", correctRounds: 2, totalRounds: 3 }
+      })
+    });
+    withWindow(storage);
+
+    const migrated = readProgressState();
+    writeProgressState(migrated);
+    const saved = JSON.parse(storage.entries.get(PROGRESS_STORAGE_KEY) ?? "{}");
+
+    expect(migrated).toMatchObject({
+      localNickname: "Faxe",
+      completedLevelIds: ["animals-1"],
+      onboarded: true,
+      apprenticeAvatarId: "cat",
+      lastResult: { levelId: "animals-1", correctRounds: 2, totalRounds: 3 }
+    });
+    expect(saved).toMatchObject({ localNickname: "Faxe", apprenticeAvatarId: "cat" });
+    expect("playerName" in saved).toBe(false);
   });
 });

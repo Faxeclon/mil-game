@@ -26,9 +26,9 @@ export type ProgressApi = {
   onboarded: boolean;
   completedLevelIds: LevelId[];
   completeLevel: (levelId: LevelId, result?: LevelAttempt) => void;
-  playerName: string | null;
+  localNickname: string | null;
   apprenticeAvatarId: ApprenticeAvatarId | null;
-  markOnboarded: (playerName?: string, apprenticeAvatarId?: ApprenticeAvatarId) => void;
+  markOnboarded: (localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId) => void;
   resetProgress: () => void;
 };
 
@@ -48,7 +48,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       lastResult: state.lastResult,
       progressState: state,
       onboarded: state.onboarded === true,
-      playerName: state.playerName,
+      localNickname: state.localNickname,
       apprenticeAvatarId: state.apprenticeAvatarId,
       completedLevelIds: state.completedLevelIds,
       completeLevel: completeLevelInStore,
