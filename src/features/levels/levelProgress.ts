@@ -2,12 +2,14 @@ import { isLevelCompleted, type ProgressState } from "@/features/progress/progre
 import {
   getCategoriesByIsland,
   getIslandOfCategory,
+  getIslandOfMission,
   getMissionById,
   getMissionsByCategory,
   islandOrder,
   missionBlueprint,
   type CategoryKey,
   type IslandKey,
+  type LevelId,
   type MissionBlueprint
 } from "./levelModel";
 
@@ -101,6 +103,29 @@ export function getNextMission(state: ProgressState): MissionBlueprint | null {
   if (!island) return null;
   const category = getAvailableCategory(state, island);
   return category ? getAvailableMission(state, category) : null;
+}
+
+export type ContinueDestination =
+  | { kind: "level"; levelId: LevelId }
+  | { kind: "island"; islandKey: IslandKey }
+  | { kind: "worlds" };
+
+/**
+ * Gives the results screen one safe continuation route without duplicating the map's
+ * canonical unlock rules. Replays skip already-finished levels and continue to the
+ * first later playable level that the authored progression has unlocked.
+ */
+export function getContinueDestination(state: ProgressState, completedLevelId: string): ContinueDestination {
+  const completedIndex = missionBlueprint.findIndex((mission) => mission.id === completedLevelId);
+  if (completedIndex === -1) return { kind: "worlds" };
+  const laterMission = missionBlueprint
+    .slice(completedIndex + 1)
+    .find((mission) => Boolean(mission.packId) && !isLevelCompleted(state, mission.id) && isMissionUnlocked(state, mission.id));
+
+  if (laterMission) return { kind: "level", levelId: laterMission.id as LevelId };
+
+  const islandKey = getIslandOfMission(completedLevelId);
+  return islandKey ? { kind: "island", islandKey } : { kind: "worlds" };
 }
 
 // --------------------------------------------------------------------- Counters

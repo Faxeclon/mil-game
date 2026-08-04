@@ -1,40 +1,51 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Sparkles } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { Bird, Cat, Feather, Turtle, Wind, Rabbit, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
-import { getNextMission } from "@/features/levels/levelProgress";
+import { getMissionById } from "@/features/levels/levelModel";
+import {
+  apprenticeAvatarIds,
+  defaultApprenticeAvatarId,
+  type ApprenticeAvatarId
+} from "@/features/profile/apprenticeAvatar";
 import { useProgress } from "@/features/progress/ProgressProvider";
-import { Link, useRouter } from "@/i18n/navigation";
+import { getContinuePath, getReplayPath } from "@/features/results/resultNavigation";
+import { formatElapsedTime, getFreshResult } from "@/features/results/resultPresentation";
+import { Link } from "@/i18n/navigation";
 import styles from "./MissionResults.module.css";
 
-/** Long enough to enjoy the celebration, short enough not to feel stuck. */
-const AUTO_ADVANCE_MS = 4500;
+type MissionResultsProps = {
+  attempt?: string;
+};
 
-/**
- * Shows the attempt the player just finished, read from the shared progress. Reaching
- * this page without having played, or refreshing it, is a normal state, not an error.
- *
- * The screen returns to the map on its own so a child never has to find a button, and
- * the first touch or key press cancels that, in case they want to replay instead.
- */
-export function MissionResults() {
+const apprenticeAvatarIcons: Record<ApprenticeAvatarId, LucideIcon> = {
+  eagle: Bird,
+  fox: Wind,
+  rabbit: Rabbit,
+  turtle: Turtle,
+  owl: Feather,
+  cat: Cat
+};
+
+/** Shows only the latest persisted result when its URL names that exact attempt. */
+export function MissionResults({ attempt }: MissionResultsProps) {
   const t = useTranslations("results");
   const tIslands = useTranslations("islands");
   const tHome = useTranslations("home");
-  const router = useRouter();
-  const { hydrated, lastResult, progressState } = useProgress();
-  const [autoAdvance, setAutoAdvance] = useState(true);
-
-  const canAutoAdvance = hydrated && Boolean(lastResult) && autoAdvance;
+  const { hydrated, lastResult, progressState, apprenticeAvatarId } = useProgress();
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const focusedResultRef = useRef<string | null>(null);
+  const result = getFreshResult(lastResult, attempt);
+  const focusKey = result ? `result:${result.attemptId}` : `empty:${attempt ?? ""}`;
 
   useEffect(() => {
-    if (!canAutoAdvance) return;
-    const timer = setTimeout(() => router.replace("/worlds"), AUTO_ADVANCE_MS);
-    return () => clearTimeout(timer);
-  }, [canAutoAdvance, router]);
+    if (!hydrated || focusedResultRef.current === focusKey) return;
+    headingRef.current?.focus();
+    focusedResultRef.current = focusKey;
+  }, [focusKey, hydrated]);
 
   if (!hydrated) {
     return (
@@ -44,31 +55,42 @@ export function MissionResults() {
     );
   }
 
-  if (!lastResult) {
+  if (!result) {
     return (
       <section aria-labelledby="results-title" className={`${styles.empty} app-chrome-hidden`}>
-        <h1 className={styles.emptyTitle} id="results-title">
+        <h1 className={styles.emptyTitle} id="results-title" ref={headingRef} tabIndex={-1}>
           {t("emptyTitle")}
         </h1>
         <p className={styles.emptyText}>{t("emptyDescription")}</p>
         <Link className={styles.primaryLink} href="/worlds">
-          {t("goToMap")}
+          {t("returnToIslands")}
         </Link>
       </section>
     );
   }
 
-  const nextMission = getNextMission(progressState);
-
-  const cancelAutoAdvance = () => setAutoAdvance(false);
+  const mission = getMissionById(result.levelId);
+  const avatarId = apprenticeAvatarId ?? defaultApprenticeAvatarId;
+  const AvatarIcon = apprenticeAvatarIcons[avatarId];
+  const apprenticeNames = tHome.raw("profileAvatars") as string[];
+  const apprenticeName = apprenticeNames[apprenticeAvatarIds.indexOf(avatarId)] ?? avatarId;
+  const levelIdentity = mission
+    ? t("levelIdentity", {
+        category: tIslands(`categories.${mission.category}.title`),
+        number: mission.order
+      })
+    : result.levelId;
+  const elapsedTime = formatElapsedTime(result.elapsedMs, {
+    second: t("second"),
+    seconds: t("seconds"),
+    minute: t("minute"),
+    minutes: t("minutes"),
+    join: t("timeJoin"),
+    notRecorded: t("timeNotRecorded")
+  });
 
   return (
-    <section
-      aria-labelledby="results-title"
-      className={`${styles.results} app-chrome-hidden`}
-      onKeyDown={cancelAutoAdvance}
-      onPointerDown={cancelAutoAdvance}
-    >
+    <section aria-labelledby="results-title" className={`${styles.results} app-chrome-hidden`}>
       <span className={styles.badge}>
         <MascotSlot alt={tHome("mascotAlt")} className={styles.mascot} mood="celebrating" priority />
         <span aria-hidden="true" className={`${styles.spark} ${styles.sparkOne}`} />
@@ -76,52 +98,36 @@ export function MissionResults() {
         <span aria-hidden="true" className={`${styles.spark} ${styles.sparkThree}`} />
       </span>
 
-      <h1 className={styles.title} id="results-title">
+      <span
+        aria-label={tHome("profileAvatarAria", { name: apprenticeName })}
+        className={styles.apprenticeAvatar}
+        role="img"
+      >
+        <AvatarIcon aria-hidden="true" strokeWidth={2} />
+      </span>
+
+      <h1 className={styles.title} id="results-title" ref={headingRef} tabIndex={-1}>
         {t("title")}
       </h1>
+      <p className={styles.levelIdentity}>{levelIdentity}</p>
       <p className={styles.text}>{t("description")}</p>
 
-      <p className={styles.score}>
-        {t("score", { correct: lastResult.correctRounds, total: lastResult.totalRounds })}
-      </p>
+      <p className={styles.correctRounds}>{t("correctRounds", { correct: result.correctRounds, total: result.totalRounds })}</p>
+      <p className={styles.elapsedTime}>{t("elapsed", { time: elapsedTime })}</p>
 
       <LookAskCheck sequential states={{ look: "completed", ask: "completed", check: "completed" }} />
 
-      {nextMission ? (
-        <p className={styles.nextMission}>
-          <span className={styles.nextMissionFlag}>
-            <Sparkles aria-hidden="true" size={13} />
-            {t("nextUnlocked")}
-          </span>
-          <span className={styles.nextMissionTitle}>
-            {tIslands(`categories.${nextMission.category}.title`)}
-          </span>
-        </p>
-      ) : (
-        <p className={styles.nextMission}>
-          <span className={styles.nextMissionTitle}>{t("allDone")}</span>
-        </p>
-      )}
-
       <div className={styles.actions}>
-        {nextMission ? (
-          <Link className={styles.primaryLink} href={`/level/${nextMission.id}`}>
-            {t("continueNext")}
-          </Link>
-        ) : null}
+        <Link className={styles.primaryLink} href={getContinuePath(progressState, result.levelId)}>
+          {t("continue")}
+        </Link>
+        <Link className={styles.secondaryLink} href={getReplayPath(result.levelId)}>
+          {t("replay")}
+        </Link>
         <Link className={styles.secondaryLink} href="/worlds">
-          {t("backToMap")}
+          {t("returnToIslands")}
         </Link>
       </div>
-
-      {autoAdvance && (
-        <p className={styles.autoAdvance} role="status">
-          <span aria-hidden="true" className={styles.autoAdvanceBar}>
-            <span className={styles.autoAdvanceFill} />
-          </span>
-          {t("autoAdvance")}
-        </p>
-      )}
     </section>
   );
 }

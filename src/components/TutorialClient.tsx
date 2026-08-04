@@ -23,6 +23,7 @@ import type { LevelId } from "@/features/levels/levelModel";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { createAttemptMetadata } from "@/features/progress/attemptMetadata";
 import type { LevelAttempt } from "@/features/progress/progressState";
+import { getResultsAttemptPath } from "@/features/results/resultNavigation";
 import { createInitialTutorialState, tutorialReducer } from "@/features/game/tutorialState";
 import {
   getChoicePresentation,
@@ -174,7 +175,7 @@ export function TutorialClient({
     };
   }, [activeRoundId, answerSubmitted, isPlaying, responseTimer, roundClosure, timedDurationMs]);
 
-  // Finishing the last round records the mission and hands over to the results screen.
+  // Persist the attempt before navigating so the destination can require this exact id.
   useEffect(() => {
     if (!isFinished || hasRecordedCompletionRef.current) return;
     hasRecordedCompletionRef.current = true;
@@ -189,7 +190,7 @@ export function TutorialClient({
     completeLevel(levelId, {
       ...attempt
     });
-    router.replace("/results");
+    router.replace(getResultsAttemptPath(attempt.attemptId));
   }, [completeLevel, correctRounds, isFinished, levelId, responseTimer, router, totalRounds]);
 
   if (state.status === "intro" && !showBriefing) {

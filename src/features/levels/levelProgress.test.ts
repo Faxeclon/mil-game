@@ -9,6 +9,7 @@ import {
   getAvailableIsland,
   getAvailableMission,
   getCategoryState,
+  getContinueDestination,
   getIslandState,
   getMissionState,
   getPlayableMissions,
@@ -108,6 +109,18 @@ describe("missions inside a category", () => {
   it("blocks a mission that has not been reached, and an unknown one", () => {
     expect(isMissionUnlocked(initialProgressState, "animals-1")).toBe(false);
     expect(isMissionUnlocked(initialProgressState, "ghost-mission")).toBe(false);
+  });
+});
+
+describe("results continuation", () => {
+  it("uses the existing unlock rules and skips missions without authored content", () => {
+    const afterAnimalsTwo = play("basics-1", "basics-2", "animals-1", "animals-2");
+    expect(getContinueDestination(afterAnimalsTwo, "animals-2")).toEqual({ kind: "level", levelId: "sports-1" });
+  });
+
+  it("falls back to the completed level's island when no later playable level is unlocked", () => {
+    const allPlayable = play("basics-1", "basics-2", "animals-1", "animals-2", "sports-1");
+    expect(getContinueDestination(allPlayable, "sports-1")).toEqual({ kind: "island", islandKey: "difference" });
   });
 });
 

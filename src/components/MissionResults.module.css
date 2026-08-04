@@ -61,6 +61,19 @@
   width: 100%;
 }
 
+.apprenticeAvatar {
+  width: 2.65rem;
+  height: 2.65rem;
+  margin-top: -0.65rem;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--r-paper);
+  border-radius: 50%;
+  background: var(--r-accent-soft);
+  box-shadow: 0 0 0 1px var(--r-hairline-strong);
+  color: var(--r-accent-ink);
+}
+
 .title {
   max-width: 14ch;
   margin: 1rem 0 0;
@@ -77,7 +90,14 @@
   font-size: 1rem;
 }
 
-.score {
+.levelIdentity {
+  margin: 0.35rem 0 0;
+  color: var(--r-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.correctRounds {
   margin: 1rem 0 1.25rem;
   padding: 0.4rem 1rem;
   border-radius: 999px;
@@ -87,40 +107,15 @@
   font-weight: 800;
 }
 
+.elapsedTime {
+  margin: -0.75rem 0 1.25rem;
+  color: var(--r-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 .results > ol {
   width: min(100%, 20rem);
-}
-
-.nextMission {
-  width: 100%;
-  margin: 1.5rem 0 0;
-  padding: 0.85rem 1rem;
-  display: grid;
-  justify-items: center;
-  gap: 0.35rem;
-  border: 1px solid var(--r-hairline);
-  border-radius: 1rem;
-  background: var(--r-paper);
-}
-
-.nextMissionFlag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.18rem 0.6rem;
-  border-radius: 999px;
-  background: var(--r-accent-soft);
-  color: var(--r-accent-ink);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.nextMissionTitle {
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
 }
 
 .actions {
@@ -130,43 +125,6 @@
   justify-content: center;
   gap: 0.6rem;
   margin-top: 1.5rem;
-}
-
-/* Countdown back to the map. Any touch or key press cancels it. */
-.autoAdvance {
-  width: min(100%, 14rem);
-  margin: 1.5rem 0 0;
-  display: grid;
-  justify-items: center;
-  gap: 0.4rem;
-  color: var(--r-ink-soft);
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.autoAdvanceBar {
-  width: 100%;
-  height: 4px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: var(--r-hairline);
-}
-
-.autoAdvanceFill {
-  height: 100%;
-  display: block;
-  border-radius: inherit;
-  background: var(--r-accent);
-  animation: autoAdvanceFill 4.5s linear 1 forwards;
-}
-
-@keyframes autoAdvanceFill {
-  from {
-    width: 0%;
-  }
-  to {
-    width: 100%;
-  }
 }
 
 /* -------------------------------------------------------------- Empty state */
