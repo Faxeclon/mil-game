@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { LevelId } from "@/features/levels/levelModel";
-import { completeLevel, initialProgressState, type ProgressState } from "@/features/progress/progressState";
+import { completeLevel, initialProgressState, type LevelAttempt, type ProgressState } from "@/features/progress/progressState";
 import {
   countCategoryProgress,
   countCompletedMissions,
@@ -19,7 +19,20 @@ import { getMissionById } from "./levelModel";
 
 /** Plays through a list of mission ids in order. */
 function play(...missionIds: LevelId[]): ProgressState {
-  return missionIds.reduce((state, missionId) => completeLevel(state, missionId), initialProgressState);
+  return missionIds.reduce(
+    (state, missionId, index) => completeLevel(state, missionId, attempt(index)),
+    initialProgressState
+  );
+}
+
+function attempt(index: number): LevelAttempt {
+  return {
+    attemptId: `attempt_progress-${index.toString().padStart(8, "0")}`,
+    correctRounds: 0,
+    totalRounds: 1,
+    elapsedMs: 0,
+    completedAt: "2025-01-02T03:04:05.000Z"
+  };
 }
 
 describe("islands", () => {
@@ -106,7 +119,7 @@ describe("counters", () => {
   });
 
   it("does not count a mission twice", () => {
-    const twice = completeLevel(play("basics-1"), "basics-1");
+    const twice = completeLevel(play("basics-1"), "basics-1", attempt(2));
     expect(countCompletedMissions(twice)).toBe(1);
   });
 });

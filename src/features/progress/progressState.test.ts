@@ -11,6 +11,14 @@ import {
   resetProgressState
 } from "./progressState";
 
+const completedAttempt = {
+  attemptId: "attempt_123e4567-e89b-12d3-a456-426614174000",
+  correctRounds: 2,
+  totalRounds: 3,
+  elapsedMs: 1_234,
+  completedAt: "2025-01-02T03:04:05.000Z"
+};
+
 describe("canonical level progress", () => {
   it("starts with the one canonical completion collection", () => {
     expect(initialProgressState).toEqual({
@@ -85,7 +93,14 @@ describe("legacy migration", () => {
       onboarded: true,
       localNickname: "Faxe",
       apprenticeAvatarId: "fox",
-      lastResult: { levelId: "animals-1", correctRounds: 2, totalRounds: 3 }
+      lastResult: {
+        levelId: "animals-1",
+        correctRounds: 2,
+        totalRounds: 3,
+        attemptId: null,
+        elapsedMs: null,
+        completedAt: null
+      }
     });
     expect("playerName" in state).toBe(false);
   });
@@ -106,18 +121,37 @@ describe("legacy migration", () => {
 
 describe("results", () => {
   it("stores the actual completed level id in the result", () => {
-    const state = completeLevel(initialProgressState, "animals-1", {
-      correctRounds: 2,
-      totalRounds: 3
-    });
+    const state = completeLevel(initialProgressState, "animals-1", completedAttempt);
 
     expect(state.completedLevelIds).toEqual(["animals-1"]);
-    expect(state.lastResult).toEqual({ levelId: "animals-1", correctRounds: 2, totalRounds: 3 });
+    expect(state.lastResult).toEqual({ levelId: "animals-1", ...completedAttempt });
   });
 
   it("ignores an invalid runtime level id", () => {
     const invalidLevelId = "ghost-level" as LevelId;
-    expect(completeLevel(initialProgressState, invalidLevelId)).toBe(initialProgressState);
+    expect(completeLevel(initialProgressState, invalidLevelId, completedAttempt)).toBe(initialProgressState);
+  });
+
+  it("requires a complete attempt at the type and runtime boundaries", () => {
+    // @ts-expect-error A gameplay completion requires a LevelAttempt.
+    expect(completeLevel(initialProgressState, "basics-1")).toBe(initialProgressState);
+  });
+
+  it("ignores malformed attempts without completing the level or replacing an earlier result", () => {
+    const existing = completeLevel(initialProgressState, "basics-1", completedAttempt);
+    const malformedAttempts = [
+      { ...completedAttempt, attemptId: "bad id" },
+      { ...completedAttempt, elapsedMs: -1 },
+      { ...completedAttempt, completedAt: "not-a-date" },
+      { ...completedAttempt, totalRounds: 0 },
+      { ...completedAttempt, correctRounds: Number.NaN }
+    ];
+
+    for (const malformed of malformedAttempts) {
+      expect(completeLevel(existing, "animals-1", malformed)).toBe(existing);
+    }
+    expect(existing.completedLevelIds).toEqual(["basics-1"]);
+    expect(existing.lastResult).toEqual({ levelId: "basics-1", ...completedAttempt });
   });
 
   it("normalizes current results and migrates the unambiguous legacy result identity", () => {
@@ -132,8 +166,69 @@ describe("results", () => {
       lastResult: { missionId: "training", correctRounds: 2, totalRounds: 3 }
     });
 
-    expect(current.lastResult).toEqual({ levelId: "basics-2", correctRounds: 3, totalRounds: 3 });
-    expect(legacy.lastResult).toEqual({ levelId: "basics-1", correctRounds: 2, totalRounds: 3 });
+    expect(current.lastResult).toEqual({
+      levelId: "basics-2",
+      correctRounds: 3,
+      totalRounds: 3,
+      attemptId: null,
+      elapsedMs: null,
+      completedAt: null
+    });
+    expect(legacy.lastResult).toEqual({
+      levelId: "basics-1",
+      correctRounds: 2,
+      totalRounds: 3,
+      attemptId: null,
+      elapsedMs: null,
+      completedAt: null
+    });
+  });
+
+  it("normalizes valid metadata and drops malformed metadata without losing the result", () => {
+    const valid = parseProgressState({
+      version: PROGRESS_VERSION,
+      localNickname: "Luz",
+      apprenticeAvatarId: "owl",
+      lastResult: {
+        levelId: "animals-1",
+        correctRounds: 1,
+        totalRounds: 3,
+        attemptId: completedAttempt.attemptId,
+        elapsedMs: 123.9,
+        completedAt: "2025-01-02T03:04:05Z"
+      }
+    });
+    const malformed = parseProgressState({
+      version: PROGRESS_VERSION,
+      localNickname: "Luz",
+      apprenticeAvatarId: "owl",
+      lastResult: {
+        levelId: "animals-1",
+        correctRounds: 1,
+        totalRounds: 3,
+        attemptId: "bad id\n",
+        elapsedMs: -1,
+        completedAt: "not-a-date"
+      }
+    });
+
+    expect(valid.lastResult).toEqual({
+      levelId: "animals-1",
+      correctRounds: 1,
+      totalRounds: 3,
+      attemptId: completedAttempt.attemptId,
+      elapsedMs: 123,
+      completedAt: "2025-01-02T03:04:05.000Z"
+    });
+    expect(malformed).toMatchObject({ localNickname: "Luz", apprenticeAvatarId: "owl" });
+    expect(malformed.lastResult).toEqual({
+      levelId: "animals-1",
+      correctRounds: 1,
+      totalRounds: 3,
+      attemptId: null,
+      elapsedMs: null,
+      completedAt: null
+    });
   });
 
   it("drops a result with an unknown current or legacy identity", () => {
@@ -154,10 +249,7 @@ describe("onboarding and reset", () => {
   });
 
   it("survives a JSON round trip with canonical progress, result, onboarding and nickname", () => {
-    const saved = completeLevel(markOnboarded(initialProgressState, "Detective Eagle", "rabbit"), "animals-1", {
-      correctRounds: 2,
-      totalRounds: 3
-    });
+    const saved = completeLevel(markOnboarded(initialProgressState, "Detective Eagle", "rabbit"), "animals-1", completedAttempt);
 
     expect(parseProgressState(JSON.parse(JSON.stringify(saved)))).toEqual(saved);
   });

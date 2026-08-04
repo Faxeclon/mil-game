@@ -7,6 +7,14 @@ import {
   writeProgressState
 } from "./progressStorage";
 
+const attemptedLevel = {
+  attemptId: "attempt_123e4567-e89b-12d3-a456-426614174000",
+  correctRounds: 0,
+  totalRounds: 1,
+  elapsedMs: 0,
+  completedAt: "2025-01-02T03:04:05.000Z"
+};
+
 /** Minimal in-memory stand-in for localStorage. */
 function createStorage(initialEntries: Record<string, string> = {}) {
   const entries = new Map(Object.entries(initialEntries));
@@ -40,7 +48,10 @@ describe("progress storage", () => {
 
     const played = completeLevel(initialProgressState, "basics-2", {
       correctRounds: 2,
-      totalRounds: 3
+      totalRounds: 3,
+      attemptId: "attempt_123e4567-e89b-12d3-a456-426614174000",
+      elapsedMs: 1_234,
+      completedAt: "2025-01-02T03:04:05.000Z"
     });
     writeProgressState(played);
 
@@ -49,7 +60,10 @@ describe("progress storage", () => {
     expect(readProgressState().lastResult).toEqual({
       levelId: "basics-2",
       correctRounds: 2,
-      totalRounds: 3
+      totalRounds: 3,
+      attemptId: "attempt_123e4567-e89b-12d3-a456-426614174000",
+      elapsedMs: 1_234,
+      completedAt: "2025-01-02T03:04:05.000Z"
     });
   });
 
@@ -67,7 +81,7 @@ describe("progress storage", () => {
     const storage = createStorage();
     withWindow(storage);
 
-    writeProgressState(completeLevel(initialProgressState, "basics-1"));
+    writeProgressState(completeLevel(initialProgressState, "basics-1", attemptedLevel));
     clearProgressState();
 
     expect(storage.entries.has(PROGRESS_STORAGE_KEY)).toBe(false);
@@ -96,7 +110,7 @@ describe("progress storage", () => {
     const storage = createStorage();
     withWindow(storage);
 
-    writeProgressState(completeLevel(initialProgressState, "basics-1"));
+    writeProgressState(completeLevel(initialProgressState, "basics-1", attemptedLevel));
 
     // A locale change re-mounts the app but reads the very same key.
     expect([...storage.entries.keys()]).toEqual([PROGRESS_STORAGE_KEY]);

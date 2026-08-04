@@ -25,7 +25,7 @@ export type ProgressApi = {
   progressState: ProgressState;
   onboarded: boolean;
   completedLevelIds: LevelId[];
-  completeLevel: (levelId: LevelId, result?: LevelAttempt) => void;
+  completeLevel: (levelId: LevelId, result: LevelAttempt) => void;
   localNickname: string | null;
   apprenticeAvatarId: ApprenticeAvatarId | null;
   markOnboarded: (localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId) => void;

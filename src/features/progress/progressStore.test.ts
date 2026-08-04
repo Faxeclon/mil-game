@@ -9,6 +9,14 @@ import {
   subscribeToProgress
 } from "./progressStore";
 
+const attemptedLevel = {
+  attemptId: "attempt_123e4567-e89b-12d3-a456-426614174000",
+  correctRounds: 0,
+  totalRounds: 1,
+  elapsedMs: 0,
+  completedAt: "2025-01-02T03:04:05.000Z"
+};
+
 function stubStorage(initialEntries: Record<string, string> = {}) {
   const entries = new Map(Object.entries(initialEntries));
   vi.stubGlobal("window", {
@@ -57,37 +65,47 @@ describe("progress store", () => {
     const unsubscribe = subscribeToProgress(listener);
     listener.mockClear();
 
-    completeLevelInStore("animals-1", { correctRounds: 3, totalRounds: 3 });
+    completeLevelInStore("animals-1", {
+      correctRounds: 3,
+      totalRounds: 3,
+      attemptId: "attempt_123e4567-e89b-12d3-a456-426614174000",
+      elapsedMs: 1_234,
+      completedAt: "2025-01-02T03:04:05.000Z"
+    });
 
     expect(listener).toHaveBeenCalledTimes(1);
     expect(getProgressSnapshot().state.completedLevelIds).toEqual(["animals-1"]);
     expect(getProgressSnapshot().state.lastResult).toEqual({
       levelId: "animals-1",
       correctRounds: 3,
-      totalRounds: 3
+      totalRounds: 3,
+      attemptId: "attempt_123e4567-e89b-12d3-a456-426614174000",
+      elapsedMs: 1_234,
+      completedAt: "2025-01-02T03:04:05.000Z"
     });
     expect(entries.has(PROGRESS_STORAGE_KEY)).toBe(true);
     unsubscribe();
   });
 
-  it("does not notify again when the same level is completed twice", () => {
+  it("keeps one completed level while recording a new replay attempt", () => {
     stubStorage();
     const listener = vi.fn();
     const unsubscribe = subscribeToProgress(listener);
-    completeLevelInStore("basics-1");
+    completeLevelInStore("basics-1", attemptedLevel);
     listener.mockClear();
 
-    completeLevelInStore("basics-1");
+    completeLevelInStore("basics-1", { ...attemptedLevel, attemptId: "attempt_abcdefab-cdef-abcd-efab-cdefabcdefab" });
 
-    expect(listener).not.toHaveBeenCalled();
+    expect(listener).toHaveBeenCalledTimes(1);
     expect(getProgressSnapshot().state.completedLevelIds).toEqual(["basics-1"]);
+    expect(getProgressSnapshot().state.lastResult?.attemptId).toBe("attempt_abcdefab-cdef-abcd-efab-cdefabcdefab");
     unsubscribe();
   });
 
   it("clears storage and returns to the start on reset", () => {
     const entries = stubStorage();
     const unsubscribe = subscribeToProgress(() => {});
-    completeLevelInStore("basics-1");
+    completeLevelInStore("basics-1", attemptedLevel);
 
     resetProgressInStore();
 

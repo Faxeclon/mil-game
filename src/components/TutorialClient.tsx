@@ -1,15 +1,18 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { Accessibility, Check, ChevronLeft, Sparkles, Target, Timer as TimerIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
+import { ActiveResponseTimer } from "@/features/game/activeResponseTimer";
 import { Link, useRouter } from "@/i18n/navigation";
 import type { TutorialPack } from "@/content/schemas/tutorial";
 import type { LevelId } from "@/features/levels/levelModel";
 import { useProgress } from "@/features/progress/ProgressProvider";
+import { createAttemptMetadata } from "@/features/progress/attemptMetadata";
+import type { LevelAttempt } from "@/features/progress/progressState";
 import { createInitialTutorialState, tutorialReducer } from "@/features/game/tutorialState";
 import {
   getChoicePresentation,
@@ -43,6 +46,10 @@ const cardStateClass: Record<ChoiceVisualState, string> = {
   neutral: styles.cardNeutral
 };
 
+function monotonicNow(): number {
+  return typeof performance === "undefined" ? Date.now() : performance.now();
+}
+
 export function TutorialClient({
   pack,
   levelId,
@@ -57,6 +64,9 @@ export function TutorialClient({
   const { completeLevel } = useProgress();
   const [state, dispatch] = useReducer(tutorialReducer, createInitialTutorialState(showBriefing));
   const [briefingIndex, setBriefingIndex] = useState(0);
+  const [responseTimer] = useState(() => new ActiveResponseTimer());
+  const completionAttemptRef = useRef<LevelAttempt | null>(null);
+  const hasRecordedCompletionRef = useRef(false);
 
   const briefingLines = t.raw("briefing") as string[];
   const isFinished = state.status === "completed";
@@ -68,25 +78,43 @@ export function TutorialClient({
   const answerSubmitted = state.status === "playing" ? state.answerSubmitted : false;
   const isRoundTimed = Boolean(secondsPerRound) && isPlaying && !answerSubmitted;
 
+  // A round starts counting only once its answer controls are interactive.
+  useEffect(() => {
+    if (!isPlaying || answerSubmitted) return;
+    responseTimer.startRound(pack.rounds[roundIndex].id, monotonicNow());
+  }, [answerSubmitted, isPlaying, pack.rounds, responseTimer, roundIndex]);
+
   /*
    * A timed round is locked by a single timer rather than a per-second counter: the
    * visible bar is a CSS animation, so nothing re-renders while it drains.
    */
   useEffect(() => {
     if (!isRoundTimed || !secondsPerRound) return;
-    const timer = setTimeout(() => dispatch({ type: "timeout" }), secondsPerRound * 1000);
+    const roundId = pack.rounds[roundIndex].id;
+    const timer = setTimeout(() => {
+      responseTimer.finishTimedOutRound(roundId, secondsPerRound * 1000);
+      dispatch({ type: "timeout" });
+    }, secondsPerRound * 1000);
     return () => clearTimeout(timer);
-  }, [isRoundTimed, roundIndex, secondsPerRound]);
+  }, [isRoundTimed, pack.rounds, responseTimer, roundIndex, secondsPerRound]);
 
   // Finishing the last round records the mission and hands over to the results screen.
   useEffect(() => {
-    if (!isFinished) return;
-    completeLevel(levelId, {
+    if (!isFinished || hasRecordedCompletionRef.current) return;
+    hasRecordedCompletionRef.current = true;
+    const metadata = createAttemptMetadata();
+    const attempt = completionAttemptRef.current ?? {
       correctRounds,
-      totalRounds
+      totalRounds,
+      elapsedMs: responseTimer.getElapsedMs(),
+      ...metadata
+    };
+    completionAttemptRef.current = attempt;
+    completeLevel(levelId, {
+      ...attempt
     });
     router.replace("/results");
-  }, [completeLevel, correctRounds, isFinished, levelId, router, totalRounds]);
+  }, [completeLevel, correctRounds, isFinished, levelId, responseTimer, router, totalRounds]);
 
   if (state.status === "intro" && !showBriefing) {
     /*
@@ -320,7 +348,10 @@ export function TutorialClient({
                 className={styles.primaryButton}
                 disabled={state.selectedChoiceId === null}
                 type="button"
-                onClick={() => dispatch({ type: "submit", correct: selectedIsCorrect })}
+                onClick={() => {
+                  responseTimer.finishRound(round.id, monotonicNow());
+                  dispatch({ type: "submit", correct: selectedIsCorrect });
+                }}
               >
                 {t("submit")}
               </button>

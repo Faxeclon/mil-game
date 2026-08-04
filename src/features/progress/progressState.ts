@@ -1,6 +1,7 @@
 import { isLevelId, type LevelId } from "@/features/levels/levelModel";
 import { isApprenticeAvatarId, type ApprenticeAvatarId } from "@/features/profile/apprenticeAvatar";
 import { normalizeLocalNickname } from "@/features/profile/localNickname";
+import { isAttemptId, parseCompletedAt, parseElapsedMs } from "./attemptMetadata";
 
 export const PROGRESS_VERSION = 1;
 
@@ -24,12 +25,21 @@ export type ProgressState = {
 /** Summary of the attempt a player just finished, used by the results screen. */
 export type LevelResult = {
   levelId: LevelId;
+  attemptId: string | null;
   correctRounds: number;
   totalRounds: number;
+  elapsedMs: number | null;
+  completedAt: string | null;
 };
 
 /** Attempt data supplied when a level is completed; the level id comes from the action. */
-export type LevelAttempt = Omit<LevelResult, "levelId">;
+export type LevelAttempt = {
+  attemptId: string;
+  correctRounds: number;
+  totalRounds: number;
+  elapsedMs: number;
+  completedAt: string;
+};
 
 export const initialProgressState: ProgressState = {
   version: PROGRESS_VERSION,
@@ -53,8 +63,29 @@ function parseResult(value: unknown): LevelResult | undefined {
   if (!Number.isFinite(correctRounds) || !Number.isFinite(totalRounds) || totalRounds <= 0) return undefined;
   return {
     levelId,
+    attemptId: isAttemptId(value.attemptId) ? value.attemptId : null,
     correctRounds: Math.min(Math.max(Math.trunc(correctRounds), 0), Math.trunc(totalRounds)),
-    totalRounds: Math.trunc(totalRounds)
+    totalRounds: Math.trunc(totalRounds),
+    elapsedMs: parseElapsedMs(value.elapsedMs),
+    completedAt: parseCompletedAt(value.completedAt)
+  };
+}
+
+function normalizeLevelAttempt(value: unknown): LevelAttempt | undefined {
+  if (!isRecord(value)) return undefined;
+  const { correctRounds, totalRounds } = value;
+  if (typeof correctRounds !== "number" || typeof totalRounds !== "number") return undefined;
+  if (!Number.isFinite(correctRounds) || !Number.isFinite(totalRounds) || totalRounds <= 0) return undefined;
+  const attemptId = isAttemptId(value.attemptId) ? value.attemptId : undefined;
+  const elapsedMs = parseElapsedMs(value.elapsedMs);
+  const completedAt = parseCompletedAt(value.completedAt);
+  if (!attemptId || elapsedMs === null || !completedAt) return undefined;
+  return {
+    attemptId,
+    correctRounds: Math.min(Math.max(Math.trunc(correctRounds), 0), Math.trunc(totalRounds)),
+    totalRounds: Math.trunc(totalRounds),
+    elapsedMs,
+    completedAt
   };
 }
 
@@ -148,24 +179,24 @@ export function needsLocalNicknameCompletion(state: ProgressState): boolean {
 }
 
 /**
- * Marks a level as finished. Replaying a level already finished changes nothing, so a
- * child can practise as many times as they like without the map moving under them.
+ * Marks a level as finished. Replays keep the map position stable while replacing the
+ * latest result with the newly completed attempt.
  */
 export function completeLevel(
   state: ProgressState,
   levelId: LevelId,
-  result?: LevelAttempt
+  result: LevelAttempt
 ): ProgressState {
   // The type prevents invalid calls in app code; this guard protects runtime boundaries.
-  if (!isLevelId(levelId)) return state;
+  const attempt = normalizeLevelAttempt(result);
+  if (!isLevelId(levelId) || !attempt) return state;
   const alreadyCompleted = state.completedLevelIds.includes(levelId);
-  if (alreadyCompleted && !result) return state;
 
   return {
     ...state,
     completedLevelIds: alreadyCompleted ? state.completedLevelIds : [...state.completedLevelIds, levelId],
     onboarded: true,
-    ...(result ? { lastResult: { levelId, ...result } } : {})
+    lastResult: { levelId, ...attempt }
   };
 }
 

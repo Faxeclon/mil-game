@@ -47,7 +47,7 @@ export function getServerProgressSnapshot(): ProgressSnapshot {
   return serverSnapshot;
 }
 
-export function completeLevelInStore(levelId: LevelId, result?: LevelAttempt): void {
+export function completeLevelInStore(levelId: LevelId, result: LevelAttempt): void {
   const next = completeLevel(snapshot.state, levelId, result);
   if (next === snapshot.state) return;
   writeProgressState(next);
