@@ -1,10 +1,9 @@
-import type { MissionKey } from "@/features/missions/missionMap";
+import type { LevelId } from "@/features/levels/levelModel";
 import {
   completeLevel,
-  completeMission,
   initialProgressState,
   markOnboarded,
-  type MissionResult,
+  type LevelAttempt,
   type ProgressState
 } from "./progressState";
 import { clearProgressState, readProgressState, writeProgressState } from "./progressStorage";
@@ -47,14 +46,7 @@ export function getServerProgressSnapshot(): ProgressSnapshot {
   return serverSnapshot;
 }
 
-export function completeMissionInStore(missionId: MissionKey, result?: MissionResult): void {
-  const next = completeMission(snapshot.state, missionId, result);
-  if (next === snapshot.state) return;
-  writeProgressState(next);
-  publish({ hydrated: true, state: next });
-}
-
-export function completeLevelInStore(levelId: string, result?: MissionResult): void {
+export function completeLevelInStore(levelId: LevelId, result?: LevelAttempt): void {
   const next = completeLevel(snapshot.state, levelId, result);
   if (next === snapshot.state) return;
   writeProgressState(next);

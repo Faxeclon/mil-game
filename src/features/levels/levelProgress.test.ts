@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import type { LevelId } from "@/features/levels/levelModel";
 import { completeLevel, initialProgressState, type ProgressState } from "@/features/progress/progressState";
 import {
   countCategoryProgress,
@@ -17,7 +18,7 @@ import {
 import { getMissionById } from "./levelModel";
 
 /** Plays through a list of mission ids in order. */
-function play(...missionIds: string[]): ProgressState {
+function play(...missionIds: LevelId[]): ProgressState {
   return missionIds.reduce((state, missionId) => completeLevel(state, missionId), initialProgressState);
 }
 

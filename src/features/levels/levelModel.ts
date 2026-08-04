@@ -46,7 +46,7 @@ export type MissionBlueprint = {
   packId?: string;
 };
 
-export const missionBlueprint: readonly MissionBlueprint[] = [
+const levelBlueprintEntries = [
   // Island 1 - Training: learn the mechanic with no theme in the way.
   { id: "basics-1", category: "basics", order: 1, mode: "compare", packId: "introductory-tutorial-v1" },
   {
@@ -73,7 +73,12 @@ export const missionBlueprint: readonly MissionBlueprint[] = [
   { id: "animals-3", category: "animals", order: 3, mode: "single" },
   { id: "sports-1", category: "sports", order: 1, mode: "compare", packId: "introductory-tutorial-v1" },
   { id: "sports-2", category: "sports", order: 2, mode: "single" }
-];
+] as const satisfies readonly MissionBlueprint[];
+
+/** A level identifier authored in the current level catalog. */
+export type LevelId = (typeof levelBlueprintEntries)[number]["id"];
+
+export const missionBlueprint: readonly MissionBlueprint[] = levelBlueprintEntries;
 
 export type LevelDifficulty = "easy" | "medium" | "hard";
 
@@ -111,6 +116,11 @@ export function isSingleMode(mode: LevelMode): boolean {
 
 export function getMissionById(missionId: string): MissionBlueprint | undefined {
   return missionBlueprint.find((mission) => mission.id === missionId);
+}
+
+/** Narrows untrusted route or stored input to an authored level identifier. */
+export function isLevelId(value: unknown): value is LevelId {
+  return typeof value === "string" && missionBlueprint.some((mission) => mission.id === value);
 }
 
 export function getMissionsByCategory(category: CategoryKey): MissionBlueprint[] {

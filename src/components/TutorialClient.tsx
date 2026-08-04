@@ -8,6 +8,7 @@ import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { Link, useRouter } from "@/i18n/navigation";
 import type { TutorialPack } from "@/content/schemas/tutorial";
+import type { LevelId } from "@/features/levels/levelModel";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { createInitialTutorialState, tutorialReducer } from "@/features/game/tutorialState";
 import {
@@ -21,7 +22,7 @@ import styles from "./TutorialClient.module.css";
 type TutorialClientProps = {
   pack: TutorialPack;
   /** Which mission of the map this run belongs to. */
-  levelId: string;
+  levelId: LevelId;
   /** Label of the chip shown during play, for example "Animales · Misión 1". */
   chipLabel: string;
   /** What the mission asks, shown on the entry card: the mode name. */
@@ -41,9 +42,6 @@ const cardStateClass: Record<ChoiceVisualState, string> = {
   mistake: styles.cardMistake,
   neutral: styles.cardNeutral
 };
-
-/** The tutorial is the first mission of the map. */
-const TUTORIAL_MISSION_ID = "training" as const;
 
 export function TutorialClient({
   pack,
@@ -84,7 +82,6 @@ export function TutorialClient({
   useEffect(() => {
     if (!isFinished) return;
     completeLevel(levelId, {
-      missionId: TUTORIAL_MISSION_ID,
       correctRounds,
       totalRounds
     });

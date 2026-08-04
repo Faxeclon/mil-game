@@ -4,7 +4,13 @@ import { MissionRouteGuard } from "@/components/MissionRouteGuard";
 import { PageContainer } from "@/components/PageContainer";
 import { TutorialClient } from "@/components/TutorialClient";
 import { introductoryTutorialPack } from "@/content/packs/introductoryTutorial";
-import { getLevelDifficulty, getMissionById, isTimedMode, missionBlueprint } from "@/features/levels/levelModel";
+import {
+  getLevelDifficulty,
+  getMissionById,
+  isTimedMode,
+  missionBlueprint,
+  type LevelId
+} from "@/features/levels/levelModel";
 
 type LevelPageProps = { params: Promise<{ locale: string; levelId: string }> };
 
@@ -46,7 +52,7 @@ export default async function LevelPage({ params }: LevelPageProps) {
             chipLabel={chipLabel}
             entryMeta={entryMeta}
             entryTitle={entryTitle}
-            levelId={mission.id}
+            levelId={mission.id as LevelId}
             pack={introductoryTutorialPack}
             secondsPerRound={mission.secondsPerRound}
             showBriefing={mission.id === FIRST_MISSION_ID}

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { completeMission, initialProgressState } from "./progressState";
+import { completeLevel, initialProgressState, markOnboarded } from "./progressState";
 import {
   clearProgressState,
   PROGRESS_STORAGE_KEY,
@@ -38,17 +38,16 @@ describe("progress storage", () => {
     const storage = createStorage();
     withWindow(storage);
 
-    const played = completeMission(initialProgressState, "training", {
-      missionId: "training",
+    const played = completeLevel(initialProgressState, "basics-2", {
       correctRounds: 2,
       totalRounds: 3
     });
     writeProgressState(played);
 
     expect(storage.entries.has(PROGRESS_STORAGE_KEY)).toBe(true);
-    expect(readProgressState().completedMissionIds).toEqual(["training"]);
+    expect(readProgressState().completedLevelIds).toEqual(["basics-2"]);
     expect(readProgressState().lastResult).toEqual({
-      missionId: "training",
+      levelId: "basics-2",
       correctRounds: 2,
       totalRounds: 3
     });
@@ -68,7 +67,7 @@ describe("progress storage", () => {
     const storage = createStorage();
     withWindow(storage);
 
-    writeProgressState(completeMission(initialProgressState, "training"));
+    writeProgressState(completeLevel(initialProgressState, "basics-1"));
     clearProgressState();
 
     expect(storage.entries.has(PROGRESS_STORAGE_KEY)).toBe(false);
@@ -97,10 +96,19 @@ describe("progress storage", () => {
     const storage = createStorage();
     withWindow(storage);
 
-    writeProgressState(completeMission(initialProgressState, "training"));
+    writeProgressState(completeLevel(initialProgressState, "basics-1"));
 
     // A locale change re-mounts the app but reads the very same key.
     expect([...storage.entries.keys()]).toEqual([PROGRESS_STORAGE_KEY]);
-    expect(readProgressState().completedMissionIds).toEqual(["training"]);
+    expect(readProgressState().completedLevelIds).toEqual(["basics-1"]);
+  });
+
+  it("keeps onboarding and a valid player name across a storage round trip", () => {
+    const storage = createStorage();
+    withWindow(storage);
+
+    writeProgressState(markOnboarded(initialProgressState, "Detective Eagle"));
+
+    expect(readProgressState()).toMatchObject({ onboarded: true, playerName: "Detective Eagle" });
   });
 });

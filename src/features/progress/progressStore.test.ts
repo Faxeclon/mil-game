@@ -1,8 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getAvailableMissionId } from "./progressState";
 import { PROGRESS_STORAGE_KEY } from "./progressStorage";
 import {
-  completeMissionInStore,
+  completeLevelInStore,
   getProgressSnapshot,
   getServerProgressSnapshot,
   resetProgressInStore,
@@ -35,61 +34,65 @@ describe("progress store", () => {
   it("renders the empty snapshot on the server", () => {
     expect(getServerProgressSnapshot()).toEqual({
       hydrated: false,
-      state: { version: 1, completedMissionIds: [], completedLevelIds: [] }
+      state: { version: 1, completedLevelIds: [], playerName: null }
     });
   });
 
   it("loads the saved progress when the first subscriber arrives", () => {
     stubStorage({
-      [PROGRESS_STORAGE_KEY]: JSON.stringify({ version: 1, completedMissionIds: ["training"] })
+      [PROGRESS_STORAGE_KEY]: JSON.stringify({ version: 1, completedLevelIds: ["basics-1"] })
     });
 
     expect(getProgressSnapshot().hydrated).toBe(false);
     const unsubscribe = subscribeToProgress(() => {});
 
     expect(getProgressSnapshot().hydrated).toBe(true);
-    expect(getProgressSnapshot().state.completedMissionIds).toEqual(["training"]);
+    expect(getProgressSnapshot().state.completedLevelIds).toEqual(["basics-1"]);
     unsubscribe();
   });
 
-  it("notifies subscribers and writes to storage when a mission is completed", () => {
+  it("notifies subscribers and writes to storage when a level is completed", () => {
     const entries = stubStorage();
     const listener = vi.fn();
     const unsubscribe = subscribeToProgress(listener);
     listener.mockClear();
 
-    completeMissionInStore("training", { missionId: "training", correctRounds: 3, totalRounds: 3 });
+    completeLevelInStore("animals-1", { correctRounds: 3, totalRounds: 3 });
 
     expect(listener).toHaveBeenCalledTimes(1);
-    expect(getAvailableMissionId(getProgressSnapshot().state)).toBe("source");
+    expect(getProgressSnapshot().state.completedLevelIds).toEqual(["animals-1"]);
+    expect(getProgressSnapshot().state.lastResult).toEqual({
+      levelId: "animals-1",
+      correctRounds: 3,
+      totalRounds: 3
+    });
     expect(entries.has(PROGRESS_STORAGE_KEY)).toBe(true);
     unsubscribe();
   });
 
-  it("does not notify again when the same mission is completed twice", () => {
+  it("does not notify again when the same level is completed twice", () => {
     stubStorage();
     const listener = vi.fn();
     const unsubscribe = subscribeToProgress(listener);
-    completeMissionInStore("training");
+    completeLevelInStore("basics-1");
     listener.mockClear();
 
-    completeMissionInStore("training");
+    completeLevelInStore("basics-1");
 
     expect(listener).not.toHaveBeenCalled();
-    expect(getProgressSnapshot().state.completedMissionIds).toEqual(["training"]);
+    expect(getProgressSnapshot().state.completedLevelIds).toEqual(["basics-1"]);
     unsubscribe();
   });
 
   it("clears storage and returns to the start on reset", () => {
     const entries = stubStorage();
     const unsubscribe = subscribeToProgress(() => {});
-    completeMissionInStore("training");
+    completeLevelInStore("basics-1");
 
     resetProgressInStore();
 
     expect(entries.has(PROGRESS_STORAGE_KEY)).toBe(false);
-    expect(getProgressSnapshot().state.completedMissionIds).toEqual([]);
-    expect(getAvailableMissionId(getProgressSnapshot().state)).toBe("training");
+    expect(getProgressSnapshot().state.completedLevelIds).toEqual([]);
     unsubscribe();
   });
 });
