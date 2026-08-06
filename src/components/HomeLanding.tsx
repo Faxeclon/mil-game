@@ -36,6 +36,7 @@ import {
 import { normalizeLocalNickname } from "@/features/profile/localNickname";
 import { needsLocalNicknameCompletion } from "@/features/progress/progressState";
 import { getLocalPlayedOn, getStreakToday } from "@/features/progress/streak";
+import { readClassSet } from "@/features/teacher/classSetStorage";
 import { useTeacherAccount } from "@/features/teacher/teacherAccountStore";
 import { MAX_LOCAL_PROFILES } from "@/features/profiles/localProfiles";
 import { getLocalStandings, getPlayerRank } from "@/features/ranks/playerRank";
@@ -99,6 +100,8 @@ export function HomeLanding() {
   const [playerChosen, setPlayerChosen] = useState(false);
   const { account: teacherAccount } = useTeacherAccount();
   const [showChildSetup, setShowChildSetup] = useState(false);
+  // Read once on mount: the card set belongs to this device and nothing else writes it.
+  const [classSet] = useState(() => readClassSet());
 
   // Nothing is rendered until the stored progress is known, so a returning player never
   // sees the sign-up screen flash before their own home.
@@ -480,34 +483,76 @@ export function HomeLanding() {
    */
   if (teacherAccount && !showChildSetup) {
     return (
-      <div className={`${styles.landing} app-chrome-hidden`}>
-        <section aria-labelledby="teacher-home-title" className={styles.profile}>
-          <span className={styles.teacherHomeIcon}>
-            <GraduationCap aria-hidden="true" size={28} />
-          </span>
-          <h1 className={styles.profileTitle} id="teacher-home-title">
-            {tTeacherAccount("navLabel")}
-          </h1>
-          <p className={styles.profileNote}>{tTeacherAccount("registeredAs", { email: teacherAccount.email })}</p>
-
-          <Link className={styles.primaryAction} href="/teacher">
-            <BookOpenCheck aria-hidden="true" size={17} />
-            {tTeacherAccount("homeGuide")}
-          </Link>
-          <Link className={styles.teacherCard} href="/teacher/cards">
-            <span className={styles.teacherCardIcon}>
-              <QrCode aria-hidden="true" size={20} />
+      <div className={styles.landing}>
+        <section aria-labelledby="teacher-home-title" className={styles.hub}>
+          <div className={styles.hubHeader}>
+            <h1 className={styles.hubGreeting} id="teacher-home-title">
+              {tTeacherAccount("homeGreeting")}
+            </h1>
+            <span className={styles.hubApprentice}>
+              <GraduationCap aria-hidden="true" strokeWidth={2} />
             </span>
-            <span className={styles.teacherCardText}>
-              <span className={styles.teacherCardTitle}>{tCards("cardsLink")}</span>
-              <span className={styles.teacherCardLead}>{tCards("cardsLinkHint")}</span>
-            </span>
-          </Link>
+          </div>
+          <p className={styles.hubTitleBadge}>{teacherAccount.email}</p>
 
-          {/* Secondary on purpose: useful for trying the game, never a requirement. */}
-          <button className={styles.teacherLink} type="button" onClick={() => setShowChildSetup(true)}>
-            {tTeacherAccount("homeTryGame")}
-          </button>
+          {/* The class this device is set up for, or the one thing missing to have one. */}
+          <div className={styles.hubNext}>
+            {classSet ? (
+              <>
+                <p className={styles.hubNextLabel}>{tTeacherAccount("homeClassLabel")}</p>
+                <p className={styles.hubNextTitle}>
+                  {classSet.name ?? tTeacherAccount("homeClassUnnamed")}
+                </p>
+                <p className={styles.teacherStat}>
+                  {tTeacherAccount("homeClassSize", { count: classSet.cards.length })}
+                </p>
+                <Link className={styles.primaryAction} href="/teacher/cards">
+                  <QrCode aria-hidden="true" size={17} />
+                  {tTeacherAccount("homeOpenCards")}
+                </Link>
+              </>
+            ) : (
+              <>
+                <p className={styles.hubNextLabel}>{tTeacherAccount("homeNoClassLabel")}</p>
+                <p className={styles.hubNextTitle}>{tCards("cardsLink")}</p>
+                <p className={styles.teacherStat}>{tCards("cardsLinkHint")}</p>
+                <Link className={styles.primaryAction} href="/teacher/cards">
+                  <QrCode aria-hidden="true" size={17} />
+                  {tCards("generate")}
+                </Link>
+              </>
+            )}
+          </div>
+
+          <ul className={styles.hubStats}>
+            <li className={styles.hubStat}>
+              <span className={`${styles.hubStatIcon} ${styles.hubStatRank}`}>
+                <BookOpenCheck aria-hidden="true" size={20} />
+              </span>
+              <span className={styles.hubStatLabel}>{tTeacherAccount("homeGuide")}</span>
+              <Link className={styles.hubStatLink} href="/teacher">
+                {tTeacherAccount("homeGuideAction")}
+              </Link>
+            </li>
+            <li className={styles.hubStat}>
+              <span className={`${styles.hubStatIcon} ${styles.hubStatStreak}`}>
+                <Play aria-hidden="true" size={20} fill="currentColor" />
+              </span>
+              <span className={styles.hubStatLabel}>{tTeacherAccount("homeTryLabel")}</span>
+              <button className={styles.hubStatLink} type="button" onClick={() => setShowChildSetup(true)}>
+                {tTeacherAccount("homeTryAction")}
+              </button>
+            </li>
+            <li className={styles.hubStat}>
+              <span className={`${styles.hubStatIcon} ${styles.hubStatFriends}`}>
+                <Users aria-hidden="true" size={20} />
+              </span>
+              <span className={styles.hubStatLabel}>{tTeacherAccount("homeOnlineClass")}</span>
+              <span className={styles.hubStatSoon}>{t("hubSoon")}</span>
+            </li>
+          </ul>
+
+          <p className={styles.guestNotice}>{tTeacherAccount("notSent")}</p>
         </section>
       </div>
     );

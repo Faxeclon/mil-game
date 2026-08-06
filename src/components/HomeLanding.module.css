@@ -890,6 +890,37 @@
   }
 }
 
+/* A figure on the teacher's home: how many cards are ready, and nothing invented. */
+.teacherStat {
+  margin: 0.15rem 0 0.6rem;
+  color: var(--h-ink-soft);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* The action inside a hub tile, so a tile is a place to go and not only a label. */
+.hubStatLink {
+  padding: 0.2rem 0.7rem;
+  border: 1px solid var(--h-hairline-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--h-ink);
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.hubStatLink:hover {
+  border-color: var(--h-accent);
+  color: var(--h-accent-ink);
+}
+
+.hubStatLink:focus-visible {
+  outline: 3px solid var(--h-accent);
+  outline-offset: 2px;
+}
+
 .teacherHomeIcon {
   width: 3.4rem;
   height: 3.4rem;

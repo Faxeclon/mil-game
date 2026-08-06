@@ -1,6 +1,6 @@
 "use client";
 
-import { GraduationCap, Home, Map, QrCode, SlidersHorizontal } from "lucide-react";
+import { BookOpenCheck, Home, Map, QrCode, SlidersHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { useTeacherAccount } from "@/features/teacher/teacherAccountStore";
@@ -24,7 +24,6 @@ export function MobileNavigation() {
   const pathname = usePathname();
   const t = useTranslations("header");
   const tTeacher = useTranslations("teacherAccount");
-  const tCards = useTranslations("cards");
   const { hydrated, onboarded } = useProgress();
   const { hydrated: teacherHydrated, account } = useTeacherAccount();
 
@@ -41,8 +40,9 @@ export function MobileNavigation() {
   const isTeacherDevice = account !== null && !onboarded;
   const destinations = isTeacherDevice
     ? [
-        { href: "/", icon: GraduationCap, label: tTeacher("navLabel") },
-        { href: "/teacher/cards", icon: QrCode, label: tCards("cardsLink") },
+        { href: "/", icon: Home, label: t("home") },
+        { href: "/teacher/cards", icon: QrCode, label: tTeacher("navCards") },
+        { href: "/teacher", icon: BookOpenCheck, label: tTeacher("navGuide") },
         { href: "/settings", icon: SlidersHorizontal, label: t("mobileOptions") }
       ]
     : playerDestinations
