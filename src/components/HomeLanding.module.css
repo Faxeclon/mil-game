@@ -652,6 +652,70 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* The one mode that needs neither an account nor a connection. */
+.versusCard {
+  width: min(100%, 24rem);
+  margin: 1.35rem auto 0;
+  padding: 0.75rem 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  border: 1px solid var(--h-hairline);
+  border-radius: 1.1rem;
+  background: #fff;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  transition: transform 150ms var(--h-ease), border-color 150ms ease;
+}
+
+.versusCard:hover {
+  transform: translateY(-1px);
+  border-color: var(--h-accent);
+}
+
+.versusCard:focus-visible {
+  outline: 3px solid var(--h-accent);
+  outline-offset: 3px;
+}
+
+.versusIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 0.85rem;
+  background: #ffece4;
+  color: #b8380a;
+}
+
+.versusText {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.versusTitle {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.versusLead {
+  color: var(--h-ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .versusCard {
+    transition: none;
+  }
+
+  .versusCard:hover {
+    transform: none;
+  }
+}
+
 /* Where the progress lives, said plainly rather than hidden. */
 .guestBadge {
   padding: 0.22rem 0.65rem;

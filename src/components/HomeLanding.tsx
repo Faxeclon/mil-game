@@ -12,6 +12,7 @@ import {
   Play,
   Rabbit,
   Smartphone,
+  Swords,
   Turtle,
   Users,
   Wind,
@@ -53,6 +54,7 @@ export function HomeLanding() {
   const t = useTranslations("home");
   const tIslands = useTranslations("islands");
   const tStorage = useTranslations("storage");
+  const tVersus = useTranslations("versus");
   const router = useRouter();
   const nameFieldId = useId();
   const {
@@ -195,6 +197,18 @@ export function HomeLanding() {
               <span className={styles.hubStatSoon}>{t("hubSoon")}</span>
             </li>
           </ul>
+
+          {/* Built for the shared family phone, so it sits next to the solo path, not
+              behind an account or a connection. */}
+          <Link className={styles.versusCard} href="/versus">
+            <span className={styles.versusIcon}>
+              <Swords aria-hidden="true" size={20} />
+            </span>
+            <span className={styles.versusText}>
+              <span className={styles.versusTitle}>{tVersus("title")}</span>
+              <span className={styles.versusLead}>{tVersus("lead")}</span>
+            </span>
+          </Link>
 
           <p className={styles.guestNotice}>{tStorage("guestNotice")}</p>
         </section>
