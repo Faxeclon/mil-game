@@ -5,6 +5,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { AppHeader } from "@/components/AppHeader";
 import { MobileNavigation } from "@/components/MobileNavigation";
+import { OfflineReadiness } from "@/features/offline/OfflineReadiness";
 import { ProgressProvider } from "@/features/progress/ProgressProvider";
 import { routing, type AppLocale } from "@/i18n/routing";
 
@@ -48,6 +49,8 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       <body>
         <NextIntlClientProvider messages={messages}>
           <ProgressProvider>
+            {/* Prepares the game to open with no signal, from the very first visit. */}
+            <OfflineReadiness />
             <a className="skip-link" href="#main-content">{t("skipToContent")}</a>
             <AppHeader locale={locale as AppLocale} />
             {children}

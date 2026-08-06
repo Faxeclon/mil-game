@@ -16,6 +16,7 @@ import {
   type LevelAttempt,
   type ProgressState
 } from "./progressState";
+import { requestPersistentStorage } from "@/features/offline/registerServiceWorker";
 import { clearProfilesDocument, readProfilesDocument, writeProfilesDocument } from "./progressStorage";
 
 export type ProgressSnapshot = {
@@ -83,6 +84,13 @@ function applyToActiveProgress(change: (state: ProgressState) => ProgressState):
 
 export function completeLevelInStore(levelId: LevelId, result: LevelAttempt): void {
   applyToActiveProgress((state) => completeLevel(state, levelId, result));
+
+  /*
+   * Asked for here rather than on the first page load, because a browser weighs the
+   * request by whether the player has anything worth keeping. Finishing a mission is
+   * exactly that moment. Best effort: a refusal must never interrupt the game.
+   */
+  void requestPersistentStorage();
 }
 
 export function markOnboardedInStore(localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId): void {

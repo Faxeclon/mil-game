@@ -1,0 +1,44 @@
+/**
+ * Turning the game into something that opens without a signal.
+ *
+ * Registration is deliberately best-effort: an old browser, a private window or a device
+ * that refuses to register must all keep playing exactly as before. Nothing here is
+ * allowed to interrupt a child who just opened the app.
+ */
+export const SERVICE_WORKER_URL = "/sw.js";
+
+export function canRegisterServiceWorker(): boolean {
+  return typeof navigator !== "undefined" && "serviceWorker" in navigator;
+}
+
+export async function registerServiceWorker(): Promise<boolean> {
+  if (!canRegisterServiceWorker()) return false;
+  try {
+    await navigator.serviceWorker.register(SERVICE_WORKER_URL, { scope: "/" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Asks the browser not to evict what is stored here.
+ *
+ * The 5 MB limit is not the danger: the saved progress weighs about two kilobytes. The
+ * danger is that a full 32 GB phone lets the browser clear the whole origin at once, and
+ * a child who did not play for three weeks would lose every medal.
+ *
+ * It is a request, not a guarantee. The browser grants it based on how much the app is
+ * used and whether it was installed, which is a second reason for the PWA.
+ */
+export async function requestPersistentStorage(): Promise<boolean | null> {
+  if (typeof navigator === "undefined" || !navigator.storage?.persist) return null;
+  try {
+    const alreadyPersisted =
+      typeof navigator.storage.persisted === "function" ? await navigator.storage.persisted() : false;
+    if (alreadyPersisted) return true;
+    return await navigator.storage.persist();
+  } catch {
+    return false;
+  }
+}
