@@ -34,6 +34,7 @@ export function MissionResults() {
   const tIslands = useTranslations("islands");
   const tHome = useTranslations("home");
   const tStorage = useTranslations("storage");
+  const tGuardian = useTranslations("guardian");
   const { hydrated, lastResult, progressState, apprenticeAvatarId } = useProgress();
   const searchParams = useSearchParams();
   const attempt = getRequestedAttempt(searchParams);
@@ -184,7 +185,9 @@ export function MissionResults() {
             <span className={styles.keepsakeTitle}>{tStorage("roquiSaveTitle")}</span>
             {tStorage("roquiSaveHint")}
           </p>
-          <span className={styles.keepsakeSoon}>{tStorage("accountSoon")}</span>
+          <Link className={styles.keepsakeAction} href="/guardian">
+            {tGuardian("askAdult")}
+          </Link>
         </aside>
       )}
 

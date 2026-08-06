@@ -27,7 +27,8 @@ describe("canonical level progress", () => {
       localNickname: null,
       apprenticeAvatarId: null,
       bestResultsByLevelId: {},
-      streak: { currentDays: 0, bestDays: 0, lastPlayedOn: null }
+      streak: { currentDays: 0, bestDays: 0, lastPlayedOn: null },
+      guardian: null
     });
     expect(initialProgressState.localNickname).toBeNull();
     expect(initialProgressState.apprenticeAvatarId).toBeNull();
@@ -98,6 +99,7 @@ describe("legacy migration", () => {
       apprenticeAvatarId: "fox",
       bestResultsByLevelId: {},
       streak: { currentDays: 0, bestDays: 0, lastPlayedOn: null },
+      guardian: null,
       lastResult: {
         levelId: "animals-1",
         correctRounds: 2,

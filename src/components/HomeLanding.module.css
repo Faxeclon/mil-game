@@ -905,6 +905,13 @@
   white-space: nowrap;
 }
 
+/* Authorised reads from the tick and the wording, not from the colour swap alone. */
+.guardianBadge {
+  border-color: #a8d5ad;
+  background: #e8f6e9;
+  color: #1f7a28;
+}
+
 .guestNotice {
   max-width: 34ch;
   margin: 1.35rem auto 0;

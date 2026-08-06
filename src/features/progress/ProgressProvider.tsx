@@ -8,9 +8,12 @@ import {
   type LevelResult,
   type ProgressState
 } from "./progressState";
+import type { GuardianConsent, GuardianRole } from "@/features/guardian/guardianConsent";
 import type { ProfilesDocument } from "@/features/profiles/localProfiles";
 import {
   addProfileInStore,
+  authorizeGuardianInStore,
+  withdrawGuardianInStore,
   clearEverythingInStore,
   completeLevelInStore,
   getProgressSnapshot,
@@ -27,6 +30,10 @@ export type ProgressApi = {
   hydrated: boolean;
   /** Everyone playing on this phone, and who is holding it now. */
   profiles: ProfilesDocument;
+  /** The adult who authorised the active player, or null while they play as a guest. */
+  guardian: GuardianConsent | null;
+  authorizeGuardian: (role: GuardianRole, authorizedOn: string) => void;
+  withdrawGuardian: () => void;
   addProfile: () => void;
   selectProfile: (profileId: string) => void;
   removeProfile: (profileId: string) => void;
@@ -58,6 +65,9 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     () => ({
       hydrated,
       profiles,
+      guardian: state.guardian,
+      authorizeGuardian: authorizeGuardianInStore,
+      withdrawGuardian: withdrawGuardianInStore,
       addProfile: addProfileInStore,
       selectProfile: selectProfileInStore,
       removeProfile: removeProfileInStore,

@@ -9,10 +9,13 @@ import {
   updateActiveProgress,
   type ProfilesDocument
 } from "@/features/profiles/localProfiles";
+import type { GuardianRole } from "@/features/guardian/guardianConsent";
 import {
+  authorizeGuardian,
   completeLevel,
   initialProgressState,
   markOnboarded,
+  withdrawGuardian,
   type LevelAttempt,
   type ProgressState
 } from "./progressState";
@@ -107,6 +110,14 @@ export function resetProgressInStore(): void {
 export function clearEverythingInStore(): void {
   clearProfilesDocument();
   publish(fromDocument(emptyProfilesDocument));
+}
+
+export function authorizeGuardianInStore(role: GuardianRole, authorizedOn: string): void {
+  applyToActiveProgress((state) => authorizeGuardian(state, role, authorizedOn));
+}
+
+export function withdrawGuardianInStore(): void {
+  applyToActiveProgress(withdrawGuardian);
 }
 
 export function addProfileInStore(): void {

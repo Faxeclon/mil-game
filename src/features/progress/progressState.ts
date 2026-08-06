@@ -5,6 +5,12 @@ import { isAttemptId, parseCompletedAt, parseElapsedMs } from "./attemptMetadata
 import { parseBestResults, updateBestResults, type BestResultsByLevelId } from "./bestResults";
 import { parseLevelScore } from "@/features/scoring/levelScore";
 import { initialStreak, isPlayedOn, parseStreak, recordPlayedDay, type Streak } from "./streak";
+import {
+  grantGuardianConsent,
+  parseGuardianConsent,
+  type GuardianConsent,
+  type GuardianRole
+} from "@/features/guardian/guardianConsent";
 
 export const PROGRESS_VERSION = 1;
 
@@ -33,6 +39,13 @@ export type ProgressState = {
    * reason as records: it is an encouragement, never a condition for unlocking.
    */
   streak: Streak;
+  /**
+   * The adult who authorised this player, or null while they play as a guest.
+   *
+   * Kept per profile because consent is given for one child, not for a device: two
+   * siblings on the same phone can perfectly well have one authorised and one not.
+   */
+  guardian: GuardianConsent | null;
 };
 
 /** Summary of the attempt a player just finished, used by the results screen. */
@@ -66,7 +79,8 @@ export const initialProgressState: ProgressState = {
   localNickname: null,
   apprenticeAvatarId: null,
   bestResultsByLevelId: {},
-  streak: initialStreak
+  streak: initialStreak,
+  guardian: null
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -172,6 +186,7 @@ export function parseProgressState(value: unknown): ProgressState {
     apprenticeAvatarId,
     bestResultsByLevelId: parseBestResults(value.bestResultsByLevelId),
     streak: parseStreak(value.streak),
+    guardian: parseGuardianConsent(value.guardian),
     ...(lastResult ? { lastResult } : {})
   };
 }
@@ -254,4 +269,23 @@ export function isLevelCompleted(state: ProgressState, levelId: string): boolean
 
 export function resetProgressState(): ProgressState {
   return initialProgressState;
+}
+
+/**
+ * Records that an adult authorised this player.
+ *
+ * Consent changes nothing about the game: the same missions, the same medals, the same
+ * device. What it changes is what may leave the device later, which is why it is stored
+ * next to the progress rather than gating any of it.
+ */
+export function authorizeGuardian(state: ProgressState, role: GuardianRole, authorizedOn: string): ProgressState {
+  const guardian = grantGuardianConsent(role, authorizedOn);
+  if (!guardian) return state;
+  return { ...state, guardian };
+}
+
+/** Withdrawing consent leaves every medal untouched; only the permission goes away. */
+export function withdrawGuardian(state: ProgressState): ProgressState {
+  if (state.guardian === null) return state;
+  return { ...state, guardian: null };
 }

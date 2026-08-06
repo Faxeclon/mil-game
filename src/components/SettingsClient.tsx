@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   Smartphone,
   Sparkles,
+  ShieldCheck,
   Trash2,
   Type,
   UserPlus,
@@ -34,10 +35,12 @@ export function SettingsClient() {
   const t = useTranslations("settings");
   const tStorage = useTranslations("storage");
   const tProfiles = useTranslations("profiles");
+  const tGuardian = useTranslations("guardian");
   const {
     hydrated,
     resetProgress,
     completedLevelIds,
+    guardian,
     profiles,
     addProfile,
     selectProfile,
@@ -116,6 +119,26 @@ export function SettingsClient() {
             <span className={styles.rowName}>{tStorage("guestBadge")}</span>
             <span className={styles.rowDetail}>{tStorage("guestNotice")}</span>
           </span>
+        </div>
+
+        {/* The consent lives with the player it was given for, so it is managed here. */}
+        <div className={styles.row}>
+          <span className={styles.rowIcon}>
+            <ShieldCheck aria-hidden="true" size={18} />
+          </span>
+          <span className={styles.rowText}>
+            <span className={styles.rowName}>{tGuardian("manageTitle")}</span>
+            <span className={styles.rowDetail}>
+              {guardian
+                ? tGuardian("grantedBy", {
+                    role: tGuardian(guardian.role === "parent" ? "roleParentShort" : "roleTeacherShort")
+                  })
+                : tGuardian("manageGuest")}
+            </span>
+          </span>
+          <Link className={styles.resetStart} href="/guardian">
+            {guardian ? tGuardian("manageTitle") : tGuardian("askAdult")}
+          </Link>
         </div>
 
         <div className={styles.resetRow}>

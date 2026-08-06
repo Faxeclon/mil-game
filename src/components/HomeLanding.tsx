@@ -11,6 +11,7 @@ import {
   Medal,
   Play,
   Rabbit,
+  ShieldCheck,
   Smartphone,
   Swords,
   Turtle,
@@ -62,6 +63,7 @@ export function HomeLanding() {
   const tProfiles = useTranslations("profiles");
   const tRank = useTranslations("rank");
   const tRush = useTranslations("rush");
+  const tGuardian = useTranslations("guardian");
   const router = useRouter();
   const nameFieldId = useId();
   const {
@@ -72,6 +74,7 @@ export function HomeLanding() {
     localNickname: savedLocalNickname,
     apprenticeAvatarId: savedApprenticeAvatarId,
     profiles,
+    guardian,
     addProfile,
     selectProfile
   } = useProgress();
@@ -183,11 +186,19 @@ export function HomeLanding() {
             </h1>
             <p className={styles.hubTitleBadge}>{tRank(`titles.${rank.titleKey}`)}</p>
             {/* Telling a child where their data lives is itself a media-literacy lesson:
-                the app practises what it teaches, and never claims nothing is stored. */}
-            <span aria-label={tStorage("guestBadgeAria")} className={styles.guestBadge} role="img">
-              <Smartphone aria-hidden="true" size={13} />
-              {tStorage("guestBadge")}
-            </span>
+                the app practises what it teaches, and never claims nothing is stored.
+                Once an adult has authorised, the badge says so instead. */}
+            {guardian ? (
+              <span className={`${styles.guestBadge} ${styles.guardianBadge}`}>
+                <ShieldCheck aria-hidden="true" size={13} />
+                {tGuardian("badge")}
+              </span>
+            ) : (
+              <span aria-label={tStorage("guestBadgeAria")} className={styles.guestBadge} role="img">
+                <Smartphone aria-hidden="true" size={13} />
+                {tStorage("guestBadge")}
+              </span>
+            )}
             <span
               aria-label={t("profileAvatarAria", {
                 name: apprenticeNames[apprenticeAvatarIds.indexOf(hubApprenticeAvatarId)]
@@ -334,7 +345,9 @@ export function HomeLanding() {
             </section>
           )}
 
-          <p className={styles.guestNotice}>{tStorage("guestNotice")}</p>
+          <p className={styles.guestNotice}>
+            {guardian ? tGuardian("grantedPending") : tStorage("guestNotice")}
+          </p>
         </section>
       </div>
     );
