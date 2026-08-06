@@ -1,12 +1,16 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { emptyProfilesDocument } from "@/features/profiles/localProfiles";
 import { initialProgressState } from "./progressState";
-import { PROGRESS_STORAGE_KEY } from "./progressStorage";
+import { PROFILES_STORAGE_KEY, PROGRESS_STORAGE_KEY } from "./progressStorage";
 import {
+  addProfileInStore,
+  clearEverythingInStore,
   completeLevelInStore,
   getProgressSnapshot,
   getServerProgressSnapshot,
   resetProgressInStore,
   resetProgressStoreForTests,
+  selectProfileInStore,
   subscribeToProgress
 } from "./progressStore";
 
@@ -43,7 +47,8 @@ describe("progress store", () => {
   it("renders the empty snapshot on the server", () => {
     expect(getServerProgressSnapshot()).toEqual({
       hydrated: false,
-      state: initialProgressState
+      state: initialProgressState,
+      profiles: emptyProfilesDocument
     });
   });
 
@@ -85,7 +90,7 @@ describe("progress store", () => {
       completedAt: "2025-01-02T03:04:05.000Z",
       score: null
     });
-    expect(entries.has(PROGRESS_STORAGE_KEY)).toBe(true);
+    expect(entries.has(PROFILES_STORAGE_KEY)).toBe(true);
     unsubscribe();
   });
 
@@ -104,15 +109,43 @@ describe("progress store", () => {
     unsubscribe();
   });
 
-  it("clears storage and returns to the start on reset", () => {
-    const entries = stubStorage();
+  it("returns the active player to the start on reset, leaving the others alone", () => {
+    stubStorage();
     const unsubscribe = subscribeToProgress(() => {});
+    completeLevelInStore("basics-1", attemptedLevel);
+    addProfileInStore();
     completeLevelInStore("basics-1", attemptedLevel);
 
     resetProgressInStore();
 
-    expect(entries.has(PROGRESS_STORAGE_KEY)).toBe(false);
     expect(getProgressSnapshot().state.completedLevelIds).toEqual([]);
+    expect(getProgressSnapshot().profiles.profiles[0].progress.completedLevelIds).toEqual(["basics-1"]);
+    unsubscribe();
+  });
+
+  it("wipes the whole phone only when that is what was asked", () => {
+    const entries = stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    completeLevelInStore("basics-1", attemptedLevel);
+
+    clearEverythingInStore();
+
+    expect(entries.has(PROFILES_STORAGE_KEY)).toBe(false);
+    expect(getProgressSnapshot().profiles.profiles).toEqual([]);
+    unsubscribe();
+  });
+
+  it("keeps two players on the phone apart", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    completeLevelInStore("basics-1", attemptedLevel);
+    addProfileInStore();
+
+    expect(getProgressSnapshot().state.completedLevelIds).toEqual([]);
+    expect(getProgressSnapshot().profiles.profiles).toHaveLength(2);
+
+    selectProfileInStore("player-1");
+    expect(getProgressSnapshot().state.completedLevelIds).toEqual(["basics-1"]);
     unsubscribe();
   });
 });

@@ -14,6 +14,7 @@ import {
   Smartphone,
   Swords,
   Turtle,
+  UserPlus,
   Users,
   Wind,
   type LucideIcon
@@ -30,6 +31,7 @@ import {
 import { normalizeLocalNickname } from "@/features/profile/localNickname";
 import { needsLocalNicknameCompletion } from "@/features/progress/progressState";
 import { getLocalPlayedOn, getStreakToday } from "@/features/progress/streak";
+import { MAX_LOCAL_PROFILES } from "@/features/profiles/localProfiles";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link, useRouter } from "@/i18n/navigation";
 import styles from "./HomeLanding.module.css";
@@ -55,6 +57,7 @@ export function HomeLanding() {
   const tIslands = useTranslations("islands");
   const tStorage = useTranslations("storage");
   const tVersus = useTranslations("versus");
+  const tProfiles = useTranslations("profiles");
   const router = useRouter();
   const nameFieldId = useId();
   const {
@@ -63,7 +66,10 @@ export function HomeLanding() {
     markOnboarded,
     progressState,
     localNickname: savedLocalNickname,
-    apprenticeAvatarId: savedApprenticeAvatarId
+    apprenticeAvatarId: savedApprenticeAvatarId,
+    profiles,
+    addProfile,
+    selectProfile
   } = useProgress();
 
   const lines = t.raw("dialogue") as string[];
@@ -77,11 +83,76 @@ export function HomeLanding() {
   // Read once per mount: the hub only renders after hydration, so the device clock is
   // available here and the streak cannot differ between server and client markup.
   const [today] = useState(() => getLocalPlayedOn(new Date()));
+  const [playerChosen, setPlayerChosen] = useState(false);
 
   // Nothing is rendered until the stored progress is known, so a returning player never
   // sees the sign-up screen flash before their own home.
   if (!hydrated) {
     return <div className={`${styles.splash} app-chrome-hidden`} />;
+  }
+
+  /*
+   * More than one child shares this phone, so it asks who is holding it before anything
+   * else. With a single player there is no question to ask and no screen appears: a
+   * seven-year-old should never meet a decision before they meet the game.
+   */
+  if (profiles.profiles.length > 1 && !playerChosen && step !== "intro") {
+    return (
+      <div className={`${styles.landing} app-chrome-hidden`}>
+        <section aria-labelledby="who-plays-title" className={styles.profile}>
+          <h1 className={styles.profileTitle} id="who-plays-title">
+            {tProfiles("whoPlays")}
+          </h1>
+          <p className={styles.profileNote}>{tProfiles("whoPlaysHint")}</p>
+
+          <ul className={styles.playerList}>
+            {profiles.profiles.map((profile, index) => {
+              const Icon = apprenticeAvatarIcons[profile.progress.apprenticeAvatarId ?? defaultApprenticeAvatarId];
+              const done = profile.progress.completedLevelIds.length;
+
+              return (
+                <li key={profile.id}>
+                  <button
+                    className={`${styles.playerCard} ${profile.id === profiles.activeId ? styles.playerCurrent : ""}`}
+                    type="button"
+                    onClick={() => {
+                      selectProfile(profile.id);
+                      setPlayerChosen(true);
+                    }}
+                  >
+                    <span className={styles.playerIcon}>
+                      <Icon aria-hidden="true" size={24} strokeWidth={2} />
+                    </span>
+                    <span className={styles.playerText}>
+                      <span className={styles.playerName}>
+                        {profile.progress.localNickname ?? tProfiles("unnamed", { number: index + 1 })}
+                      </span>
+                      <span className={styles.playerDetail}>{tProfiles("playerMissions", { count: done })}</span>
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+
+          {profiles.profiles.length < MAX_LOCAL_PROFILES && (
+            <button
+              className={styles.addPlayer}
+              type="button"
+              onClick={() => {
+                addProfile();
+                setPlayerChosen(true);
+              }}
+            >
+              <UserPlus aria-hidden="true" size={16} />
+              {tProfiles("addPlayer")}
+            </button>
+          )}
+
+          <p className={styles.profileNote}>{tProfiles("separateNote")}</p>
+        </section>
+      </div>
+    );
   }
 
   /*

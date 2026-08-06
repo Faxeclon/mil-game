@@ -652,6 +652,94 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* ------------------------------------------------------- Who is playing */
+
+.playerList {
+  width: min(100%, 22rem);
+  margin: 1rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.playerCard {
+  width: 100%;
+  min-height: 3.6rem;
+  padding: 0.55rem 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  border: 1px solid var(--h-hairline);
+  border-radius: 1.1rem;
+  background: #fff;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.playerCard:hover,
+.playerCard:focus-visible {
+  border-color: var(--h-accent);
+}
+
+.playerCard:focus-visible {
+  outline: 3px solid var(--h-accent);
+  outline-offset: 3px;
+}
+
+/* Whoever played last is marked by a ring, not by colour alone. */
+.playerCurrent {
+  box-shadow: inset 0 0 0 2px var(--h-accent);
+}
+
+.playerIcon {
+  width: 2.6rem;
+  height: 2.6rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #ffece4;
+  color: #b8380a;
+}
+
+.playerText {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.playerName {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.playerDetail {
+  color: var(--h-ink-soft);
+  font-size: 0.78rem;
+}
+
+.addPlayer {
+  min-height: 3rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px dashed var(--h-hairline-strong, #d5cfcd);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--h-ink);
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.addPlayer:focus-visible {
+  outline: 3px solid var(--h-accent);
+  outline-offset: 3px;
+}
+
 /* The one mode that needs neither an account nor a connection. */
 .versusCard {
   width: min(100%, 24rem);

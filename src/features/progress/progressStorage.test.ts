@@ -1,10 +1,17 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  addProfile,
+  emptyProfilesDocument,
+  updateActiveProgress
+} from "@/features/profiles/localProfiles";
 import { completeLevel, initialProgressState, markOnboarded } from "./progressState";
 import {
-  clearProgressState,
+  clearProfilesDocument,
+  PROFILES_STORAGE_KEY,
   PROGRESS_STORAGE_KEY,
+  readProfilesDocument,
   readProgressState,
-  writeProgressState
+  writeProfilesDocument
 } from "./progressStorage";
 
 const attemptedLevel = {
@@ -30,6 +37,11 @@ function withWindow(storage: unknown) {
   vi.stubGlobal("window", { localStorage: storage });
 }
 
+/** One profile holding the given progress, as the store would write it. */
+function documentWith(progress: Parameters<typeof updateActiveProgress>[1]) {
+  return updateActiveProgress(addProfile(emptyProfilesDocument), progress);
+}
+
 afterEach(() => {
   vi.unstubAllGlobals();
 });
@@ -38,8 +50,9 @@ describe("progress storage", () => {
   it("returns the initial state during server rendering, without touching window", () => {
     expect(typeof window).toBe("undefined");
     expect(readProgressState()).toEqual(initialProgressState);
-    expect(() => writeProgressState(initialProgressState)).not.toThrow();
-    expect(() => clearProgressState()).not.toThrow();
+    expect(readProfilesDocument()).toEqual(emptyProfilesDocument);
+    expect(() => writeProfilesDocument(emptyProfilesDocument)).not.toThrow();
+    expect(() => clearProfilesDocument()).not.toThrow();
   });
 
   it("persists progress under a versioned key and reads it back", () => {
@@ -53,9 +66,9 @@ describe("progress storage", () => {
       elapsedMs: 1_234,
       completedAt: "2025-01-02T03:04:05.000Z"
     });
-    writeProgressState(played);
+    writeProfilesDocument(documentWith(played));
 
-    expect(storage.entries.has(PROGRESS_STORAGE_KEY)).toBe(true);
+    expect(storage.entries.has(PROFILES_STORAGE_KEY)).toBe(true);
     expect(readProgressState().completedLevelIds).toEqual(["basics-2"]);
     expect(readProgressState().lastResult).toEqual({
       levelId: "basics-2",
@@ -69,7 +82,7 @@ describe("progress storage", () => {
   });
 
   it("starts clean when the stored value is not valid JSON", () => {
-    withWindow(createStorage({ [PROGRESS_STORAGE_KEY]: "{not json" }));
+    withWindow(createStorage({ [PROFILES_STORAGE_KEY]: "{not json" }));
     expect(readProgressState()).toEqual(initialProgressState);
   });
 
@@ -82,10 +95,10 @@ describe("progress storage", () => {
     const storage = createStorage();
     withWindow(storage);
 
-    writeProgressState(completeLevel(initialProgressState, "basics-1", attemptedLevel));
-    clearProgressState();
+    writeProfilesDocument(documentWith(completeLevel(initialProgressState, "basics-1", attemptedLevel)));
+    clearProfilesDocument();
 
-    expect(storage.entries.has(PROGRESS_STORAGE_KEY)).toBe(false);
+    expect(storage.entries.has(PROFILES_STORAGE_KEY)).toBe(false);
     expect(readProgressState()).toEqual(initialProgressState);
   });
 
@@ -103,18 +116,18 @@ describe("progress storage", () => {
     });
 
     expect(readProgressState()).toEqual(initialProgressState);
-    expect(() => writeProgressState(initialProgressState)).not.toThrow();
-    expect(() => clearProgressState()).not.toThrow();
+    expect(() => writeProfilesDocument(emptyProfilesDocument)).not.toThrow();
+    expect(() => clearProfilesDocument()).not.toThrow();
   });
 
   it("uses one key for both languages, so switching locale keeps the progress", () => {
     const storage = createStorage();
     withWindow(storage);
 
-    writeProgressState(completeLevel(initialProgressState, "basics-1", attemptedLevel));
+    writeProfilesDocument(documentWith(completeLevel(initialProgressState, "basics-1", attemptedLevel)));
 
     // A locale change re-mounts the app but reads the very same key.
-    expect([...storage.entries.keys()]).toEqual([PROGRESS_STORAGE_KEY]);
+    expect([...storage.entries.keys()]).toEqual([PROFILES_STORAGE_KEY]);
     expect(readProgressState().completedLevelIds).toEqual(["basics-1"]);
   });
 
@@ -122,7 +135,7 @@ describe("progress storage", () => {
     const storage = createStorage();
     withWindow(storage);
 
-    writeProgressState(markOnboarded(initialProgressState, "Detective Eagle", "fox"));
+    writeProfilesDocument(documentWith(markOnboarded(initialProgressState, "Detective Eagle", "fox")));
 
     expect(readProgressState()).toMatchObject({
       onboarded: true,
@@ -144,18 +157,48 @@ describe("progress storage", () => {
     });
     withWindow(storage);
 
-    const migrated = readProgressState();
-    writeProgressState(migrated);
-    const saved = JSON.parse(storage.entries.get(PROGRESS_STORAGE_KEY) ?? "{}");
+    const migrated = readProfilesDocument();
+    writeProfilesDocument(migrated);
+    const saved = JSON.parse(storage.entries.get(PROFILES_STORAGE_KEY) ?? "{}");
 
-    expect(migrated).toMatchObject({
+    expect(migrated.profiles[0].progress).toMatchObject({
       localNickname: "Faxe",
       completedLevelIds: ["animals-1"],
       onboarded: true,
       apprenticeAvatarId: "cat",
       lastResult: { levelId: "animals-1", correctRounds: 2, totalRounds: 3 }
     });
-    expect(saved).toMatchObject({ localNickname: "Faxe", apprenticeAvatarId: "cat" });
-    expect("playerName" in saved).toBe(false);
+    expect(saved.profiles[0].progress).toMatchObject({ localNickname: "Faxe", apprenticeAvatarId: "cat" });
+    expect("playerName" in saved.profiles[0].progress).toBe(false);
+  });
+});
+
+describe("moving a single-player device onto profiles", () => {
+  it("keeps everything the only child had earned", () => {
+    const played = completeLevel(initialProgressState, "basics-1", attemptedLevel);
+    const storage = createStorage({ [PROGRESS_STORAGE_KEY]: JSON.stringify(played) });
+    withWindow(storage);
+
+    const document = readProfilesDocument();
+
+    expect(document.profiles).toHaveLength(1);
+    expect(document.profiles[0].progress.completedLevelIds).toEqual(["basics-1"]);
+  });
+
+  it("clears the old single-player key once it has been folded in", () => {
+    const played = completeLevel(initialProgressState, "basics-1", attemptedLevel);
+    const storage = createStorage({ [PROGRESS_STORAGE_KEY]: JSON.stringify(played) });
+    withWindow(storage);
+
+    readProfilesDocument();
+
+    // Left behind, it would resurrect those medals the next time the phone is wiped.
+    expect(storage.entries.has(PROGRESS_STORAGE_KEY)).toBe(false);
+  });
+
+  it("leaves a never-played device with no profile at all", () => {
+    withWindow(createStorage({ [PROGRESS_STORAGE_KEY]: JSON.stringify(initialProgressState) }));
+
+    expect(readProfilesDocument()).toEqual(emptyProfilesDocument);
   });
 });
