@@ -1,7 +1,8 @@
 "use client";
 
-import { BookOpenCheck, Home, Map, QrCode, SlidersHorizontal } from "lucide-react";
+import { Home, Map, QrCode, SlidersHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useHasMounted } from "@/features/app/useHasMounted";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { useTeacherAccount } from "@/features/teacher/teacherAccountStore";
 import { Link, usePathname } from "@/i18n/navigation";
@@ -24,6 +25,7 @@ export function MobileNavigation() {
   const pathname = usePathname();
   const t = useTranslations("header");
   const tTeacher = useTranslations("teacherAccount");
+  const hasMounted = useHasMounted();
   const { hydrated, onboarded } = useProgress();
   const { hydrated: teacherHydrated, account } = useTeacherAccount();
 
@@ -34,15 +36,15 @@ export function MobileNavigation() {
    * every destination would either ask for one or be the page already on screen. A bar
    * of dead ends is worse than no bar, so there is no bar.
    */
-  if (!hydrated || !teacherHydrated) return null;
+  if (!hasMounted || !hydrated || !teacherHydrated) return null;
   if (!onboarded && account === null) return null;
 
   const isTeacherDevice = account !== null && !onboarded;
   const destinations = isTeacherDevice
     ? [
+        // Three, like the player's bar: the guide lives on the home, where it is read.
         { href: "/", icon: Home, label: t("home") },
         { href: "/teacher/cards", icon: QrCode, label: tTeacher("navCards") },
-        { href: "/teacher", icon: BookOpenCheck, label: tTeacher("navGuide") },
         { href: "/settings", icon: SlidersHorizontal, label: t("mobileOptions") }
       ]
     : playerDestinations

@@ -2,6 +2,7 @@
 
 import { Map } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useHasMounted } from "@/features/app/useHasMounted";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link } from "@/i18n/navigation";
 
@@ -14,9 +15,10 @@ import { Link } from "@/i18n/navigation";
  */
 export function IslandsNavLink({ className }: { className?: string }) {
   const t = useTranslations("header");
+  const hasMounted = useHasMounted();
   const { hydrated, onboarded } = useProgress();
 
-  if (!hydrated || !onboarded) return null;
+  if (!hasMounted || !hydrated || !onboarded) return null;
 
   return (
     <Link aria-label={t("worlds")} className={className} href="/worlds">

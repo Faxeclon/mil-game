@@ -7,7 +7,7 @@ import {
   MessageCircleQuestion,
   Printer,
   QrCode,
-  Sparkles,
+  Smartphone,
   Users
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -15,16 +15,17 @@ import { useTeacherAccount } from "@/features/teacher/teacherAccountStore";
 import { Link } from "@/i18n/navigation";
 import styles from "./TeacherClient.module.css";
 
+const CARD_STEPS = ["create", "print", "hand", "ask", "raise", "read"] as const;
 const SESSION_STEPS = ["welcome", "play", "versus", "talk", "close"] as const;
 const DISCUSSION_PROMPTS = ["one", "two", "three", "four"] as const;
-const SETUP_NOTES = ["oneDevice", "noInternet", "noAccounts", "noData"] as const;
 
 /**
- * What a teacher can actually do with this today, on one phone and with no connection.
+ * How the classroom mode actually works, told as a sequence rather than a feature list.
  *
- * The classroom with accounts, shared codes and a progress dashboard needs a server, so
- * it is named here as still to be built rather than sketched as if it worked. What is
- * offered instead is real: a session plan that runs offline, and a page that prints.
+ * A teacher opening this has one question - what do I do on Monday - so the page answers
+ * that first: the two ways to run it, then what happens minute by minute. The classroom
+ * with accounts and a live dashboard needs a server, so it is named as still to be built
+ * rather than sketched as if it worked.
  */
 export function TeacherClient() {
   const t = useTranslations("teacher");
@@ -64,18 +65,56 @@ export function TeacherClient() {
       <h1 className={styles.title}>{t("title")}</h1>
       <p className={styles.lead}>{t("lead")}</p>
 
-      <section aria-labelledby="teacher-setup" className={styles.group}>
-        <h2 className={styles.groupTitle} id="teacher-setup">
-          {t("setupTitle")}
+      {/* The two ways to run it, so a teacher can pick before reading any detail. */}
+      <section aria-labelledby="teacher-ways" className={styles.group}>
+        <h2 className={styles.groupTitle} id="teacher-ways">
+          {t("waysTitle")}
         </h2>
-        <ul className={styles.notes}>
-          {SETUP_NOTES.map((note) => (
-            <li className={styles.note} key={note}>
-              <Sparkles aria-hidden="true" size={15} />
-              {t(`setup.${note}`)}
+
+        <div className={styles.way}>
+          <span className={styles.wayIcon}>
+            <Printer aria-hidden="true" size={19} />
+          </span>
+          <span className={styles.wayText}>
+            <span className={styles.wayName}>{t("wayCardsName")}</span>
+            <span className={styles.wayDetail}>{t("wayCardsDetail")}</span>
+          </span>
+        </div>
+
+        <div className={styles.way}>
+          <span className={styles.wayIcon}>
+            <Smartphone aria-hidden="true" size={19} />
+          </span>
+          <span className={styles.wayText}>
+            <span className={styles.wayName}>{t("wayPhonesName")}</span>
+            <span className={styles.wayDetail}>{t("wayPhonesDetail")}</span>
+          </span>
+        </div>
+      </section>
+
+      {/* How the printed cards work, end to end. This is the part nobody guesses. */}
+      <section aria-labelledby="teacher-cards" className={styles.group}>
+        <h2 className={styles.groupTitle} id="teacher-cards">
+          {t("cardsHowTitle")}
+        </h2>
+        <p className={styles.groupLead}>{t("cardsHowLead")}</p>
+
+        <ol className={styles.steps}>
+          {CARD_STEPS.map((step, index) => (
+            <li className={styles.step} key={step}>
+              <span className={styles.stepTime}>{index + 1}</span>
+              <span className={styles.stepBody}>
+                <span className={styles.stepName}>{t(`cardsHow.${step}.title`)}</span>
+                <span className={styles.stepDetail}>{t(`cardsHow.${step}.detail`)}</span>
+              </span>
             </li>
           ))}
-        </ul>
+        </ol>
+
+        <Link className={`${styles.print} ${styles.noPrint}`} href="/teacher/cards">
+          <QrCode aria-hidden="true" size={16} />
+          {tCards("generate")}
+        </Link>
       </section>
 
       <section aria-labelledby="teacher-session" className={styles.group}>
@@ -110,18 +149,6 @@ export function TeacherClient() {
             </li>
           ))}
         </ul>
-      </section>
-
-      {/* The one classroom tool that already works: printed cards, no student devices. */}
-      <section aria-labelledby="teacher-cards" className={styles.group}>
-        <h2 className={styles.groupTitle} id="teacher-cards">
-          {tCards("cardsLink")}
-        </h2>
-        <p className={styles.groupLead}>{tCards("cardsLinkHint")}</p>
-        <Link className={`${styles.print} ${styles.noPrint}`} href="/teacher/cards">
-          <QrCode aria-hidden="true" size={16} />
-          {tCards("generate")}
-        </Link>
       </section>
 
       <section aria-labelledby="teacher-soon" className={styles.group}>

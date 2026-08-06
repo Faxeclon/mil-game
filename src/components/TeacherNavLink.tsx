@@ -2,6 +2,7 @@
 
 import { GraduationCap } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useHasMounted } from "@/features/app/useHasMounted";
 import { useTeacherAccount } from "@/features/teacher/teacherAccountStore";
 import { Link } from "@/i18n/navigation";
 
@@ -15,9 +16,10 @@ import { Link } from "@/i18n/navigation";
  */
 export function TeacherNavLink({ className }: { className?: string }) {
   const t = useTranslations("teacherAccount");
+  const hasMounted = useHasMounted();
   const { hydrated, account } = useTeacherAccount();
 
-  if (!hydrated || !account) return null;
+  if (!hasMounted || !hydrated || !account) return null;
 
   return (
     <Link aria-label={t("navLabel")} className={className} href="/teacher">
