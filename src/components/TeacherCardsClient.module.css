@@ -1,0 +1,298 @@
+/*
+ * Printable answer cards. Everything here is designed for a school printer: pure black
+ * on white, thick strokes, no colour and no shading that a photocopier would smear.
+ */
+
+.cards {
+  --c-ink: #1f2a44;
+  --c-ink-soft: #5b6780;
+  --c-hairline: #ece7e6;
+  --c-hairline-strong: #d5cfcd;
+  --c-accent-strong: #c93c0b;
+  --c-accent-ink: #b8380a;
+  --c-accent-soft: #ffece4;
+
+  width: min(100%, 44rem);
+  margin: 0 auto;
+  padding-bottom: 3rem;
+  color: var(--c-ink);
+}
+
+.back {
+  min-height: 2.75rem;
+  margin-top: clamp(0.5rem, 3vw, 1.25rem);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--c-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.title {
+  margin: 0.6rem 0 0;
+  font-size: clamp(1.6rem, 6vw, 2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.lead {
+  max-width: 46ch;
+  margin: 0.45rem 0 0;
+  color: var(--c-ink-soft);
+  font-size: 0.96rem;
+  line-height: 1.45;
+}
+
+/* ------------------------------------------------------------------ Setup */
+
+.field {
+  margin-top: 1.1rem;
+  display: grid;
+  gap: 0.3rem;
+  max-width: 18rem;
+}
+
+.fieldLabel {
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.input {
+  min-height: 3.2rem;
+  padding: 0.5rem 0.9rem;
+  border: 2px solid var(--c-hairline-strong);
+  border-radius: 0.9rem;
+  background: #fff;
+  color: var(--c-ink);
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.input:focus-visible {
+  outline: 3px solid var(--c-accent-strong);
+  outline-offset: 2px;
+}
+
+.fieldHint {
+  margin: 0;
+  color: var(--c-ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.steps {
+  max-width: 46ch;
+  margin: 1rem 0 0;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.step {
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.keep {
+  max-width: 46ch;
+  margin: 0.9rem 0 0;
+  padding: 0.6rem 0.85rem;
+  border: 1px dashed var(--c-hairline-strong);
+  border-radius: 0.9rem;
+  color: var(--c-ink-soft);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.actions {
+  margin-top: 1.1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.primary,
+.secondary {
+  min-height: 3.1rem;
+  padding: 0.55rem 1.3rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 0;
+  border-radius: 999px;
+  font-size: 0.94rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.primary {
+  background: var(--c-accent-strong);
+  color: #fff;
+}
+
+.secondary {
+  border: 1px solid var(--c-hairline-strong);
+  background: transparent;
+  color: var(--c-ink);
+}
+
+.primary:focus-visible,
+.secondary:focus-visible {
+  outline: 3px solid var(--c-accent-strong);
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------------------------ Sheets */
+
+.sheets {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.sheet {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px dashed var(--c-hairline-strong);
+  border-radius: 0.6rem;
+  break-inside: avoid;
+}
+
+.cutHint {
+  grid-column: 1 / -1;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--c-ink-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+/* ------------------------------------------------------------------- Card */
+
+.card {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.5rem;
+  border: 3px solid #000;
+  border-radius: 0.4rem;
+  background: #fff;
+  break-inside: avoid;
+  text-align: center;
+}
+
+/*
+ * The two edges must not be mirror images: the solid bar is A, the outlined one is B.
+ * That asymmetry is the only thing a camera can use to tell which way up the card is,
+ * because a QR reader normalises rotation before returning the text.
+ */
+.edgeA,
+.edgeB {
+  margin: 0;
+  padding: 0.2rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-size: 1.3rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.edgeA {
+  background: #000;
+  color: #fff;
+}
+
+.edgeB {
+  border: 3px solid #000;
+  background: #fff;
+  color: #000;
+}
+
+.arrowUp,
+.arrowDown {
+  width: 0;
+  height: 0;
+  border-right: 0.42rem solid transparent;
+  border-left: 0.42rem solid transparent;
+}
+
+.arrowUp {
+  border-bottom: 0.55rem solid #fff;
+}
+
+.arrowDown {
+  border-top: 0.55rem solid #000;
+}
+
+.cardBody {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.cardNumber {
+  min-width: 2.4rem;
+  font-size: 2.1rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.qr {
+  width: min(100%, 9rem);
+  aspect-ratio: 1;
+  display: block;
+}
+
+.noPrint {
+  display: block;
+}
+
+/* -------------------------------------------------------------- On paper */
+
+@media print {
+  .noPrint {
+    display: none;
+  }
+
+  .cards {
+    width: 100%;
+    padding: 0;
+  }
+
+  .sheets {
+    margin: 0;
+    gap: 0;
+  }
+
+  .sheet {
+    padding: 0.4cm;
+    border: 0;
+    gap: 0.5cm;
+    page-break-after: always;
+  }
+
+  .cutHint {
+    display: none;
+  }
+
+  .card {
+    padding: 0.3cm;
+  }
+
+  /* Solid black must actually print solid, not as a light grey wash. */
+  .edgeA,
+  .arrowDown {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

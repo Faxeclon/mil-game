@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpenCheck, ChevronLeft, MessageCircleQuestion, Printer, Sparkles, Users } from "lucide-react";
+import { BookOpenCheck, ChevronLeft, MessageCircleQuestion, Printer, QrCode, Sparkles, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import styles from "./TeacherClient.module.css";
@@ -18,6 +18,7 @@ const SETUP_NOTES = ["oneDevice", "noInternet", "noAccounts", "noData"] as const
  */
 export function TeacherClient() {
   const t = useTranslations("teacher");
+  const tCards = useTranslations("cards");
 
   return (
     <div className={styles.teacher}>
@@ -75,6 +76,18 @@ export function TeacherClient() {
             </li>
           ))}
         </ul>
+      </section>
+
+      {/* The one classroom tool that already works: printed cards, no student devices. */}
+      <section aria-labelledby="teacher-cards" className={styles.group}>
+        <h2 className={styles.groupTitle} id="teacher-cards">
+          {tCards("cardsLink")}
+        </h2>
+        <p className={styles.groupLead}>{tCards("cardsLinkHint")}</p>
+        <Link className={`${styles.print} ${styles.noPrint}`} href="/teacher/cards">
+          <QrCode aria-hidden="true" size={16} />
+          {tCards("generate")}
+        </Link>
       </section>
 
       <section aria-labelledby="teacher-soon" className={styles.group}>
