@@ -15,7 +15,6 @@ import {
   Users
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { MAX_LOCAL_PROFILES } from "@/features/profiles/localProfiles";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { useTeacherAccount } from "@/features/teacher/teacherAccountStore";
 import { Link } from "@/i18n/navigation";
@@ -224,14 +223,10 @@ export function SettingsClient() {
           })}
         </ul>
 
-        {profiles.profiles.length < MAX_LOCAL_PROFILES ? (
-          <button className={styles.resetStart} type="button" onClick={addProfile}>
-            <UserPlus aria-hidden="true" size={15} />
-            {tProfiles("addPlayer")}
-          </button>
-        ) : (
-          <p className={styles.resetText}>{tProfiles("full", { max: MAX_LOCAL_PROFILES })}</p>
-        )}
+        <button className={styles.resetStart} type="button" onClick={addProfile}>
+          <UserPlus aria-hidden="true" size={15} />
+          {tProfiles("addPlayer")}
+        </button>
 
         <div className={styles.resetRow}>
           <p className={styles.resetText}>{tProfiles("eraseAllConfirm")}</p>

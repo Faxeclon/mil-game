@@ -22,8 +22,15 @@ export type ProfilesDocument = {
   profiles: LocalProfile[];
 };
 
-/** A shared family phone, not a class register: a short list keeps the chooser readable. */
-export const MAX_LOCAL_PROFILES = 4;
+/**
+ * A ceiling against runaway growth, not a rule about families.
+ *
+ * How many children share a phone is not ours to decide, so nothing in the interface
+ * counts down towards this. It exists only so a loop or a corrupt file cannot fill the
+ * device: each profile weighs about two kilobytes, and this leaves the total far under
+ * any storage a browser offers.
+ */
+export const MAX_LOCAL_PROFILES = 50;
 
 export const PROFILES_VERSION = 1;
 
@@ -63,6 +70,11 @@ export function getActiveProgress(document: ProfilesDocument): ProgressState {
 
 export function canAddProfile(document: ProfilesDocument): boolean {
   return document.profiles.length < MAX_LOCAL_PROFILES;
+}
+
+/** How many can still be added, for a screen that needs to know it is near the ceiling. */
+export function remainingProfileSlots(document: ProfilesDocument): number {
+  return Math.max(0, MAX_LOCAL_PROFILES - document.profiles.length);
 }
 
 /** Adds an empty profile and hands the phone to it straight away. */

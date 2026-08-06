@@ -38,7 +38,6 @@ import { needsLocalNicknameCompletion } from "@/features/progress/progressState"
 import { getLocalPlayedOn, getStreakToday } from "@/features/progress/streak";
 import { readClassSet } from "@/features/teacher/classSetStorage";
 import { useTeacherAccount } from "@/features/teacher/teacherAccountStore";
-import { MAX_LOCAL_PROFILES } from "@/features/profiles/localProfiles";
 import { getLocalStandings, getPlayerRank } from "@/features/ranks/playerRank";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -153,19 +152,17 @@ export function HomeLanding() {
             })}
           </ul>
 
-          {profiles.profiles.length < MAX_LOCAL_PROFILES && (
-            <button
-              className={styles.addPlayer}
-              type="button"
-              onClick={() => {
-                addProfile();
-                setPlayerChosen(true);
-              }}
-            >
-              <UserPlus aria-hidden="true" size={16} />
-              {tProfiles("addPlayer")}
-            </button>
-          )}
+          <button
+            className={styles.addPlayer}
+            type="button"
+            onClick={() => {
+              addProfile();
+              setPlayerChosen(true);
+            }}
+          >
+            <UserPlus aria-hidden="true" size={16} />
+            {tProfiles("addPlayer")}
+          </button>
 
           <p className={styles.profileNote}>{tProfiles("separateNote")}</p>
         </section>

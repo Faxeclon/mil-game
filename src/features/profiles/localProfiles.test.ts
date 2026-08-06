@@ -49,9 +49,17 @@ describe("sharing the phone", () => {
     expect(withTwoPlayers().activeId).toBe("player-2");
   });
 
-  it("stops at a short list, because this is a family phone and not a class register", () => {
+  it("keeps adding players without a rule about how many a family has", () => {
     let document = emptyProfilesDocument;
-    for (let index = 0; index < MAX_LOCAL_PROFILES + 3; index += 1) document = addProfile(document);
+    for (let index = 0; index < 10; index += 1) document = addProfile(document);
+
+    expect(document.profiles).toHaveLength(10);
+    expect(canAddProfile(document)).toBe(true);
+  });
+
+  it("still refuses to grow without end, so a loop cannot fill the device", () => {
+    let document = emptyProfilesDocument;
+    for (let index = 0; index < MAX_LOCAL_PROFILES + 5; index += 1) document = addProfile(document);
 
     expect(document.profiles).toHaveLength(MAX_LOCAL_PROFILES);
     expect(canAddProfile(document)).toBe(false);
