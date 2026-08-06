@@ -652,6 +652,60 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* What Roqui says to the child, under the greeting inside the same bubble. */
+.hubWelcome {
+  margin: 0.35rem 0 0;
+  color: var(--h-ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.4;
+  text-wrap: balance;
+}
+
+/*
+ * Apprentice and earned title on one line, and a way into the ladder that explains it.
+ * Compact on purpose: it is who you are, not an announcement.
+ */
+.identity {
+  margin: 0.9rem auto 0;
+  padding: 0.3rem 0.75rem 0.3rem 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--h-hairline);
+  border-radius: 999px;
+  background: #fff;
+  color: inherit;
+  text-decoration: none;
+}
+
+.identity:hover {
+  border-color: var(--h-accent);
+}
+
+.identity:focus-visible {
+  outline: 3px solid var(--h-accent);
+  outline-offset: 3px;
+}
+
+.identityAvatar {
+  width: 2.1rem;
+  height: 2.1rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #ffece4;
+  color: #b8380a;
+}
+
+.identityTitle {
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.identityChevron {
+  color: var(--h-ink-soft);
+}
+
 /* The earned title, right under the greeting. */
 .hubTitleBadge {
   margin: 0.25rem 0 0;

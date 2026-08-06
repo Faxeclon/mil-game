@@ -7,14 +7,13 @@ import {
   BookOpenCheck,
   Cat,
   Check,
+  ChevronRight,
   Feather,
   Flame,
   Medal,
   Play,
   QrCode,
   Rabbit,
-  ShieldCheck,
-  Smartphone,
   Swords,
   Turtle,
   Users,
@@ -117,35 +116,40 @@ export function HomeLanding() {
     return (
       <div className={styles.landing}>
         <section aria-labelledby="hub-title" className={styles.hub}>
-          <div className={styles.hubHeader}>
-            <h1 className={styles.hubGreeting} id="hub-title">
-              {savedLocalNickname ? t("hubGreetingNamed", { name: savedLocalNickname }) : t("hubGreeting")}
-            </h1>
-            <p className={styles.hubTitleBadge}>{tRank(`titles.${rank.titleKey}`)}</p>
-            {/* Telling a child where their data lives is itself a media-literacy lesson:
-                the app practises what it teaches, and never claims nothing is stored.
-                Once an adult has authorised, the badge says so instead. */}
-            {guardian ? (
-              <span className={`${styles.guestBadge} ${styles.guardianBadge}`}>
-                <ShieldCheck aria-hidden="true" size={13} />
-                {tGuardian("badge")}
-              </span>
-            ) : (
-              <span aria-label={tStorage("guestBadgeAria")} className={styles.guestBadge} role="img">
-                <Smartphone aria-hidden="true" size={13} />
-                {tStorage("guestBadge")}
-              </span>
-            )}
+          {/* Roqui greets the child the same way he greets the teacher: standing beside
+              a speech bubble. It is the guide talking, not a header. */}
+          <div className={styles.mascotRow}>
+            <div className={styles.bubble}>
+              <h1 className={styles.line} id="hub-title">
+                {savedLocalNickname ? t("hubGreetingNamed", { name: savedLocalNickname }) : t("hubGreeting")}
+              </h1>
+              <p className={styles.hubWelcome}>
+                {nextMission
+                  ? t("hubNextHint", { category: tIslands(`categories.${nextMission.category}.title`) })
+                  : t("hubAllDone")}
+              </p>
+            </div>
+            <MascotSlot alt={t("mascotAlt")} className={styles.mascot} mood="welcoming" priority />
+          </div>
+
+          {/*
+            The apprentice and the earned title on one line, right under the greeting.
+            Where the progress lives is said once, at the foot of the page, instead of
+            twice: a badge repeating the notice below it only costs room.
+          */}
+          <Link className={styles.identity} href="/ranks">
             <span
               aria-label={t("profileAvatarAria", {
                 name: apprenticeNames[apprenticeAvatarIds.indexOf(hubApprenticeAvatarId)]
               })}
-              className={styles.hubApprentice}
+              className={styles.identityAvatar}
               role="img"
             >
               <HubApprenticeIcon aria-hidden="true" strokeWidth={2} />
             </span>
-          </div>
+            <span className={styles.identityTitle}>{tRank(`titles.${rank.titleKey}`)}</span>
+            <ChevronRight aria-hidden="true" className={styles.identityChevron} size={16} />
+          </Link>
 
           <div className={styles.hubNext}>
             {nextMission ? (
@@ -205,9 +209,10 @@ export function HomeLanding() {
               <span className={styles.hubStatValue}>
                 {rank.tier ? tRank(`tiers.${rank.tier}`) : tRank("none")}
               </span>
-              <span className={styles.hubStatDetail}>
-                {rank.tier ? tRank("stars", { stars: rank.stars, max: rank.maxStars }) : tRank("noneHint")}
-              </span>
+              {/* The ladder explains what the word means and what the next step asks. */}
+              <Link className={styles.hubStatLink} href="/ranks">
+                {tRank("seeLadder")}
+              </Link>
             </li>
             <li className={`${styles.hubStat} ${streak.currentDays > 0 ? styles.hubStatLive : ""}`}>
               <span className={`${styles.hubStatIcon} ${styles.hubStatStreak}`}>

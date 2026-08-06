@@ -1,0 +1,204 @@
+/* The ladder of ranks and titles: what there is to earn, and where the player stands. */
+
+.ranks {
+  --r-ink: #1f2a44;
+  --r-ink-soft: #5b6780;
+  --r-paper: #ffffff;
+  --r-hairline: #ece7e6;
+  --r-hairline-strong: #d5cfcd;
+  --r-accent: #ea4b16;
+  --r-accent-strong: #c93c0b;
+  --r-accent-ink: #b8380a;
+  --r-accent-soft: #ffece4;
+  --r-mint: #1f7a28;
+  --r-shadow: 0 1px 2px rgba(31, 42, 68, 0.05), 0 12px 28px rgba(31, 42, 68, 0.08);
+
+  width: min(100%, 30rem);
+  margin: 0 auto;
+  padding-bottom: 3rem;
+  display: grid;
+  justify-items: center;
+  color: var(--r-ink);
+}
+
+.ranks::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background: #fff9f6;
+  content: "";
+  pointer-events: none;
+}
+
+.ranks > * {
+  position: relative;
+  z-index: 1;
+}
+
+.back {
+  min-height: 2.75rem;
+  margin: clamp(0.5rem, 3vw, 1.25rem) auto 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--r-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.mascot {
+  width: clamp(6rem, 26vw, 8.5rem);
+}
+
+.title {
+  margin: 0.4rem 0 0;
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-align: center;
+}
+
+.lead {
+  max-width: 32ch;
+  margin: 0.45rem 0 0;
+  color: var(--r-ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.4;
+  text-align: center;
+  text-wrap: balance;
+}
+
+/* The player's own figure, and the only one on the page. */
+.standing {
+  margin: 0.85rem 0 0;
+  padding: 0.35rem 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  background: var(--r-accent-soft);
+  color: var(--r-accent-ink);
+  font-size: 0.92rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.group {
+  width: 100%;
+  margin-top: 1.25rem;
+  padding: 0.95rem 1rem 1.05rem;
+  border: 1px solid var(--r-hairline);
+  border-radius: 1.25rem;
+  background: var(--r-paper);
+  box-shadow: var(--r-shadow);
+}
+
+.groupTitle {
+  margin: 0;
+  color: var(--r-ink-soft);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.groupLead {
+  margin: 0.35rem 0 0;
+  color: var(--r-ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.list {
+  margin: 0.7rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+  list-style: none;
+}
+
+.row {
+  padding: 0.55rem 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border-radius: 0.9rem;
+}
+
+/* Where the player is now, marked by a ring and a word rather than colour alone. */
+.rowNow {
+  background: var(--r-accent-soft);
+  box-shadow: inset 0 0 0 2px var(--r-accent);
+}
+
+.medal {
+  width: 2.4rem;
+  height: 2.4rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.bronze {
+  background: #f6e6d8;
+  color: #96551f;
+}
+
+.silver {
+  background: #eceff3;
+  color: #5b6780;
+}
+
+.gold {
+  background: #fdf1cf;
+  color: #a9700d;
+}
+
+.starCount {
+  width: 2.4rem;
+  height: 2.4rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f4f1ef;
+  color: var(--r-ink-soft);
+  font-size: 0.92rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.rowText {
+  flex: 1 1 auto;
+  display: grid;
+  gap: 0.05rem;
+}
+
+.rowName {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.rowDetail {
+  color: var(--r-ink-soft);
+  font-size: 0.79rem;
+}
+
+.now {
+  flex: none;
+  padding: 0.16rem 0.6rem;
+  border-radius: 999px;
+  background: var(--r-accent-strong);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.done {
+  flex: none;
+  color: var(--r-mint);
+}
