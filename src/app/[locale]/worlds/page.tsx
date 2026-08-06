@@ -1,6 +1,7 @@
 import { setRequestLocale } from "next-intl/server";
 import { MissionMap } from "@/components/MissionMap";
 import { PageContainer } from "@/components/PageContainer";
+import { ProfileRouteGuard } from "@/components/ProfileRouteGuard";
 
 type WorldsPageProps = { params: Promise<{ locale: string }> };
 
@@ -11,7 +12,9 @@ export default async function WorldsPage({ params }: WorldsPageProps) {
   return (
     <main id="main-content">
       <PageContainer className="mission-map-page">
-        <MissionMap />
+        <ProfileRouteGuard>
+          <MissionMap />
+        </ProfileRouteGuard>
       </PageContainer>
     </main>
   );

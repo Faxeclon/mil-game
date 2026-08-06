@@ -17,6 +17,21 @@
   color: var(--a-ink);
 }
 
+/* Same warm full-bleed tint as the rest of the game, painted from the module. */
+.guardian::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background: #fff9f6;
+  content: "";
+  pointer-events: none;
+}
+
+.guardian > * {
+  position: relative;
+  z-index: 1;
+}
+
 .guardian {
   width: min(100%, 32rem);
   margin: 0 auto;

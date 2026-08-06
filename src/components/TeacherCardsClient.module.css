@@ -3,6 +3,21 @@
  * on white, thick strokes, no colour and no shading that a photocopier would smear.
  */
 
+/* Same warm full-bleed tint as the rest of the game, painted from the module. */
+.cards::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background: #fff9f6;
+  content: "";
+  pointer-events: none;
+}
+
+.cards > * {
+  position: relative;
+  z-index: 1;
+}
+
 .cards {
   --c-ink: #1f2a44;
   --c-ink-soft: #5b6780;
@@ -260,7 +275,8 @@
 }
 
 @media print {
-  .noPrint {
+  .noPrint,
+  .cards::before {
     display: none;
   }
 

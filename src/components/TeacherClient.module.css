@@ -1,5 +1,20 @@
 /* A session plan a teacher can read on a phone, and print for the classroom wall. */
 
+/* Same warm full-bleed tint as the rest of the game, painted from the module. */
+.teacher::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background: #fff9f6;
+  content: "";
+  pointer-events: none;
+}
+
+.teacher > * {
+  position: relative;
+  z-index: 1;
+}
+
 .teacher {
   --k-ink: #1f2a44;
   --k-ink-soft: #5b6780;
@@ -232,7 +247,8 @@
 
 /* On paper the plan is what matters; the navigation is not. */
 @media print {
-  .noPrint {
+  .noPrint,
+  .teacher::before {
     display: none;
   }
 
