@@ -22,6 +22,30 @@ export async function registerServiceWorker(): Promise<boolean> {
 }
 
 /**
+ * Removes every worker registered for this origin, and the caches they were serving.
+ *
+ * A worker outlives the build that installed it: one registered by a production run
+ * keeps answering requests on the same host afterwards, which in development means
+ * yesterday's chunks served against today's code. Clearing it is how that machine
+ * recovers without anybody having to know what a service worker is.
+ */
+export async function unregisterServiceWorkers(): Promise<number> {
+  if (!canRegisterServiceWorker()) return 0;
+  try {
+    const registrations = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(registrations.map((registration) => registration.unregister()));
+
+    if (typeof caches !== "undefined") {
+      const keys = await caches.keys();
+      await Promise.all(keys.map((key) => caches.delete(key)));
+    }
+    return registrations.length;
+  } catch {
+    return 0;
+  }
+}
+
+/**
  * Asks the browser not to evict what is stored here.
  *
  * The 5 MB limit is not the danger: the saved progress weighs about two kilobytes. The

@@ -3,7 +3,8 @@ import {
   canRegisterServiceWorker,
   registerServiceWorker,
   requestPersistentStorage,
-  SERVICE_WORKER_URL
+  SERVICE_WORKER_URL,
+  unregisterServiceWorkers
 } from "./registerServiceWorker";
 
 afterEach(() => {
@@ -82,5 +83,34 @@ describe("asking the browser to keep the progress", () => {
     });
 
     await expect(requestPersistentStorage()).resolves.toBe(false);
+  });
+});
+
+describe("clearing a worker left behind by another build", () => {
+  it("unregisters everything it finds and drops the caches with it", async () => {
+    const unregister = vi.fn().mockResolvedValue(true);
+    const remove = vi.fn().mockResolvedValue(true);
+    vi.stubGlobal("navigator", {
+      serviceWorker: { getRegistrations: () => Promise.resolve([{ unregister }, { unregister }]) }
+    });
+    vi.stubGlobal("caches", { keys: () => Promise.resolve(["kikiria-v1"]), delete: remove });
+
+    await expect(unregisterServiceWorkers()).resolves.toBe(2);
+    expect(unregister).toHaveBeenCalledTimes(2);
+    expect(remove).toHaveBeenCalledWith("kikiria-v1");
+  });
+
+  it("reports nothing to clear on a browser without service workers", async () => {
+    vi.stubGlobal("navigator", {});
+
+    await expect(unregisterServiceWorkers()).resolves.toBe(0);
+  });
+
+  it("never throws when the browser refuses", async () => {
+    vi.stubGlobal("navigator", {
+      serviceWorker: { getRegistrations: () => Promise.reject(new Error("nope")) }
+    });
+
+    await expect(unregisterServiceWorkers()).resolves.toBe(0);
   });
 });
