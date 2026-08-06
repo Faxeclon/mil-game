@@ -24,7 +24,6 @@ export function TeacherJoinClient() {
   const { hydrated, account } = useTeacherAccount();
   const [email, setEmail] = useState("");
   const [invalid, setInvalid] = useState(false);
-  const [leaving, setLeaving] = useState(false);
 
   if (!hydrated) {
     return <p className={styles.loading}>{t("lead")}</p>;
@@ -45,29 +44,13 @@ export function TeacherJoinClient() {
         <p className={styles.lead}>{t("registeredAs", { email: account.email })}</p>
         {account.syncPending && <p className={styles.notSent}>{t("notSent")}</p>}
 
-        {leaving ? (
-          <div className={styles.confirmRow}>
-            <p className={styles.confirmText}>{t("signOutConfirm")}</p>
-            <button
-              className={styles.primary}
-              type="button"
-              onClick={() => {
-                signOutTeacher();
-                setLeaving(false);
-              }}
-            >
-              {t("signOutYes")}
-            </button>
-            <button className={styles.secondary} type="button" onClick={() => setLeaving(false)}>
-              {t("signOutNo")}
-            </button>
-          </div>
-        ) : (
-          <button className={styles.secondary} type="button" onClick={() => setLeaving(true)}>
-            <LogOut aria-hidden="true" size={16} />
-            {t("signOut")}
-          </button>
-        )}
+        {/* No confirmation: leaving costs nothing. The card sets stay where they are,
+            and registering again is one tap away. */}
+        <button className={styles.secondary} type="button" onClick={signOutTeacher}>
+          <LogOut aria-hidden="true" size={16} />
+          {t("signOut")}
+        </button>
+        <p className={styles.fieldHint}>{t("signOutKeepsCards")}</p>
       </div>
     );
   }

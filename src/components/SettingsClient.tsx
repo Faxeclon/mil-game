@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useProgress } from "@/features/progress/ProgressProvider";
-import { useTeacherAccount } from "@/features/teacher/teacherAccountStore";
+import { signOutTeacher, useTeacherAccount } from "@/features/teacher/teacherAccountStore";
 import { Link } from "@/i18n/navigation";
 import styles from "./SettingsClient.module.css";
 
@@ -84,9 +84,9 @@ export function SettingsClient() {
               <span className={styles.rowName}>{tTeacherAccount("navLabel")}</span>
               <span className={styles.rowDetail}>{teacherAccount.email}</span>
             </span>
-            <Link className={styles.resetStart} href="/teacher/join">
+            <button className={styles.resetStart} type="button" onClick={signOutTeacher}>
               {tTeacherAccount("signOut")}
-            </Link>
+            </button>
           </div>
         )}
 
