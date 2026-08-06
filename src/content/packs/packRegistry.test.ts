@@ -96,6 +96,21 @@ describe("every mission plays its own rounds", () => {
     }
   });
 
+  it("offers the uncertain answer only where a round actually needs it", () => {
+    for (const [packId, pack] of Object.entries(singlePacks)) {
+      const usesUnknown = pack.rounds.some((round) => round.answer === "unknown");
+
+      // A third button that can never be right would teach that doubting is a mistake.
+      expect(usesUnknown, `${packId}`).toBe(pack.allowsUncertain);
+    }
+  });
+
+  it("has at least one mission where looking is not enough to know", () => {
+    const uncertain = Object.values(singlePacks).filter((pack) => pack.allowsUncertain);
+
+    expect(uncertain.length).toBeGreaterThan(0);
+  });
+
   it("keeps a single-image answer equal to the image's own origin", () => {
     for (const pack of Object.values(singlePacks)) {
       for (const round of pack.rounds) {

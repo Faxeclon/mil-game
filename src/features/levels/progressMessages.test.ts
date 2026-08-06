@@ -76,9 +76,11 @@ describe("progress wording in both languages", () => {
 
       expect(t("lockedIsland")).not.toBe(t("comingSoon"));
       expect(t("lockedIsland").trim().length).toBeGreaterThan(0);
-      // "source" has no playable missions, so the map must say coming soon, not locked.
-      expect(getIslandProgress(initialProgressState, "source").isEmpty).toBe(true);
-      expect(getIslandProgress(initialProgressState, "training").isEmpty).toBe(false);
+      // Every authored island has content now, so all of them are shut by progress
+      // rather than by being unbuilt; the two words must still read differently.
+      for (const island of islandOrder) {
+        expect(getIslandProgress(initialProgressState, island).isEmpty, island).toBe(false);
+      }
     }
   });
 

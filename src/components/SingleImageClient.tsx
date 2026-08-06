@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useReducer, useRef, useState } from "react";
-import { Camera, Check, ChevronLeft, Sparkles, Target } from "lucide-react";
+import { Camera, Check, ChevronLeft, HelpCircle, Sparkles, Target } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
@@ -115,9 +115,15 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
   const isFinalRound = round.order === totalRounds;
   const feedbackBlocks = getFeedbackBlocks(round);
 
+  /*
+   * The third option appears only where the content was built for it. Offering it in a
+   * mission where it can never be right would teach a child that doubting is a mistake,
+   * which is the exact opposite of the lesson.
+   */
   const answers = [
     { id: "ai-generated", labelKey: "answerAi", Icon: Sparkles },
-    { id: "camera-captured", labelKey: "answerCamera", Icon: Camera }
+    { id: "camera-captured", labelKey: "answerCamera", Icon: Camera },
+    ...(pack.allowsUncertain ? [{ id: "unknown", labelKey: "answerUnknown", Icon: HelpCircle } as const] : [])
   ] as const;
 
   return (
@@ -153,10 +159,18 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
         {state.answerSubmitted ? (
           <p className={isCorrect ? styles.verdictRight : styles.verdictWrong}>
             {isCorrect ? <Check aria-hidden="true" size={15} strokeWidth={3} /> : <Target aria-hidden="true" size={15} />}
-            {isCorrect ? t("singleCorrect") : t("singleWrong")}
+            {/* Getting an unknowable image right deserves its own praise: saying "you
+                cannot tell" is the hardest answer to give, not a lucky guess. */}
+            {round.answer === "unknown"
+              ? isCorrect
+                ? t("uncertainCorrect")
+                : t("uncertainMissed")
+              : isCorrect
+                ? t("singleCorrect")
+                : t("singleWrong")}
           </p>
         ) : (
-          <p className={styles.hint}>{t("singleHint")}</p>
+          <p className={styles.hint}>{pack.allowsUncertain ? t("uncertainHint") : t("singleHint")}</p>
         )}
 
         <div aria-labelledby="single-question" className={styles.answers} role="group">

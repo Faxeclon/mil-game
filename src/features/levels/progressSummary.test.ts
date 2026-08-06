@@ -30,7 +30,8 @@ describe("the playable path", () => {
       "animals-2",
       "animals-3",
       "sports-1",
-      "sports-2"
+      "sports-2",
+      "creators-1"
     ]);
   });
 });
@@ -63,7 +64,9 @@ describe("progress of an island", () => {
   });
 
   it("treats an island with nothing playable as empty instead of dividing by zero", () => {
-    const summary = getIslandProgress(initialProgressState, "source");
+    // Every authored island has content now, so the guarantee is checked against an
+    // island key that does not exist: the same code path, with nothing behind it.
+    const summary = getIslandProgress(initialProgressState, "ghost-island" as never);
 
     expect(summary).toMatchObject({ done: 0, total: 0, percent: 0, isEmpty: true, isComplete: false });
     expect(Number.isFinite(summary.percent)).toBe(true);
@@ -84,11 +87,11 @@ describe("progress of a category and of the whole game", () => {
   });
 
   it("summarises every playable mission of the game", () => {
-    expect(getGlobalProgress(initialProgressState)).toMatchObject({ done: 0, total: 7, percent: 0 });
+    expect(getGlobalProgress(initialProgressState)).toMatchObject({ done: 0, total: 8, percent: 0 });
     expect(getGlobalProgress(withCompleted("basics-1", "basics-2"))).toMatchObject({
       done: 2,
-      total: 7,
-      percent: 29
+      total: 8,
+      percent: 25
     });
   });
 
@@ -100,7 +103,8 @@ describe("progress of a category and of the whole game", () => {
       "animals-2",
       "animals-3",
       "sports-1",
-      "sports-2"
+      "sports-2",
+      "creators-1"
     );
 
     expect(getGlobalProgress(everything)).toMatchObject({ percent: 100, isComplete: true });

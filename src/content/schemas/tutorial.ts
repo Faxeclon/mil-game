@@ -65,8 +65,15 @@ export type TutorialPack = {
   rounds: [TutorialRound, TutorialRound, TutorialRound];
 };
 
-/** The two answers a single image can be given; "unknown" belongs to a later mode. */
-export const singleAnswers = ["ai-generated", "camera-captured"] as const;
+/**
+ * What a player can answer about one image.
+ *
+ * "unknown" is not a way out: for some images looking really is not enough, and saying
+ * so is the correct answer. Teaching a child that "I cannot tell by looking" is a valid
+ * conclusion is the opposite of what the internet rewards, and it is the most valuable
+ * thing this game has to offer.
+ */
+export const singleAnswers = ["ai-generated", "camera-captured", "unknown"] as const;
 
 export type SingleAnswer = (typeof singleAnswers)[number];
 
@@ -89,6 +96,11 @@ export type SingleRound = {
 
 export type SinglePack = {
   id: string;
+  /**
+   * Whether "I cannot tell by looking" is on offer. It is shown only in packs built for
+   * it, so a child is never given a third button that can never be right.
+   */
+  allowsUncertain: boolean;
   rounds: [SingleRound, SingleRound, SingleRound];
 };
 

@@ -5,6 +5,7 @@ import { validateSinglePack } from "@/content/validators/validateSinglePack";
 import { validateTutorialPack } from "@/content/validators/validateTutorialPack";
 import animalsCompareJson from "./animals-compare.json";
 import animalsSingleJson from "./animals-single.json";
+import creatorsUncertainJson from "./creators-uncertain.json";
 import sportsSingleJson from "./sports-single.json";
 import animalsTimedJson from "./animals-timed.json";
 import cityBasicsTimedJson from "./city-basics-timed.json";
@@ -54,7 +55,8 @@ export function getContentPack(packId: string | undefined): TutorialPack | undef
  */
 export const singlePacks: Readonly<Record<string, SinglePack>> = {
   "animals-single-v1": validateSinglePack(animalsSingleJson, hasTutorialLocalizationKey),
-  "sports-single-v1": validateSinglePack(sportsSingleJson, hasTutorialLocalizationKey)
+  "sports-single-v1": validateSinglePack(sportsSingleJson, hasTutorialLocalizationKey),
+  "creators-uncertain-v1": validateSinglePack(creatorsUncertainJson, hasTutorialLocalizationKey)
 };
 
 export function getSinglePack(packId: string | undefined): SinglePack | undefined {

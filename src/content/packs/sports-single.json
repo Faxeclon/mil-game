@@ -1,5 +1,6 @@
 {
   "id": "sports-single-v1",
+  "allowsUncertain": false,
   "rounds": [
     {
       "id": "sports-single-round-1",

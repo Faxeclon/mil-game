@@ -72,7 +72,17 @@ const levelBlueprintEntries = [
   },
   { id: "animals-3", category: "animals", order: 3, mode: "single", packId: "animals-single-v1" },
   { id: "sports-1", category: "sports", order: 1, mode: "compare", packId: "sports-compare-v1" },
-  { id: "sports-2", category: "sports", order: 2, mode: "single", packId: "sports-single-v1" }
+  { id: "sports-2", category: "sports", order: 2, mode: "single", packId: "sports-single-v1" },
+
+  // Island 3 - Checking the source: the image stops being enough, and admitting that is
+  // the answer. This is where "I cannot tell by looking" becomes a correct thing to say.
+  {
+    id: "creators-1",
+    category: "creators",
+    order: 1,
+    mode: "single-uncertain",
+    packId: "creators-uncertain-v1"
+  }
 ] as const satisfies readonly MissionBlueprint[];
 
 /** A level identifier authored in the current level catalog. */

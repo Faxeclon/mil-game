@@ -38,7 +38,7 @@ function attempt(index: number): LevelAttempt {
 
 describe("islands", () => {
   it("only treats an island with playable missions as playable", () => {
-    expect(playableIslandOrder).toEqual(["training", "difference"]);
+    expect(playableIslandOrder).toEqual(["training", "difference", "source"]);
   });
 
   it("opens the first island and closes the rest", () => {
@@ -118,15 +118,24 @@ describe("results continuation", () => {
   });
 
   it("falls back to the completed level's island when no later playable level is unlocked", () => {
-    const allPlayable = play("basics-1", "basics-2", "animals-1", "animals-2", "animals-3", "sports-1", "sports-2");
-    expect(getContinueDestination(allPlayable, "sports-2")).toEqual({ kind: "island", islandKey: "difference" });
+    const allPlayable = play(
+      "basics-1",
+      "basics-2",
+      "animals-1",
+      "animals-2",
+      "animals-3",
+      "sports-1",
+      "sports-2",
+      "creators-1"
+    );
+    expect(getContinueDestination(allPlayable, "creators-1")).toEqual({ kind: "island", islandKey: "source" });
   });
 });
 
 describe("counters", () => {
   it("counts finished missions against the playable total", () => {
     expect(countCompletedMissions(initialProgressState)).toBe(0);
-    expect(countPlayableMissions()).toBe(7);
+    expect(countPlayableMissions()).toBe(8);
     expect(countCompletedMissions(play("basics-1", "animals-1"))).toBe(2);
   });
 

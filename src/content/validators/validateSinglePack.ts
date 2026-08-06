@@ -73,6 +73,7 @@ function validateRound(
 export function validateSinglePack(pack: unknown, hasLocalizationKey: LocalizationKeyChecker): SinglePack {
   assert(isRecord(pack), "pack must be an object.");
   assert(typeof pack.id === "string" && pack.id.length > 0, "pack.id is required.");
+  assert(typeof pack.allowsUncertain === "boolean", "pack.allowsUncertain must be specified.");
   assert(Array.isArray(pack.rounds) && pack.rounds.length === 3, "pack.rounds must contain exactly three rounds.");
 
   const roundIds = new Set<string>();
@@ -80,9 +81,20 @@ export function validateSinglePack(pack: unknown, hasLocalizationKey: Localizati
     validateRound(pack.rounds[index], index, roundIds, hasLocalizationKey);
   }
 
-  // Both answers must appear, or the mission can be won by always tapping the same button.
+  // More than one answer must appear, or the mission is won by always tapping the same button.
   const answers = new Set((pack.rounds as SingleRound[]).map((round) => round.answer));
   assert(answers.size > 1, "pack.rounds must not all share the same answer.");
+
+  /*
+   * The third button and the rounds that need it travel together. Offering "I cannot
+   * tell" where it is never right teaches a child that doubting is always wrong; asking
+   * for it where the button is hidden makes the round unanswerable.
+   */
+  if (pack.allowsUncertain) {
+    assert(answers.has("unknown"), "a pack offering the uncertain answer must use it at least once.");
+  } else {
+    assert(!answers.has("unknown"), "a round cannot answer unknown unless the pack offers it.");
+  }
 
   return pack as SinglePack;
 }
