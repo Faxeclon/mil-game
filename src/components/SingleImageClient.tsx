@@ -43,6 +43,7 @@ function monotonicNow(): number {
  */
 export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryMeta }: SingleImageClientProps) {
   const t = useTranslations("tutorial");
+  const tEducation = useTranslations("education");
   const router = useRouter();
   const { completeLevel } = useProgress();
   const [state, dispatch] = useReducer(tutorialReducer, createInitialTutorialState(false));
@@ -214,7 +215,15 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
               {feedbackBlocks.map((block) => (
                 <p className={styles.clue} key={block.labelKey}>
                   <span className={styles.clueLabel}>{t(block.labelKey)}</span>
-                  <span className={styles.clueText}>{t(block.textKey)}</span>
+                  <span className={styles.clueText}>
+                    {block.labelKey === "look"
+                      ? tEducation("visualClue")
+                      : block.labelKey === "ask"
+                        ? tEducation("sourceQuestion")
+                        : block.labelKey === "check"
+                          ? tEducation("evidenceCheck")
+                          : tEducation("remember")}
+                  </span>
                 </p>
               ))}
             </div>

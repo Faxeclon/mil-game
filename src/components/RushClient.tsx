@@ -28,6 +28,7 @@ import styles from "./RushClient.module.css";
 export function RushClient({ island, pool }: { island: IslandKey; pool: readonly RushItem[] }) {
   const t = useTranslations("rush");
   const tTutorial = useTranslations("tutorial");
+  const tEducation = useTranslations("education");
   const [state, dispatch] = useReducer(rushReducer, initialRushState);
   const [deck, setDeck] = useState<RushItem[]>([]);
   const [secondsLeft, setSecondsLeft] = useState(RUSH_SECONDS);
@@ -86,7 +87,7 @@ export function RushClient({ island, pool }: { island: IslandKey; pool: readonly
         <p className={styles.bigScore}>{t("caught", { count: state.correct })}</p>
         <p className={styles.lead}>{t("accuracy", { percent: accuracy })}</p>
         {!state.ranOut && <p className={styles.warning}>{t("ranOutOfImages")}</p>}
-        <p className={styles.warning}>{t("closing")}</p>
+        <p className={styles.warning}>{tEducation("remember")}</p>
         <button className={styles.primary} type="button" onClick={beginRun}>
           {t("again")}
         </button>

@@ -30,6 +30,7 @@ const TURN_CHOICES = [3, 5] as const;
 export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
   const t = useTranslations("versus");
   const tTutorial = useTranslations("tutorial");
+  const tEducation = useTranslations("education");
   const { profiles } = useProgress();
   const [state, dispatch] = useReducer(versusReducer, initialVersusState);
   const [turnsPerPlayer, setTurnsPerPlayer] = useState<number>(TURN_CHOICES[0]);
@@ -80,7 +81,7 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
           </li>
           <li className={styles.rule}>
             <Sparkles aria-hidden="true" size={16} />
-            {t("ruleTalk")}
+            {tEducation("sourceQuestion")}
           </li>
         </ol>
 
