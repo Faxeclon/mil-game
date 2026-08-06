@@ -55,23 +55,23 @@ const levelBlueprintEntries = [
     order: 2,
     mode: "compare-timed",
     secondsPerRound: 15,
-    packId: "introductory-tutorial-v1"
+    packId: "city-basics-timed-v1"
   },
 
   // Island 2 - Telling images apart: the same ladder, once per theme.
   // The single-image missions are declared without a pack: they show as coming soon
   // until their content exists, which keeps the roadmap visible without faking it.
-  { id: "animals-1", category: "animals", order: 1, mode: "compare", packId: "introductory-tutorial-v1" },
+  { id: "animals-1", category: "animals", order: 1, mode: "compare", packId: "animals-compare-v1" },
   {
     id: "animals-2",
     category: "animals",
     order: 2,
     mode: "compare-timed",
     secondsPerRound: 12,
-    packId: "introductory-tutorial-v1"
+    packId: "animals-timed-v1"
   },
   { id: "animals-3", category: "animals", order: 3, mode: "single" },
-  { id: "sports-1", category: "sports", order: 1, mode: "compare", packId: "introductory-tutorial-v1" },
+  { id: "sports-1", category: "sports", order: 1, mode: "compare", packId: "sports-compare-v1" },
   { id: "sports-2", category: "sports", order: 2, mode: "single" }
 ] as const satisfies readonly MissionBlueprint[];
 

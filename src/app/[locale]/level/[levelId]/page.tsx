@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { MissionRouteGuard } from "@/components/MissionRouteGuard";
 import { PageContainer } from "@/components/PageContainer";
 import { TutorialClient } from "@/components/TutorialClient";
-import { introductoryTutorialPack } from "@/content/packs/introductoryTutorial";
+import { getContentPack } from "@/content/packs/packRegistry";
 import {
   getLevelDifficulty,
   getMissionById,
@@ -19,7 +19,7 @@ const FIRST_MISSION_ID = "basics-1";
 
 export function generateStaticParams() {
   return missionBlueprint
-    .filter((mission) => Boolean(mission.packId))
+    .filter((mission) => Boolean(getContentPack(mission.packId)))
     .map((mission) => ({ levelId: mission.id }));
 }
 
@@ -32,7 +32,10 @@ export default async function LevelPage({ params }: LevelPageProps) {
   setRequestLocale(locale);
 
   const mission = getMissionById(levelId);
-  if (!mission?.packId) notFound();
+  // A mission is playable only when its declared pack actually exists, so a typo in the
+  // blueprint shows up as a missing route rather than as somebody else's rounds.
+  const pack = getContentPack(mission?.packId);
+  if (!mission || !pack) notFound();
 
   const t = await getTranslations("islands");
   const chipLabel = `${t(`categories.${mission.category}.title`)} · ${t("missionNumber", { number: mission.order })}`;
@@ -53,7 +56,7 @@ export default async function LevelPage({ params }: LevelPageProps) {
             entryMeta={entryMeta}
             entryTitle={entryTitle}
             levelId={mission.id as LevelId}
-            pack={introductoryTutorialPack}
+            pack={pack}
             secondsPerRound={mission.secondsPerRound}
             showBriefing={mission.id === FIRST_MISSION_ID}
           />
