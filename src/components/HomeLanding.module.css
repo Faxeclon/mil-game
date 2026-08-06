@@ -1185,8 +1185,11 @@
   }
 }
 
-/* Roqui greeting the teacher: same guide, a different grown-up. */
-.teacherMascot {
-  width: clamp(5.5rem, 24vw, 8rem);
-  margin: 0 auto;
+/* What Roqui says to the teacher, under the greeting inside the same bubble. */
+.teacherWelcome {
+  margin: 0.35rem 0 0;
+  color: var(--h-ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.4;
+  text-wrap: balance;
 }

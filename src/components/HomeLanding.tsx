@@ -485,13 +485,18 @@ export function HomeLanding() {
     return (
       <div className={styles.landing}>
         <section aria-labelledby="teacher-home-title" className={styles.hub}>
-          {/* Roqui greets the teacher too: the guide of the game welcoming the adult who
-              is about to run it. The email is a setting, and lives in the settings. */}
-          <MascotSlot alt={t("mascotAlt")} className={styles.teacherMascot} mood="welcoming" priority />
-          <h1 className={styles.hubGreeting} id="teacher-home-title">
-            {tTeacherAccount("homeGreeting")}
-          </h1>
-          <p className={styles.hubTitleBadge}>{tTeacherAccount("homeWelcome")}</p>
+          {/* Roqui greets the teacher the same way he greets a child: standing beside a
+              speech bubble. Same guide, a different grown-up. The email is a setting and
+              lives in the settings. */}
+          <div className={styles.mascotRow}>
+            <div className={styles.bubble}>
+              <h1 className={styles.line} id="teacher-home-title">
+                {tTeacherAccount("homeGreeting")}
+              </h1>
+              <p className={styles.teacherWelcome}>{tTeacherAccount("homeWelcome")}</p>
+            </div>
+            <MascotSlot alt={t("mascotAlt")} className={styles.mascot} mood="welcoming" priority />
+          </div>
 
           {/* The class this device is set up for, or the one thing missing to have one. */}
           <div className={styles.hubNext}>
