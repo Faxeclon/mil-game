@@ -24,6 +24,7 @@ import { useProgress } from "@/features/progress/ProgressProvider";
 import { createAttemptMetadata } from "@/features/progress/attemptMetadata";
 import type { LevelAttempt } from "@/features/progress/progressState";
 import { getResultsAttemptPath } from "@/features/results/resultNavigation";
+import { calculateLevelScore } from "@/features/scoring/levelScore";
 import { createInitialTutorialState, tutorialReducer } from "@/features/game/tutorialState";
 import {
   getChoicePresentation,
@@ -91,6 +92,8 @@ export function TutorialClient({
   const isFinished = state.status === "completed";
   const correctRounds = state.status === "completed" ? state.correctRounds : 0;
   const totalRounds = pack.rounds.length;
+  // Scored from the recorded rounds, so the number saved is the one that was played.
+  const attemptScore = state.status === "completed" ? calculateLevelScore(state.roundOutcomes) : null;
 
   const isPlaying = state.status === "playing";
   const roundIndex = state.status === "playing" ? state.roundIndex : -1;
@@ -184,6 +187,7 @@ export function TutorialClient({
       correctRounds,
       totalRounds,
       elapsedMs: responseTimer.getElapsedMs(),
+      ...(attemptScore === null ? {} : { score: attemptScore }),
       ...metadata
     };
     completionAttemptRef.current = attempt;
@@ -191,7 +195,7 @@ export function TutorialClient({
       ...attempt
     });
     router.replace(getResultsAttemptPath(attempt.attemptId));
-  }, [completeLevel, correctRounds, isFinished, levelId, responseTimer, router, totalRounds]);
+  }, [attemptScore, completeLevel, correctRounds, isFinished, levelId, responseTimer, router, totalRounds]);
 
   if (state.status === "intro" && !showBriefing) {
     /*
@@ -444,8 +448,19 @@ export function TutorialClient({
                 type="button"
                 onClick={() => {
                   if (!roundClosure.tryClose(round.id)) return;
-                  responseTimer.finishRound(round.id, monotonicNow());
-                  dispatch({ type: "submit", correct: selectedIsCorrect });
+                  const answeredAt = monotonicNow();
+                  responseTimer.finishRound(round.id, answeredAt);
+                  // Only a timed round has a clock to report; an untimed one stays silent
+                  // so the score treats it as accuracy alone rather than as a slow answer.
+                  const deadline =
+                    roundDeadlineRef.current?.roundId === round.id ? roundDeadlineRef.current : null;
+                  dispatch({
+                    type: "submit",
+                    correct: selectedIsCorrect,
+                    ...(deadline
+                      ? { remainingMs: getRemainingMs(deadline, answeredAt), durationMs: deadline.durationMs }
+                      : {})
+                  });
                 }}
               >
                 {t("submit")}

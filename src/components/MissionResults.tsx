@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { Bird, Cat, Feather, Turtle, Wind, Rabbit, type LucideIcon } from "lucide-react";
+import { Bird, Cat, Feather, Star, Trophy, Turtle, Wind, Rabbit, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
@@ -15,6 +15,7 @@ import {
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { getContinuePath, getReplayPath } from "@/features/results/resultNavigation";
 import { formatElapsedTime, getFreshResult, getRequestedAttempt } from "@/features/results/resultPresentation";
+import { getScoreSummary } from "@/features/results/scoreSummary";
 import { Link } from "@/i18n/navigation";
 import styles from "./MissionResults.module.css";
 
@@ -79,6 +80,7 @@ export function MissionResults() {
         number: mission.order
       })
     : result.levelId;
+  const summary = getScoreSummary(result, progressState.bestResultsByLevelId);
   const elapsedTime = formatElapsedTime(result.elapsedMs, {
     second: t("second"),
     seconds: t("seconds"),
@@ -110,6 +112,56 @@ export function MissionResults() {
       </h1>
       <p className={styles.levelIdentity}>{levelIdentity}</p>
       <p className={styles.text}>{t("description")}</p>
+
+      {/* The score of this attempt, and the mission record it did or did not beat. Nothing
+          here announces itself: the heading already took focus, so a reload stays quiet. */}
+      <div className={styles.scoreCard}>
+        {summary.isNewRecord && (
+          <p className={styles.recordBadge}>
+            <Trophy aria-hidden="true" size={15} />
+            {t("newRecord")}
+          </p>
+        )}
+
+        <p className={styles.scoreLabel}>{t("scoreLabel")}</p>
+
+        {summary.score === null ? (
+          <p className={styles.scoreMissing}>{t("scoreUnavailable")}</p>
+        ) : (
+          <>
+            <span
+              aria-label={t("starsAria", { stars: summary.stars, total: 3 })}
+              className={styles.stars}
+              role="img"
+            >
+              {[1, 2, 3].map((position) => (
+                <Star
+                  aria-hidden="true"
+                  className={position <= summary.stars ? styles.starEarned : styles.starEmpty}
+                  fill={position <= summary.stars ? "currentColor" : "none"}
+                  key={position}
+                  size={28}
+                  strokeWidth={2}
+                />
+              ))}
+            </span>
+            <p className={styles.scoreValue}>{t("scorePoints", { score: summary.score })}</p>
+          </>
+        )}
+
+        {summary.isNewRecord && <p className={styles.recordHint}>{t("newRecordHint")}</p>}
+
+        {summary.showsBest && summary.best !== null && (
+          <p className={styles.bestScore}>
+            <span className={styles.bestScoreLabel}>{t("bestScoreLabel")}</span>
+            <span className={styles.bestScoreValue}>{t("scorePoints", { score: summary.best })}</span>
+          </p>
+        )}
+
+        {summary.score === null && summary.best === null && (
+          <p className={styles.bestScoreLabel}>{t("noBestScore")}</p>
+        )}
+      </div>
 
       <p className={styles.correctRounds}>{t("correctRounds", { correct: result.correctRounds, total: result.totalRounds })}</p>
       <p className={styles.elapsedTime}>{t("elapsed", { time: elapsedTime })}</p>
