@@ -8,8 +8,7 @@ import { initialStreak, isPlayedOn, parseStreak, recordPlayedDay, type Streak } 
 import {
   grantGuardianConsent,
   parseGuardianConsent,
-  type GuardianConsent,
-  type GuardianRole
+  type GuardianConsent
 } from "@/features/guardian/guardianConsent";
 
 export const PROGRESS_VERSION = 1;
@@ -278,8 +277,8 @@ export function resetProgressState(): ProgressState {
  * device. What it changes is what may leave the device later, which is why it is stored
  * next to the progress rather than gating any of it.
  */
-export function authorizeGuardian(state: ProgressState, role: GuardianRole, authorizedOn: string): ProgressState {
-  const guardian = grantGuardianConsent(role, authorizedOn);
+export function authorizeGuardian(state: ProgressState, authorizedOn: string): ProgressState {
+  const guardian = grantGuardianConsent(authorizedOn);
   if (!guardian) return state;
   return { ...state, guardian };
 }

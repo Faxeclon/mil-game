@@ -9,7 +9,6 @@ import {
   updateActiveProgress,
   type ProfilesDocument
 } from "@/features/profiles/localProfiles";
-import type { GuardianRole } from "@/features/guardian/guardianConsent";
 import {
   authorizeGuardian,
   completeLevel,
@@ -112,8 +111,8 @@ export function clearEverythingInStore(): void {
   publish(fromDocument(emptyProfilesDocument));
 }
 
-export function authorizeGuardianInStore(role: GuardianRole, authorizedOn: string): void {
-  applyToActiveProgress((state) => authorizeGuardian(state, role, authorizedOn));
+export function authorizeGuardianInStore(authorizedOn: string): void {
+  applyToActiveProgress((state) => authorizeGuardian(state, authorizedOn));
 }
 
 export function withdrawGuardianInStore(): void {

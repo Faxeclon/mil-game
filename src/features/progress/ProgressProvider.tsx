@@ -8,7 +8,7 @@ import {
   type LevelResult,
   type ProgressState
 } from "./progressState";
-import type { GuardianConsent, GuardianRole } from "@/features/guardian/guardianConsent";
+import type { GuardianConsent } from "@/features/guardian/guardianConsent";
 import type { ProfilesDocument } from "@/features/profiles/localProfiles";
 import {
   addProfileInStore,
@@ -32,7 +32,7 @@ export type ProgressApi = {
   profiles: ProfilesDocument;
   /** The adult who authorised the active player, or null while they play as a guest. */
   guardian: GuardianConsent | null;
-  authorizeGuardian: (role: GuardianRole, authorizedOn: string) => void;
+  authorizeGuardian: (authorizedOn: string) => void;
   withdrawGuardian: () => void;
   addProfile: () => void;
   selectProfile: (profileId: string) => void;

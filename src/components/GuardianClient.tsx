@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Check, ChevronLeft, GraduationCap, ShieldCheck, Users } from "lucide-react";
+import { Check, ChevronLeft, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { consentPromiseKeys, type GuardianRole } from "@/features/guardian/guardianConsent";
+import { consentPromiseKeys } from "@/features/guardian/guardianConsent";
 import { getLocalPlayedOn } from "@/features/progress/streak";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link } from "@/i18n/navigation";
@@ -26,8 +26,6 @@ export function GuardianClient() {
   const { hydrated, guardian, authorizeGuardian, withdrawGuardian } = useProgress();
   const [withdrawing, setWithdrawing] = useState(false);
 
-  const roleLabel = (value: GuardianRole) => t(value === "parent" ? "roleParentShort" : "roleTeacherShort");
-
   if (!hydrated) {
     return <p className={styles.loading}>{t("lead")}</p>;
   }
@@ -44,7 +42,7 @@ export function GuardianClient() {
           <ShieldCheck aria-hidden="true" size={28} />
         </span>
         <h1 className={styles.title}>{t("grantedTitle")}</h1>
-        <p className={styles.lead}>{t("grantedBy", { role: roleLabel(guardian.role) })}</p>
+        <p className={styles.lead}>{t("grantedWho")}</p>
         <p className={styles.meta}>{t("grantedOn", { date: guardian.authorizedOn })}</p>
 
         {/* Said plainly: consent has been given, and still nothing has left the device. */}
@@ -76,9 +74,9 @@ export function GuardianClient() {
     );
   }
 
-  const authorize = (role: GuardianRole) => {
+  const authorize = () => {
     const today = getLocalPlayedOn(new Date());
-    if (today) authorizeGuardian(role, today);
+    if (today) authorizeGuardian(today);
   };
 
   return (
@@ -106,20 +104,11 @@ export function GuardianClient() {
         </ul>
       </section>
 
-      <p className={styles.rolesLegend}>{t("roleTitle")}</p>
-      <div className={styles.roles}>
-        {(["parent", "teacher"] as const).map((option) => {
-          const Icon = option === "parent" ? Users : GraduationCap;
-
-          return (
-            <button className={styles.role} key={option} type="button" onClick={() => authorize(option)}>
-              <Icon aria-hidden="true" size={19} />
-              {t(`roles.${option}`)}
-            </button>
-          );
-        })}
-      </div>
-
+      {/* One button is the whole decision: no choice to make, no second step. */}
+      <button className={styles.accept} type="button" onClick={authorize}>
+        <ShieldCheck aria-hidden="true" size={19} />
+        {t("accept")}
+      </button>
       <Link className={styles.secondary} href="/settings">
         {t("cancel")}
       </Link>

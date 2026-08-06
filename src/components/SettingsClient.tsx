@@ -129,11 +129,7 @@ export function SettingsClient() {
           <span className={styles.rowText}>
             <span className={styles.rowName}>{tGuardian("manageTitle")}</span>
             <span className={styles.rowDetail}>
-              {guardian
-                ? tGuardian("grantedBy", {
-                    role: tGuardian(guardian.role === "parent" ? "roleParentShort" : "roleTeacherShort")
-                  })
-                : tGuardian("manageGuest")}
+              {guardian ? tGuardian("manageGranted") : tGuardian("manageGuest")}
             </span>
           </span>
           <Link className={styles.resetStart} href="/guardian">

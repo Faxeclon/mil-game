@@ -88,47 +88,32 @@
   line-height: 1.4;
 }
 
-/* ------------------------------------------------------------------ Roles */
+/* ----------------------------------------------------------------- Accept */
 
-/* The two buttons are the confirmation: tapping one is the yes, there is no second step. */
-.roles {
-  width: 100%;
-  margin: 0.15rem 0 0;
-  display: grid;
-  gap: 0.5rem;
-}
-
-.rolesLegend {
-  margin: 0.4rem 0 0;
-  color: var(--a-ink-soft);
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.role {
+/* One button is the whole decision. Wide and unmissable, for an adult in a hurry. */
+.accept {
   width: 100%;
   min-height: 3.6rem;
-  padding: 0.6rem 1rem;
-  display: flex;
+  margin-top: 0.35rem;
+  padding: 0.6rem 1.4rem;
+  display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
+  justify-content: center;
+  gap: 0.45rem;
   border: 0;
-  border-radius: 1rem;
+  border-radius: 999px;
   background: var(--a-accent-strong);
   color: #fff;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 800;
-  text-align: left;
   cursor: pointer;
 }
 
-.role:hover {
+.accept:hover {
   background: var(--a-accent-ink);
 }
 
-.role:focus-visible {
+.accept:focus-visible {
   outline: 3px solid var(--a-accent-strong);
   outline-offset: 3px;
 }
