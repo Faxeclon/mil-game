@@ -890,6 +890,16 @@
   }
 }
 
+.teacherHomeIcon {
+  width: 3.4rem;
+  height: 3.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #e8f6e9;
+  color: #1f7a28;
+}
+
 /* Once a teacher registered here, their way in stops being quiet: this device is theirs. */
 .teacherCard {
   width: min(100%, 22rem);
@@ -948,10 +958,18 @@
   margin-top: 0.5rem;
   display: inline-flex;
   align-items: center;
+  border: 0;
+  background: transparent;
   color: var(--h-ink-soft);
   font-size: 0.82rem;
   font-weight: 700;
   text-decoration: underline;
+  cursor: pointer;
+}
+
+.teacherLink:focus-visible {
+  outline: 3px solid var(--h-accent);
+  outline-offset: 3px;
 }
 
 .teacherLink:hover {

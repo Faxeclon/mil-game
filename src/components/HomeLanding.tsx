@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useId, useState } from "react";
 import {
   Bird,
+  BookOpenCheck,
   Cat,
   Check,
   Feather,
@@ -11,6 +12,7 @@ import {
   GraduationCap,
   Medal,
   Play,
+  QrCode,
   Rabbit,
   ShieldCheck,
   Smartphone,
@@ -67,6 +69,7 @@ export function HomeLanding() {
   const tRush = useTranslations("rush");
   const tGuardian = useTranslations("guardian");
   const tTeacherAccount = useTranslations("teacherAccount");
+  const tCards = useTranslations("cards");
   const router = useRouter();
   const nameFieldId = useId();
   const {
@@ -95,6 +98,7 @@ export function HomeLanding() {
   const [today] = useState(() => getLocalPlayedOn(new Date()));
   const [playerChosen, setPlayerChosen] = useState(false);
   const { account: teacherAccount } = useTeacherAccount();
+  const [showChildSetup, setShowChildSetup] = useState(false);
 
   // Nothing is rendered until the stored progress is known, so a returning player never
   // sees the sign-up screen flash before their own home.
@@ -466,6 +470,49 @@ export function HomeLanding() {
     );
   }
 
+  /*
+   * A device that belongs to a teacher opens on the teacher's own home.
+   *
+   * Asking them to invent a nickname and pick an apprentice before they can reach a
+   * class tool would be answering a question they never asked. Creating a player is
+   * still offered, because a teacher may well want to try the game or project it in
+   * class, but it stops being the thing standing in their way.
+   */
+  if (teacherAccount && !showChildSetup) {
+    return (
+      <div className={`${styles.landing} app-chrome-hidden`}>
+        <section aria-labelledby="teacher-home-title" className={styles.profile}>
+          <span className={styles.teacherHomeIcon}>
+            <GraduationCap aria-hidden="true" size={28} />
+          </span>
+          <h1 className={styles.profileTitle} id="teacher-home-title">
+            {tTeacherAccount("navLabel")}
+          </h1>
+          <p className={styles.profileNote}>{tTeacherAccount("registeredAs", { email: teacherAccount.email })}</p>
+
+          <Link className={styles.primaryAction} href="/teacher">
+            <BookOpenCheck aria-hidden="true" size={17} />
+            {tTeacherAccount("homeGuide")}
+          </Link>
+          <Link className={styles.teacherCard} href="/teacher/cards">
+            <span className={styles.teacherCardIcon}>
+              <QrCode aria-hidden="true" size={20} />
+            </span>
+            <span className={styles.teacherCardText}>
+              <span className={styles.teacherCardTitle}>{tCards("cardsLink")}</span>
+              <span className={styles.teacherCardLead}>{tCards("cardsLinkHint")}</span>
+            </span>
+          </Link>
+
+          {/* Secondary on purpose: useful for trying the game, never a requirement. */}
+          <button className={styles.teacherLink} type="button" onClick={() => setShowChildSetup(true)}>
+            {tTeacherAccount("homeTryGame")}
+          </button>
+        </section>
+      </div>
+    );
+  }
+
   return (
     /* The local profile screen is the entry point, so the header and bottom bar stay hidden. */
     <div className={`${styles.landing} app-chrome-hidden`}>
@@ -557,15 +604,9 @@ export function HomeLanding() {
           question, so the way out is offered plainly instead of hidden.
         */}
         {teacherAccount ? (
-          <Link className={styles.teacherCard} href="/teacher">
-            <span className={styles.teacherCardIcon}>
-              <GraduationCap aria-hidden="true" size={20} />
-            </span>
-            <span className={styles.teacherCardText}>
-              <span className={styles.teacherCardTitle}>{tTeacherAccount("navLabel")}</span>
-              <span className={styles.teacherCardLead}>{tTeacherAccount("goToTools")}</span>
-            </span>
-          </Link>
+          <button className={styles.teacherLink} type="button" onClick={() => setShowChildSetup(false)}>
+            {tTeacherAccount("goToTools")}
+          </button>
         ) : (
           <Link className={styles.teacherLink} href="/teacher/join">
             {tTeacherAccount("imTeacher")}
