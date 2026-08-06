@@ -8,6 +8,7 @@ import {
   Check,
   Feather,
   Flame,
+  GraduationCap,
   Medal,
   Play,
   Rabbit,
@@ -33,6 +34,7 @@ import {
 import { normalizeLocalNickname } from "@/features/profile/localNickname";
 import { needsLocalNicknameCompletion } from "@/features/progress/progressState";
 import { getLocalPlayedOn, getStreakToday } from "@/features/progress/streak";
+import { useTeacherAccount } from "@/features/teacher/teacherAccountStore";
 import { MAX_LOCAL_PROFILES } from "@/features/profiles/localProfiles";
 import { getLocalStandings, getPlayerRank } from "@/features/ranks/playerRank";
 import { useProgress } from "@/features/progress/ProgressProvider";
@@ -92,6 +94,7 @@ export function HomeLanding() {
   // available here and the streak cannot differ between server and client markup.
   const [today] = useState(() => getLocalPlayedOn(new Date()));
   const [playerChosen, setPlayerChosen] = useState(false);
+  const { account: teacherAccount } = useTeacherAccount();
 
   // Nothing is rendered until the stored progress is known, so a returning player never
   // sees the sign-up screen flash before their own home.
@@ -548,10 +551,26 @@ export function HomeLanding() {
 
         <p className={styles.profileNote}>{t("profileLocalNote")}</p>
 
-        {/* The one door out of the children's path, for the adult holding the phone. */}
-        <Link className={styles.teacherLink} href="/teacher/join">
-          {tTeacherAccount("imTeacher")}
-        </Link>
+        {/*
+          A teacher who registered on this device is not a player. Sending them to make a
+          child's profile before they can reach their own tools would be asking the wrong
+          question, so the way out is offered plainly instead of hidden.
+        */}
+        {teacherAccount ? (
+          <Link className={styles.teacherCard} href="/teacher">
+            <span className={styles.teacherCardIcon}>
+              <GraduationCap aria-hidden="true" size={20} />
+            </span>
+            <span className={styles.teacherCardText}>
+              <span className={styles.teacherCardTitle}>{tTeacherAccount("navLabel")}</span>
+              <span className={styles.teacherCardLead}>{tTeacherAccount("goToTools")}</span>
+            </span>
+          </Link>
+        ) : (
+          <Link className={styles.teacherLink} href="/teacher/join">
+            {tTeacherAccount("imTeacher")}
+          </Link>
+        )}
       </section>
     </div>
   );

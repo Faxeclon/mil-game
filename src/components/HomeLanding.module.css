@@ -890,6 +890,58 @@
   }
 }
 
+/* Once a teacher registered here, their way in stops being quiet: this device is theirs. */
+.teacherCard {
+  width: min(100%, 22rem);
+  margin-top: 0.9rem;
+  padding: 0.7rem 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid var(--h-hairline);
+  border-radius: 1.1rem;
+  background: #fff;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+}
+
+.teacherCard:hover {
+  border-color: var(--h-accent);
+}
+
+.teacherCard:focus-visible {
+  outline: 3px solid var(--h-accent);
+  outline-offset: 3px;
+}
+
+.teacherCardIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 0.85rem;
+  background: #e8f6e9;
+  color: #1f7a28;
+}
+
+.teacherCardText {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.teacherCardTitle {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.teacherCardLead {
+  color: var(--h-ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
 /* Quiet on purpose: a child has no reason to notice it, an adult finds it if they look. */
 .teacherLink {
   min-height: 2.75rem;
