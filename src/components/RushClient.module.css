@@ -1,0 +1,263 @@
+/* The thirty-second run: one big image, two big buttons, a clock that is easy to ignore. */
+
+.rush {
+  --u-ink: #1f2a44;
+  --u-ink-soft: #5b6780;
+  --u-paper: #ffffff;
+  --u-hairline: #ece7e6;
+  --u-hairline-strong: #d5cfcd;
+  --u-accent: #ea4b16;
+  --u-accent-strong: #c93c0b;
+  --u-accent-ink: #b8380a;
+  --u-accent-soft: #ffece4;
+  --u-blue: #2563eb;
+  --u-blue-soft: #e5edff;
+  --u-mint: #1f7a28;
+  --u-mint-soft: #e8f6e9;
+  --u-ease: cubic-bezier(0.22, 0.8, 0.36, 1);
+
+  width: min(100%, 30rem);
+  margin: clamp(0.75rem, 4vw, 2rem) auto;
+  display: grid;
+  justify-items: center;
+  gap: 0.65rem;
+  color: var(--u-ink);
+  text-align: center;
+}
+
+.rush::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background: #fff9f6;
+  content: "";
+  pointer-events: none;
+}
+
+.rush > * {
+  position: relative;
+  z-index: 1;
+}
+
+.mascot {
+  width: clamp(6rem, 26vw, 9rem);
+}
+
+.title {
+  max-width: 18ch;
+  margin: 0;
+  font-size: clamp(1.5rem, 5.6vw, 2.05rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 32ch;
+  margin: 0;
+  color: var(--u-ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  text-wrap: balance;
+}
+
+.warning {
+  max-width: 34ch;
+  margin: 0;
+  color: var(--u-ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.bigScore {
+  margin: 0.2rem 0;
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+
+/* ------------------------------------------------------------------- Run */
+
+.hud {
+  width: 100%;
+  margin: 0;
+  padding: 0.4rem 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border: 1px solid var(--u-hairline);
+  border-radius: 999px;
+  background: var(--u-paper);
+  font-size: 0.85rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.clock,
+.clockLow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.16rem 0.6rem;
+  border-radius: 999px;
+}
+
+.clock {
+  color: var(--u-ink-soft);
+}
+
+/* The last seconds change shape as well as colour: bold on a filled pill. */
+.clockLow {
+  background: var(--u-accent-soft);
+  color: var(--u-accent-ink);
+  font-weight: 900;
+}
+
+.tally {
+  color: var(--u-ink-soft);
+  font-size: 0.8rem;
+}
+
+.question {
+  max-width: 18ch;
+  margin: 0.1rem 0 0;
+  font-size: clamp(1.2rem, 5vw, 1.6rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+
+.figure {
+  width: min(100%, 20rem);
+  aspect-ratio: 1;
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border: 3px solid var(--u-hairline-strong);
+  border-radius: 1.2rem;
+  background: #f4f1ef;
+}
+
+.figure img {
+  object-fit: cover;
+}
+
+/* A brief edge on the next card says how the last one went, without stopping the clock. */
+.right {
+  border-color: var(--u-mint);
+}
+
+.wrong {
+  border-style: dashed;
+  border-color: var(--u-accent-strong);
+}
+
+.answers {
+  width: min(100%, 20rem);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.answerAi,
+.answerCamera {
+  min-height: 3.5rem;
+  padding: 0.6rem 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 2px solid transparent;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.15;
+  cursor: pointer;
+  text-wrap: balance;
+  transition: transform 120ms var(--u-ease);
+}
+
+.answerAi {
+  background: var(--u-blue-soft);
+  border-color: var(--u-blue);
+  color: var(--u-blue);
+}
+
+.answerCamera {
+  background: var(--u-mint-soft);
+  border-color: var(--u-mint);
+  color: var(--u-mint);
+}
+
+.answerAi:hover,
+.answerCamera:hover {
+  transform: translateY(-1px);
+}
+
+.answerAi:focus-visible,
+.answerCamera:focus-visible {
+  outline: 3px solid var(--u-accent-strong);
+  outline-offset: 3px;
+}
+
+.hint {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--u-ink-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------- Actions */
+
+.primary,
+.secondary {
+  min-height: 3.1rem;
+  padding: 0.6rem 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  font-size: 0.98rem;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primary {
+  background: var(--u-accent-strong);
+  color: #fff;
+}
+
+.secondary {
+  border: 1px solid var(--u-hairline-strong);
+  background: transparent;
+  color: var(--u-ink);
+}
+
+.srOnly {
+  width: 1px;
+  height: 1px;
+  position: absolute;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .answerAi,
+  .answerCamera {
+    transition: none;
+  }
+
+  .answerAi:hover,
+  .answerCamera:hover {
+    transform: none;
+  }
+}
