@@ -2,6 +2,8 @@ import { isLevelId, type LevelId } from "@/features/levels/levelModel";
 import { isApprenticeAvatarId, type ApprenticeAvatarId } from "@/features/profile/apprenticeAvatar";
 import { normalizeLocalNickname } from "@/features/profile/localNickname";
 import { isAttemptId, parseCompletedAt, parseElapsedMs } from "./attemptMetadata";
+import { parseBestResults, updateBestResults, type BestResultsByLevelId } from "./bestResults";
+import { parseLevelScore } from "@/features/scoring/levelScore";
 
 export const PROGRESS_VERSION = 1;
 
@@ -20,6 +22,11 @@ export type ProgressState = {
   /** The selected young apprentice; Roqui remains the game's guide. */
   apprenticeAvatarId: ApprenticeAvatarId | null;
   lastResult?: LevelResult;
+  /**
+   * The best local run per level. A keepsake only: unlocking still comes solely from
+   * `completedLevelIds`, so a record can never open a mission on its own.
+   */
+  bestResultsByLevelId: BestResultsByLevelId;
 };
 
 /** Summary of the attempt a player just finished, used by the results screen. */
@@ -30,6 +37,8 @@ export type LevelResult = {
   totalRounds: number;
   elapsedMs: number | null;
   completedAt: string | null;
+  /** Null for results stored before scoring existed; shown honestly, never invented. */
+  score: number | null;
 };
 
 /** Attempt data supplied when a level is completed; the level id comes from the action. */
@@ -39,13 +48,16 @@ export type LevelAttempt = {
   totalRounds: number;
   elapsedMs: number;
   completedAt: string;
+  /** Optional so attempts recorded before scoring existed still validate. */
+  score?: number;
 };
 
 export const initialProgressState: ProgressState = {
   version: PROGRESS_VERSION,
   completedLevelIds: [],
   localNickname: null,
-  apprenticeAvatarId: null
+  apprenticeAvatarId: null,
+  bestResultsByLevelId: {}
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -67,7 +79,8 @@ function parseResult(value: unknown): LevelResult | undefined {
     correctRounds: Math.min(Math.max(Math.trunc(correctRounds), 0), Math.trunc(totalRounds)),
     totalRounds: Math.trunc(totalRounds),
     elapsedMs: parseElapsedMs(value.elapsedMs),
-    completedAt: parseCompletedAt(value.completedAt)
+    completedAt: parseCompletedAt(value.completedAt),
+    score: parseLevelScore(value.score)
   };
 }
 
@@ -85,7 +98,9 @@ function normalizeLevelAttempt(value: unknown): LevelAttempt | undefined {
     correctRounds: Math.min(Math.max(Math.trunc(correctRounds), 0), Math.trunc(totalRounds)),
     totalRounds: Math.trunc(totalRounds),
     elapsedMs,
-    completedAt
+    completedAt,
+    // Absent for attempts recorded before scoring existed; never invented here.
+    ...(parseLevelScore(value.score) === null ? {} : { score: parseLevelScore(value.score) as number })
   };
 }
 
@@ -144,6 +159,7 @@ export function parseProgressState(value: unknown): ProgressState {
       : {}),
     localNickname: localNickname ?? null,
     apprenticeAvatarId,
+    bestResultsByLevelId: parseBestResults(value.bestResultsByLevelId),
     ...(lastResult ? { lastResult } : {})
   };
 }
@@ -191,12 +207,30 @@ export function completeLevel(
   const attempt = normalizeLevelAttempt(result);
   if (!isLevelId(levelId) || !attempt) return state;
   const alreadyCompleted = state.completedLevelIds.includes(levelId);
+  const score = attempt.score ?? null;
+
+  /*
+   * Records are kept apart from completion on purpose: replaying is always allowed and
+   * always updates the latest result, but only a genuinely better run takes the record.
+   */
+  const bestResultsByLevelId =
+    score === null
+      ? state.bestResultsByLevelId
+      : updateBestResults(state.bestResultsByLevelId, levelId, {
+          score,
+          correctRounds: attempt.correctRounds,
+          totalRounds: attempt.totalRounds,
+          elapsedMs: attempt.elapsedMs,
+          attemptId: attempt.attemptId,
+          completedAt: attempt.completedAt
+        });
 
   return {
     ...state,
     completedLevelIds: alreadyCompleted ? state.completedLevelIds : [...state.completedLevelIds, levelId],
     onboarded: true,
-    lastResult: { levelId, ...attempt }
+    bestResultsByLevelId,
+    lastResult: { levelId, ...attempt, score }
   };
 }
 

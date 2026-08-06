@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { initialProgressState } from "./progressState";
 import { PROGRESS_STORAGE_KEY } from "./progressStorage";
 import {
   completeLevelInStore,
@@ -42,7 +43,7 @@ describe("progress store", () => {
   it("renders the empty snapshot on the server", () => {
     expect(getServerProgressSnapshot()).toEqual({
       hydrated: false,
-      state: { version: 1, completedLevelIds: [], localNickname: null, apprenticeAvatarId: null }
+      state: initialProgressState
     });
   });
 
@@ -81,7 +82,8 @@ describe("progress store", () => {
       totalRounds: 3,
       attemptId: "attempt_123e4567-e89b-12d3-a456-426614174000",
       elapsedMs: 1_234,
-      completedAt: "2025-01-02T03:04:05.000Z"
+      completedAt: "2025-01-02T03:04:05.000Z",
+      score: null
     });
     expect(entries.has(PROGRESS_STORAGE_KEY)).toBe(true);
     unsubscribe();

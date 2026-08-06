@@ -25,7 +25,8 @@ describe("canonical level progress", () => {
       version: PROGRESS_VERSION,
       completedLevelIds: [],
       localNickname: null,
-      apprenticeAvatarId: null
+      apprenticeAvatarId: null,
+      bestResultsByLevelId: {}
     });
     expect(initialProgressState.localNickname).toBeNull();
     expect(initialProgressState.apprenticeAvatarId).toBeNull();
@@ -84,6 +85,7 @@ describe("legacy migration", () => {
       completedLevelIds: ["animals-1"],
       onboarded: true,
       apprenticeAvatarId: "fox",
+      bestResultsByLevelId: {},
       lastResult: { levelId: "animals-1", correctRounds: 2, totalRounds: 3 }
     });
 
@@ -93,13 +95,15 @@ describe("legacy migration", () => {
       onboarded: true,
       localNickname: "Faxe",
       apprenticeAvatarId: "fox",
+      bestResultsByLevelId: {},
       lastResult: {
         levelId: "animals-1",
         correctRounds: 2,
         totalRounds: 3,
         attemptId: null,
         elapsedMs: null,
-        completedAt: null
+        completedAt: null,
+        score: null
       }
     });
     expect("playerName" in state).toBe(false);
@@ -124,7 +128,7 @@ describe("results", () => {
     const state = completeLevel(initialProgressState, "animals-1", completedAttempt);
 
     expect(state.completedLevelIds).toEqual(["animals-1"]);
-    expect(state.lastResult).toEqual({ levelId: "animals-1", ...completedAttempt });
+    expect(state.lastResult).toEqual({ levelId: "animals-1", ...completedAttempt, score: null });
   });
 
   it("ignores an invalid runtime level id", () => {
@@ -151,7 +155,7 @@ describe("results", () => {
       expect(completeLevel(existing, "animals-1", malformed)).toBe(existing);
     }
     expect(existing.completedLevelIds).toEqual(["basics-1"]);
-    expect(existing.lastResult).toEqual({ levelId: "basics-1", ...completedAttempt });
+    expect(existing.lastResult).toEqual({ levelId: "basics-1", ...completedAttempt, score: null });
   });
 
   it("normalizes current results and migrates the unambiguous legacy result identity", () => {
@@ -172,7 +176,8 @@ describe("results", () => {
       totalRounds: 3,
       attemptId: null,
       elapsedMs: null,
-      completedAt: null
+      completedAt: null,
+      score: null
     });
     expect(legacy.lastResult).toEqual({
       levelId: "basics-1",
@@ -180,7 +185,8 @@ describe("results", () => {
       totalRounds: 3,
       attemptId: null,
       elapsedMs: null,
-      completedAt: null
+      completedAt: null,
+      score: null
     });
   });
 
@@ -218,7 +224,8 @@ describe("results", () => {
       totalRounds: 3,
       attemptId: completedAttempt.attemptId,
       elapsedMs: 123,
-      completedAt: "2025-01-02T03:04:05.000Z"
+      completedAt: "2025-01-02T03:04:05.000Z",
+      score: null
     });
     expect(malformed).toMatchObject({ localNickname: "Luz", apprenticeAvatarId: "owl" });
     expect(malformed.lastResult).toEqual({
@@ -227,7 +234,8 @@ describe("results", () => {
       totalRounds: 3,
       attemptId: null,
       elapsedMs: null,
-      completedAt: null
+      completedAt: null,
+      score: null
     });
   });
 

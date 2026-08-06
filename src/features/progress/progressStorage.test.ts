@@ -63,7 +63,8 @@ describe("progress storage", () => {
       totalRounds: 3,
       attemptId: "attempt_123e4567-e89b-12d3-a456-426614174000",
       elapsedMs: 1_234,
-      completedAt: "2025-01-02T03:04:05.000Z"
+      completedAt: "2025-01-02T03:04:05.000Z",
+      score: null
     });
   });
 
