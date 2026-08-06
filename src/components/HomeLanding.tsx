@@ -9,7 +9,6 @@ import {
   Check,
   Feather,
   Flame,
-  GraduationCap,
   Medal,
   Play,
   QrCode,
@@ -26,6 +25,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { getAvailableIsland, getNextMission } from "@/features/levels/levelProgress";
 import { getGlobalProgress } from "@/features/levels/progressSummary";
 import {
@@ -485,15 +485,13 @@ export function HomeLanding() {
     return (
       <div className={styles.landing}>
         <section aria-labelledby="teacher-home-title" className={styles.hub}>
-          <div className={styles.hubHeader}>
-            <h1 className={styles.hubGreeting} id="teacher-home-title">
-              {tTeacherAccount("homeGreeting")}
-            </h1>
-            <span className={styles.hubApprentice}>
-              <GraduationCap aria-hidden="true" strokeWidth={2} />
-            </span>
-          </div>
-          <p className={styles.hubTitleBadge}>{teacherAccount.email}</p>
+          {/* Roqui greets the teacher too: the guide of the game welcoming the adult who
+              is about to run it. The email is a setting, and lives in the settings. */}
+          <MascotSlot alt={t("mascotAlt")} className={styles.teacherMascot} mood="welcoming" priority />
+          <h1 className={styles.hubGreeting} id="teacher-home-title">
+            {tTeacherAccount("homeGreeting")}
+          </h1>
+          <p className={styles.hubTitleBadge}>{tTeacherAccount("homeWelcome")}</p>
 
           {/* The class this device is set up for, or the one thing missing to have one. */}
           <div className={styles.hubNext}>

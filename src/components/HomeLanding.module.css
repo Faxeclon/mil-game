@@ -1184,3 +1184,9 @@
     transition: none;
   }
 }
+
+/* Roqui greeting the teacher: same guide, a different grown-up. */
+.teacherMascot {
+  width: clamp(5.5rem, 24vw, 8rem);
+  margin: 0 auto;
+}

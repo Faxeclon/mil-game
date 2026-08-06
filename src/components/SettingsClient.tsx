@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   Brain,
+  GraduationCap,
   Check,
   ChevronLeft,
   Smartphone,
@@ -32,6 +33,7 @@ export function SettingsClient() {
   const tStorage = useTranslations("storage");
   const tProfiles = useTranslations("profiles");
   const tGuardian = useTranslations("guardian");
+  const tTeacherAccount = useTranslations("teacherAccount");
   const {
     hydrated,
     resetProgress,
@@ -72,6 +74,22 @@ export function SettingsClient() {
         <h2 className={styles.groupTitle} id="settings-data">
           {t("dataTitle")}
         </h2>
+
+        {/* The teacher's own registration: a setting, not a greeting, so it lives here. */}
+        {teacherAccount && (
+          <div className={styles.row}>
+            <span className={styles.rowIcon}>
+              <GraduationCap aria-hidden="true" size={18} />
+            </span>
+            <span className={styles.rowText}>
+              <span className={styles.rowName}>{tTeacherAccount("navLabel")}</span>
+              <span className={styles.rowDetail}>{teacherAccount.email}</span>
+            </span>
+            <Link className={styles.resetStart} href="/teacher/join">
+              {tTeacherAccount("signOut")}
+            </Link>
+          </div>
+        )}
 
         {!isTeacherDevice && (
           <div className={styles.row}>
