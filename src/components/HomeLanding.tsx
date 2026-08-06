@@ -5,7 +5,8 @@ import { useId, useState } from "react";
 import { Bird, Cat, Check, Feather, Flame, Medal, Play, Rabbit, Turtle, Users, Wind, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { getNextMission, countCompletedMissions, countPlayableMissions } from "@/features/levels/levelProgress";
+import { getAvailableIsland, getNextMission } from "@/features/levels/levelProgress";
+import { getGlobalProgress } from "@/features/levels/progressSummary";
 import {
   apprenticeAvatarIds,
   defaultApprenticeAvatarId,
@@ -68,9 +69,9 @@ export function HomeLanding() {
    * flips `onboarded` immediately, and the hub would flash before the route changes.
    */
   if (onboarded && !needsLocalNicknameCompletion(progressState) && step !== "intro") {
-    const done = countCompletedMissions(progressState);
-    const total = countPlayableMissions();
+    const overall = getGlobalProgress(progressState);
     const nextMission = getNextMission(progressState);
+    const activeIsland = getAvailableIsland(progressState);
     const hubApprenticeAvatarId = savedApprenticeAvatarId ?? defaultApprenticeAvatarId;
     const HubApprenticeIcon = apprenticeAvatarIcons[hubApprenticeAvatarId];
 
@@ -112,13 +113,32 @@ export function HomeLanding() {
             )}
           </div>
 
-          <p className={styles.progress}>
+          <div className={styles.progress}>
             <span className={styles.progressLabel}>{t("progressLabel")}</span>
-            <span aria-hidden="true" className={styles.progressTrack}>
-              <span className={styles.progressFill} style={{ width: `${(done / total) * 100}%` }} />
+            <div
+              aria-label={t("progressAria", { done: overall.done, total: overall.total })}
+              aria-valuemax={100}
+              aria-valuemin={0}
+              aria-valuenow={overall.percent}
+              aria-valuetext={t("progressPercent", { percent: overall.percent })}
+              className={styles.progressTrack}
+              role="progressbar"
+            >
+              <span className={styles.progressFill} style={{ width: `${overall.percent}%` }} />
+            </div>
+            <span className={styles.progressValue}>
+              {t("progressValue", { done: overall.done, total: overall.total })}
+              {" · "}
+              {t("progressPercent", { percent: overall.percent })}
             </span>
-            <span className={styles.progressValue}>{t("progressValue", { done, total })}</span>
-          </p>
+          </div>
+
+          {activeIsland && (
+            <p className={styles.hubIsland}>
+              <span className={styles.hubIslandLabel}>{t("hubIslandLabel")}</span>
+              <span className={styles.hubIslandName}>{tIslands(`list.${activeIsland}.title`)}</span>
+            </p>
+          )}
 
           <ul className={styles.hubStats}>
             <li className={styles.hubStat}>

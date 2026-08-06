@@ -633,6 +633,30 @@
   color: var(--h-ink);
   font-size: 0.9rem;
   font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.hubIsland {
+  margin: 0.75rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.35rem;
+  text-align: center;
+}
+
+.hubIslandLabel {
+  color: var(--h-ink-soft);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hubIslandName {
+  font-size: 0.95rem;
+  font-weight: 800;
 }
 
 .greeting {
