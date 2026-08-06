@@ -28,6 +28,7 @@ import {
 } from "@/features/profile/apprenticeAvatar";
 import { normalizeLocalNickname } from "@/features/profile/localNickname";
 import { needsLocalNicknameCompletion } from "@/features/progress/progressState";
+import { getLocalPlayedOn, getStreakToday } from "@/features/progress/streak";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link, useRouter } from "@/i18n/navigation";
 import styles from "./HomeLanding.module.css";
@@ -71,6 +72,9 @@ export function HomeLanding() {
   const [apprenticeAvatarId, setApprenticeAvatarId] = useState<ApprenticeAvatarId>(defaultApprenticeAvatarId);
   const [localNickname, setLocalNickname] = useState("");
   const [nicknameError, setNicknameError] = useState(false);
+  // Read once per mount: the hub only renders after hydration, so the device clock is
+  // available here and the streak cannot differ between server and client markup.
+  const [today] = useState(() => getLocalPlayedOn(new Date()));
 
   // Nothing is rendered until the stored progress is known, so a returning player never
   // sees the sign-up screen flash before their own home.
@@ -87,6 +91,7 @@ export function HomeLanding() {
     const overall = getGlobalProgress(progressState);
     const nextMission = getNextMission(progressState);
     const activeIsland = getAvailableIsland(progressState);
+    const streak = today ? getStreakToday(progressState.streak, today) : progressState.streak;
     const hubApprenticeAvatarId = savedApprenticeAvatarId ?? defaultApprenticeAvatarId;
     const HubApprenticeIcon = apprenticeAvatarIcons[hubApprenticeAvatarId];
 
@@ -169,12 +174,18 @@ export function HomeLanding() {
               <span className={styles.hubStatLabel}>{t("hubRank")}</span>
               <span className={styles.hubStatSoon}>{t("hubSoon")}</span>
             </li>
-            <li className={styles.hubStat}>
+            <li className={`${styles.hubStat} ${streak.currentDays > 0 ? styles.hubStatLive : ""}`}>
               <span className={`${styles.hubStatIcon} ${styles.hubStatStreak}`}>
                 <Flame aria-hidden="true" size={20} />
               </span>
               <span className={styles.hubStatLabel}>{t("hubStreak")}</span>
-              <span className={styles.hubStatSoon}>{t("hubSoon")}</span>
+              {/* Read for today, so a streak broken while the app was closed shows as broken. */}
+              <span className={styles.hubStatValue}>
+                {streak.currentDays > 0 ? t("streakDays", { days: streak.currentDays }) : t("streakNone")}
+              </span>
+              {streak.bestDays > 0 && (
+                <span className={styles.hubStatDetail}>{t("streakBest", { days: streak.bestDays })}</span>
+              )}
             </li>
             <li className={styles.hubStat}>
               <span className={`${styles.hubStatIcon} ${styles.hubStatFriends}`}>

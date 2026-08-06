@@ -4,6 +4,7 @@ import { normalizeLocalNickname } from "@/features/profile/localNickname";
 import { isAttemptId, parseCompletedAt, parseElapsedMs } from "./attemptMetadata";
 import { parseBestResults, updateBestResults, type BestResultsByLevelId } from "./bestResults";
 import { parseLevelScore } from "@/features/scoring/levelScore";
+import { initialStreak, isPlayedOn, parseStreak, recordPlayedDay, type Streak } from "./streak";
 
 export const PROGRESS_VERSION = 1;
 
@@ -27,6 +28,11 @@ export type ProgressState = {
    * `completedLevelIds`, so a record can never open a mission on its own.
    */
   bestResultsByLevelId: BestResultsByLevelId;
+  /**
+   * Days in a row with a finished mission. Kept apart from completion for the same
+   * reason as records: it is an encouragement, never a condition for unlocking.
+   */
+  streak: Streak;
 };
 
 /** Summary of the attempt a player just finished, used by the results screen. */
@@ -50,6 +56,8 @@ export type LevelAttempt = {
   completedAt: string;
   /** Optional so attempts recorded before scoring existed still validate. */
   score?: number;
+  /** The player's local calendar day, supplied by the device that finished the mission. */
+  playedOn?: string;
 };
 
 export const initialProgressState: ProgressState = {
@@ -57,7 +65,8 @@ export const initialProgressState: ProgressState = {
   completedLevelIds: [],
   localNickname: null,
   apprenticeAvatarId: null,
-  bestResultsByLevelId: {}
+  bestResultsByLevelId: {},
+  streak: initialStreak
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -100,7 +109,9 @@ function normalizeLevelAttempt(value: unknown): LevelAttempt | undefined {
     elapsedMs,
     completedAt,
     // Absent for attempts recorded before scoring existed; never invented here.
-    ...(parseLevelScore(value.score) === null ? {} : { score: parseLevelScore(value.score) as number })
+    ...(parseLevelScore(value.score) === null ? {} : { score: parseLevelScore(value.score) as number }),
+    // Absent when the device could not read its own calendar; the streak then stands still.
+    ...(isPlayedOn(value.playedOn) ? { playedOn: value.playedOn } : {})
   };
 }
 
@@ -160,6 +171,7 @@ export function parseProgressState(value: unknown): ProgressState {
     localNickname: localNickname ?? null,
     apprenticeAvatarId,
     bestResultsByLevelId: parseBestResults(value.bestResultsByLevelId),
+    streak: parseStreak(value.streak),
     ...(lastResult ? { lastResult } : {})
   };
 }
@@ -230,6 +242,8 @@ export function completeLevel(
     completedLevelIds: alreadyCompleted ? state.completedLevelIds : [...state.completedLevelIds, levelId],
     onboarded: true,
     bestResultsByLevelId,
+    // Replaying on the same day is welcome but adds nothing: a streak counts days, not runs.
+    streak: attempt.playedOn ? recordPlayedDay(state.streak, attempt.playedOn) : state.streak,
     lastResult: { levelId, ...attempt, score }
   };
 }

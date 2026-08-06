@@ -595,6 +595,22 @@
   font-weight: 700;
 }
 
+.hubStatDetail {
+  color: var(--h-ink-soft);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+/* A running streak lights up; a broken one stays quiet rather than scolding. */
+.hubStatLive .hubStatIcon {
+  background: #ffe8d8;
+  color: #c2410c;
+}
+
+.hubStatLive .hubStatValue {
+  color: #c2410c;
+}
+
 /* ---------------------------------------------------------------- Progress */
 
 .progress {

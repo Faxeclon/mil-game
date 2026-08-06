@@ -1,3 +1,5 @@
+import { getLocalPlayedOn } from "./streak";
+
 export type AttemptIdDependencies = {
   randomUUID?: (() => string) | null;
   getRandomValues?: ((values: Uint32Array) => Uint32Array) | null;
@@ -49,12 +51,23 @@ export function createAttemptId(dependencies: AttemptIdDependencies = {}): strin
   return `attempt_${safeTimestamp.toString(36).padStart(8, "0")}-${fallbackSequence.toString(36).padStart(8, "0")}`;
 }
 
-/** Creates the metadata attached to a newly completed attempt. */
+/**
+ * Creates the metadata attached to a newly completed attempt.
+ *
+ * `completedAt` is the instant, in UTC; `playedOn` is the calendar day the child was
+ * living when they finished. Both are recorded because a streak follows the local day
+ * and would otherwise jump a day for anyone playing in the evening.
+ */
 export function createAttemptMetadata(
   dependencies: AttemptIdDependencies = {}
-): { attemptId: string; completedAt: string } {
-  const completedAt = new Date(dependencies.now?.() ?? Date.now()).toISOString();
-  return { attemptId: createAttemptId(dependencies), completedAt };
+): { attemptId: string; completedAt: string; playedOn?: string } {
+  const finishedAt = new Date(dependencies.now?.() ?? Date.now());
+  const playedOn = getLocalPlayedOn(finishedAt);
+  return {
+    attemptId: createAttemptId(dependencies),
+    completedAt: finishedAt.toISOString(),
+    ...(playedOn ? { playedOn } : {})
+  };
 }
 
 export function parseElapsedMs(value: unknown): number | null {
