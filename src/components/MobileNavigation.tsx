@@ -35,11 +35,14 @@ export function MobileNavigation() {
         { href: "/teacher/cards", icon: QrCode, label: tCards("cardsLink") },
         { href: "/settings", icon: SlidersHorizontal, label: t("mobileOptions") }
       ]
-    : playerDestinations.map((destination) => ({
-        href: destination.href,
-        icon: destination.icon,
-        label: t(destination.labelKey)
-      }));
+    : playerDestinations
+        // Without a profile the map only asks for one, so the bar does not offer it.
+        .filter((destination) => destination.href !== "/worlds" || (hydrated && onboarded))
+        .map((destination) => ({
+          href: destination.href,
+          icon: destination.icon,
+          label: t(destination.labelKey)
+        }));
 
   return (
     <nav aria-label={t("mobileNavigation")} className="mobile-bottom-nav">
