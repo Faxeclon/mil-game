@@ -1,0 +1,248 @@
+/* A session plan a teacher can read on a phone, and print for the classroom wall. */
+
+.teacher {
+  --k-ink: #1f2a44;
+  --k-ink-soft: #5b6780;
+  --k-paper: #ffffff;
+  --k-hairline: #ece7e6;
+  --k-hairline-strong: #d5cfcd;
+  --k-accent: #ea4b16;
+  --k-accent-strong: #c93c0b;
+  --k-accent-ink: #b8380a;
+  --k-accent-soft: #ffece4;
+
+  width: min(100%, 40rem);
+  margin: 0 auto;
+  padding-bottom: 3rem;
+  color: var(--k-ink);
+}
+
+.back {
+  min-height: 2.75rem;
+  margin-top: clamp(0.5rem, 3vw, 1.25rem);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--k-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.title {
+  margin: 0.6rem 0 0;
+  font-size: clamp(1.6rem, 6vw, 2.1rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.lead {
+  max-width: 44ch;
+  margin: 0.45rem 0 0;
+  color: var(--k-ink-soft);
+  font-size: 0.98rem;
+  line-height: 1.45;
+}
+
+.group {
+  margin-top: clamp(1.35rem, 5vw, 2rem);
+  padding: clamp(0.85rem, 3vw, 1.15rem);
+  border: 1px solid var(--k-hairline);
+  border-radius: 1.25rem;
+  background: var(--k-paper);
+  break-inside: avoid;
+}
+
+.groupTitle {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.groupLead {
+  max-width: 46ch;
+  margin: 0.3rem 0 0;
+  color: var(--k-ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+/* -------------------------------------------------------------- Session */
+
+.steps {
+  margin: 0.85rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+  list-style: none;
+  counter-reset: step;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--k-hairline);
+}
+
+.step:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.stepTime {
+  min-width: 3.6rem;
+  flex: none;
+  padding: 0.18rem 0.5rem;
+  border-radius: 999px;
+  background: var(--k-accent-soft);
+  color: var(--k-accent-ink);
+  font-size: 0.74rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.stepBody {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.stepName {
+  font-size: 0.94rem;
+  font-weight: 800;
+}
+
+.stepDetail {
+  color: var(--k-ink-soft);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+/* ---------------------------------------------------------------- Notes */
+
+.notes {
+  margin: 0.7rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.45rem;
+  list-style: none;
+}
+
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  color: var(--k-ink);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.note svg {
+  flex: none;
+  margin-top: 0.15rem;
+  color: var(--k-accent-ink);
+}
+
+/* ----------------------------------------------------------- Still to come */
+
+.soonRow {
+  padding: 0.7rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  border-bottom: 1px solid var(--k-hairline);
+}
+
+.soonRow:last-of-type {
+  border-bottom: 0;
+  padding-bottom: 0.1rem;
+}
+
+.soonIcon {
+  width: 2.2rem;
+  height: 2.2rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 0.75rem;
+  background: #f4f1ef;
+  color: var(--k-ink-soft);
+}
+
+.soonText {
+  flex: 1 1 12rem;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.soonName {
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.soonDetail {
+  color: var(--k-ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.soonBadge {
+  padding: 0.18rem 0.6rem;
+  border: 1px dashed var(--k-hairline-strong);
+  border-radius: 999px;
+  color: var(--k-ink-soft);
+  font-size: 0.74rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.privacy {
+  max-width: 46ch;
+  margin: 1.35rem 0 0;
+  color: var(--k-ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.print {
+  min-height: 3rem;
+  margin-top: 1.25rem;
+  padding: 0.5rem 1.3rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--k-hairline-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--k-ink);
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.print:focus-visible {
+  outline: 3px solid var(--k-accent-strong);
+  outline-offset: 3px;
+}
+
+/* On paper the plan is what matters; the navigation is not. */
+@media print {
+  .noPrint {
+    display: none;
+  }
+
+  .teacher {
+    width: 100%;
+    padding-bottom: 0;
+  }
+
+  .group {
+    border-color: #999;
+    box-shadow: none;
+  }
+}
