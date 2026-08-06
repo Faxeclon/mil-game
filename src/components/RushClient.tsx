@@ -13,17 +13,19 @@ import {
   RUSH_SECONDS,
   type RushItem
 } from "@/features/rush/rushState";
+import type { IslandKey } from "@/features/levels/levelModel";
 import { Link } from "@/i18n/navigation";
 import styles from "./RushClient.module.css";
 
 /**
- * The thirty-second run.
+ * The island's thirty-second challenge.
  *
- * It is kept off the map on purpose: no medals, no unlocks, no record. Speed makes a fun
- * game and a poor lesson, so this stays a side attraction while the missions, where a
- * child is asked to slow down and look, remain the thing that counts.
+ * It uses that island's own pictures, so it asks about material the child has already
+ * met. It still awards no medals and unlocks nothing: speed makes a fun game and a poor
+ * lesson, and the missions, where a child is asked to slow down and look, remain the
+ * thing that counts.
  */
-export function RushClient({ pool }: { pool: readonly RushItem[] }) {
+export function RushClient({ island, pool }: { island: IslandKey; pool: readonly RushItem[] }) {
   const t = useTranslations("rush");
   const tTutorial = useTranslations("tutorial");
   const [state, dispatch] = useReducer(rushReducer, initialRushState);
@@ -65,7 +67,7 @@ export function RushClient({ pool }: { pool: readonly RushItem[] }) {
         <button className={styles.primary} type="button" onClick={beginRun}>
           {t("start")}
         </button>
-        <Link className={styles.secondary} href="/worlds">
+        <Link className={styles.secondary} href={`/island/${island}`}>
           {t("exit")}
         </Link>
       </section>
@@ -88,7 +90,7 @@ export function RushClient({ pool }: { pool: readonly RushItem[] }) {
         <button className={styles.primary} type="button" onClick={beginRun}>
           {t("again")}
         </button>
-        <Link className={styles.secondary} href="/worlds">
+        <Link className={styles.secondary} href={`/island/${island}`}>
           {t("exit")}
         </Link>
       </section>

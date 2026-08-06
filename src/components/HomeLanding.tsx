@@ -19,7 +19,6 @@ import {
   Turtle,
   Users,
   Wind,
-  Zap,
   type LucideIcon
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -64,7 +63,6 @@ export function HomeLanding() {
   const tStorage = useTranslations("storage");
   const tVersus = useTranslations("versus");
   const tRank = useTranslations("rank");
-  const tRush = useTranslations("rush");
   const tGuardian = useTranslations("guardian");
   const tTeacherAccount = useTranslations("teacherAccount");
   const tCards = useTranslations("cards");
@@ -242,18 +240,6 @@ export function HomeLanding() {
             <span className={styles.versusText}>
               <span className={styles.versusTitle}>{tVersus("title")}</span>
               <span className={styles.versusLead}>{tVersus("lead")}</span>
-            </span>
-          </Link>
-
-          {/* Kept next to versus rather than on the map: it is a side attraction and
-              awards nothing, so it must not look like part of the learning route. */}
-          <Link className={styles.versusCard} href="/rush">
-            <span className={styles.versusIcon}>
-              <Zap aria-hidden="true" size={20} />
-            </span>
-            <span className={styles.versusText}>
-              <span className={styles.versusTitle}>{tRush("title")}</span>
-              <span className={styles.versusLead}>{tRush("notAMission")}</span>
             </span>
           </Link>
 

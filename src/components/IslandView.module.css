@@ -423,3 +423,81 @@
     transform: none;
   }
 }
+
+/* ------------------------------------------------ The island's own challenge */
+
+/*
+ * Sits above the missions but reads as an extra, not as a step: a rounded card with its
+ * own icon, never a node on the chain. It is the last look back at the island, and it
+ * awards nothing, so it must not look like something the path depends on.
+ */
+.challenge {
+  margin-top: clamp(0.9rem, 3vw, 1.25rem);
+  padding: 0.75rem 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  border: 1px dashed var(--i-hairline-strong);
+  border-radius: 1.1rem;
+  background: var(--i-paper);
+}
+
+.challengeIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 0.85rem;
+  background: #fff3e8;
+  color: var(--i-accent-ink);
+}
+
+.challengeText {
+  flex: 1 1 10rem;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.challengeTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.challengeLead {
+  margin: 0;
+  color: var(--i-ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.challengeAction {
+  min-height: 2.75rem;
+  padding: 0.4rem 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--i-accent-strong);
+  color: #fff;
+  font-size: 0.86rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.challengeAction:focus-visible {
+  outline: 3px solid var(--i-accent-strong);
+  outline-offset: 3px;
+}
+
+.challengeLocked {
+  width: 2.2rem;
+  height: 2.2rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f2eeec;
+  color: var(--i-ink-soft);
+}

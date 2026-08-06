@@ -1,4 +1,6 @@
 import type { SinglePack, TutorialPack } from "@/content/schemas/tutorial";
+import type { IslandKey } from "@/features/levels/levelModel";
+import { getPlayableCategories, getPlayableMissions } from "@/features/levels/levelProgress";
 
 /**
  * Thirty seconds, one image at a time.
@@ -93,6 +95,29 @@ export function buildRushPool(
   }
 
   return items;
+}
+
+/**
+ * The images of one island, so its challenge is made of what was learned there.
+ *
+ * A run that mixed every island together would be a separate game sitting beside the map.
+ * Scoped to an island it becomes the last thing you do there: the same pictures, now
+ * without time to think, which is a different question about the same material.
+ */
+export function buildIslandRushPool(
+  island: IslandKey,
+  comparePacks: Readonly<Record<string, TutorialPack>>,
+  singlePacks: Readonly<Record<string, SinglePack>>
+): RushItem[] {
+  const packIds = getPlayableCategories(island)
+    .flatMap((category) => getPlayableMissions(category.key))
+    .map((mission) => mission.packId)
+    .filter((packId): packId is string => Boolean(packId));
+
+  return buildRushPool(
+    packIds.map((packId) => comparePacks[packId]).filter(Boolean),
+    packIds.map((packId) => singlePacks[packId]).filter(Boolean)
+  );
 }
 
 /** Shuffles the pool for one run, without repeating an image inside it. */
