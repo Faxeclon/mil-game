@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { needsLocalNicknameCompletion } from "@/features/progress/progressState";
+import { getProfileRouteAccess } from "@/features/profiles/profileRouteAccess";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link } from "@/i18n/navigation";
 import styles from "./ProfileRouteGuard.module.css";
@@ -22,15 +22,22 @@ export function ProfileRouteGuard({ children }: { children: ReactNode }) {
   const { hydrated, onboarded, progressState } = useProgress();
 
   // Progress lives in the browser, so the answer is only trustworthy after hydration.
-  if (!hydrated) {
+  const access = getProfileRouteAccess(hydrated, onboarded, progressState);
+
+  if (access === "checking") {
     return (
-      <p className={`${styles.loading} app-chrome-hidden`} role="status">
-        {tLocked("checking")}
-      </p>
+      <section aria-labelledby="profile-guard-loading-title" className={`${styles.guard} app-chrome-hidden`}>
+        <h1 className={styles.title} id="profile-guard-loading-title">
+          {t("profileTitle")}
+        </h1>
+        <p className={styles.text} role="status">
+          {tLocked("checking")}
+        </p>
+      </section>
     );
   }
 
-  if (!onboarded || needsLocalNicknameCompletion(progressState)) {
+  if (access === "denied") {
     return (
       <section aria-labelledby="profile-guard-title" className={styles.guard}>
         <span className={styles.mark}>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { ChevronLeft, Printer, RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
@@ -28,13 +28,31 @@ import styles from "./TeacherCardsClient.module.css";
  */
 export function TeacherCardsClient() {
   const t = useTranslations("cards");
+  const tLocked = useTranslations("locked");
   const countFieldId = useId();
   const nameFieldId = useId();
+  const storageRead = useRef(false);
 
-  // Read once on mount: the set belongs to this device and never changes underneath us.
-  const [set, setSet] = useState<TeacherClassSet | null>(() => readClassSet());
+  // Both server and first client render are neutral. Saved cards are read only after
+  // hydration, preventing storage from producing different initial markup.
+  const [set, setSet] = useState<TeacherClassSet | null>(null);
+  const [storageReady, setStorageReady] = useState(false);
   const [studentCount, setStudentCount] = useState("25");
   const [className, setClassName] = useState("");
+
+  useEffect(() => {
+    const task = window.setTimeout(() => {
+      if (storageRead.current) return;
+      storageRead.current = true;
+      const saved = readClassSet();
+      setSet(saved);
+      setStorageReady(true);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(task);
+    };
+  }, []);
 
   const generate = () => {
     const createdOn = getLocalPlayedOn(new Date()) ?? "";
@@ -42,6 +60,17 @@ export function TeacherCardsClient() {
     writeClassSet(created);
     setSet(created);
   };
+
+  if (!storageReady) {
+    return (
+      <div className={styles.cards}>
+        <h1 className={styles.title}>{t("title")}</h1>
+        <p className={styles.lead} role="status">
+          {tLocked("checking")}
+        </p>
+      </div>
+    );
+  }
 
   if (!set) {
     return (

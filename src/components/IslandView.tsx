@@ -15,7 +15,7 @@ import {
   getCategoryState,
   getMissionState
 } from "@/features/levels/levelProgress";
-import { getIslandProgress, getMissionRequirement } from "@/features/levels/progressSummary";
+import { getIslandProgress, getMissionRequirement, isIslandRushUnlocked } from "@/features/levels/progressSummary";
 import { getBestResult } from "@/features/progress/bestResults";
 import { getStarCount } from "@/features/scoring/levelScore";
 import { useProgress } from "@/features/progress/ProgressProvider";
@@ -35,6 +35,7 @@ export function IslandView({ island }: { island: IslandKey }) {
   const { progressState } = useProgress();
   const categories = getCategoriesByIsland(island);
   const islandProgress = getIslandProgress(progressState, island);
+  const rushUnlocked = isIslandRushUnlocked(progressState, island);
 
   /** Names a mission the way it is written on the map, for the "finish X first" line. */
   const describeMission = (missionId: string): string => {
@@ -105,10 +106,10 @@ export function IslandView({ island }: { island: IslandKey }) {
               {tRush("title")}
             </h2>
             <p className={styles.challengeLead}>
-              {islandProgress.isComplete ? tRush("notAMission") : tRush("lockedUntilDone")}
+              {rushUnlocked ? tRush("notAMission") : tRush("lockedUntilDone")}
             </p>
           </span>
-          {islandProgress.isComplete ? (
+          {rushUnlocked ? (
             <Link className={styles.challengeAction} href={`/island/${island}/rush`}>
               {tRush("start")}
             </Link>

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { PageContainer } from "@/components/PageContainer";
 import { ProfileRouteGuard } from "@/components/ProfileRouteGuard";
+import { RushRouteGuard } from "@/components/RushRouteGuard";
 import { RushClient } from "@/components/RushClient";
 import { contentPacks, singlePacks } from "@/content/packs/packRegistry";
 import { islands, type IslandKey } from "@/features/levels/levelModel";
@@ -30,7 +31,9 @@ export default async function IslandRushPage({ params }: IslandRushPageProps) {
     <main id="main-content">
       <PageContainer className="tutorial-shell tutorial-game-shell">
         <ProfileRouteGuard>
-          <RushClient island={islandKey as IslandKey} pool={pool} />
+          <RushRouteGuard island={islandKey}>
+            <RushClient island={islandKey as IslandKey} pool={pool} />
+          </RushRouteGuard>
         </ProfileRouteGuard>
       </PageContainer>
     </main>

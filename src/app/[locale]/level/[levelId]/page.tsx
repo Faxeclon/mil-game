@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { MissionIntro } from "@/components/MissionIntro";
 import { MissionRouteGuard } from "@/components/MissionRouteGuard";
 import { PageContainer } from "@/components/PageContainer";
+import { ProfileRouteGuard } from "@/components/ProfileRouteGuard";
 import { SingleImageClient } from "@/components/SingleImageClient";
 import { TutorialClient } from "@/components/TutorialClient";
 import { getContentPack, getSinglePack, hasContentPack } from "@/content/packs/packRegistry";
@@ -53,30 +54,32 @@ export default async function LevelPage({ params }: LevelPageProps) {
   return (
     <main id="main-content">
       <PageContainer className="tutorial-shell tutorial-game-shell">
-        <MissionRouteGuard missionId={mission.id}>
-          {/* Roqui presents a new island or theme before its first mission opens. */}
-          <MissionIntro missionId={mission.id}>
-          {singlePack ? (
-            <SingleImageClient
-              chipLabel={chipLabel}
-              entryMeta={entryMeta}
-              entryTitle={entryTitle}
-              levelId={mission.id as LevelId}
-              pack={singlePack}
-            />
-          ) : (
-            <TutorialClient
-              chipLabel={chipLabel}
-              entryMeta={entryMeta}
-              entryTitle={entryTitle}
-              levelId={mission.id as LevelId}
-              pack={pack!}
-              secondsPerRound={mission.secondsPerRound}
-              showBriefing={mission.id === FIRST_MISSION_ID}
-            />
-          )}
-          </MissionIntro>
-        </MissionRouteGuard>
+        <ProfileRouteGuard>
+          <MissionRouteGuard missionId={mission.id}>
+            {/* Roqui presents a new island or theme before its first mission opens. */}
+            <MissionIntro missionId={mission.id}>
+              {singlePack ? (
+                <SingleImageClient
+                  chipLabel={chipLabel}
+                  entryMeta={entryMeta}
+                  entryTitle={entryTitle}
+                  levelId={mission.id as LevelId}
+                  pack={singlePack}
+                />
+              ) : (
+                <TutorialClient
+                  chipLabel={chipLabel}
+                  entryMeta={entryMeta}
+                  entryTitle={entryTitle}
+                  levelId={mission.id as LevelId}
+                  pack={pack!}
+                  secondsPerRound={mission.secondsPerRound}
+                  showBriefing={mission.id === FIRST_MISSION_ID}
+                />
+              )}
+            </MissionIntro>
+          </MissionRouteGuard>
+        </ProfileRouteGuard>
       </PageContainer>
     </main>
   );

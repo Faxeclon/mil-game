@@ -2,6 +2,7 @@ import type { ProgressState } from "@/features/progress/progressState";
 import { isLevelCompleted } from "@/features/progress/progressState";
 import {
   getMissionById,
+  islands,
   type CategoryKey,
   type IslandKey,
   type LevelId,
@@ -64,6 +65,15 @@ export function getCategoryProgress(state: ProgressState, category: CategoryKey)
 export function getIslandProgress(state: ProgressState, island: IslandKey): ProgressSummary {
   const missions = getPlayableCategories(island).flatMap((category) => getPlayableMissions(category.key));
   return summarize(countDone(state, missions), missions.length);
+}
+
+/**
+ * Rush is the island's completed-path challenge. The page guard and the island card use
+ * this same derived rule, so a typed URL cannot open it earlier than the visible path.
+ */
+export function isIslandRushUnlocked(state: ProgressState, island: string): boolean {
+  if (!islands.some((entry) => entry.key === island)) return false;
+  return getIslandProgress(state, island as IslandKey).isComplete;
 }
 
 export function getGlobalProgress(state: ProgressState): ProgressSummary {
