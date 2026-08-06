@@ -9,6 +9,7 @@ import {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
 });
 
 describe("preparing the game to open without a signal", () => {
@@ -20,10 +21,20 @@ describe("preparing the game to open without a signal", () => {
 
   it("registers the worker at the root, so every page of the game is covered", async () => {
     const register = vi.fn().mockResolvedValue({});
+    vi.stubEnv("NODE_ENV", "production");
     vi.stubGlobal("navigator", { serviceWorker: { register } });
 
     await expect(registerServiceWorker()).resolves.toBe(true);
     expect(register).toHaveBeenCalledWith(SERVICE_WORKER_URL, { scope: "/" });
+  });
+
+  it("does not register outside production", async () => {
+    const register = vi.fn();
+    vi.stubEnv("NODE_ENV", "development");
+    vi.stubGlobal("navigator", { serviceWorker: { register } });
+
+    await expect(registerServiceWorker()).resolves.toBe(false);
+    expect(register).not.toHaveBeenCalled();
   });
 
   it("keeps playing when registration is refused", async () => {
@@ -87,17 +98,23 @@ describe("asking the browser to keep the progress", () => {
 });
 
 describe("clearing a worker left behind by another build", () => {
-  it("unregisters everything it finds and drops the caches with it", async () => {
+  it("unregisters only Kikiria's worker and caches", async () => {
     const unregister = vi.fn().mockResolvedValue(true);
+    const unrelatedUnregister = vi.fn().mockResolvedValue(true);
     const remove = vi.fn().mockResolvedValue(true);
     vi.stubGlobal("navigator", {
-      serviceWorker: { getRegistrations: () => Promise.resolve([{ unregister }, { unregister }]) }
+      serviceWorker: { getRegistrations: () => Promise.resolve([
+        { unregister, active: { scriptURL: "https://example.test/sw.js" } },
+        { unregister: unrelatedUnregister, active: { scriptURL: "https://example.test/other-sw.js" } }
+      ]) }
     });
-    vi.stubGlobal("caches", { keys: () => Promise.resolve(["kikiria-v1"]), delete: remove });
+    vi.stubGlobal("caches", { keys: () => Promise.resolve(["kikiria-v1", "other-cache"]), delete: remove });
 
-    await expect(unregisterServiceWorkers()).resolves.toBe(2);
-    expect(unregister).toHaveBeenCalledTimes(2);
+    await expect(unregisterServiceWorkers()).resolves.toBe(1);
+    expect(unregister).toHaveBeenCalledOnce();
+    expect(unrelatedUnregister).not.toHaveBeenCalled();
     expect(remove).toHaveBeenCalledWith("kikiria-v1");
+    expect(remove).not.toHaveBeenCalledWith("other-cache");
   });
 
   it("reports nothing to clear on a browser without service workers", async () => {

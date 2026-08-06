@@ -12,7 +12,7 @@ export function canRegisterServiceWorker(): boolean {
 }
 
 export async function registerServiceWorker(): Promise<boolean> {
-  if (!canRegisterServiceWorker()) return false;
+  if (process.env.NODE_ENV !== "production" || !canRegisterServiceWorker()) return false;
   try {
     await navigator.serviceWorker.register(SERVICE_WORKER_URL, { scope: "/" });
     return true;
@@ -33,13 +33,14 @@ export async function unregisterServiceWorkers(): Promise<number> {
   if (!canRegisterServiceWorker()) return 0;
   try {
     const registrations = await navigator.serviceWorker.getRegistrations();
-    await Promise.all(registrations.map((registration) => registration.unregister()));
+    const ours = registrations.filter((registration) => registration.active?.scriptURL.endsWith(SERVICE_WORKER_URL));
+    await Promise.all(ours.map((registration) => registration.unregister()));
 
     if (typeof caches !== "undefined") {
       const keys = await caches.keys();
-      await Promise.all(keys.map((key) => caches.delete(key)));
+      await Promise.all(keys.filter((key) => key.startsWith("kikiria-")).map((key) => caches.delete(key)));
     }
-    return registrations.length;
+    return ours.length;
   } catch {
     return 0;
   }
