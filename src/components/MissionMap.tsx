@@ -2,9 +2,11 @@
 
 import {
   AudioLines,
+  Check,
   Clapperboard,
   Cloud,
   FileSearch,
+  Hourglass,
   Layers3,
   Leaf,
   LockKeyhole,
@@ -21,7 +23,8 @@ import type { CSSProperties } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { islands } from "@/features/levels/levelModel";
-import { getIslandState, type PlayState } from "@/features/levels/levelProgress";
+import { getIslandState, islandHasContent, type PlayState } from "@/features/levels/levelProgress";
+import { getIslandProgress } from "@/features/levels/progressSummary";
 import type { MissionKind } from "@/features/missions/missionMap";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import styles from "./MissionMap.module.css";
@@ -83,18 +86,30 @@ export function MissionMap() {
   const tIslands = useTranslations("islands");
   const { progressState } = useProgress();
 
-  // Each island on the trail is a zone: a themed group of levels.
+  /*
+   * Each island on the trail is a zone: a themed group of levels. An island with no
+   * playable content is marked apart from one shut by progress, because "not built yet"
+   * and "you have not reached it" are different promises to a child.
+   */
   const missions = islands.map((zone) => ({
     key: zone.key,
     kind: zone.icon,
     state: getIslandState(progressState, zone.key),
+    isUpcoming: !islandHasContent(zone.key),
+    progress: getIslandProgress(progressState, zone.key),
     title: tIslands(`list.${zone.key}.title`)
   }));
 
   const positions = getNodePositions(missions.length);
 
-  const statusLabel = (state: PlayState) =>
-    state === "available" ? t("available") : state === "completed" ? t("completed") : t("comingSoon");
+  const statusLabel = (state: PlayState, isUpcoming: boolean) =>
+    state === "available"
+      ? t("available")
+      : state === "completed"
+        ? t("completed")
+        : isUpcoming
+          ? t("comingSoon")
+          : t("lockedIsland");
 
   return (
     <div className={styles.map}>
@@ -114,12 +129,18 @@ export function MissionMap() {
             const isAvailable = mission.state === "available";
             const isCompleted = mission.state === "completed";
             const href = isAvailable || isCompleted ? `/island/${mission.key}` : null;
-            const stateClass = isAvailable ? styles.available : isCompleted ? styles.completed : styles.locked;
+            const stateClass = isAvailable
+              ? styles.available
+              : isCompleted
+                ? styles.completed
+                : mission.isUpcoming
+                  ? styles.upcoming
+                  : styles.locked;
             const nodeSide = getNodeSide(index);
             const ariaLabel = t("nodeAria", {
               number: index + 1,
               title: mission.title,
-              status: statusLabel(mission.state)
+              status: statusLabel(mission.state, mission.isUpcoming)
             });
 
             const world = (
@@ -127,9 +148,20 @@ export function MissionMap() {
                 <span className={styles.orb}>
                   <Icon aria-hidden="true" size={isAvailable ? 44 : 32} strokeWidth={2.1} />
                   <span className={styles.orbNumber}>{index + 1}</span>
+                  {isCompleted && (
+                    <span className={styles.doneBadge}>
+                      <Check aria-hidden="true" size={15} strokeWidth={3.4} />
+                    </span>
+                  )}
+                  {/* A padlock only where progress is the reason; an hourglass where the
+                      island simply does not exist yet. Two shapes, not two colours. */}
                   {!isAvailable && !isCompleted && (
                     <span className={styles.lock}>
-                      <LockKeyhole aria-hidden="true" size={15} />
+                      {mission.isUpcoming ? (
+                        <Hourglass aria-hidden="true" size={14} />
+                      ) : (
+                        <LockKeyhole aria-hidden="true" size={15} />
+                      )}
                     </span>
                   )}
                   {isAvailable && (
@@ -141,7 +173,19 @@ export function MissionMap() {
                 </span>
                 <span className={styles.caption}>
                   <span className={styles.title}>{mission.title}</span>
-                  <span className={styles.state}>{statusLabel(mission.state)}</span>
+                  <span className={styles.state}>{statusLabel(mission.state, mission.isUpcoming)}</span>
+                  {!mission.progress.isEmpty && (
+                    <span
+                      aria-label={t("islandCountAria", {
+                        done: mission.progress.done,
+                        total: mission.progress.total
+                      })}
+                      className={styles.count}
+                      role="img"
+                    >
+                      {t("islandCount", { done: mission.progress.done, total: mission.progress.total })}
+                    </span>
+                  )}
                 </span>
               </>
             );

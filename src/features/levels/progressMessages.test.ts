@@ -70,6 +70,30 @@ describe("progress wording in both languages", () => {
     }
   });
 
+  it("gives the map a different word for a closed island and an island not built yet", () => {
+    for (const { locale, messages } of locales) {
+      const t = createTranslator({ locale, messages, namespace: "worlds" });
+
+      expect(t("lockedIsland")).not.toBe(t("comingSoon"));
+      expect(t("lockedIsland").trim().length).toBeGreaterThan(0);
+      // "source" has no playable missions, so the map must say coming soon, not locked.
+      expect(getIslandProgress(initialProgressState, "source").isEmpty).toBe(true);
+      expect(getIslandProgress(initialProgressState, "training").isEmpty).toBe(false);
+    }
+  });
+
+  it("counts an island on the map without leaving a placeholder behind", () => {
+    for (const { locale, messages } of locales) {
+      const t = createTranslator({ locale, messages, namespace: "worlds" });
+      const summary = getIslandProgress(initialProgressState, "training");
+
+      expect(t("islandCount", { done: summary.done, total: summary.total })).toBe(`0/${summary.total}`);
+      expect(t("islandCountAria", { done: summary.done, total: summary.total })).not.toMatch(
+        /\{done\}|\{total\}/
+      );
+    }
+  });
+
   it("still offers rank, streak and friends only as coming soon, with no rank tier left", () => {
     for (const { locale, messages } of locales) {
       const t = createTranslator({ locale, messages, namespace: "home" });
