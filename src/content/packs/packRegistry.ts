@@ -1,8 +1,11 @@
 import englishMessages from "@/messages/en.json";
 import spanishMessages from "@/messages/es.json";
-import type { TutorialPack } from "@/content/schemas/tutorial";
+import type { SinglePack, TutorialPack } from "@/content/schemas/tutorial";
+import { validateSinglePack } from "@/content/validators/validateSinglePack";
 import { validateTutorialPack } from "@/content/validators/validateTutorialPack";
 import animalsCompareJson from "./animals-compare.json";
+import animalsSingleJson from "./animals-single.json";
+import sportsSingleJson from "./sports-single.json";
 import animalsTimedJson from "./animals-timed.json";
 import cityBasicsTimedJson from "./city-basics-timed.json";
 import sportsCompareJson from "./sports-compare.json";
@@ -43,6 +46,24 @@ export const contentPacks: Readonly<Record<string, TutorialPack>> = {
 
 export function getContentPack(packId: string | undefined): TutorialPack | undefined {
   return packId ? contentPacks[packId] : undefined;
+}
+
+/**
+ * Packs for the single-image mode. They are kept in their own registry because the shape
+ * differs: one picture and two answers, rather than two pictures and one question.
+ */
+export const singlePacks: Readonly<Record<string, SinglePack>> = {
+  "animals-single-v1": validateSinglePack(animalsSingleJson, hasTutorialLocalizationKey),
+  "sports-single-v1": validateSinglePack(sportsSingleJson, hasTutorialLocalizationKey)
+};
+
+export function getSinglePack(packId: string | undefined): SinglePack | undefined {
+  return packId ? singlePacks[packId] : undefined;
+}
+
+/** True when some authored pack, of either shape, answers to this id. */
+export function hasContentPack(packId: string | undefined): boolean {
+  return Boolean(getContentPack(packId) ?? getSinglePack(packId));
 }
 
 /** The pack every player meets first; the tutorial route has no mission to ask. */

@@ -33,7 +33,8 @@ export type FeedbackBlock = { labelKey: LearningStep | "remember"; textKey: stri
  * Feedback is deliberately limited to two short blocks: the prompt for the round's own
  * step, followed by its reminder. Longer explanations are not shown to children.
  */
-export function getFeedbackBlocks(round: TutorialRound): FeedbackBlock[] {
+/** Works from the goal and the feedback alone, which both round shapes provide. */
+export function getFeedbackBlocks(round: Pick<TutorialRound, "learningGoal" | "feedback">): FeedbackBlock[] {
   const step = stepByLearningGoal[round.learningGoal];
   const promptKey =
     step === "look"

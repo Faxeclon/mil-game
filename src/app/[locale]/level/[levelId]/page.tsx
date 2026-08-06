@@ -2,8 +2,9 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { MissionRouteGuard } from "@/components/MissionRouteGuard";
 import { PageContainer } from "@/components/PageContainer";
+import { SingleImageClient } from "@/components/SingleImageClient";
 import { TutorialClient } from "@/components/TutorialClient";
-import { getContentPack } from "@/content/packs/packRegistry";
+import { getContentPack, getSinglePack, hasContentPack } from "@/content/packs/packRegistry";
 import {
   getLevelDifficulty,
   getMissionById,
@@ -19,7 +20,7 @@ const FIRST_MISSION_ID = "basics-1";
 
 export function generateStaticParams() {
   return missionBlueprint
-    .filter((mission) => Boolean(getContentPack(mission.packId)))
+    .filter((mission) => hasContentPack(mission.packId))
     .map((mission) => ({ levelId: mission.id }));
 }
 
@@ -35,7 +36,8 @@ export default async function LevelPage({ params }: LevelPageProps) {
   // A mission is playable only when its declared pack actually exists, so a typo in the
   // blueprint shows up as a missing route rather than as somebody else's rounds.
   const pack = getContentPack(mission?.packId);
-  if (!mission || !pack) notFound();
+  const singlePack = getSinglePack(mission?.packId);
+  if (!mission || (!pack && !singlePack)) notFound();
 
   const t = await getTranslations("islands");
   const chipLabel = `${t(`categories.${mission.category}.title`)} · ${t("missionNumber", { number: mission.order })}`;
@@ -51,15 +53,25 @@ export default async function LevelPage({ params }: LevelPageProps) {
     <main id="main-content">
       <PageContainer className="tutorial-shell tutorial-game-shell">
         <MissionRouteGuard missionId={mission.id}>
-          <TutorialClient
-            chipLabel={chipLabel}
-            entryMeta={entryMeta}
-            entryTitle={entryTitle}
-            levelId={mission.id as LevelId}
-            pack={pack}
-            secondsPerRound={mission.secondsPerRound}
-            showBriefing={mission.id === FIRST_MISSION_ID}
-          />
+          {singlePack ? (
+            <SingleImageClient
+              chipLabel={chipLabel}
+              entryMeta={entryMeta}
+              entryTitle={entryTitle}
+              levelId={mission.id as LevelId}
+              pack={singlePack}
+            />
+          ) : (
+            <TutorialClient
+              chipLabel={chipLabel}
+              entryMeta={entryMeta}
+              entryTitle={entryTitle}
+              levelId={mission.id as LevelId}
+              pack={pack!}
+              secondsPerRound={mission.secondsPerRound}
+              showBriefing={mission.id === FIRST_MISSION_ID}
+            />
+          )}
         </MissionRouteGuard>
       </PageContainer>
     </main>

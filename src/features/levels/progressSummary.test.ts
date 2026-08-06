@@ -28,24 +28,28 @@ describe("the playable path", () => {
       "basics-2",
       "animals-1",
       "animals-2",
-      "sports-1"
+      "animals-3",
+      "sports-1",
+      "sports-2"
     ]);
   });
 });
 
 describe("progress of an island", () => {
-  it("counts only playable missions, so a coming-soon one cannot lower the percentage", () => {
-    // The "difference" island declares animals-3 and sports-2 without content.
-    const summary = getIslandProgress(withCompleted("animals-1", "animals-2", "sports-1"), "difference");
+  it("counts every playable mission of the island, and only those", () => {
+    const summary = getIslandProgress(
+      withCompleted("animals-1", "animals-2", "animals-3", "sports-1", "sports-2"),
+      "difference"
+    );
 
-    expect(summary).toMatchObject({ done: 3, total: 3, percent: 100, isComplete: true, isEmpty: false });
+    expect(summary).toMatchObject({ done: 5, total: 5, percent: 100, isComplete: true, isEmpty: false });
   });
 
   it("reports a partly finished island as a whole percentage", () => {
     expect(getIslandProgress(withCompleted("animals-1"), "difference")).toMatchObject({
       done: 1,
-      total: 3,
-      percent: 33
+      total: 5,
+      percent: 20
     });
   });
 
@@ -74,22 +78,30 @@ describe("progress of a category and of the whole game", () => {
   it("summarises a category on its own", () => {
     expect(getCategoryProgress(withCompleted("animals-1"), "animals")).toMatchObject({
       done: 1,
-      total: 2,
-      percent: 50
+      total: 3,
+      percent: 33
     });
   });
 
   it("summarises every playable mission of the game", () => {
-    expect(getGlobalProgress(initialProgressState)).toMatchObject({ done: 0, total: 5, percent: 0 });
+    expect(getGlobalProgress(initialProgressState)).toMatchObject({ done: 0, total: 7, percent: 0 });
     expect(getGlobalProgress(withCompleted("basics-1", "basics-2"))).toMatchObject({
       done: 2,
-      total: 5,
-      percent: 40
+      total: 7,
+      percent: 29
     });
   });
 
   it("reaches a hundred per cent only when every playable mission is done", () => {
-    const everything = withCompleted("basics-1", "basics-2", "animals-1", "animals-2", "sports-1");
+    const everything = withCompleted(
+      "basics-1",
+      "basics-2",
+      "animals-1",
+      "animals-2",
+      "animals-3",
+      "sports-1",
+      "sports-2"
+    );
 
     expect(getGlobalProgress(everything)).toMatchObject({ percent: 100, isComplete: true });
   });
@@ -124,10 +136,15 @@ describe("what a mission is waiting for", () => {
   });
 
   it("tells a mission with no content apart from one locked by progress", () => {
-    const everything = withCompleted("basics-1", "basics-2", "animals-1", "animals-2", "sports-1");
+    // Every authored mission has content now, so the rule is checked against a mission
+    // whose pack has been taken away rather than against a real one.
+    const contentless = { ...mission("animals-3"), packId: undefined };
 
-    expect(getMissionRequirement(everything, mission("animals-3"))).toEqual({ kind: "comingSoon" });
-    expect(getMissionRequirement(initialProgressState, mission("animals-3"))).toEqual({ kind: "comingSoon" });
+    expect(getMissionRequirement(initialProgressState, contentless)).toEqual({ kind: "comingSoon" });
+    expect(getMissionRequirement(initialProgressState, mission("animals-3"))).toEqual({
+      kind: "requiresMission",
+      missionId: "animals-2"
+    });
   });
 
   it("opens the next mission as soon as the one before it is finished", () => {

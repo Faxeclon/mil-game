@@ -1,0 +1,78 @@
+{
+  "id": "animals-single-v1",
+  "rounds": [
+    {
+      "id": "animals-single-round-1",
+      "order": 1,
+      "learningGoal": "visible-clue",
+      "promptKey": "singleQuestion",
+      "media": {
+        "id": "animals-single-deer-forest",
+        "src": "/media/tutorial/placeholders/animals/deer-forest.svg",
+        "altKey": "media.animals.deerForest",
+        "origin": "ai-generated",
+        "reliability": "unverified",
+        "provenance": {
+          "sourceType": "project-placeholder",
+          "sourceName": "UNESCO Youth Hackathon temporary media team",
+          "licenseStatus": "Project placeholder; not for final use",
+          "temporary": true,
+          "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+        }
+      },
+      "answer": "ai-generated",
+      "feedback": {
+        "observationKey": "packs.animalsSingle.r1.observation",
+        "uncertaintyKey": "packs.animalsSingle.r1.remember"
+      }
+    },
+    {
+      "id": "animals-single-round-2",
+      "order": 2,
+      "learningGoal": "source-and-purpose",
+      "promptKey": "singleQuestion",
+      "media": {
+        "id": "animals-single-rooster-yard",
+        "src": "/media/tutorial/placeholders/animals/rooster-yard.svg",
+        "altKey": "media.animals.roosterYard",
+        "origin": "camera-captured",
+        "reliability": "unverified",
+        "provenance": {
+          "sourceType": "project-placeholder",
+          "sourceName": "UNESCO Youth Hackathon temporary media team",
+          "licenseStatus": "Project placeholder; not for final use",
+          "temporary": true
+        }
+      },
+      "answer": "camera-captured",
+      "feedback": {
+        "questionKey": "packs.animalsSingle.r2.question",
+        "uncertaintyKey": "packs.animalsSingle.r2.remember"
+      }
+    },
+    {
+      "id": "animals-single-round-3",
+      "order": 3,
+      "learningGoal": "uncertainty",
+      "promptKey": "singleQuestion",
+      "media": {
+        "id": "animals-single-cow-field",
+        "src": "/media/tutorial/placeholders/animals/cow-field.svg",
+        "altKey": "media.animals.cowField",
+        "origin": "camera-captured",
+        "reliability": "unverified",
+        "provenance": {
+          "sourceType": "project-placeholder",
+          "sourceName": "UNESCO Youth Hackathon temporary media team",
+          "licenseStatus": "Project placeholder; not for final use",
+          "temporary": true
+        }
+      },
+      "answer": "camera-captured",
+      "feedback": {
+        "verificationKey": "packs.animalsSingle.r3.verification",
+        "uncertaintyKey": "packs.animalsSingle.r3.remember"
+      }
+    }
+  ]
+}

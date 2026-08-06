@@ -70,9 +70,9 @@ const levelBlueprintEntries = [
     secondsPerRound: 12,
     packId: "animals-timed-v1"
   },
-  { id: "animals-3", category: "animals", order: 3, mode: "single" },
+  { id: "animals-3", category: "animals", order: 3, mode: "single", packId: "animals-single-v1" },
   { id: "sports-1", category: "sports", order: 1, mode: "compare", packId: "sports-compare-v1" },
-  { id: "sports-2", category: "sports", order: 2, mode: "single" }
+  { id: "sports-2", category: "sports", order: 2, mode: "single", packId: "sports-single-v1" }
 ] as const satisfies readonly MissionBlueprint[];
 
 /** A level identifier authored in the current level catalog. */

@@ -65,3 +65,30 @@ export type TutorialPack = {
   rounds: [TutorialRound, TutorialRound, TutorialRound];
 };
 
+/** The two answers a single image can be given; "unknown" belongs to a later mode. */
+export const singleAnswers = ["ai-generated", "camera-captured"] as const;
+
+export type SingleAnswer = (typeof singleAnswers)[number];
+
+/**
+ * One image, judged on its own.
+ *
+ * Comparing two pictures hands the player a clue for free: whatever differs is worth
+ * looking at. With a single image that help disappears and the child has to apply their
+ * own criteria, which is the step that actually transfers outside the game.
+ */
+export type SingleRound = {
+  id: string;
+  order: number;
+  learningGoal: TutorialLearningGoal;
+  promptKey: string;
+  media: TutorialMediaAsset;
+  answer: SingleAnswer;
+  feedback: EducationalFeedback;
+};
+
+export type SinglePack = {
+  id: string;
+  rounds: [SingleRound, SingleRound, SingleRound];
+};
+
