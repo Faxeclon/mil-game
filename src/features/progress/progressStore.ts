@@ -102,8 +102,8 @@ export function resetProgressInStore(): void {
   if (snapshot.profiles.profiles.length === 0) publish(fromDocument(emptyProfilesDocument));
 }
 
-export function authorizeGuardianInStore(authorizedOn: string): void {
-  applyToActiveProgress((state) => authorizeGuardian(state, authorizedOn));
+export function authorizeGuardianInStore(email: string, authorizedOn: string): void {
+  applyToActiveProgress((state) => authorizeGuardian(state, email, authorizedOn));
 }
 
 export function withdrawGuardianInStore(): void {

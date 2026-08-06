@@ -28,7 +28,7 @@ export type ProgressApi = {
   profiles: ProfilesDocument;
   /** The adult who authorised the active player, or null while they play as a guest. */
   guardian: GuardianConsent | null;
-  authorizeGuardian: (authorizedOn: string) => void;
+  authorizeGuardian: (email: string, authorizedOn: string) => void;
   withdrawGuardian: () => void;
   lastResult?: LevelResult;
   /** Raw state, for the zone and level helpers that derive from it. */

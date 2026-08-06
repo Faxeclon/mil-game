@@ -1,30 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Check, ChevronLeft, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { consentPromiseKeys } from "@/features/guardian/guardianConsent";
 import { getLocalPlayedOn } from "@/features/progress/streak";
 import { useProgress } from "@/features/progress/ProgressProvider";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import styles from "./GuardianClient.module.css";
 
 /**
- * Where a responsible adult says yes.
+ * Linking a child to the responsible adult at home.
  *
- * One tap, no form. Nobody types an email, a name or a password, because none of that is
- * stored: what is recorded is a role and a date, the same pair the cloud schema keeps in
- * `adultos.autorizo_en`. The promises are listed above the buttons so the decision is
- * made after reading them rather than before.
+ * The adult gives their own address and nothing else; the child is never asked for
+ * anything, and nothing about them is added by linking. The promises are listed above
+ * the button so the decision is made after reading them rather than before.
  *
- * The whole privacy claim of the project rests on this moment, so it is built for real
- * even though there is nowhere to sync to yet. When the server arrives, this screen does
- * not change; only what happens to the record afterwards does.
+ * Teachers have their own door on the start screen, so this page never asks which kind
+ * of adult is reading it. The whole privacy claim of the project rests on this moment,
+ * which is why it is built for real even though there is nowhere to sync to yet.
  */
 export function GuardianClient() {
   const t = useTranslations("guardian");
+  const emailFieldId = useId();
+  const router = useRouter();
   const { hydrated, guardian, authorizeGuardian, withdrawGuardian } = useProgress();
-  const [withdrawing, setWithdrawing] = useState(false);
+  const [email, setEmail] = useState("");
+  const [invalid, setInvalid] = useState(false);
 
   if (!hydrated) {
     return <p className={styles.loading}>{t("lead")}</p>;
@@ -42,42 +44,27 @@ export function GuardianClient() {
           <ShieldCheck aria-hidden="true" size={28} />
         </span>
         <h1 className={styles.title}>{t("grantedTitle")}</h1>
-        <p className={styles.lead}>{t("grantedWho")}</p>
+        <p className={styles.lead}>{t("grantedWho", { email: guardian.email })}</p>
         <p className={styles.meta}>{t("grantedOn", { date: guardian.authorizedOn })}</p>
 
-        {/* Said plainly: consent has been given, and still nothing has left the device. */}
+        {/* Said plainly: the link exists, and still nothing has left the device. */}
         {guardian.syncPending && <p className={styles.pending}>{t("grantedPending")}</p>}
 
-        {withdrawing ? (
-          <div className={styles.confirmRow}>
-            <p className={styles.confirmText}>{t("withdrawConfirm")}</p>
-            <button
-              className={styles.danger}
-              type="button"
-              onClick={() => {
-                withdrawGuardian();
-                setWithdrawing(false);
-              }}
-            >
-              {t("withdrawYes")}
-            </button>
-            <button className={styles.secondary} type="button" onClick={() => setWithdrawing(false)}>
-              {t("withdrawNo")}
-            </button>
-          </div>
-        ) : (
-          <button className={styles.secondary} type="button" onClick={() => setWithdrawing(true)}>
-            {t("withdraw")}
-          </button>
-        )}
+        {/* No confirmation: unlinking costs nothing, every medal stays. */}
+        <button
+          className={styles.secondary}
+          type="button"
+          onClick={() => {
+            withdrawGuardian();
+            router.push("/settings");
+          }}
+        >
+          {t("withdraw")}
+        </button>
+        <p className={styles.meta}>{t("withdrawKeeps")}</p>
       </div>
     );
   }
-
-  const authorize = () => {
-    const today = getLocalPlayedOn(new Date());
-    if (today) authorizeGuardian(today);
-  };
 
   return (
     <div className={styles.guardian}>
@@ -89,7 +76,6 @@ export function GuardianClient() {
       <h1 className={styles.title}>{t("title")}</h1>
       <p className={styles.lead}>{t("lead")}</p>
 
-      {/* Read before the tap, not buried behind it. */}
       <section aria-labelledby="guardian-promises" className={styles.promises}>
         <h2 className={styles.promisesTitle} id="guardian-promises">
           {t("promisesTitle")}
@@ -104,11 +90,50 @@ export function GuardianClient() {
         </ul>
       </section>
 
-      {/* One button is the whole decision: no choice to make, no second step. */}
-      <button className={styles.accept} type="button" onClick={authorize}>
-        <ShieldCheck aria-hidden="true" size={19} />
-        {t("accept")}
-      </button>
+      <form
+        className={styles.form}
+        onSubmit={(event) => {
+          event.preventDefault();
+          const today = getLocalPlayedOn(new Date()) ?? "";
+          if (!email.trim() || !today) {
+            setInvalid(true);
+            return;
+          }
+          authorizeGuardian(email, today);
+          router.push("/settings");
+        }}
+      >
+        <label className={styles.fieldLabel} htmlFor={emailFieldId}>
+          {t("emailLabel")}
+        </label>
+        <input
+          aria-describedby={`${emailFieldId}-hint${invalid ? ` ${emailFieldId}-error` : ""}`}
+          autoComplete="email"
+          className={styles.input}
+          id={emailFieldId}
+          inputMode="email"
+          type="email"
+          value={email}
+          onChange={(event) => {
+            setEmail(event.target.value);
+            setInvalid(false);
+          }}
+        />
+        <p className={styles.fieldHint} id={`${emailFieldId}-hint`}>
+          {t("emailHint")}
+        </p>
+        {invalid && (
+          <p className={styles.fieldError} id={`${emailFieldId}-error`} role="alert">
+            {t("emailInvalid")}
+          </p>
+        )}
+
+        <button className={styles.accept} type="submit">
+          <ShieldCheck aria-hidden="true" size={19} />
+          {t("accept")}
+        </button>
+      </form>
+
       <Link className={styles.secondary} href="/settings">
         {t("cancel")}
       </Link>

@@ -285,19 +285,19 @@ export function resetProgressState(): ProgressState {
 }
 
 /**
- * Records that an adult authorised this player.
+ * Links this player to the responsible adult who said yes.
  *
  * Consent changes nothing about the game: the same missions, the same medals, the same
  * device. What it changes is what may leave the device later, which is why it is stored
  * next to the progress rather than gating any of it.
  */
-export function authorizeGuardian(state: ProgressState, authorizedOn: string): ProgressState {
-  const guardian = grantGuardianConsent(authorizedOn);
+export function authorizeGuardian(state: ProgressState, email: string, authorizedOn: string): ProgressState {
+  const guardian = grantGuardianConsent(email, authorizedOn);
   if (!guardian) return state;
   return { ...state, guardian };
 }
 
-/** Withdrawing consent leaves every medal untouched; only the permission goes away. */
+/** Unlinking leaves every medal untouched; only the link goes away. */
 export function withdrawGuardian(state: ProgressState): ProgressState {
   if (state.guardian === null) return state;
   return { ...state, guardian: null };

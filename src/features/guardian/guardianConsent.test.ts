@@ -2,10 +2,12 @@ import { describe, expect, it } from "vitest";
 import { createTranslator } from "next-intl";
 import englishMessages from "@/messages/en.json";
 import spanishMessages from "@/messages/es.json";
+import { completeLevel, initialProgressState, authorizeGuardian, withdrawGuardian } from "@/features/progress/progressState";
 import {
   consentPromiseKeys,
   grantGuardianConsent,
   hasGuardianConsent,
+  normalizeGuardianEmail,
   parseGuardianConsent
 } from "./guardianConsent";
 
@@ -14,61 +16,100 @@ const locales = [
   { locale: "es", messages: spanishMessages }
 ] as const;
 
-describe("recording that an adult said yes", () => {
-  it("records the day and nothing else", () => {
-    expect(grantGuardianConsent("2026-08-05")).toEqual({
-      authorizedOn: "2026-08-05",
+describe("the adult's own address", () => {
+  it("is taken as typed and tidied up", () => {
+    expect(normalizeGuardianEmail("  Papa@Correo.PE ")).toBe("papa@correo.pe");
+  });
+
+  it("is never checked, because there is nowhere to check it against", () => {
+    // Looking strict would imply a verification that never happens. Only blank is refused.
+    expect(normalizeGuardianEmail("papa")).toBe("papa");
+    expect(normalizeGuardianEmail("   ")).toBeNull();
+    expect(normalizeGuardianEmail("")).toBeNull();
+    expect(normalizeGuardianEmail(42)).toBeNull();
+    expect(normalizeGuardianEmail("a".repeat(300))).toBeNull();
+  });
+});
+
+describe("linking a child to an adult", () => {
+  it("records the address and the day, and nothing else", () => {
+    expect(grantGuardianConsent("papa@correo.pe", "2026-08-06")).toEqual({
+      email: "papa@correo.pe",
+      authorizedOn: "2026-08-06",
       syncPending: true
     });
   });
 
-  it("refuses to record consent it cannot date", () => {
-    expect(grantGuardianConsent("not-a-day")).toBeNull();
-    expect(grantGuardianConsent("2026-02-31")).toBeNull();
+  it("refuses a blank address or a day it cannot record", () => {
+    expect(grantGuardianConsent("   ", "2026-08-06")).toBeNull();
+    expect(grantGuardianConsent("papa@correo.pe", "not-a-day")).toBeNull();
   });
 
   it("starts with nothing synced, because nothing has left the phone", () => {
-    expect(grantGuardianConsent("2026-08-05")?.syncPending).toBe(true);
+    expect(grantGuardianConsent("papa@correo.pe", "2026-08-06")?.syncPending).toBe(true);
   });
 
-  it("holds nothing that could identify a person", () => {
-    const consent = grantGuardianConsent("2026-08-05");
+  it("holds nothing about the child", () => {
+    const consent = grantGuardianConsent("papa@correo.pe", "2026-08-06");
 
-    expect(Object.keys(consent ?? {})).toEqual(["authorizedOn", "syncPending"]);
-    // No email, no name, no phone: there is no field for them and never was.
-    expect(JSON.stringify(consent)).not.toMatch(/mail|name|phone|nombre|correo/i);
+    expect(Object.keys(consent ?? {})).toEqual(["email", "authorizedOn", "syncPending"]);
+    expect(JSON.stringify(consent)).not.toMatch(/child|nino|niño|age|edad|school|colegio/i);
+  });
+});
+
+describe("linking and unlinking beside the progress", () => {
+  const attempt = {
+    attemptId: "attempt_123e4567-e89b-12d3-a456-426614174000",
+    correctRounds: 3,
+    totalRounds: 3,
+    elapsedMs: 9_000,
+    completedAt: "2026-08-06T12:00:00.000Z",
+    score: 900
+  };
+
+  it("leaves every medal exactly where it was", () => {
+    const played = completeLevel(initialProgressState, "basics-1", attempt);
+    const linked = authorizeGuardian(played, "papa@correo.pe", "2026-08-06");
+
+    expect(linked.completedLevelIds).toEqual(played.completedLevelIds);
+    expect(linked.bestResultsByLevelId).toEqual(played.bestResultsByLevelId);
+    expect(linked.guardian?.email).toBe("papa@correo.pe");
+  });
+
+  it("loses nothing when the link is removed", () => {
+    const played = completeLevel(initialProgressState, "basics-1", attempt);
+    const unlinked = withdrawGuardian(authorizeGuardian(played, "papa@correo.pe", "2026-08-06"));
+
+    expect(unlinked.guardian).toBeNull();
+    expect(unlinked.completedLevelIds).toEqual(played.completedLevelIds);
+    expect(unlinked.bestResultsByLevelId).toEqual(played.bestResultsByLevelId);
+  });
+
+  it("ignores a link it cannot record rather than half-applying it", () => {
+    const played = completeLevel(initialProgressState, "basics-1", attempt);
+
+    expect(authorizeGuardian(played, "  ", "2026-08-06")).toBe(played);
   });
 });
 
 describe("reading stored consent", () => {
   it("keeps a valid record", () => {
-    const stored = { authorizedOn: "2026-08-05", syncPending: true };
+    const stored = { email: "papa@correo.pe", authorizedOn: "2026-08-06", syncPending: true };
 
     expect(parseGuardianConsent(stored)).toEqual(stored);
   });
 
-  it("treats anything unreadable as no consent at all", () => {
+  it("treats anything unreadable as no link at all", () => {
     expect(parseGuardianConsent(undefined)).toBeNull();
     expect(parseGuardianConsent("yes")).toBeNull();
     expect(parseGuardianConsent({})).toBeNull();
-    expect(parseGuardianConsent({ authorizedOn: "2026-02-31" })).toBeNull();
+    expect(parseGuardianConsent({ email: "papa@correo.pe" })).toBeNull();
+    expect(parseGuardianConsent({ email: "  ", authorizedOn: "2026-08-06" })).toBeNull();
   });
 
   it("never assumes a yes from corrupt data", () => {
     expect(hasGuardianConsent(parseGuardianConsent({}))).toBe(false);
-    expect(hasGuardianConsent(null)).toBe(false);
-    expect(hasGuardianConsent(grantGuardianConsent("2026-08-05"))).toBe(true);
-  });
-
-  it("ignores extra fields somebody may have added by hand", () => {
-    const parsed = parseGuardianConsent({
-      authorizedOn: "2026-08-05",
-      syncPending: true,
-      email: "someone@example.com"
-    });
-
-    expect(parsed).toEqual({ authorizedOn: "2026-08-05", syncPending: true });
-    expect(JSON.stringify(parsed)).not.toContain("example.com");
+    expect(hasGuardianConsent(grantGuardianConsent("papa@correo.pe", "2026-08-06"))).toBe(true);
   });
 });
 
@@ -85,12 +126,13 @@ describe("what the adult is told before deciding", () => {
     }
   });
 
-  it("says plainly that nothing has been uploaded yet", () => {
+  it("says the address is the adult's and that nothing is sent", () => {
     for (const { locale, messages } of locales) {
       const t = createTranslator({ locale, messages, namespace: "guardian" });
-      const promise = t("promises.nothingYet").toLowerCase();
 
-      expect(promise).toMatch(/por ahora no se sube|todavía|aún|not yet|nothing is uploaded/);
+      expect(t("emailHint").toLowerCase()).toMatch(/niñ|child/);
+      expect(t("promises.nothingYet").toLowerCase()).toMatch(/por ahora no se sube|nothing is uploaded/);
+      expect(t("withdrawKeeps").toLowerCase()).toMatch(/no se pierde|loses no/);
     }
   });
 });
