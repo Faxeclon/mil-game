@@ -1,4 +1,7 @@
-/* The adult's screen. Plain, quiet, and readable by someone who is not the player. */
+/*
+ * The adult's screen, built like the profile card the child meets at the start: one
+ * centred panel, everything full width inside it, nothing floating off to a side.
+ */
 
 .guardian,
 .loading {
@@ -13,12 +16,13 @@
   --a-accent-soft: #ffece4;
   --a-mint: #1f7a28;
   --a-mint-soft: #e8f6e9;
+  --a-shadow: 0 1px 2px rgba(31, 42, 68, 0.05), 0 12px 28px rgba(31, 42, 68, 0.08);
 
   color: var(--a-ink);
 }
 
-/* Same warm full-bleed tint as the rest of the game, painted from the module. */
-.guardian::before {
+.guardian::before,
+.loading::before {
   position: fixed;
   z-index: 0;
   inset: 0;
@@ -27,18 +31,17 @@
   pointer-events: none;
 }
 
-.guardian > * {
-  position: relative;
-  z-index: 1;
-}
-
 .guardian {
-  width: min(100%, 32rem);
+  width: min(100%, 27rem);
   margin: 0 auto;
   padding-bottom: 3rem;
   display: grid;
-  justify-items: start;
-  gap: 0.65rem;
+  justify-items: center;
+}
+
+.guardian > * {
+  position: relative;
+  z-index: 1;
 }
 
 .loading {
@@ -49,7 +52,7 @@
 
 .back {
   min-height: 2.75rem;
-  margin-top: clamp(0.5rem, 3vw, 1.25rem);
+  margin: clamp(0.5rem, 3vw, 1.25rem) auto 0 0;
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
@@ -59,177 +62,196 @@
   text-decoration: none;
 }
 
+/* ------------------------------------------------------------------ Panel */
+
 .seal {
-  width: 3.4rem;
-  height: 3.4rem;
+  width: 3.6rem;
+  height: 3.6rem;
+  margin-top: 0.75rem;
   display: grid;
   place-items: center;
+  border: 3px solid var(--a-paper);
   border-radius: 50%;
-  background: var(--a-mint-soft);
-  color: var(--a-mint);
+  background: var(--a-accent-soft);
+  box-shadow: 0 0 0 1px var(--a-hairline);
+  color: var(--a-accent-ink);
 }
 
 .title {
-  margin: 0.3rem 0 0;
-  font-size: clamp(1.5rem, 5.5vw, 1.95rem);
+  max-width: 18ch;
+  margin: 0.75rem 0 0;
+  font-size: clamp(1.4rem, 5.5vw, 1.85rem);
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: -0.03em;
+  text-align: center;
+  text-wrap: balance;
 }
 
 .lead {
-  max-width: 44ch;
-  margin: 0;
+  max-width: 34ch;
+  margin: 0.5rem 0 0;
   color: var(--a-ink-soft);
-  font-size: 0.95rem;
+  font-size: 0.93rem;
   line-height: 1.45;
+  text-align: center;
+  text-wrap: balance;
 }
 
 .meta {
-  margin: 0;
+  margin: 0.35rem 0 0;
   color: var(--a-ink-soft);
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.84rem;
+  text-align: center;
 }
 
 .pending {
-  max-width: 44ch;
-  margin: 0.4rem 0 0;
-  padding: 0.6rem 0.85rem;
+  width: 100%;
+  margin: 0.85rem 0 0;
+  padding: 0.65rem 0.9rem;
   border: 1px dashed var(--a-hairline-strong);
   border-radius: 0.9rem;
   color: var(--a-ink-soft);
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   line-height: 1.4;
-}
-
-/* ----------------------------------------------------------------- Accept */
-
-/* One button is the whole decision. Wide and unmissable, for an adult in a hurry. */
-.accept {
-  width: 100%;
-  min-height: 3.6rem;
-  margin-top: 0.35rem;
-  padding: 0.6rem 1.4rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  border: 0;
-  border-radius: 999px;
-  background: var(--a-accent-strong);
-  color: #fff;
-  font-size: 1rem;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.accept:hover {
-  background: var(--a-accent-ink);
-}
-
-.accept:focus-visible {
-  outline: 3px solid var(--a-accent-strong);
-  outline-offset: 3px;
+  text-align: center;
 }
 
 /* --------------------------------------------------------------- Promises */
 
 .promises {
   width: 100%;
-  margin-top: 0.5rem;
-  padding: 0.85rem 1rem 0.95rem;
+  margin-top: 1.2rem;
+  padding: 0.95rem 1.05rem 1.05rem;
   border: 1px solid var(--a-hairline);
-  border-radius: 1.1rem;
+  border-radius: 1.25rem;
   background: var(--a-paper);
+  box-shadow: var(--a-shadow);
 }
 
 .promisesTitle {
-  margin: 0 0 0.55rem;
-  font-size: 0.95rem;
+  margin: 0 0 0.7rem;
+  color: var(--a-ink-soft);
+  font-size: 0.74rem;
   font-weight: 800;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .promiseList {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.45rem;
+  gap: 0.55rem;
   list-style: none;
 }
 
 .promise {
   display: flex;
   align-items: flex-start;
-  gap: 0.45rem;
+  gap: 0.5rem;
   font-size: 0.88rem;
   line-height: 1.4;
 }
 
 .promise svg {
   flex: none;
-  margin-top: 0.2rem;
+  margin-top: 0.18rem;
   color: var(--a-mint);
+}
+
+/* ------------------------------------------------------------------- Form */
+
+.form {
+  width: 100%;
+  margin-top: 1.1rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.fieldLabel {
+  color: var(--a-ink-soft);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.input {
+  width: 100%;
+  min-height: 3.4rem;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--a-hairline-strong);
+  border-radius: 1rem;
+  background: var(--a-paper);
+  color: var(--a-ink);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.input:focus-visible {
+  outline: 3px solid var(--a-accent-strong);
+  outline-offset: 2px;
+}
+
+.fieldHint {
+  margin: 0.1rem 0 0;
+  color: var(--a-ink-soft);
+  font-size: 0.79rem;
+  line-height: 1.4;
+}
+
+.fieldError {
+  margin: 0;
+  color: var(--a-accent-ink);
+  font-size: 0.85rem;
+  font-weight: 700;
 }
 
 /* ---------------------------------------------------------------- Actions */
 
-.primary,
-.secondary,
-.danger {
-  min-height: 3.1rem;
-  margin-top: 0.35rem;
+.accept,
+.secondary {
+  width: 100%;
+  min-height: 3.4rem;
+  margin-top: 0.85rem;
   padding: 0.6rem 1.4rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.45rem;
   border: 0;
   border-radius: 999px;
-  font-size: 0.96rem;
+  font-size: 1rem;
   font-weight: 800;
   text-decoration: none;
   cursor: pointer;
 }
 
-.primary {
+.accept {
   background: var(--a-accent-strong);
   color: #fff;
 }
 
-.primary:disabled {
-  background: var(--a-hairline-strong);
-  cursor: not-allowed;
+.accept:hover {
+  background: var(--a-accent-ink);
 }
 
 .secondary {
-  border: 1px solid var(--a-hairline-strong);
+  min-height: 2.9rem;
+  margin-top: 0.55rem;
   background: transparent;
+  color: var(--a-ink-soft);
+  font-size: 0.9rem;
+}
+
+.secondary:hover {
   color: var(--a-ink);
 }
 
-.danger {
-  background: var(--a-accent-strong);
-  color: #fff;
-}
-
-.primary:focus-visible,
-.secondary:focus-visible,
-.danger:focus-visible {
+.accept:focus-visible,
+.secondary:focus-visible {
   outline: 3px solid var(--a-accent-strong);
   outline-offset: 3px;
-}
-
-.confirmRow {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.confirmText {
-  flex: 1 1 14rem;
-  margin: 0;
-  color: var(--a-accent-ink);
-  font-size: 0.88rem;
-  font-weight: 800;
 }

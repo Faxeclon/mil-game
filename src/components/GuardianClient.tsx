@@ -73,6 +73,9 @@ export function GuardianClient() {
         {t("back")}
       </Link>
 
+      <span className={styles.seal}>
+        <ShieldCheck aria-hidden="true" size={26} />
+      </span>
       <h1 className={styles.title}>{t("title")}</h1>
       <p className={styles.lead}>{t("lead")}</p>
 
