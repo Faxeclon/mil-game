@@ -28,7 +28,17 @@ export function MobileNavigation() {
   const { hydrated, onboarded } = useProgress();
   const { hydrated: teacherHydrated, account } = useTeacherAccount();
 
-  const isTeacherDevice = teacherHydrated && account !== null && hydrated && !onboarded;
+  /*
+   * An empty device has nowhere to navigate to.
+   *
+   * Until somebody exists here - a player with a profile or a teacher who registered -
+   * every destination would either ask for one or be the page already on screen. A bar
+   * of dead ends is worse than no bar, so there is no bar.
+   */
+  if (!hydrated || !teacherHydrated) return null;
+  if (!onboarded && account === null) return null;
+
+  const isTeacherDevice = account !== null && !onboarded;
   const destinations = isTeacherDevice
     ? [
         { href: "/", icon: GraduationCap, label: tTeacher("navLabel") },
