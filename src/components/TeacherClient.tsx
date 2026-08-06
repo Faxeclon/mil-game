@@ -2,10 +2,10 @@
 
 import {
   BookOpenCheck,
+  Printer,
   ChevronLeft,
   GraduationCap,
   MessageCircleQuestion,
-  Printer,
   QrCode,
   Smartphone,
   Users
@@ -16,15 +16,14 @@ import { Link } from "@/i18n/navigation";
 import styles from "./TeacherClient.module.css";
 
 const CARD_STEPS = ["create", "print", "hand", "ask", "raise", "read"] as const;
-const SESSION_STEPS = ["welcome", "play", "versus", "talk", "close"] as const;
 const DISCUSSION_PROMPTS = ["one", "two", "three", "four"] as const;
 
 /**
  * How the classroom mode actually works, told as a sequence rather than a feature list.
  *
  * A teacher opening this has one question - what do I do on Monday - so the page answers
- * that first: the two ways to run it, then what happens minute by minute. The classroom
- * with accounts and a live dashboard needs a server, so it is named as still to be built
+ * that first: the two ways to run it, then the cards step by step. The classroom with
+ * accounts and a live dashboard needs a server, so it is named as still to be built
  * rather than sketched as if it worked.
  */
 export function TeacherClient() {
@@ -117,25 +116,6 @@ export function TeacherClient() {
         </Link>
       </section>
 
-      <section aria-labelledby="teacher-session" className={styles.group}>
-        <h2 className={styles.groupTitle} id="teacher-session">
-          {t("sessionTitle")}
-        </h2>
-        <p className={styles.groupLead}>{t("sessionLead")}</p>
-
-        <ol className={styles.steps}>
-          {SESSION_STEPS.map((step) => (
-            <li className={styles.step} key={step}>
-              <span className={styles.stepTime}>{t(`session.${step}.time`)}</span>
-              <span className={styles.stepBody}>
-                <span className={styles.stepName}>{t(`session.${step}.title`)}</span>
-                <span className={styles.stepDetail}>{t(`session.${step}.detail`)}</span>
-              </span>
-            </li>
-          ))}
-        </ol>
-      </section>
-
       <section aria-labelledby="teacher-talk" className={styles.group}>
         <h2 className={styles.groupTitle} id="teacher-talk">
           {t("promptsTitle")}
@@ -179,11 +159,6 @@ export function TeacherClient() {
 
       <p className={styles.privacy}>{t("privacyNote")}</p>
 
-      {/* Printing is the offline part of the kit: it needs no server and no connection. */}
-      <button className={`${styles.print} ${styles.noPrint}`} type="button" onClick={() => window.print()}>
-        <Printer aria-hidden="true" size={16} />
-        {t("print")}
-      </button>
     </div>
   );
 }

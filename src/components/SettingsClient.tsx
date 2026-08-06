@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import {
-  Accessibility,
   Brain,
   Check,
   ChevronLeft,
@@ -12,15 +11,12 @@ import {
   Trash2,
   Type,
   UserPlus,
-  Users,
-  Volume2,
-  Wind
+  Users
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { usePrefersReducedMotion } from "@/features/accessibility/usePrefersReducedMotion";
 import { MAX_LOCAL_PROFILES } from "@/features/profiles/localProfiles";
 import { useProgress } from "@/features/progress/ProgressProvider";
+import { useTeacherAccount } from "@/features/teacher/teacherAccountStore";
 import { Link } from "@/i18n/navigation";
 import styles from "./SettingsClient.module.css";
 
@@ -47,14 +43,18 @@ export function SettingsClient() {
     removeProfile,
     clearEverything
   } = useProgress();
-  const prefersReducedMotion = usePrefersReducedMotion();
+  const { account: teacherAccount } = useTeacherAccount();
+  /*
+   * On a teacher's device there is no child playing, so the guest badge and the
+   * grown-up's permission are answering a question nobody asked here.
+   */
+  const isTeacherDevice = teacherAccount !== null && completedLevelIds.length === 0;
   const [confirmingReset, setConfirmingReset] = useState(false);
   const [confirmingErase, setConfirmingErase] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
 
   const upcoming = [
     { key: "largerText", Icon: Type },
-    { key: "sound", Icon: Volume2 },
     { key: "neurodivergent", Icon: Brain }
   ] as const;
 
@@ -68,60 +68,25 @@ export function SettingsClient() {
       <h1 className={styles.title}>{t("title")}</h1>
       <p className={styles.lead}>{t("lead")}</p>
 
-      <section aria-labelledby="settings-active" className={styles.group}>
-        <h2 className={styles.groupTitle} id="settings-active">
-          {t("activeTitle")}
-        </h2>
-
-        <div className={styles.row}>
-          <span className={styles.rowIcon}>
-            <Wind aria-hidden="true" size={18} />
-          </span>
-          <span className={styles.rowText}>
-            <span className={styles.rowName}>{t("motionName")}</span>
-            <span className={styles.rowDetail}>{t("motionDetail")}</span>
-          </span>
-          {/* Reported, not offered: the switch belongs to the device, and the game obeys it. */}
-          <span className={prefersReducedMotion ? styles.stateOn : styles.stateOff}>
-            {prefersReducedMotion ? (
-              <>
-                <Check aria-hidden="true" size={13} strokeWidth={3} />
-                {t("motionOn")}
-              </>
-            ) : (
-              t("motionOff")
-            )}
-          </span>
-        </div>
-
-        <div className={styles.row}>
-          <span className={styles.rowIcon}>
-            <Accessibility aria-hidden="true" size={18} />
-          </span>
-          <span className={styles.rowText}>
-            <span className={styles.rowName}>{t("languageName")}</span>
-            <span className={styles.rowDetail}>{t("languageDetail")}</span>
-          </span>
-          <LanguageSwitcher />
-        </div>
-      </section>
-
       <section aria-labelledby="settings-data" className={styles.group}>
         <h2 className={styles.groupTitle} id="settings-data">
           {t("dataTitle")}
         </h2>
 
-        <div className={styles.row}>
-          <span className={styles.rowIcon}>
-            <Smartphone aria-hidden="true" size={18} />
-          </span>
-          <span className={styles.rowText}>
-            <span className={styles.rowName}>{tStorage("guestBadge")}</span>
-            <span className={styles.rowDetail}>{tStorage("guestNotice")}</span>
-          </span>
-        </div>
+        {!isTeacherDevice && (
+          <div className={styles.row}>
+            <span className={styles.rowIcon}>
+              <Smartphone aria-hidden="true" size={18} />
+            </span>
+            <span className={styles.rowText}>
+              <span className={styles.rowName}>{tStorage("guestBadge")}</span>
+              <span className={styles.rowDetail}>{tStorage("guestNotice")}</span>
+            </span>
+          </div>
+        )}
 
         {/* The consent lives with the player it was given for, so it is managed here. */}
+        {!isTeacherDevice && (
         <div className={styles.row}>
           <span className={styles.rowIcon}>
             <ShieldCheck aria-hidden="true" size={18} />
@@ -136,6 +101,7 @@ export function SettingsClient() {
             {guardian ? tGuardian("manageTitle") : tGuardian("askAdult")}
           </Link>
         </div>
+        )}
 
         <div className={styles.resetRow}>
           <p className={styles.resetText}>

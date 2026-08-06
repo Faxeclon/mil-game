@@ -145,3 +145,10 @@
     transition: none;
   }
 }
+
+/* The language switch and the sound control read as one pair of round buttons. */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}

@@ -2,6 +2,7 @@ import { Accessibility } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { IslandsNavLink } from "@/components/IslandsNavLink";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { SoundToggle } from "@/components/SoundToggle";
 import { TeacherNavLink } from "@/components/TeacherNavLink";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { Link } from "@/i18n/navigation";
@@ -33,7 +34,10 @@ export async function AppHeader({ locale }: { locale: AppLocale }) {
           <TeacherNavLink className={styles.navLink} />
         </nav>
 
-        <LanguageSwitcher />
+        <div className={styles.controls}>
+          <LanguageSwitcher />
+          <SoundToggle />
+        </div>
       </div>
     </header>
   );
