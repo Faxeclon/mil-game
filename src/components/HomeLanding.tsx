@@ -64,6 +64,7 @@ export function HomeLanding() {
   const tRank = useTranslations("rank");
   const tRush = useTranslations("rush");
   const tGuardian = useTranslations("guardian");
+  const tTeacherAccount = useTranslations("teacherAccount");
   const router = useRouter();
   const nameFieldId = useId();
   const {
@@ -546,6 +547,11 @@ export function HomeLanding() {
         </button>
 
         <p className={styles.profileNote}>{t("profileLocalNote")}</p>
+
+        {/* The one door out of the children's path, for the adult holding the phone. */}
+        <Link className={styles.teacherLink} href="/teacher/join">
+          {tTeacherAccount("imTeacher")}
+        </Link>
       </section>
     </div>
   );

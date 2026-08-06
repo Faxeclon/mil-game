@@ -1,7 +1,17 @@
 "use client";
 
-import { BookOpenCheck, ChevronLeft, MessageCircleQuestion, Printer, QrCode, Sparkles, Users } from "lucide-react";
+import {
+  BookOpenCheck,
+  ChevronLeft,
+  GraduationCap,
+  MessageCircleQuestion,
+  Printer,
+  QrCode,
+  Sparkles,
+  Users
+} from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useTeacherAccount } from "@/features/teacher/teacherAccountStore";
 import { Link } from "@/i18n/navigation";
 import styles from "./TeacherClient.module.css";
 
@@ -19,6 +29,30 @@ const SETUP_NOTES = ["oneDevice", "noInternet", "noAccounts", "noData"] as const
 export function TeacherClient() {
   const t = useTranslations("teacher");
   const tCards = useTranslations("cards");
+  const tAccount = useTranslations("teacherAccount");
+  const { hydrated, account } = useTeacherAccount();
+
+  /*
+   * The classroom tools belong to a registered teacher. This is not security - nothing
+   * here is secret - it is about keeping a children's game from opening onto a menu
+   * meant for an adult running a class.
+   */
+  if (hydrated && !account) {
+    return (
+      <div className={styles.teacher}>
+        <Link className={styles.back} href="/">
+          <ChevronLeft aria-hidden="true" size={18} />
+          {t("backHome")}
+        </Link>
+        <h1 className={styles.title}>{tAccount("title")}</h1>
+        <p className={styles.lead}>{tAccount("locked")}</p>
+        <Link className={styles.print} href="/teacher/join">
+          <GraduationCap aria-hidden="true" size={16} />
+          {tAccount("register")}
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.teacher}>

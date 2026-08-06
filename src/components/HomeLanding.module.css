@@ -890,6 +890,22 @@
   }
 }
 
+/* Quiet on purpose: a child has no reason to notice it, an adult finds it if they look. */
+.teacherLink {
+  min-height: 2.75rem;
+  margin-top: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  color: var(--h-ink-soft);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.teacherLink:hover {
+  color: var(--h-ink);
+}
+
 /* Where the progress lives, said plainly rather than hidden. */
 .guestBadge {
   padding: 0.22rem 0.65rem;

@@ -1,0 +1,169 @@
+/* The teacher's registration. Adult-facing, so plain and quick rather than playful. */
+
+.join,
+.loading {
+  --j-ink: #1f2a44;
+  --j-ink-soft: #5b6780;
+  --j-hairline-strong: #d5cfcd;
+  --j-accent-strong: #c93c0b;
+  --j-accent-ink: #b8380a;
+  --j-mint: #1f7a28;
+  --j-mint-soft: #e8f6e9;
+
+  color: var(--j-ink);
+}
+
+.join {
+  width: min(100%, 32rem);
+  margin: 0 auto;
+  padding-bottom: 3rem;
+  display: grid;
+  justify-items: start;
+  gap: 0.6rem;
+}
+
+.loading {
+  margin: clamp(2rem, 10vw, 5rem) auto;
+  color: var(--j-ink-soft);
+  text-align: center;
+}
+
+.back {
+  min-height: 2.75rem;
+  margin-top: clamp(0.5rem, 3vw, 1.25rem);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--j-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.seal {
+  width: 3.4rem;
+  height: 3.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--j-mint-soft);
+  color: var(--j-mint);
+}
+
+.title {
+  margin: 0.3rem 0 0;
+  font-size: clamp(1.5rem, 5.5vw, 1.95rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.lead {
+  max-width: 44ch;
+  margin: 0;
+  color: var(--j-ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.form {
+  width: min(100%, 22rem);
+  margin-top: 0.6rem;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.fieldLabel {
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.input {
+  min-height: 3.2rem;
+  padding: 0.5rem 0.9rem;
+  border: 2px solid var(--j-hairline-strong);
+  border-radius: 0.9rem;
+  background: #fff;
+  color: var(--j-ink);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.input:focus-visible {
+  outline: 3px solid var(--j-accent-strong);
+  outline-offset: 2px;
+}
+
+.fieldHint {
+  margin: 0;
+  color: var(--j-ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.fieldError {
+  margin: 0;
+  color: var(--j-accent-ink);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* Said next to the button, so nobody waits for a confirmation mail. */
+.notSent {
+  max-width: 44ch;
+  margin: 0.5rem 0 0;
+  padding: 0.6rem 0.85rem;
+  border: 1px dashed var(--j-hairline-strong);
+  border-radius: 0.9rem;
+  color: var(--j-ink-soft);
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+.primary,
+.secondary {
+  min-height: 3.1rem;
+  margin-top: 0.5rem;
+  padding: 0.6rem 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 0;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.primary {
+  background: var(--j-accent-strong);
+  color: #fff;
+}
+
+.secondary {
+  border: 1px solid var(--j-hairline-strong);
+  background: transparent;
+  color: var(--j-ink);
+}
+
+.primary:focus-visible,
+.secondary:focus-visible {
+  outline: 3px solid var(--j-accent-strong);
+  outline-offset: 3px;
+}
+
+.confirmRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.confirmText {
+  flex: 1 1 14rem;
+  margin: 0;
+  color: var(--j-accent-ink);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
