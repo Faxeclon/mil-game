@@ -14,7 +14,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { signOutTeacher, useTeacherAccount } from "@/features/teacher/teacherAccountStore";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import styles from "./SettingsClient.module.css";
 
 /**
@@ -29,6 +29,7 @@ export function SettingsClient() {
   const tStorage = useTranslations("storage");
   const tGuardian = useTranslations("guardian");
   const tTeacherAccount = useTranslations("teacherAccount");
+  const router = useRouter();
   const {
     hydrated,
     resetProgress,
@@ -73,7 +74,14 @@ export function SettingsClient() {
               <span className={styles.rowName}>{tTeacherAccount("navLabel")}</span>
               <span className={styles.rowDetail}>{teacherAccount.email}</span>
             </span>
-            <button className={styles.resetStart} type="button" onClick={signOutTeacher}>
+            <button
+              className={styles.resetStart}
+              type="button"
+              onClick={() => {
+                signOutTeacher();
+                router.push("/");
+              }}
+            >
               {tTeacherAccount("signOut")}
             </button>
           </div>

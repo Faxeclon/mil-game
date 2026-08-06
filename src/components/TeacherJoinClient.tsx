@@ -5,7 +5,7 @@ import { ChevronLeft, GraduationCap, LogOut } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { getLocalPlayedOn } from "@/features/progress/streak";
 import { registerTeacher, signOutTeacher, useTeacherAccount } from "@/features/teacher/teacherAccountStore";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import styles from "./TeacherJoinClient.module.css";
 
 /**
@@ -21,6 +21,7 @@ import styles from "./TeacherJoinClient.module.css";
 export function TeacherJoinClient() {
   const t = useTranslations("teacherAccount");
   const emailFieldId = useId();
+  const router = useRouter();
   const { hydrated, account } = useTeacherAccount();
   const [email, setEmail] = useState("");
   const [invalid, setInvalid] = useState(false);
@@ -46,7 +47,14 @@ export function TeacherJoinClient() {
 
         {/* No confirmation: leaving costs nothing. The card sets stay where they are,
             and registering again is one tap away. */}
-        <button className={styles.secondary} type="button" onClick={signOutTeacher}>
+        <button
+          className={styles.secondary}
+          type="button"
+          onClick={() => {
+            signOutTeacher();
+            router.push("/");
+          }}
+        >
           <LogOut aria-hidden="true" size={16} />
           {t("signOut")}
         </button>
@@ -70,7 +78,11 @@ export function TeacherJoinClient() {
         onSubmit={(event) => {
           event.preventDefault();
           const today = getLocalPlayedOn(new Date()) ?? "";
-          if (!registerTeacher(email, today)) setInvalid(true);
+          if (registerTeacher(email, today)) {
+            router.push("/");
+            return;
+          }
+          setInvalid(true);
         }}
       >
         <label className={styles.fieldLabel} htmlFor={emailFieldId}>
