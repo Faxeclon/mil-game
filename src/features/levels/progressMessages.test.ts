@@ -94,13 +94,14 @@ describe("progress wording in both languages", () => {
     }
   });
 
-  it("still offers rank, streak and friends only as coming soon, with no rank tier left", () => {
+  it("keeps friends as the only hub block still to be built", () => {
     for (const { locale, messages } of locales) {
       const t = createTranslator({ locale, messages, namespace: "home" });
-      const hubText = [t("hubRank"), t("hubStreak"), t("hubFriends"), t("hubSoon")].join(" ").toLowerCase();
 
+      // Rank and streak are real now; friends needs a server and stays honest about it.
       expect(t("hubSoon").trim().length).toBeGreaterThan(0);
-      expect(hubText).not.toMatch(/bronze|bronce|silver|plata|gold|oro/);
+      expect(t("hubFriends")).not.toBe(t("hubSoon"));
+      expect(t("streakNone")).not.toBe(t("hubSoon"));
     }
   });
 });

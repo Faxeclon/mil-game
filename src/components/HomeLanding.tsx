@@ -32,6 +32,7 @@ import { normalizeLocalNickname } from "@/features/profile/localNickname";
 import { needsLocalNicknameCompletion } from "@/features/progress/progressState";
 import { getLocalPlayedOn, getStreakToday } from "@/features/progress/streak";
 import { MAX_LOCAL_PROFILES } from "@/features/profiles/localProfiles";
+import { getLocalStandings, getPlayerRank } from "@/features/ranks/playerRank";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link, useRouter } from "@/i18n/navigation";
 import styles from "./HomeLanding.module.css";
@@ -58,6 +59,7 @@ export function HomeLanding() {
   const tStorage = useTranslations("storage");
   const tVersus = useTranslations("versus");
   const tProfiles = useTranslations("profiles");
+  const tRank = useTranslations("rank");
   const router = useRouter();
   const nameFieldId = useId();
   const {
@@ -165,6 +167,8 @@ export function HomeLanding() {
     const nextMission = getNextMission(progressState);
     const activeIsland = getAvailableIsland(progressState);
     const streak = today ? getStreakToday(progressState.streak, today) : progressState.streak;
+    const rank = getPlayerRank(progressState);
+    const standings = getLocalStandings(profiles.profiles);
     const hubApprenticeAvatarId = savedApprenticeAvatarId ?? defaultApprenticeAvatarId;
     const HubApprenticeIcon = apprenticeAvatarIcons[hubApprenticeAvatarId];
 
@@ -175,6 +179,7 @@ export function HomeLanding() {
             <h1 className={styles.hubGreeting} id="hub-title">
               {savedLocalNickname ? t("hubGreetingNamed", { name: savedLocalNickname }) : t("hubGreeting")}
             </h1>
+            <p className={styles.hubTitleBadge}>{tRank(`titles.${rank.titleKey}`)}</p>
             {/* Telling a child where their data lives is itself a media-literacy lesson:
                 the app practises what it teaches, and never claims nothing is stored. */}
             <span aria-label={tStorage("guestBadgeAria")} className={styles.guestBadge} role="img">
@@ -240,12 +245,19 @@ export function HomeLanding() {
           )}
 
           <ul className={styles.hubStats}>
-            <li className={styles.hubStat}>
+            {/* Worked out from the stars already on the map, so it can never claim more
+                than the player earned, and it is never a position against other children. */}
+            <li className={`${styles.hubStat} ${rank.tier ? styles.hubStatLive : ""}`}>
               <span className={`${styles.hubStatIcon} ${styles.hubStatRank}`}>
                 <Medal aria-hidden="true" size={20} />
               </span>
               <span className={styles.hubStatLabel}>{t("hubRank")}</span>
-              <span className={styles.hubStatSoon}>{t("hubSoon")}</span>
+              <span className={styles.hubStatValue}>
+                {rank.tier ? tRank(`tiers.${rank.tier}`) : tRank("none")}
+              </span>
+              <span className={styles.hubStatDetail}>
+                {rank.tier ? tRank("stars", { stars: rank.stars, max: rank.maxStars }) : tRank("noneHint")}
+              </span>
             </li>
             <li className={`${styles.hubStat} ${streak.currentDays > 0 ? styles.hubStatLive : ""}`}>
               <span className={`${styles.hubStatIcon} ${styles.hubStatStreak}`}>
@@ -280,6 +292,33 @@ export function HomeLanding() {
               <span className={styles.versusLead}>{tVersus("lead")}</span>
             </span>
           </Link>
+
+          {/* The only comparison the game makes: between the children of this phone,
+              sitting next to each other. No server, no strangers, no league. */}
+          {standings.length > 1 && (
+            <section aria-labelledby="standings-title" className={styles.standings}>
+              <h2 className={styles.standingsTitle} id="standings-title">
+                {tRank("standingsTitle")}
+              </h2>
+              <ol className={styles.standingsList}>
+                {standings.map((entry, index) => (
+                  <li
+                    className={`${styles.standing} ${entry.profileId === profiles.activeId ? styles.standingYou : ""}`}
+                    key={entry.profileId}
+                  >
+                    <span className={styles.standingPosition}>{tRank("position", { position: index + 1 })}</span>
+                    <span className={styles.standingName}>
+                      {entry.nickname ?? tProfiles("unnamed", { number: index + 1 })}
+                    </span>
+                    <span className={styles.standingStars}>
+                      {tRank("stars", { stars: entry.rank.stars, max: entry.rank.maxStars })}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+              <p className={styles.standingsNote}>{tRank("standingsLead")}</p>
+            </section>
+          )}
 
           <p className={styles.guestNotice}>{tStorage("guestNotice")}</p>
         </section>
