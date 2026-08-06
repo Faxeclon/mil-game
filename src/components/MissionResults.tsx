@@ -33,6 +33,7 @@ export function MissionResults() {
   const t = useTranslations("results");
   const tIslands = useTranslations("islands");
   const tHome = useTranslations("home");
+  const tStorage = useTranslations("storage");
   const { hydrated, lastResult, progressState, apprenticeAvatarId } = useProgress();
   const searchParams = useSearchParams();
   const attempt = getRequestedAttempt(searchParams);
@@ -81,6 +82,8 @@ export function MissionResults() {
       })
     : result.levelId;
   const summary = getScoreSummary(result, progressState.bestResultsByLevelId);
+  // Derived from the one canonical list, so it cannot be shown twice or get out of step.
+  const isFirstEverCompletion = progressState.completedLevelIds.length === 1;
   const elapsedTime = formatElapsedTime(result.elapsedMs, {
     second: t("second"),
     seconds: t("seconds"),
@@ -167,6 +170,23 @@ export function MissionResults() {
       <p className={styles.elapsedTime}>{t("elapsed", { time: elapsedTime })}</p>
 
       <LookAskCheck sequential states={{ look: "completed", ask: "completed", check: "completed" }} />
+
+      {/*
+        Offered once, after the very first mission: at that moment the player has something
+        they would not want to lose, so the message lands instead of blocking the way in.
+        It says where the medal is kept, and marks the account as not built yet rather
+        than promising a button that does not exist.
+      */}
+      {isFirstEverCompletion && (
+        <aside className={styles.keepsake}>
+          <MascotSlot alt="" className={styles.keepsakeMascot} mood="encouraging" size={72} />
+          <p className={styles.keepsakeText}>
+            <span className={styles.keepsakeTitle}>{tStorage("roquiSaveTitle")}</span>
+            {tStorage("roquiSaveHint")}
+          </p>
+          <span className={styles.keepsakeSoon}>{tStorage("accountSoon")}</span>
+        </aside>
+      )}
 
       <div className={styles.actions}>
         <Link className={styles.primaryLink} href={getContinuePath(progressState, result.levelId)}>

@@ -2,7 +2,21 @@
 
 import Image from "next/image";
 import { useId, useState } from "react";
-import { Bird, Cat, Check, Feather, Flame, Medal, Play, Rabbit, Turtle, Users, Wind, type LucideIcon } from "lucide-react";
+import {
+  Bird,
+  Cat,
+  Check,
+  Feather,
+  Flame,
+  Medal,
+  Play,
+  Rabbit,
+  Smartphone,
+  Turtle,
+  Users,
+  Wind,
+  type LucideIcon
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { getAvailableIsland, getNextMission } from "@/features/levels/levelProgress";
@@ -37,6 +51,7 @@ const apprenticeAvatarIcons: Record<ApprenticeAvatarId, LucideIcon> = {
 export function HomeLanding() {
   const t = useTranslations("home");
   const tIslands = useTranslations("islands");
+  const tStorage = useTranslations("storage");
   const router = useRouter();
   const nameFieldId = useId();
   const {
@@ -82,6 +97,12 @@ export function HomeLanding() {
             <h1 className={styles.hubGreeting} id="hub-title">
               {savedLocalNickname ? t("hubGreetingNamed", { name: savedLocalNickname }) : t("hubGreeting")}
             </h1>
+            {/* Telling a child where their data lives is itself a media-literacy lesson:
+                the app practises what it teaches, and never claims nothing is stored. */}
+            <span aria-label={tStorage("guestBadgeAria")} className={styles.guestBadge} role="img">
+              <Smartphone aria-hidden="true" size={13} />
+              {tStorage("guestBadge")}
+            </span>
             <span
               aria-label={t("profileAvatarAria", {
                 name: apprenticeNames[apprenticeAvatarIds.indexOf(hubApprenticeAvatarId)]
@@ -163,6 +184,8 @@ export function HomeLanding() {
               <span className={styles.hubStatSoon}>{t("hubSoon")}</span>
             </li>
           </ul>
+
+          <p className={styles.guestNotice}>{tStorage("guestNotice")}</p>
         </section>
       </div>
     );

@@ -14,6 +14,7 @@ import {
   Play,
   SearchCheck,
   Send,
+  Smartphone,
   Sparkles,
   Star,
   type LucideIcon
@@ -84,6 +85,7 @@ function buildSegment(from: { x: number; y: number }, to: { x: number; y: number
 export function MissionMap() {
   const t = useTranslations("worlds");
   const tIslands = useTranslations("islands");
+  const tStorage = useTranslations("storage");
   const { progressState } = useProgress();
 
   /*
@@ -114,6 +116,11 @@ export function MissionMap() {
   return (
     <div className={styles.map}>
       <p className={styles.greeting}>{t("title")}</p>
+      {/* Said on the map too, where a child looks at everything they have earned. */}
+      <p className={styles.guestNotice}>
+        <Smartphone aria-hidden="true" size={13} />
+        {tStorage("guestNotice")}
+      </p>
 
       <div className={styles.journey} style={{ "--island-count": missions.length } as CSSProperties}>
         <MapEnvironment />

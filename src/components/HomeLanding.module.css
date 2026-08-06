@@ -636,6 +636,31 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Where the progress lives, said plainly rather than hidden. */
+.guestBadge {
+  padding: 0.22rem 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid var(--h-hairline);
+  border-radius: 999px;
+  background: var(--h-paper, #fff);
+  color: var(--h-ink-soft);
+  font-size: 0.72rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.guestNotice {
+  max-width: 34ch;
+  margin: 1.35rem auto 0;
+  color: var(--h-ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  text-align: center;
+  text-wrap: balance;
+}
+
 .hubIsland {
   margin: 0.75rem 0 0;
   display: flex;

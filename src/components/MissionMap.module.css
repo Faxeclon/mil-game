@@ -46,6 +46,21 @@
   text-wrap: balance;
 }
 
+/* Where the progress lives, in the same place a child admires it. */
+.guestNotice {
+  max-width: 34ch;
+  margin: 0.5rem auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  color: var(--m-ink-soft);
+  font-size: 0.76rem;
+  line-height: 1.35;
+  text-align: center;
+  text-wrap: balance;
+}
+
 /* --------------------------------------------------------------------- Path */
 
 .journey {
