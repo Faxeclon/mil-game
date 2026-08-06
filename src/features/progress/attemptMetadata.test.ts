@@ -72,10 +72,19 @@ describe("attempt metadata", () => {
     expect(createAttemptMetadata({
       randomUUID: () => "123e4567-e89b-12d3-a456-426614174000",
       now: () => 0
-    })).toEqual({
+    })).toMatchObject({
       attemptId: "attempt_123e4567-e89b-12d3-a456-426614174000",
       completedAt: "1970-01-01T00:00:00.000Z"
     });
+  });
+
+  it("also records the local calendar day, which is what a streak counts", () => {
+    // The instant is fixed in UTC; the day depends on where the device is, so only its
+    // shape can be asserted without pinning the test to one time zone.
+    const metadata = createAttemptMetadata({ randomUUID: () => "123e4567-e89b-12d3-a456-426614174000", now: () => 0 });
+
+    expect(metadata.playedOn).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(["1969-12-31", "1970-01-01"]).toContain(metadata.playedOn);
   });
 
   it("normalizes elapsed milliseconds and safely drops invalid metadata", () => {

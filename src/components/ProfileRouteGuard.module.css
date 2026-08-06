@@ -1,0 +1,93 @@
+/* Shown when a route needs a profile that this device does not have yet. */
+
+.guard,
+.loading {
+  --p-ink: #1f2a44;
+  --p-ink-soft: #5b6780;
+  --p-hairline-strong: #d5cfcd;
+  --p-accent-strong: #c93c0b;
+  --p-accent-ink: #b8380a;
+  --p-accent-soft: #ffece4;
+
+  color: var(--p-ink);
+}
+
+.guard::before,
+.loading::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background: #fff9f6;
+  content: "";
+  pointer-events: none;
+}
+
+.guard {
+  width: min(100%, 28rem);
+  margin: clamp(2rem, 10vw, 5rem) auto;
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  text-align: center;
+}
+
+.guard > * {
+  position: relative;
+  z-index: 1;
+}
+
+.loading {
+  margin: clamp(2rem, 10vw, 5rem) auto;
+  color: var(--p-ink-soft);
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.mark {
+  width: 3.4rem;
+  height: 3.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--p-accent-soft);
+  color: var(--p-accent-ink);
+}
+
+.title {
+  max-width: 20ch;
+  margin: 0.3rem 0 0;
+  font-size: clamp(1.4rem, 5.5vw, 1.85rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.text {
+  max-width: 32ch;
+  margin: 0;
+  color: var(--p-ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.action {
+  min-height: 3.1rem;
+  margin-top: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--p-accent-strong);
+  color: #fff;
+  font-size: 0.96rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.action:focus-visible {
+  outline: 3px solid var(--p-accent-strong);
+  outline-offset: 3px;
+}

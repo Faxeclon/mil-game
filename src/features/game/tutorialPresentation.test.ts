@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import englishMessages from "@/messages/en.json";
 import spanishMessages from "@/messages/es.json";
-import { introductoryTutorialPack } from "@/content/packs/introductoryTutorial";
+import { introductoryTutorialPack } from "@/content/packs/packRegistry";
 import {
   getChoicePresentation,
   getFeedbackBlocks,

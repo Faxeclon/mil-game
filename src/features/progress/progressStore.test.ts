@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { PROGRESS_STORAGE_KEY } from "./progressStorage";
+import { emptyProfilesDocument } from "@/features/profiles/localProfiles";
+import { initialProgressState } from "./progressState";
+import { PROFILES_STORAGE_KEY, PROGRESS_STORAGE_KEY } from "./progressStorage";
 import {
   completeLevelInStore,
   getProgressSnapshot,
@@ -42,7 +44,8 @@ describe("progress store", () => {
   it("renders the empty snapshot on the server", () => {
     expect(getServerProgressSnapshot()).toEqual({
       hydrated: false,
-      state: { version: 1, completedLevelIds: [], localNickname: null, apprenticeAvatarId: null }
+      state: initialProgressState,
+      profiles: emptyProfilesDocument
     });
   });
 
@@ -81,9 +84,10 @@ describe("progress store", () => {
       totalRounds: 3,
       attemptId: "attempt_123e4567-e89b-12d3-a456-426614174000",
       elapsedMs: 1_234,
-      completedAt: "2025-01-02T03:04:05.000Z"
+      completedAt: "2025-01-02T03:04:05.000Z",
+      score: null
     });
-    expect(entries.has(PROGRESS_STORAGE_KEY)).toBe(true);
+    expect(entries.has(PROFILES_STORAGE_KEY)).toBe(true);
     unsubscribe();
   });
 
@@ -102,15 +106,27 @@ describe("progress store", () => {
     unsubscribe();
   });
 
-  it("clears storage and returns to the start on reset", () => {
-    const entries = stubStorage();
+  it("returns the player to the start on reset", () => {
+    stubStorage();
     const unsubscribe = subscribeToProgress(() => {});
     completeLevelInStore("basics-1", attemptedLevel);
 
     resetProgressInStore();
 
-    expect(entries.has(PROGRESS_STORAGE_KEY)).toBe(false);
     expect(getProgressSnapshot().state.completedLevelIds).toEqual([]);
     unsubscribe();
   });
+
+  it("leaves the device empty enough to start over after a reset", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    completeLevelInStore("basics-1", attemptedLevel);
+
+    resetProgressInStore();
+
+    // Nothing to unlock, nothing recorded, no nickname: the same as a new device.
+    expect(getProgressSnapshot().state).toEqual(initialProgressState);
+    unsubscribe();
+  });
+
 });

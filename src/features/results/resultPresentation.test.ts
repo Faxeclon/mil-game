@@ -17,7 +17,8 @@ const result: LevelResult = {
   correctRounds: 2,
   totalRounds: 3,
   elapsedMs: 72_000,
-  completedAt: "2025-01-02T03:04:05.000Z"
+  completedAt: "2025-01-02T03:04:05.000Z",
+  score: 840
 };
 
 describe("fresh result matching", () => {

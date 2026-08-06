@@ -1,0 +1,149 @@
+{
+  "id": "animals-compare-v1",
+  "rounds": [
+    {
+      "id": "animals-compare-round-1",
+      "order": 1,
+      "learningGoal": "visible-clue",
+      "promptKey": "question",
+      "choices": [
+        {
+          "id": "animals-compare-1-left",
+          "position": "left",
+          "media": {
+            "id": "animals-compare-dog-park",
+            "src": "/media/tutorial/placeholders/animals/dog-park.svg",
+            "altKey": "media.animals.dogPark",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-placeholder",
+              "sourceName": "UNESCO Youth Hackathon temporary media team",
+              "licenseStatus": "Project placeholder; not for final use",
+              "temporary": true
+            }
+          }
+        },
+        {
+          "id": "animals-compare-1-right",
+          "position": "right",
+          "media": {
+            "id": "animals-compare-cat-pattern",
+            "src": "/media/tutorial/placeholders/animals/cat-pattern.svg",
+            "altKey": "media.animals.catPattern",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-placeholder",
+              "sourceName": "UNESCO Youth Hackathon temporary media team",
+              "licenseStatus": "Project placeholder; not for final use",
+              "temporary": true,
+              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "animals-compare-1-right",
+      "feedback": {
+        "observationKey": "packs.animalsCompare.r1.observation",
+        "uncertaintyKey": "packs.animalsCompare.r1.remember"
+      }
+    },
+    {
+      "id": "animals-compare-round-2",
+      "order": 2,
+      "learningGoal": "source-and-purpose",
+      "promptKey": "question",
+      "choices": [
+        {
+          "id": "animals-compare-2-left",
+          "position": "left",
+          "media": {
+            "id": "animals-compare-bird-branch",
+            "src": "/media/tutorial/placeholders/animals/bird-branch.svg",
+            "altKey": "media.animals.birdBranch",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-placeholder",
+              "sourceName": "UNESCO Youth Hackathon temporary media team",
+              "licenseStatus": "Project placeholder; not for final use",
+              "temporary": true,
+              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+            }
+          }
+        },
+        {
+          "id": "animals-compare-2-right",
+          "position": "right",
+          "media": {
+            "id": "animals-compare-rabbit-grass",
+            "src": "/media/tutorial/placeholders/animals/rabbit-grass.svg",
+            "altKey": "media.animals.rabbitGrass",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-placeholder",
+              "sourceName": "UNESCO Youth Hackathon temporary media team",
+              "licenseStatus": "Project placeholder; not for final use",
+              "temporary": true
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "animals-compare-2-left",
+      "feedback": {
+        "questionKey": "packs.animalsCompare.r2.question",
+        "uncertaintyKey": "packs.animalsCompare.r2.remember"
+      }
+    },
+    {
+      "id": "animals-compare-round-3",
+      "order": 3,
+      "learningGoal": "uncertainty",
+      "promptKey": "question",
+      "choices": [
+        {
+          "id": "animals-compare-3-left",
+          "position": "left",
+          "media": {
+            "id": "animals-compare-fish-water",
+            "src": "/media/tutorial/placeholders/animals/fish-water.svg",
+            "altKey": "media.animals.fishWater",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-placeholder",
+              "sourceName": "UNESCO Youth Hackathon temporary media team",
+              "licenseStatus": "Project placeholder; not for final use",
+              "temporary": true
+            }
+          }
+        },
+        {
+          "id": "animals-compare-3-right",
+          "position": "right",
+          "media": {
+            "id": "animals-compare-horse-sunset",
+            "src": "/media/tutorial/placeholders/animals/horse-sunset.svg",
+            "altKey": "media.animals.horseSunset",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-placeholder",
+              "sourceName": "UNESCO Youth Hackathon temporary media team",
+              "licenseStatus": "Project placeholder; not for final use",
+              "temporary": true,
+              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "animals-compare-3-right",
+      "feedback": {
+        "verificationKey": "packs.animalsCompare.r3.verification",
+        "uncertaintyKey": "packs.animalsCompare.r3.remember"
+      }
+    }
+  ]
+}

@@ -68,6 +68,64 @@
   font-size: 1rem;
 }
 
+/* ---------------------------------------------------------- Island progress */
+
+.islandProgress {
+  margin-top: clamp(0.9rem, 3vw, 1.25rem);
+  padding: 0.75rem 0.9rem 0.85rem;
+  border: 1px solid var(--i-hairline);
+  border-radius: 1.1rem;
+  background: var(--i-paper);
+}
+
+.islandProgressTop {
+  margin: 0 0 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+
+.islandProgressLabel {
+  color: var(--i-ink-soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.islandProgressValue {
+  font-size: 0.9rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.islandProgressTrack {
+  height: 0.6rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #f0e9e6;
+}
+
+.islandProgressFill {
+  height: 100%;
+  display: block;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--i-accent) 0%, var(--i-accent-strong) 100%);
+  transition: width 320ms var(--i-ease);
+}
+
+.islandEmpty {
+  max-width: 34ch;
+  margin: clamp(0.9rem, 3vw, 1.25rem) 0 0;
+  padding: 0.7rem 0.9rem;
+  border: 1px dashed var(--i-hairline-strong);
+  border-radius: 1.1rem;
+  color: var(--i-ink-soft);
+  font-size: 0.9rem;
+}
+
 /* ------------------------------------------------------------ Category group */
 
 .group {
@@ -245,6 +303,42 @@
   font-weight: 700;
 }
 
+/* Best local run of a finished mission: stars first, then the number. */
+.best {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--i-mint);
+  font-size: 0.7rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.05rem;
+}
+
+/* Earned stars are filled and empty ones are outlined, so the count survives without colour. */
+.starEarned {
+  color: #e0930c;
+}
+
+.starEmpty {
+  color: var(--i-hairline-strong);
+}
+
+/* Why a mission is shut, in words rather than only a dimmed look. */
+.requirement {
+  max-width: 9rem;
+  color: var(--i-ink-soft);
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
 /* ------------------------------------------------------------------ States */
 
 .step.available .orb {
@@ -278,6 +372,34 @@
   color: var(--i-ink-soft);
 }
 
+/*
+ * A mission with no content yet. It is drawn differently from a locked one on purpose:
+ * dashed instead of solid, so nobody reads it as something they failed to earn.
+ */
+.step.upcoming .orb {
+  border-style: dashed;
+  border-color: var(--i-hairline-strong);
+  background: transparent;
+  box-shadow: none;
+}
+
+.step.upcoming .orbNumber {
+  background: #f6f1ef;
+  color: var(--i-ink-soft);
+}
+
+.step.upcoming .mode,
+.step.upcoming .caption {
+  color: var(--i-ink-soft);
+}
+
+/* Keyboard focus must be obvious on a map made of round targets. */
+.mission:focus-visible {
+  outline: 3px solid var(--i-accent-strong);
+  outline-offset: 4px;
+  border-radius: 1rem;
+}
+
 @keyframes float {
   0%,
   100% {
@@ -300,4 +422,82 @@
   .step.available .mission:hover {
     transform: none;
   }
+}
+
+/* ------------------------------------------------ The island's own challenge */
+
+/*
+ * Sits above the missions but reads as an extra, not as a step: a rounded card with its
+ * own icon, never a node on the chain. It is the last look back at the island, and it
+ * awards nothing, so it must not look like something the path depends on.
+ */
+.challenge {
+  margin-top: clamp(0.9rem, 3vw, 1.25rem);
+  padding: 0.75rem 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  border: 1px dashed var(--i-hairline-strong);
+  border-radius: 1.1rem;
+  background: var(--i-paper);
+}
+
+.challengeIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 0.85rem;
+  background: #fff3e8;
+  color: var(--i-accent-ink);
+}
+
+.challengeText {
+  flex: 1 1 10rem;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.challengeTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.challengeLead {
+  margin: 0;
+  color: var(--i-ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.challengeAction {
+  min-height: 2.75rem;
+  padding: 0.4rem 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--i-accent-strong);
+  color: #fff;
+  font-size: 0.86rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.challengeAction:focus-visible {
+  outline: 3px solid var(--i-accent-strong);
+  outline-offset: 3px;
+}
+
+.challengeLocked {
+  width: 2.2rem;
+  height: 2.2rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f2eeec;
+  color: var(--i-ink-soft);
 }

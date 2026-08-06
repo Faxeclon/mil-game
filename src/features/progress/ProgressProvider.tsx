@@ -8,7 +8,11 @@ import {
   type LevelResult,
   type ProgressState
 } from "./progressState";
+import type { GuardianConsent } from "@/features/guardian/guardianConsent";
+import type { ProfilesDocument } from "@/features/profiles/localProfiles";
 import {
+  authorizeGuardianInStore,
+  withdrawGuardianInStore,
   completeLevelInStore,
   getProgressSnapshot,
   markOnboardedInStore,
@@ -20,6 +24,12 @@ import {
 export type ProgressApi = {
   /** False until the stored progress has been read on the client. */
   hydrated: boolean;
+  /** Everyone playing on this phone, and who is holding it now. */
+  profiles: ProfilesDocument;
+  /** The adult who authorised the active player, or null while they play as a guest. */
+  guardian: GuardianConsent | null;
+  authorizeGuardian: (email: string, authorizedOn: string) => void;
+  withdrawGuardian: () => void;
   lastResult?: LevelResult;
   /** Raw state, for the zone and level helpers that derive from it. */
   progressState: ProgressState;
@@ -36,7 +46,7 @@ const ProgressContext = createContext<ProgressApi | null>(null);
 
 /** Single owner of the stored progress for the whole app. */
 export function ProgressProvider({ children }: { children: ReactNode }) {
-  const { hydrated, state } = useSyncExternalStore(
+  const { hydrated, state, profiles } = useSyncExternalStore(
     subscribeToProgress,
     getProgressSnapshot,
     getServerProgressSnapshot
@@ -45,6 +55,10 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const value = useMemo<ProgressApi>(
     () => ({
       hydrated,
+      profiles,
+      guardian: state.guardian,
+      authorizeGuardian: authorizeGuardianInStore,
+      withdrawGuardian: withdrawGuardianInStore,
       lastResult: state.lastResult,
       progressState: state,
       onboarded: state.onboarded === true,
@@ -55,7 +69,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       markOnboarded: markOnboardedInStore,
       resetProgress: resetProgressInStore
     }),
-    [hydrated, state]
+    [hydrated, profiles, state]
   );
 
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;

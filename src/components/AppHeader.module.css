@@ -51,6 +51,21 @@
   letter-spacing: -0.02em;
 }
 
+/* ------------------------------------------------------------------ Controls */
+
+/*
+ * Language and sound sit at the very end of the bar, past everything else. Sound is the
+ * last of the two because it is the one reached for in a hurry when a room goes quiet.
+ */
+.controls {
+  flex: 0 0 auto;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  order: 99;
+}
+
 /* ---------------------------------------------------------------- Navigation */
 
 .nav {

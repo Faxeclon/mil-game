@@ -1,0 +1,257 @@
+/*
+ * The adult's screen, built like the profile card the child meets at the start: one
+ * centred panel, everything full width inside it, nothing floating off to a side.
+ */
+
+.guardian,
+.loading {
+  --a-ink: #1f2a44;
+  --a-ink-soft: #5b6780;
+  --a-paper: #ffffff;
+  --a-hairline: #ece7e6;
+  --a-hairline-strong: #d5cfcd;
+  --a-accent: #ea4b16;
+  --a-accent-strong: #c93c0b;
+  --a-accent-ink: #b8380a;
+  --a-accent-soft: #ffece4;
+  --a-mint: #1f7a28;
+  --a-mint-soft: #e8f6e9;
+  --a-shadow: 0 1px 2px rgba(31, 42, 68, 0.05), 0 12px 28px rgba(31, 42, 68, 0.08);
+
+  color: var(--a-ink);
+}
+
+.guardian::before,
+.loading::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background: #fff9f6;
+  content: "";
+  pointer-events: none;
+}
+
+.guardian {
+  width: min(100%, 27rem);
+  margin: 0 auto;
+  padding-bottom: 3rem;
+  display: grid;
+  justify-items: center;
+}
+
+.guardian > * {
+  position: relative;
+  z-index: 1;
+}
+
+.loading {
+  margin: clamp(2rem, 10vw, 5rem) auto;
+  color: var(--a-ink-soft);
+  text-align: center;
+}
+
+.back {
+  min-height: 2.75rem;
+  margin: clamp(0.5rem, 3vw, 1.25rem) auto 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--a-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* ------------------------------------------------------------------ Panel */
+
+.seal {
+  width: 3.6rem;
+  height: 3.6rem;
+  margin-top: 0.75rem;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--a-paper);
+  border-radius: 50%;
+  background: var(--a-accent-soft);
+  box-shadow: 0 0 0 1px var(--a-hairline);
+  color: var(--a-accent-ink);
+}
+
+.title {
+  max-width: 18ch;
+  margin: 0.75rem 0 0;
+  font-size: clamp(1.4rem, 5.5vw, 1.85rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.lead {
+  max-width: 34ch;
+  margin: 0.5rem 0 0;
+  color: var(--a-ink-soft);
+  font-size: 0.93rem;
+  line-height: 1.45;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.meta {
+  margin: 0.35rem 0 0;
+  color: var(--a-ink-soft);
+  font-size: 0.84rem;
+  text-align: center;
+}
+
+.pending {
+  width: 100%;
+  margin: 0.85rem 0 0;
+  padding: 0.65rem 0.9rem;
+  border: 1px dashed var(--a-hairline-strong);
+  border-radius: 0.9rem;
+  color: var(--a-ink-soft);
+  font-size: 0.84rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------- Promises */
+
+.promises {
+  width: 100%;
+  margin-top: 1.2rem;
+  padding: 0.95rem 1.05rem 1.05rem;
+  border: 1px solid var(--a-hairline);
+  border-radius: 1.25rem;
+  background: var(--a-paper);
+  box-shadow: var(--a-shadow);
+}
+
+.promisesTitle {
+  margin: 0 0 0.7rem;
+  color: var(--a-ink-soft);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.promiseList {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+  list-style: none;
+}
+
+.promise {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.promise svg {
+  flex: none;
+  margin-top: 0.18rem;
+  color: var(--a-mint);
+}
+
+/* ------------------------------------------------------------------- Form */
+
+.form {
+  width: 100%;
+  margin-top: 1.1rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.fieldLabel {
+  color: var(--a-ink-soft);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.input {
+  width: 100%;
+  min-height: 3.4rem;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--a-hairline-strong);
+  border-radius: 1rem;
+  background: var(--a-paper);
+  color: var(--a-ink);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.input:focus-visible {
+  outline: 3px solid var(--a-accent-strong);
+  outline-offset: 2px;
+}
+
+.fieldHint {
+  margin: 0.1rem 0 0;
+  color: var(--a-ink-soft);
+  font-size: 0.79rem;
+  line-height: 1.4;
+}
+
+.fieldError {
+  margin: 0;
+  color: var(--a-accent-ink);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* ---------------------------------------------------------------- Actions */
+
+.accept,
+.secondary {
+  width: 100%;
+  min-height: 3.4rem;
+  margin-top: 0.85rem;
+  padding: 0.6rem 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 0;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.accept {
+  background: var(--a-accent-strong);
+  color: #fff;
+}
+
+.accept:hover {
+  background: var(--a-accent-ink);
+}
+
+.secondary {
+  min-height: 2.9rem;
+  margin-top: 0.55rem;
+  background: transparent;
+  color: var(--a-ink-soft);
+  font-size: 0.9rem;
+}
+
+.secondary:hover {
+  color: var(--a-ink);
+}
+
+.accept:focus-visible,
+.secondary:focus-visible {
+  outline: 3px solid var(--a-accent-strong);
+  outline-offset: 3px;
+}

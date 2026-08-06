@@ -595,6 +595,22 @@
   font-weight: 700;
 }
 
+.hubStatDetail {
+  color: var(--h-ink-soft);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+/* A running streak lights up; a broken one stays quiet rather than scolding. */
+.hubStatLive .hubStatIcon {
+  background: #ffe8d8;
+  color: #c2410c;
+}
+
+.hubStatLive .hubStatValue {
+  color: #c2410c;
+}
+
 /* ---------------------------------------------------------------- Progress */
 
 .progress {
@@ -632,6 +648,467 @@
 .progressValue {
   color: var(--h-ink);
   font-size: 0.9rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* What Roqui says to the child, under the greeting inside the same bubble. */
+.hubWelcome {
+  margin: 0.35rem 0 0;
+  color: var(--h-ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.4;
+  text-wrap: balance;
+}
+
+/*
+ * Apprentice and earned title on one line, and a way into the ladder that explains it.
+ * Compact on purpose: it is who you are, not an announcement.
+ */
+.identity {
+  margin: 0.9rem auto 0;
+  padding: 0.3rem 0.8rem 0.3rem 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--h-hairline);
+  border-radius: 999px;
+  background: #fff;
+}
+
+/* Only shown once an adult is linked, so the tick always means something. */
+.identityCheck {
+  width: 1.25rem;
+  height: 1.25rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #e8f6e9;
+  color: #1f7a28;
+}
+
+.identityAvatar {
+  width: 2.1rem;
+  height: 2.1rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #ffece4;
+  color: #b8380a;
+}
+
+.identityTitle {
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+/* The earned title, right under the greeting. */
+.hubTitleBadge {
+  margin: 0.25rem 0 0;
+  padding: 0.18rem 0.7rem;
+  display: inline-block;
+  border-radius: 999px;
+  background: #fff3e8;
+  color: #b8380a;
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+/* ------------------------------------------------------------- Standings */
+
+.standings {
+  width: min(100%, 24rem);
+  margin: 1.35rem auto 0;
+  padding: 0.8rem 0.9rem 0.9rem;
+  border: 1px solid var(--h-hairline);
+  border-radius: 1.1rem;
+  background: #fff;
+}
+
+.standingsTitle {
+  margin: 0 0 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--h-ink-soft);
+}
+
+.standingsList {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.3rem;
+  list-style: none;
+}
+
+.standing {
+  padding: 0.4rem 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  border-radius: 0.7rem;
+  font-size: 0.86rem;
+}
+
+/* Whose row is whose reads from the ring, not from the colour alone. */
+.standingYou {
+  background: #fff3e8;
+  box-shadow: inset 0 0 0 1px #f0b48f;
+}
+
+.standingPosition {
+  width: 1.5rem;
+  flex: none;
+  color: var(--h-ink-soft);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.standingName {
+  flex: 1 1 auto;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.standingStars {
+  flex: none;
+  color: var(--h-ink-soft);
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.standingsNote {
+  margin: 0.6rem 0 0;
+  color: var(--h-ink-soft);
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+/* ------------------------------------------------------- Who is playing */
+
+.playerList {
+  width: min(100%, 22rem);
+  margin: 1rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.playerCard {
+  width: 100%;
+  min-height: 3.6rem;
+  padding: 0.55rem 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  border: 1px solid var(--h-hairline);
+  border-radius: 1.1rem;
+  background: #fff;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.playerCard:hover,
+.playerCard:focus-visible {
+  border-color: var(--h-accent);
+}
+
+.playerCard:focus-visible {
+  outline: 3px solid var(--h-accent);
+  outline-offset: 3px;
+}
+
+/* Whoever played last is marked by a ring, not by colour alone. */
+.playerCurrent {
+  box-shadow: inset 0 0 0 2px var(--h-accent);
+}
+
+.playerIcon {
+  width: 2.6rem;
+  height: 2.6rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #ffece4;
+  color: #b8380a;
+}
+
+.playerText {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.playerName {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.playerDetail {
+  color: var(--h-ink-soft);
+  font-size: 0.78rem;
+}
+
+.addPlayer {
+  min-height: 3rem;
+  margin-top: 0.75rem;
+  padding: 0.5rem 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px dashed var(--h-hairline-strong, #d5cfcd);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--h-ink);
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.addPlayer:focus-visible {
+  outline: 3px solid var(--h-accent);
+  outline-offset: 3px;
+}
+
+/* The one mode that needs neither an account nor a connection. */
+.versusCard {
+  width: min(100%, 24rem);
+  margin: 1.35rem auto 0;
+  padding: 0.75rem 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  border: 1px solid var(--h-hairline);
+  border-radius: 1.1rem;
+  background: #fff;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  transition: transform 150ms var(--h-ease), border-color 150ms ease;
+}
+
+.versusCard:hover {
+  transform: translateY(-1px);
+  border-color: var(--h-accent);
+}
+
+.versusCard:focus-visible {
+  outline: 3px solid var(--h-accent);
+  outline-offset: 3px;
+}
+
+.versusIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 0.85rem;
+  background: #ffece4;
+  color: #b8380a;
+}
+
+.versusText {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.versusTitle {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.versusLead {
+  color: var(--h-ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .versusCard {
+    transition: none;
+  }
+
+  .versusCard:hover {
+    transform: none;
+  }
+}
+
+/* A figure on the teacher's home: how many cards are ready, and nothing invented. */
+.teacherStat {
+  margin: 0.15rem 0 0.6rem;
+  color: var(--h-ink-soft);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* The action inside a hub tile, so a tile is a place to go and not only a label. */
+.hubStatLink {
+  padding: 0.2rem 0.7rem;
+  border: 1px solid var(--h-hairline-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--h-ink);
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.hubStatLink:hover {
+  border-color: var(--h-accent);
+  color: var(--h-accent-ink);
+}
+
+.hubStatLink:focus-visible {
+  outline: 3px solid var(--h-accent);
+  outline-offset: 2px;
+}
+
+.teacherHomeIcon {
+  width: 3.4rem;
+  height: 3.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #e8f6e9;
+  color: #1f7a28;
+}
+
+/* Once a teacher registered here, their way in stops being quiet: this device is theirs. */
+.teacherCard {
+  width: min(100%, 22rem);
+  margin-top: 0.9rem;
+  padding: 0.7rem 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid var(--h-hairline);
+  border-radius: 1.1rem;
+  background: #fff;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+}
+
+.teacherCard:hover {
+  border-color: var(--h-accent);
+}
+
+.teacherCard:focus-visible {
+  outline: 3px solid var(--h-accent);
+  outline-offset: 3px;
+}
+
+.teacherCardIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 0.85rem;
+  background: #e8f6e9;
+  color: #1f7a28;
+}
+
+.teacherCardText {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.teacherCardTitle {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.teacherCardLead {
+  color: var(--h-ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+/* Quiet on purpose: a child has no reason to notice it, an adult finds it if they look. */
+.teacherLink {
+  min-height: 2.75rem;
+  margin-top: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--h-ink-soft);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.teacherLink:focus-visible {
+  outline: 3px solid var(--h-accent);
+  outline-offset: 3px;
+}
+
+.teacherLink:hover {
+  color: var(--h-ink);
+}
+
+/* Where the progress lives, said plainly rather than hidden. */
+.guestBadge {
+  padding: 0.22rem 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid var(--h-hairline);
+  border-radius: 999px;
+  background: var(--h-paper, #fff);
+  color: var(--h-ink-soft);
+  font-size: 0.72rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* Authorised reads from the tick and the wording, not from the colour swap alone. */
+.guardianBadge {
+  border-color: #a8d5ad;
+  background: #e8f6e9;
+  color: #1f7a28;
+}
+
+.guestNotice {
+  max-width: 34ch;
+  margin: 1.35rem auto 0;
+  color: var(--h-ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.hubIsland {
+  margin: 0.75rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.35rem;
+  text-align: center;
+}
+
+.hubIslandLabel {
+  color: var(--h-ink-soft);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hubIslandName {
+  font-size: 0.95rem;
   font-weight: 800;
 }
 
@@ -756,4 +1233,13 @@
   .secondaryAction {
     transition: none;
   }
+}
+
+/* What Roqui says to the teacher, under the greeting inside the same bubble. */
+.teacherWelcome {
+  margin: 0.35rem 0 0;
+  color: var(--h-ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.4;
+  text-wrap: balance;
 }

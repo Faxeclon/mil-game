@@ -1,0 +1,80 @@
+{
+  "id": "sports-single-v1",
+  "allowsUncertain": false,
+  "rounds": [
+    {
+      "id": "sports-single-round-1",
+      "order": 1,
+      "learningGoal": "visible-clue",
+      "promptKey": "singleQuestion",
+      "media": {
+        "id": "sports-single-skate-park",
+        "src": "/media/tutorial/placeholders/sports/skate-park.svg",
+        "altKey": "media.sports.skatePark",
+        "origin": "ai-generated",
+        "reliability": "unverified",
+        "provenance": {
+          "sourceType": "project-placeholder",
+          "sourceName": "UNESCO Youth Hackathon temporary media team",
+          "licenseStatus": "Project placeholder; not for final use",
+          "temporary": true,
+          "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+        }
+      },
+      "answer": "ai-generated",
+      "feedback": {
+        "observationKey": "packs.sportsSingle.r1.observation",
+        "uncertaintyKey": "packs.sportsSingle.r1.remember"
+      }
+    },
+    {
+      "id": "sports-single-round-2",
+      "order": 2,
+      "learningGoal": "source-and-purpose",
+      "promptKey": "singleQuestion",
+      "media": {
+        "id": "sports-single-tennis-court",
+        "src": "/media/tutorial/placeholders/sports/tennis-court.svg",
+        "altKey": "media.sports.tennisCourt",
+        "origin": "camera-captured",
+        "reliability": "unverified",
+        "provenance": {
+          "sourceType": "project-placeholder",
+          "sourceName": "UNESCO Youth Hackathon temporary media team",
+          "licenseStatus": "Project placeholder; not for final use",
+          "temporary": true
+        }
+      },
+      "answer": "camera-captured",
+      "feedback": {
+        "questionKey": "packs.sportsSingle.r2.question",
+        "uncertaintyKey": "packs.sportsSingle.r2.remember"
+      }
+    },
+    {
+      "id": "sports-single-round-3",
+      "order": 3,
+      "learningGoal": "uncertainty",
+      "promptKey": "singleQuestion",
+      "media": {
+        "id": "sports-single-boxing-ring",
+        "src": "/media/tutorial/placeholders/sports/boxing-ring.svg",
+        "altKey": "media.sports.boxingRing",
+        "origin": "ai-generated",
+        "reliability": "unverified",
+        "provenance": {
+          "sourceType": "project-placeholder",
+          "sourceName": "UNESCO Youth Hackathon temporary media team",
+          "licenseStatus": "Project placeholder; not for final use",
+          "temporary": true,
+          "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+        }
+      },
+      "answer": "ai-generated",
+      "feedback": {
+        "verificationKey": "packs.sportsSingle.r3.verification",
+        "uncertaintyKey": "packs.sportsSingle.r3.remember"
+      }
+    }
+  ]
+}

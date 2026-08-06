@@ -1,10 +1,11 @@
 "use client";
 
-import { Check, ChevronLeft, LockKeyhole, Play, Timer } from "lucide-react";
+import { Check, ChevronLeft, Hourglass, LockKeyhole, Play, Star, Timer, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   getCategoriesByIsland,
   getLevelDifficulty,
+  getMissionById,
   getMissionsByCategory,
   isTimedMode,
   type IslandKey
@@ -14,6 +15,9 @@ import {
   getCategoryState,
   getMissionState
 } from "@/features/levels/levelProgress";
+import { getIslandProgress, getMissionRequirement, isIslandRushUnlocked } from "@/features/levels/progressSummary";
+import { getBestResult } from "@/features/progress/bestResults";
+import { getStarCount } from "@/features/scoring/levelScore";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link } from "@/i18n/navigation";
 import styles from "./IslandView.module.css";
@@ -27,8 +31,22 @@ import styles from "./IslandView.module.css";
  */
 export function IslandView({ island }: { island: IslandKey }) {
   const t = useTranslations("islands");
+  const tRush = useTranslations("rush");
   const { progressState } = useProgress();
   const categories = getCategoriesByIsland(island);
+  const islandProgress = getIslandProgress(progressState, island);
+  const rushUnlocked = isIslandRushUnlocked(progressState, island);
+
+  /** Names a mission the way it is written on the map, for the "finish X first" line. */
+  const describeMission = (missionId: string): string => {
+    const blocking = getMissionById(missionId);
+    return blocking
+      ? t("missionIdentity", {
+          category: t(`categories.${blocking.category}.title`),
+          number: blocking.order
+        })
+      : missionId;
+  };
 
   return (
     <div className={styles.island}>
@@ -39,6 +57,69 @@ export function IslandView({ island }: { island: IslandKey }) {
 
       <h1 className={styles.title}>{t("islandTitle", { name: t(`list.${island}.title`) })}</h1>
       <p className={styles.subtitle}>{t(`list.${island}.description`)}</p>
+
+      {/* An island with nothing playable says so; it is not a mission left at zero. */}
+      {islandProgress.isEmpty ? (
+        <p className={styles.islandEmpty}>{t("islandEmpty")}</p>
+      ) : (
+        <div className={styles.islandProgress}>
+          <p className={styles.islandProgressTop}>
+            <span className={styles.islandProgressLabel}>{t("islandProgressLabel")}</span>
+            <span className={styles.islandProgressValue}>
+              {t("islandProgress", { done: islandProgress.done, total: islandProgress.total })}
+              {" · "}
+              {t("percent", { percent: islandProgress.percent })}
+            </span>
+          </p>
+          <div
+            aria-label={t("islandProgressAria", {
+              done: islandProgress.done,
+              total: islandProgress.total
+            })}
+            aria-valuemax={100}
+            aria-valuemin={0}
+            aria-valuenow={islandProgress.percent}
+            aria-valuetext={t("percent", { percent: islandProgress.percent })}
+            className={styles.islandProgressTrack}
+            role="progressbar"
+          >
+            <span
+              className={styles.islandProgressFill}
+              style={{ width: `${islandProgress.percent}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/*
+        The island's own challenge, at the end of its path. It opens once the island is
+        finished: the same pictures, now against a clock, which only makes sense as a
+        last look back rather than as a shortcut past the missions.
+      */}
+      {!islandProgress.isEmpty && (
+        <section aria-labelledby={`challenge-${island}`} className={styles.challenge}>
+          <span className={styles.challengeIcon}>
+            <Zap aria-hidden="true" size={20} />
+          </span>
+          <span className={styles.challengeText}>
+            <h2 className={styles.challengeTitle} id={`challenge-${island}`}>
+              {tRush("title")}
+            </h2>
+            <p className={styles.challengeLead}>
+              {rushUnlocked ? tRush("notAMission") : tRush("lockedUntilDone")}
+            </p>
+          </span>
+          {rushUnlocked ? (
+            <Link className={styles.challengeAction} href={`/island/${island}/rush`}>
+              {tRush("start")}
+            </Link>
+          ) : (
+            <span className={styles.challengeLocked}>
+              <LockKeyhole aria-hidden="true" size={15} />
+            </span>
+          )}
+        </section>
+      )}
 
       {categories.map((category) => {
         const missions = getMissionsByCategory(category.key);
@@ -67,6 +148,9 @@ export function IslandView({ island }: { island: IslandKey }) {
                 const isAvailable = state === "available" && isPlayable;
                 const isCompleted = state === "completed";
                 const difficulty = getLevelDifficulty(mission.mode);
+                const requirement = getMissionRequirement(progressState, mission);
+                const best = isCompleted ? getBestResult(progressState.bestResultsByLevelId, mission.id) : undefined;
+                const stars = best ? getStarCount(best.score) : 0;
 
                 const body = (
                   <>
@@ -75,8 +159,12 @@ export function IslandView({ island }: { island: IslandKey }) {
                         <Check aria-hidden="true" size={24} strokeWidth={3} />
                       ) : isAvailable ? (
                         <Play aria-hidden="true" size={22} fill="currentColor" />
-                      ) : (
+                      ) : isPlayable ? (
                         <LockKeyhole aria-hidden="true" size={18} />
+                      ) : (
+                        /* A different shape, not just a different colour, so a mission that
+                           does not exist yet never reads as one the player failed to unlock. */
+                        <Hourglass aria-hidden="true" size={18} />
                       )}
                       <span className={styles.orbNumber}>{mission.order}</span>
                     </span>
@@ -92,6 +180,40 @@ export function IslandView({ island }: { island: IslandKey }) {
                         </span>
                       )}
                       {!isPlayable && <span className={styles.soon}>{t("comingSoon")}</span>}
+
+                      {best && (
+                        <span className={styles.best}>
+                          <span
+                            aria-label={t("starsAria", { stars, total: 3 })}
+                            className={styles.stars}
+                            role="img"
+                          >
+                            {[1, 2, 3].map((position) => (
+                              <Star
+                                aria-hidden="true"
+                                className={position <= stars ? styles.starEarned : styles.starEmpty}
+                                fill={position <= stars ? "currentColor" : "none"}
+                                key={position}
+                                size={13}
+                                strokeWidth={2.2}
+                              />
+                            ))}
+                          </span>
+                          {t("missionBest", { score: best.score })}
+                        </span>
+                      )}
+
+                      {requirement.kind === "requiresMission" && (
+                        <span className={styles.requirement}>
+                          {t("lockedBy", { mission: describeMission(requirement.missionId) })}
+                        </span>
+                      )}
+                      {requirement.kind === "locked" && (
+                        <span className={styles.requirement}>{t("lockedGeneric")}</span>
+                      )}
+                      {requirement.kind === "comingSoon" && (
+                        <span className={styles.requirement}>{t("comingSoonHint")}</span>
+                      )}
                     </span>
                   </>
                 );
@@ -100,7 +222,9 @@ export function IslandView({ island }: { island: IslandKey }) {
                   ? styles.available
                   : isCompleted
                     ? styles.completed
-                    : styles.locked;
+                    : isPlayable
+                      ? styles.locked
+                      : styles.upcoming;
 
                 return (
                   <li className={`${styles.step} ${stateClass}`} key={mission.id}>

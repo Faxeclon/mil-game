@@ -97,6 +97,109 @@
   font-weight: 800;
 }
 
+/* ---------------------------------------------------------------- Score card */
+
+.scoreCard {
+  width: min(100%, 20rem);
+  margin: 1.15rem 0 1.1rem;
+  padding: 1rem 1.1rem 1.1rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--r-hairline);
+  border-radius: 1.4rem;
+  background: var(--r-paper);
+  box-shadow: 0 6px 18px -14px rgb(31 42 68 / 40%);
+}
+
+.recordBadge {
+  margin: 0 0 0.15rem;
+  padding: 0.32rem 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  background: var(--r-accent-soft);
+  color: var(--r-accent-ink);
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.scoreLabel {
+  margin: 0;
+  color: var(--r-ink-soft);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: var(--r-accent);
+}
+
+/* Earned and empty differ in fill, not only in colour, so the count reads without it. */
+.starEarned {
+  color: #e0930c;
+}
+
+.starEmpty {
+  color: var(--r-hairline-strong);
+}
+
+.scoreValue {
+  margin: 0.1rem 0 0;
+  font-size: clamp(1.6rem, 6vw, 2rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.scoreMissing {
+  max-width: 30ch;
+  margin: 0.2rem 0 0;
+  color: var(--r-ink-soft);
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.recordHint {
+  max-width: 28ch;
+  margin: 0.3rem 0 0;
+  color: var(--r-ink-soft);
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
+.bestScore {
+  margin: 0.55rem 0 0;
+  padding-top: 0.6rem;
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  gap: 0.1rem;
+  border-top: 1px dashed var(--r-hairline);
+}
+
+.bestScoreLabel {
+  margin: 0.2rem 0 0;
+  color: var(--r-ink-soft);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.bestScoreValue {
+  color: var(--r-ink);
+  font-size: 1.05rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
 .correctRounds {
   margin: 1rem 0 1.25rem;
   padding: 0.4rem 1rem;
@@ -116,6 +219,60 @@
 
 .results > ol {
   width: min(100%, 20rem);
+}
+
+/* ------------------------------------------------- Where the medal is kept */
+
+.keepsake {
+  width: min(100%, 21rem);
+  margin: 1.4rem 0 0;
+  padding: 0.9rem 1rem 1rem;
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--r-hairline);
+  border-radius: 1.4rem;
+  background: var(--r-accent-soft);
+  text-align: center;
+}
+
+.keepsakeMascot {
+  width: 3.4rem;
+}
+
+.keepsakeText {
+  max-width: 32ch;
+  margin: 0;
+  color: var(--r-ink);
+  font-size: 0.88rem;
+  line-height: 1.4;
+  text-wrap: balance;
+}
+
+.keepsakeTitle {
+  margin-right: 0.3rem;
+  color: var(--r-accent-ink);
+  font-weight: 800;
+}
+
+.keepsakeAction {
+  min-height: 2.8rem;
+  margin-top: 0.2rem;
+  padding: 0.45rem 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--r-paper);
+  color: var(--r-accent-ink);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.keepsakeAction:focus-visible {
+  outline: 3px solid var(--r-accent-strong);
+  outline-offset: 3px;
 }
 
 .actions {

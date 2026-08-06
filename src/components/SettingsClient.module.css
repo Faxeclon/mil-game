@@ -1,0 +1,255 @@
+/* Accessibility and data. Plain rows, no decoration competing with the content. */
+
+.settings {
+  --s-ink: #1f2a44;
+  --s-ink-soft: #5b6780;
+  --s-paper: #ffffff;
+  --s-hairline: #ece7e6;
+  --s-hairline-strong: #d5cfcd;
+  --s-accent: #ea4b16;
+  --s-accent-strong: #c93c0b;
+  --s-accent-ink: #b8380a;
+  --s-accent-soft: #ffece4;
+  --s-mint: #1f7a28;
+  --s-mint-soft: #e8f6e9;
+
+  width: min(100%, 36rem);
+  margin: 0 auto;
+  padding-bottom: 3rem;
+  color: var(--s-ink);
+}
+
+.settings::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background: #fff9f6;
+  content: "";
+  pointer-events: none;
+}
+
+.settings > * {
+  position: relative;
+  z-index: 1;
+}
+
+.back {
+  min-height: 2.75rem;
+  margin-top: clamp(0.5rem, 3vw, 1.25rem);
+  padding: 0 0.6rem 0 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 999px;
+  color: var(--s-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back:hover {
+  color: var(--s-ink);
+}
+
+.title {
+  margin: 0.6rem 0 0;
+  font-size: clamp(1.6rem, 6vw, 2.1rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.lead {
+  max-width: 40ch;
+  margin: 0.45rem 0 0;
+  color: var(--s-ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+/* ------------------------------------------------------------------ Groups */
+
+.group {
+  margin-top: clamp(1.35rem, 5vw, 2rem);
+  padding: clamp(0.85rem, 3vw, 1.15rem);
+  border: 1px solid var(--s-hairline);
+  border-radius: 1.25rem;
+  background: var(--s-paper);
+}
+
+.groupTitle {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.groupLead {
+  max-width: 42ch;
+  margin: 0.3rem 0 0;
+  color: var(--s-ink-soft);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.upcomingList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  padding: 0.75rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  border-bottom: 1px solid var(--s-hairline);
+}
+
+.row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0.15rem;
+}
+
+.rowIcon {
+  width: 2.3rem;
+  height: 2.3rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 0.8rem;
+  background: #f4f1ef;
+  color: var(--s-ink-soft);
+}
+
+.rowText {
+  flex: 1 1 12rem;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.rowName {
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.rowDetail {
+  color: var(--s-ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+/* A state, not a switch: the tick plus the word carry it without relying on colour. */
+.stateOn,
+.stateOff {
+  padding: 0.22rem 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.stateOn {
+  background: var(--s-mint-soft);
+  color: var(--s-mint);
+}
+
+.stateOff {
+  border: 1px solid var(--s-hairline-strong);
+  color: var(--s-ink-soft);
+}
+
+.soon {
+  padding: 0.2rem 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px dashed var(--s-hairline-strong);
+  border-radius: 999px;
+  color: var(--s-ink-soft);
+  font-size: 0.74rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------- Reset */
+
+.resetRow {
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  border-top: 1px dashed var(--s-hairline-strong);
+}
+
+.resetText {
+  flex: 1 1 12rem;
+  margin: 0;
+  color: var(--s-ink-soft);
+  font-size: 0.82rem;
+}
+
+.resetStart,
+.resetYes,
+.resetNo {
+  min-height: 2.75rem;
+  padding: 0.45rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.resetStart {
+  border: 1px solid var(--s-hairline-strong);
+  background: transparent;
+  color: var(--s-ink);
+}
+
+.resetStart:disabled {
+  color: var(--s-ink-soft);
+  cursor: not-allowed;
+}
+
+/* Two steps on purpose: erasing every medal must never be one stray tap away. */
+.resetConfirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.resetQuestion {
+  color: var(--s-accent-ink);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.resetYes {
+  border: 0;
+  background: var(--s-accent-strong);
+  color: #fff;
+}
+
+.resetNo {
+  border: 1px solid var(--s-hairline-strong);
+  background: transparent;
+  color: var(--s-ink);
+}
+
+.resetStart:focus-visible,
+.resetYes:focus-visible,
+.resetNo:focus-visible {
+  outline: 3px solid var(--s-accent-strong);
+  outline-offset: 3px;
+}

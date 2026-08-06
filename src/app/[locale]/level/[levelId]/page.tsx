@@ -1,9 +1,12 @@
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { MissionIntro } from "@/components/MissionIntro";
 import { MissionRouteGuard } from "@/components/MissionRouteGuard";
 import { PageContainer } from "@/components/PageContainer";
+import { ProfileRouteGuard } from "@/components/ProfileRouteGuard";
+import { SingleImageClient } from "@/components/SingleImageClient";
 import { TutorialClient } from "@/components/TutorialClient";
-import { introductoryTutorialPack } from "@/content/packs/introductoryTutorial";
+import { getContentPack, getSinglePack, hasContentPack } from "@/content/packs/packRegistry";
 import {
   getLevelDifficulty,
   getMissionById,
@@ -19,7 +22,7 @@ const FIRST_MISSION_ID = "basics-1";
 
 export function generateStaticParams() {
   return missionBlueprint
-    .filter((mission) => Boolean(mission.packId))
+    .filter((mission) => hasContentPack(mission.packId))
     .map((mission) => ({ levelId: mission.id }));
 }
 
@@ -32,7 +35,11 @@ export default async function LevelPage({ params }: LevelPageProps) {
   setRequestLocale(locale);
 
   const mission = getMissionById(levelId);
-  if (!mission?.packId) notFound();
+  // A mission is playable only when its declared pack actually exists, so a typo in the
+  // blueprint shows up as a missing route rather than as somebody else's rounds.
+  const pack = getContentPack(mission?.packId);
+  const singlePack = getSinglePack(mission?.packId);
+  if (!mission || (!pack && !singlePack)) notFound();
 
   const t = await getTranslations("islands");
   const chipLabel = `${t(`categories.${mission.category}.title`)} · ${t("missionNumber", { number: mission.order })}`;
@@ -47,17 +54,32 @@ export default async function LevelPage({ params }: LevelPageProps) {
   return (
     <main id="main-content">
       <PageContainer className="tutorial-shell tutorial-game-shell">
-        <MissionRouteGuard missionId={mission.id}>
-          <TutorialClient
-            chipLabel={chipLabel}
-            entryMeta={entryMeta}
-            entryTitle={entryTitle}
-            levelId={mission.id as LevelId}
-            pack={introductoryTutorialPack}
-            secondsPerRound={mission.secondsPerRound}
-            showBriefing={mission.id === FIRST_MISSION_ID}
-          />
-        </MissionRouteGuard>
+        <ProfileRouteGuard>
+          <MissionRouteGuard missionId={mission.id}>
+            {/* Roqui presents a new island or theme before its first mission opens. */}
+            <MissionIntro missionId={mission.id}>
+              {singlePack ? (
+                <SingleImageClient
+                  chipLabel={chipLabel}
+                  entryMeta={entryMeta}
+                  entryTitle={entryTitle}
+                  levelId={mission.id as LevelId}
+                  pack={singlePack}
+                />
+              ) : (
+                <TutorialClient
+                  chipLabel={chipLabel}
+                  entryMeta={entryMeta}
+                  entryTitle={entryTitle}
+                  levelId={mission.id as LevelId}
+                  pack={pack!}
+                  secondsPerRound={mission.secondsPerRound}
+                  showBriefing={mission.id === FIRST_MISSION_ID}
+                />
+              )}
+            </MissionIntro>
+          </MissionRouteGuard>
+        </ProfileRouteGuard>
       </PageContainer>
     </main>
   );

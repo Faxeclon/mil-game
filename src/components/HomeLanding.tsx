@@ -2,10 +2,28 @@
 
 import Image from "next/image";
 import { useId, useState } from "react";
-import { Bird, Cat, Check, Feather, Flame, Medal, Play, Rabbit, Turtle, Users, Wind, type LucideIcon } from "lucide-react";
+import {
+  Bird,
+  BookOpenCheck,
+  Cat,
+  Check,
+  Feather,
+  Flame,
+  Medal,
+  Play,
+  QrCode,
+  Rabbit,
+  Swords,
+  Turtle,
+  Users,
+  Wind,
+  type LucideIcon
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { getNextMission, countCompletedMissions, countPlayableMissions } from "@/features/levels/levelProgress";
+import { MascotSlot } from "@/features/mascot/MascotSlot";
+import { getAvailableIsland, getNextMission } from "@/features/levels/levelProgress";
+import { getGlobalProgress } from "@/features/levels/progressSummary";
 import {
   apprenticeAvatarIds,
   defaultApprenticeAvatarId,
@@ -13,6 +31,10 @@ import {
 } from "@/features/profile/apprenticeAvatar";
 import { normalizeLocalNickname } from "@/features/profile/localNickname";
 import { needsLocalNicknameCompletion } from "@/features/progress/progressState";
+import { getLocalPlayedOn, getStreakToday } from "@/features/progress/streak";
+import { readClassSet } from "@/features/teacher/classSetStorage";
+import { useTeacherAccount } from "@/features/teacher/teacherAccountStore";
+import { getPlayerRank } from "@/features/ranks/playerRank";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link, useRouter } from "@/i18n/navigation";
 import styles from "./HomeLanding.module.css";
@@ -36,6 +58,12 @@ const apprenticeAvatarIcons: Record<ApprenticeAvatarId, LucideIcon> = {
 export function HomeLanding() {
   const t = useTranslations("home");
   const tIslands = useTranslations("islands");
+  const tStorage = useTranslations("storage");
+  const tVersus = useTranslations("versus");
+  const tRank = useTranslations("rank");
+  const tGuardian = useTranslations("guardian");
+  const tTeacherAccount = useTranslations("teacherAccount");
+  const tCards = useTranslations("cards");
   const router = useRouter();
   const nameFieldId = useId();
   const {
@@ -44,7 +72,8 @@ export function HomeLanding() {
     markOnboarded,
     progressState,
     localNickname: savedLocalNickname,
-    apprenticeAvatarId: savedApprenticeAvatarId
+    apprenticeAvatarId: savedApprenticeAvatarId,
+    guardian
   } = useProgress();
 
   const lines = t.raw("dialogue") as string[];
@@ -55,6 +84,13 @@ export function HomeLanding() {
   const [apprenticeAvatarId, setApprenticeAvatarId] = useState<ApprenticeAvatarId>(defaultApprenticeAvatarId);
   const [localNickname, setLocalNickname] = useState("");
   const [nicknameError, setNicknameError] = useState(false);
+  // Read once per mount: the hub only renders after hydration, so the device clock is
+  // available here and the streak cannot differ between server and client markup.
+  const [today] = useState(() => getLocalPlayedOn(new Date()));
+  const { account: teacherAccount } = useTeacherAccount();
+  const [showChildSetup, setShowChildSetup] = useState(false);
+  // Read once on mount: the card set belongs to this device and nothing else writes it.
+  const [classSet] = useState(() => readClassSet());
 
   // Nothing is rendered until the stored progress is known, so a returning player never
   // sees the sign-up screen flash before their own home.
@@ -68,29 +104,55 @@ export function HomeLanding() {
    * flips `onboarded` immediately, and the hub would flash before the route changes.
    */
   if (onboarded && !needsLocalNicknameCompletion(progressState) && step !== "intro") {
-    const done = countCompletedMissions(progressState);
-    const total = countPlayableMissions();
+    const overall = getGlobalProgress(progressState);
     const nextMission = getNextMission(progressState);
+    const activeIsland = getAvailableIsland(progressState);
+    const streak = today ? getStreakToday(progressState.streak, today) : progressState.streak;
+    const rank = getPlayerRank(progressState);
     const hubApprenticeAvatarId = savedApprenticeAvatarId ?? defaultApprenticeAvatarId;
     const HubApprenticeIcon = apprenticeAvatarIcons[hubApprenticeAvatarId];
 
     return (
       <div className={styles.landing}>
         <section aria-labelledby="hub-title" className={styles.hub}>
-          <div className={styles.hubHeader}>
-            <h1 className={styles.hubGreeting} id="hub-title">
-              {savedLocalNickname ? t("hubGreetingNamed", { name: savedLocalNickname }) : t("hubGreeting")}
-            </h1>
+          {/* Roqui greets the child the same way he greets the teacher: standing beside
+              a speech bubble. It is the guide talking, not a header. */}
+          <div className={styles.mascotRow}>
+            <div className={styles.bubble}>
+              <h1 className={styles.line} id="hub-title">
+                {savedLocalNickname ? t("hubGreetingNamed", { name: savedLocalNickname }) : t("hubGreeting")}
+              </h1>
+              <p className={styles.hubWelcome}>
+                {nextMission
+                  ? t("hubNextHint", { category: tIslands(`categories.${nextMission.category}.title`) })
+                  : t("hubAllDone")}
+              </p>
+            </div>
+            <MascotSlot alt={t("mascotAlt")} className={styles.mascot} mood="welcoming" priority />
+          </div>
+
+          {/*
+            Who the player is: apprentice, earned title, and a tick once a responsible
+            adult has been linked. It goes nowhere on purpose - it is an identity, not a
+            menu - and where the progress lives is said once, at the foot of the page.
+          */}
+          <p className={styles.identity}>
             <span
               aria-label={t("profileAvatarAria", {
                 name: apprenticeNames[apprenticeAvatarIds.indexOf(hubApprenticeAvatarId)]
               })}
-              className={styles.hubApprentice}
+              className={styles.identityAvatar}
               role="img"
             >
               <HubApprenticeIcon aria-hidden="true" strokeWidth={2} />
             </span>
-          </div>
+            <span className={styles.identityTitle}>{tRank(`titles.${rank.titleKey}`)}</span>
+            {guardian && (
+              <span aria-label={tGuardian("badge")} className={styles.identityCheck} role="img">
+                <Check aria-hidden="true" size={13} strokeWidth={3.5} />
+              </span>
+            )}
+          </p>
 
           <div className={styles.hubNext}>
             {nextMission ? (
@@ -112,28 +174,61 @@ export function HomeLanding() {
             )}
           </div>
 
-          <p className={styles.progress}>
+          <div className={styles.progress}>
             <span className={styles.progressLabel}>{t("progressLabel")}</span>
-            <span aria-hidden="true" className={styles.progressTrack}>
-              <span className={styles.progressFill} style={{ width: `${(done / total) * 100}%` }} />
+            <div
+              aria-label={t("progressAria", { done: overall.done, total: overall.total })}
+              aria-valuemax={100}
+              aria-valuemin={0}
+              aria-valuenow={overall.percent}
+              aria-valuetext={t("progressPercent", { percent: overall.percent })}
+              className={styles.progressTrack}
+              role="progressbar"
+            >
+              <span className={styles.progressFill} style={{ width: `${overall.percent}%` }} />
+            </div>
+            <span className={styles.progressValue}>
+              {t("progressValue", { done: overall.done, total: overall.total })}
+              {" · "}
+              {t("progressPercent", { percent: overall.percent })}
             </span>
-            <span className={styles.progressValue}>{t("progressValue", { done, total })}</span>
-          </p>
+          </div>
+
+          {activeIsland && (
+            <p className={styles.hubIsland}>
+              <span className={styles.hubIslandLabel}>{t("hubIslandLabel")}</span>
+              <span className={styles.hubIslandName}>{tIslands(`list.${activeIsland}.title`)}</span>
+            </p>
+          )}
 
           <ul className={styles.hubStats}>
-            <li className={styles.hubStat}>
+            {/* Worked out from the stars already on the map, so it can never claim more
+                than the player earned, and it is never a position against other children. */}
+            <li className={`${styles.hubStat} ${rank.tier ? styles.hubStatLive : ""}`}>
               <span className={`${styles.hubStatIcon} ${styles.hubStatRank}`}>
                 <Medal aria-hidden="true" size={20} />
               </span>
               <span className={styles.hubStatLabel}>{t("hubRank")}</span>
-              <span className={styles.hubStatSoon}>{t("hubSoon")}</span>
+              <span className={styles.hubStatValue}>
+                {rank.tier ? tRank(`tiers.${rank.tier}`) : tRank("none")}
+              </span>
+              {/* The ladder explains what the word means and what the next step asks. */}
+              <Link className={styles.hubStatLink} href="/ranks">
+                {tRank("seeLadder")}
+              </Link>
             </li>
-            <li className={styles.hubStat}>
+            <li className={`${styles.hubStat} ${streak.currentDays > 0 ? styles.hubStatLive : ""}`}>
               <span className={`${styles.hubStatIcon} ${styles.hubStatStreak}`}>
                 <Flame aria-hidden="true" size={20} />
               </span>
               <span className={styles.hubStatLabel}>{t("hubStreak")}</span>
-              <span className={styles.hubStatSoon}>{t("hubSoon")}</span>
+              {/* Read for today, so a streak broken while the app was closed shows as broken. */}
+              <span className={styles.hubStatValue}>
+                {streak.currentDays > 0 ? t("streakDays", { days: streak.currentDays }) : t("streakNone")}
+              </span>
+              {streak.bestDays > 0 && (
+                <span className={styles.hubStatDetail}>{t("streakBest", { days: streak.bestDays })}</span>
+              )}
             </li>
             <li className={styles.hubStat}>
               <span className={`${styles.hubStatIcon} ${styles.hubStatFriends}`}>
@@ -143,6 +238,22 @@ export function HomeLanding() {
               <span className={styles.hubStatSoon}>{t("hubSoon")}</span>
             </li>
           </ul>
+
+          {/* Built for the shared family phone, so it sits next to the solo path, not
+              behind an account or a connection. */}
+          <Link className={styles.versusCard} href="/versus">
+            <span className={styles.versusIcon}>
+              <Swords aria-hidden="true" size={20} />
+            </span>
+            <span className={styles.versusText}>
+              <span className={styles.versusTitle}>{tVersus("title")}</span>
+              <span className={styles.versusLead}>{tVersus("lead")}</span>
+            </span>
+          </Link>
+
+          <p className={styles.guestNotice}>
+            {guardian ? tGuardian("grantedPending") : tStorage("guestNotice")}
+          </p>
         </section>
       </div>
     );
@@ -257,6 +368,94 @@ export function HomeLanding() {
     );
   }
 
+  /*
+   * A device that belongs to a teacher opens on the teacher's own home.
+   *
+   * Asking them to invent a nickname and pick an apprentice before they can reach a
+   * class tool would be answering a question they never asked. Creating a player is
+   * still offered, because a teacher may well want to try the game or project it in
+   * class, but it stops being the thing standing in their way.
+   */
+  if (teacherAccount && !showChildSetup) {
+    return (
+      <div className={styles.landing}>
+        <section aria-labelledby="teacher-home-title" className={styles.hub}>
+          {/* Roqui greets the teacher the same way he greets a child: standing beside a
+              speech bubble. Same guide, a different grown-up. The email is a setting and
+              lives in the settings. */}
+          <div className={styles.mascotRow}>
+            <div className={styles.bubble}>
+              <h1 className={styles.line} id="teacher-home-title">
+                {tTeacherAccount("homeGreeting")}
+              </h1>
+              <p className={styles.teacherWelcome}>{tTeacherAccount("homeWelcome")}</p>
+            </div>
+            <MascotSlot alt={t("mascotAlt")} className={styles.mascot} mood="welcoming" priority />
+          </div>
+
+          {/* The class this device is set up for, or the one thing missing to have one. */}
+          <div className={styles.hubNext}>
+            {classSet ? (
+              <>
+                <p className={styles.hubNextLabel}>{tTeacherAccount("homeClassLabel")}</p>
+                <p className={styles.hubNextTitle}>
+                  {classSet.name ?? tTeacherAccount("homeClassUnnamed")}
+                </p>
+                <p className={styles.teacherStat}>
+                  {tTeacherAccount("homeClassSize", { count: classSet.cards.length })}
+                </p>
+                <Link className={styles.primaryAction} href="/teacher/cards">
+                  <QrCode aria-hidden="true" size={17} />
+                  {tTeacherAccount("homeOpenCards")}
+                </Link>
+              </>
+            ) : (
+              <>
+                <p className={styles.hubNextLabel}>{tTeacherAccount("homeNoClassLabel")}</p>
+                <p className={styles.hubNextTitle}>{tCards("cardsLink")}</p>
+                <p className={styles.teacherStat}>{tCards("cardsLinkHint")}</p>
+                <Link className={styles.primaryAction} href="/teacher/cards">
+                  <QrCode aria-hidden="true" size={17} />
+                  {tCards("generate")}
+                </Link>
+              </>
+            )}
+          </div>
+
+          <ul className={styles.hubStats}>
+            <li className={styles.hubStat}>
+              <span className={`${styles.hubStatIcon} ${styles.hubStatRank}`}>
+                <BookOpenCheck aria-hidden="true" size={20} />
+              </span>
+              <span className={styles.hubStatLabel}>{tTeacherAccount("homeGuide")}</span>
+              <Link className={styles.hubStatLink} href="/teacher">
+                {tTeacherAccount("homeGuideAction")}
+              </Link>
+            </li>
+            <li className={styles.hubStat}>
+              <span className={`${styles.hubStatIcon} ${styles.hubStatStreak}`}>
+                <Play aria-hidden="true" size={20} fill="currentColor" />
+              </span>
+              <span className={styles.hubStatLabel}>{tTeacherAccount("homeTryLabel")}</span>
+              <button className={styles.hubStatLink} type="button" onClick={() => setShowChildSetup(true)}>
+                {tTeacherAccount("homeTryAction")}
+              </button>
+            </li>
+            <li className={styles.hubStat}>
+              <span className={`${styles.hubStatIcon} ${styles.hubStatFriends}`}>
+                <Users aria-hidden="true" size={20} />
+              </span>
+              <span className={styles.hubStatLabel}>{tTeacherAccount("homeOnlineClass")}</span>
+              <span className={styles.hubStatSoon}>{t("hubSoon")}</span>
+            </li>
+          </ul>
+
+          <p className={styles.guestNotice}>{tTeacherAccount("notSent")}</p>
+        </section>
+      </div>
+    );
+  }
+
   return (
     /* The local profile screen is the entry point, so the header and bottom bar stay hidden. */
     <div className={`${styles.landing} app-chrome-hidden`}>
@@ -341,6 +540,21 @@ export function HomeLanding() {
         </button>
 
         <p className={styles.profileNote}>{t("profileLocalNote")}</p>
+
+        {/*
+          A teacher who registered on this device is not a player. Sending them to make a
+          child's profile before they can reach their own tools would be asking the wrong
+          question, so the way out is offered plainly instead of hidden.
+        */}
+        {teacherAccount ? (
+          <button className={styles.teacherLink} type="button" onClick={() => setShowChildSetup(false)}>
+            {tTeacherAccount("goToTools")}
+          </button>
+        ) : (
+          <Link className={styles.teacherLink} href="/teacher/join">
+            {tTeacherAccount("imTeacher")}
+          </Link>
+        )}
       </section>
     </div>
   );

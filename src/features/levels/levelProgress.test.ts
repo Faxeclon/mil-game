@@ -38,7 +38,7 @@ function attempt(index: number): LevelAttempt {
 
 describe("islands", () => {
   it("only treats an island with playable missions as playable", () => {
-    expect(playableIslandOrder).toEqual(["training", "difference"]);
+    expect(playableIslandOrder).toEqual(["training", "difference", "source"]);
   });
 
   it("opens the first island and closes the rest", () => {
@@ -69,8 +69,7 @@ describe("categories inside an island", () => {
   });
 
   it("moves to the next category when the previous one is finished", () => {
-    // The third animals mission has no content, so the category is done after two.
-    const state = play("basics-1", "basics-2", "animals-1", "animals-2");
+    const state = play("basics-1", "basics-2", "animals-1", "animals-2", "animals-3");
 
     expect(getCategoryState(state, "animals")).toBe("completed");
     expect(getCategoryState(state, "sports")).toBe("available");
@@ -78,16 +77,16 @@ describe("categories inside an island", () => {
 
   it("counts progress inside a category", () => {
     const state = play("basics-1", "basics-2", "animals-1");
-    expect(countCategoryProgress(state, "animals")).toEqual({ done: 1, total: 2 });
+    expect(countCategoryProgress(state, "animals")).toEqual({ done: 1, total: 3 });
   });
 });
 
 describe("missions inside a category", () => {
-  it("ignores missions that have no content yet", () => {
-    // animals-3 is declared but has no pack, so it is not part of the playable chain.
+  it("lists every mission of the category that has authored content", () => {
     expect(getPlayableMissions("animals").map((mission) => mission.id)).toEqual([
       "animals-1",
-      "animals-2"
+      "animals-2",
+      "animals-3"
     ]);
   });
 
@@ -113,21 +112,30 @@ describe("missions inside a category", () => {
 });
 
 describe("results continuation", () => {
-  it("uses the existing unlock rules and skips missions without authored content", () => {
+  it("uses the existing unlock rules to point at the next playable mission", () => {
     const afterAnimalsTwo = play("basics-1", "basics-2", "animals-1", "animals-2");
-    expect(getContinueDestination(afterAnimalsTwo, "animals-2")).toEqual({ kind: "level", levelId: "sports-1" });
+    expect(getContinueDestination(afterAnimalsTwo, "animals-2")).toEqual({ kind: "level", levelId: "animals-3" });
   });
 
   it("falls back to the completed level's island when no later playable level is unlocked", () => {
-    const allPlayable = play("basics-1", "basics-2", "animals-1", "animals-2", "sports-1");
-    expect(getContinueDestination(allPlayable, "sports-1")).toEqual({ kind: "island", islandKey: "difference" });
+    const allPlayable = play(
+      "basics-1",
+      "basics-2",
+      "animals-1",
+      "animals-2",
+      "animals-3",
+      "sports-1",
+      "sports-2",
+      "creators-1"
+    );
+    expect(getContinueDestination(allPlayable, "creators-1")).toEqual({ kind: "island", islandKey: "source" });
   });
 });
 
 describe("counters", () => {
   it("counts finished missions against the playable total", () => {
     expect(countCompletedMissions(initialProgressState)).toBe(0);
-    expect(countPlayableMissions()).toBe(5);
+    expect(countPlayableMissions()).toBe(8);
     expect(countCompletedMissions(play("basics-1", "animals-1"))).toBe(2);
   });
 

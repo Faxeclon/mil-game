@@ -1,6 +1,9 @@
-import { Accessibility, Map } from "lucide-react";
+import { Accessibility } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { IslandsNavLink } from "@/components/IslandsNavLink";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { SoundToggle } from "@/components/SoundToggle";
+import { TeacherNavLink } from "@/components/TeacherNavLink";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
@@ -21,17 +24,20 @@ export async function AppHeader({ locale }: { locale: AppLocale }) {
         </Link>
 
         <nav aria-label={t("primaryNavigation")} className={styles.nav}>
-          <Link aria-label={t("worlds")} className={styles.navLink} href="/worlds">
-            <Map aria-hidden="true" size={19} />
-            <span>{t("worlds")}</span>
-          </Link>
+          {/* Appears once a profile exists; without one the map only asks for it. */}
+          <IslandsNavLink className={styles.navLink} />
           <Link aria-label={t("accessibility")} className={styles.navLink} href="/settings">
             <Accessibility aria-hidden="true" size={19} />
             <span>{t("accessibility")}</span>
           </Link>
+          {/* Appears only where a teacher registered; a child never meets it. */}
+          <TeacherNavLink className={styles.navLink} />
         </nav>
 
-        <LanguageSwitcher />
+        <div className={styles.controls}>
+          <LanguageSwitcher />
+          <SoundToggle />
+        </div>
       </div>
     </header>
   );

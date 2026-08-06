@@ -46,6 +46,21 @@
   text-wrap: balance;
 }
 
+/* Where the progress lives, in the same place a child admires it. */
+.guestNotice {
+  max-width: 34ch;
+  margin: 0.5rem auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  color: var(--m-ink-soft);
+  font-size: 0.76rem;
+  line-height: 1.35;
+  text-align: center;
+  text-wrap: balance;
+}
+
 /* --------------------------------------------------------------------- Path */
 
 .journey {
@@ -475,6 +490,41 @@
   font-weight: 800;
 }
 
+/* How much of the island is done, next to its name. */
+.count {
+  margin-top: 0.15rem;
+  padding: 0.06rem 0.5rem;
+  border-radius: 999px;
+  background: rgb(31 42 68 / 6%);
+  color: var(--m-ink-soft);
+  font-size: 0.74rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A tick on a finished island: a shape, so the state does not rely on the green. */
+.doneBadge {
+  width: 1.9rem;
+  height: 1.9rem;
+  position: absolute;
+  right: -0.35rem;
+  bottom: -0.35rem;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--m-paper);
+  border-radius: 50%;
+  background: var(--m-mint);
+  box-shadow: 0 4px 10px rgb(31 42 68 / 16%);
+  color: #fff;
+}
+
+/* Keyboard focus has to be unmistakable on a map made of large round targets. */
+.world:focus-visible {
+  outline: 4px solid var(--m-accent-strong);
+  outline-offset: 6px;
+  border-radius: 1.5rem;
+}
+
 /* ------------------------------------------------------------------ States */
 
 .available {
@@ -591,12 +641,40 @@
   color: var(--m-mint);
 }
 
+.completed .count {
+  background: var(--m-mint-soft);
+  color: var(--m-mint);
+}
+
 .locked .orb {
   color: var(--m-blue-ink);
 }
 
 .locked .title,
 .locked .state {
+  color: var(--m-ink-soft);
+}
+
+/*
+ * An island that has no content yet. Drawn hollow and dashed rather than merely dimmed,
+ * so it never looks like something the player failed to unlock.
+ */
+.upcoming .orb {
+  border-style: dashed;
+  border-color: rgb(31 42 68 / 22%);
+  background: rgb(255 255 255 / 55%);
+  box-shadow: 0 0 0 1px rgb(55 66 83 / 6%);
+  color: var(--m-ink-soft);
+}
+
+.upcoming .lock {
+  background: var(--m-paper);
+  color: var(--m-ink-soft);
+  box-shadow: 0 0 0 1px rgb(55 66 83 / 12%);
+}
+
+.upcoming .title,
+.upcoming .state {
   color: var(--m-ink-soft);
 }
 

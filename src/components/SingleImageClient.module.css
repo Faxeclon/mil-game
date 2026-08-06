@@ -1,0 +1,369 @@
+/*
+ * One image, judged alone. The picture takes the middle of the screen and the two
+ * answers sit under it, close enough to the thumb on a small phone.
+ */
+
+.round,
+.intro,
+.handover {
+  --g-ink: #1f2a44;
+  --g-ink-soft: #5b6780;
+  --g-paper: #ffffff;
+  --g-hairline: #ece7e6;
+  --g-hairline-strong: #d5cfcd;
+  --g-accent: #ea4b16;
+  --g-accent-strong: #c93c0b;
+  --g-accent-ink: #b8380a;
+  --g-accent-soft: #ffece4;
+  --g-blue: #2563eb;
+  --g-blue-soft: #e5edff;
+  --g-mint: #1f7a28;
+  --g-mint-soft: #e8f6e9;
+  --g-ease: cubic-bezier(0.22, 0.8, 0.36, 1);
+
+  color: var(--g-ink);
+}
+
+.round {
+  width: min(100%, 32rem);
+  margin: 0 auto;
+  padding-bottom: 2.5rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-top: 0.6rem;
+}
+
+.headerLink {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: var(--g-ink-soft);
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.headerProgress {
+  margin: 0;
+  color: var(--g-ink-soft);
+  font-size: 0.82rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.progressTrack {
+  height: 6px;
+  margin: 0.35rem 0 1rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--g-hairline);
+}
+
+.progressTrack span {
+  height: 100%;
+  display: block;
+  border-radius: inherit;
+  background: var(--g-accent);
+  transition: width 300ms var(--g-ease);
+}
+
+.board {
+  display: grid;
+  justify-items: center;
+  gap: 0.7rem;
+  text-align: center;
+}
+
+.missionChip {
+  margin: 0;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  background: var(--g-accent-soft);
+  color: var(--g-accent-ink);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.question {
+  max-width: 18ch;
+  margin: 0;
+  font-size: clamp(1.35rem, 5.4vw, 1.85rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.figure {
+  width: min(100%, 22rem);
+  aspect-ratio: 1;
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border: 3px solid var(--g-hairline-strong);
+  border-radius: 1.3rem;
+  background: #f4f1ef;
+}
+
+.figure img {
+  object-fit: cover;
+}
+
+.hint {
+  max-width: 30ch;
+  margin: 0;
+  color: var(--g-ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.verdictRight,
+.verdictWrong {
+  margin: 0;
+  padding: 0.3rem 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.verdictRight {
+  background: var(--g-mint-soft);
+  color: var(--g-mint);
+}
+
+.verdictWrong {
+  background: var(--g-accent-soft);
+  color: var(--g-accent-ink);
+}
+
+/* ---------------------------------------------------------------- Answers */
+
+/* Two answers sit side by side; a third stretches across, so none is ever cramped. */
+.answers {
+  width: min(100%, 22rem);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.answers > :nth-child(3):last-child {
+  grid-column: 1 / -1;
+}
+
+.answer {
+  min-height: 3.4rem;
+  padding: 0.6rem 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 2px solid var(--g-hairline-strong);
+  border-radius: 1rem;
+  background: var(--g-paper);
+  color: var(--g-ink);
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.15;
+  cursor: pointer;
+  text-wrap: balance;
+  transition: transform 140ms var(--g-ease), border-color 140ms ease;
+}
+
+.answer:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.answer:focus-visible {
+  outline: 3px solid var(--g-accent-strong);
+  outline-offset: 3px;
+}
+
+.answerSelected {
+  border-color: var(--g-blue);
+  background: var(--g-blue-soft);
+}
+
+.answerTruth {
+  border-color: var(--g-mint);
+  background: var(--g-mint-soft);
+  color: var(--g-mint);
+}
+
+/* Dashed, so being wrong is legible without depending on the red. */
+.answerMistake {
+  border-style: dashed;
+  border-color: var(--g-accent-strong);
+  background: var(--g-accent-soft);
+  color: var(--g-accent-ink);
+}
+
+/* --------------------------------------------------------------- Feedback */
+
+.panel {
+  width: min(100%, 24rem);
+  margin-top: 0.3rem;
+  padding: 0.9rem 1rem 1rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  border: 1px solid var(--g-hairline);
+  border-radius: 1.3rem;
+  background: var(--g-paper);
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.panelBody {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.clue {
+  margin: 0;
+  display: grid;
+  gap: 0.1rem;
+}
+
+.clueLabel {
+  color: var(--g-ink-soft);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.clueText {
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.primaryButton {
+  min-height: 3.1rem;
+  padding: 0.6rem 1.6rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--g-accent-strong);
+  color: #fff;
+  font-size: 0.98rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 140ms var(--g-ease), background-color 140ms ease;
+}
+
+.primaryButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: var(--g-accent-ink);
+}
+
+.primaryButton:disabled {
+  background: var(--g-hairline-strong);
+  cursor: not-allowed;
+}
+
+.primaryButton:focus-visible {
+  outline: 3px solid var(--g-accent-strong);
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------------------------ Entry */
+
+.intro {
+  width: 100%;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: #fff9f6;
+  cursor: pointer;
+}
+
+.introStage {
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.introChip {
+  padding: 0.25rem 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 999px;
+  background: var(--g-accent-soft);
+  color: var(--g-accent-ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.introBubble {
+  max-width: 22ch;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.entryLabel {
+  color: var(--g-ink-soft);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.introLine {
+  font-size: clamp(1.4rem, 6vw, 1.9rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.entryMeta {
+  color: var(--g-ink-soft);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.introMascot {
+  width: clamp(7rem, 30vw, 10rem);
+}
+
+.introHint {
+  color: var(--g-ink-soft);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.handover {
+  margin: clamp(2rem, 12vw, 6rem) auto;
+  color: var(--g-ink-soft);
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .answer,
+  .primaryButton,
+  .progressTrack span {
+    transition: none;
+  }
+
+  .answer:hover:not(:disabled),
+  .primaryButton:hover:not(:disabled) {
+    transform: none;
+  }
+}

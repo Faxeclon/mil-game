@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { Bird, Cat, Feather, Turtle, Wind, Rabbit, type LucideIcon } from "lucide-react";
+import { Bird, Cat, Feather, Star, Trophy, Turtle, Wind, Rabbit, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
@@ -15,6 +15,7 @@ import {
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { getContinuePath, getReplayPath } from "@/features/results/resultNavigation";
 import { formatElapsedTime, getFreshResult, getRequestedAttempt } from "@/features/results/resultPresentation";
+import { getScoreSummary } from "@/features/results/scoreSummary";
 import { Link } from "@/i18n/navigation";
 import styles from "./MissionResults.module.css";
 
@@ -32,6 +33,8 @@ export function MissionResults() {
   const t = useTranslations("results");
   const tIslands = useTranslations("islands");
   const tHome = useTranslations("home");
+  const tStorage = useTranslations("storage");
+  const tGuardian = useTranslations("guardian");
   const { hydrated, lastResult, progressState, apprenticeAvatarId } = useProgress();
   const searchParams = useSearchParams();
   const attempt = getRequestedAttempt(searchParams);
@@ -79,6 +82,9 @@ export function MissionResults() {
         number: mission.order
       })
     : result.levelId;
+  const summary = getScoreSummary(result, progressState.bestResultsByLevelId);
+  // Derived from the one canonical list, so it cannot be shown twice or get out of step.
+  const isFirstEverCompletion = progressState.completedLevelIds.length === 1;
   const elapsedTime = formatElapsedTime(result.elapsedMs, {
     second: t("second"),
     seconds: t("seconds"),
@@ -111,10 +117,79 @@ export function MissionResults() {
       <p className={styles.levelIdentity}>{levelIdentity}</p>
       <p className={styles.text}>{t("description")}</p>
 
+      {/* The score of this attempt, and the mission record it did or did not beat. Nothing
+          here announces itself: the heading already took focus, so a reload stays quiet. */}
+      <div className={styles.scoreCard}>
+        {summary.isNewRecord && (
+          <p className={styles.recordBadge}>
+            <Trophy aria-hidden="true" size={15} />
+            {t("newRecord")}
+          </p>
+        )}
+
+        <p className={styles.scoreLabel}>{t("scoreLabel")}</p>
+
+        {summary.score === null ? (
+          <p className={styles.scoreMissing}>{t("scoreUnavailable")}</p>
+        ) : (
+          <>
+            <span
+              aria-label={t("starsAria", { stars: summary.stars, total: 3 })}
+              className={styles.stars}
+              role="img"
+            >
+              {[1, 2, 3].map((position) => (
+                <Star
+                  aria-hidden="true"
+                  className={position <= summary.stars ? styles.starEarned : styles.starEmpty}
+                  fill={position <= summary.stars ? "currentColor" : "none"}
+                  key={position}
+                  size={28}
+                  strokeWidth={2}
+                />
+              ))}
+            </span>
+            <p className={styles.scoreValue}>{t("scorePoints", { score: summary.score })}</p>
+          </>
+        )}
+
+        {summary.isNewRecord && <p className={styles.recordHint}>{t("newRecordHint")}</p>}
+
+        {summary.showsBest && summary.best !== null && (
+          <p className={styles.bestScore}>
+            <span className={styles.bestScoreLabel}>{t("bestScoreLabel")}</span>
+            <span className={styles.bestScoreValue}>{t("scorePoints", { score: summary.best })}</span>
+          </p>
+        )}
+
+        {summary.score === null && summary.best === null && (
+          <p className={styles.bestScoreLabel}>{t("noBestScore")}</p>
+        )}
+      </div>
+
       <p className={styles.correctRounds}>{t("correctRounds", { correct: result.correctRounds, total: result.totalRounds })}</p>
       <p className={styles.elapsedTime}>{t("elapsed", { time: elapsedTime })}</p>
 
       <LookAskCheck sequential states={{ look: "completed", ask: "completed", check: "completed" }} />
+
+      {/*
+        Offered once, after the very first mission: at that moment the player has something
+        they would not want to lose, so the message lands instead of blocking the way in.
+        It says where the medal is kept, and marks the account as not built yet rather
+        than promising a button that does not exist.
+      */}
+      {isFirstEverCompletion && (
+        <aside className={styles.keepsake}>
+          <MascotSlot alt="" className={styles.keepsakeMascot} mood="encouraging" size={72} />
+          <p className={styles.keepsakeText}>
+            <span className={styles.keepsakeTitle}>{tStorage("roquiSaveTitle")}</span>
+            {tStorage("roquiSaveHint")}
+          </p>
+          <Link className={styles.keepsakeAction} href="/guardian">
+            {tGuardian("askAdult")}
+          </Link>
+        </aside>
+      )}
 
       <div className={styles.actions}>
         <Link className={styles.primaryLink} href={getContinuePath(progressState, result.levelId)}>

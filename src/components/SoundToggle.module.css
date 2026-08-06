@@ -1,0 +1,36 @@
+/* Sits beside the language switch, same size and weight so the pair reads as one control. */
+
+.toggle {
+  width: 2.6rem;
+  height: 2.6rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border-strong, #8fa7da);
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+/* On and off differ in fill as well as icon, so the state survives without colour. */
+.on {
+  background: #ffece4;
+  border-color: #ea4b16;
+  color: #b8380a;
+}
+
+.off {
+  background: transparent;
+  color: var(--text-muted, #64748b);
+}
+
+.toggle:focus-visible {
+  outline: 3px solid #c93c0b;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toggle {
+    transition: none;
+  }
+}
