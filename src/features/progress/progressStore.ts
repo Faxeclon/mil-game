@@ -1,11 +1,8 @@
 import type { LevelId } from "@/features/levels/levelModel";
 import type { ApprenticeAvatarId } from "@/features/profile/apprenticeAvatar";
 import {
-  addProfile,
   emptyProfilesDocument,
   getActiveProgress,
-  removeProfile,
-  selectProfile,
   updateActiveProgress,
   type ProfilesDocument
 } from "@/features/profiles/localProfiles";
@@ -19,7 +16,7 @@ import {
   type ProgressState
 } from "./progressState";
 import { requestPersistentStorage } from "@/features/offline/registerServiceWorker";
-import { clearProfilesDocument, readProfilesDocument, writeProfilesDocument } from "./progressStorage";
+import { readProfilesDocument, writeProfilesDocument } from "./progressStorage";
 
 export type ProgressSnapshot = {
   /** False until the stored progress has been read in the browser. */
@@ -105,30 +102,12 @@ export function resetProgressInStore(): void {
   if (snapshot.profiles.profiles.length === 0) publish(fromDocument(emptyProfilesDocument));
 }
 
-/** Wipes the phone: every profile and every medal on it. */
-export function clearEverythingInStore(): void {
-  clearProfilesDocument();
-  publish(fromDocument(emptyProfilesDocument));
-}
-
 export function authorizeGuardianInStore(authorizedOn: string): void {
   applyToActiveProgress((state) => authorizeGuardian(state, authorizedOn));
 }
 
 export function withdrawGuardianInStore(): void {
   applyToActiveProgress(withdrawGuardian);
-}
-
-export function addProfileInStore(): void {
-  commit(addProfile(snapshot.profiles));
-}
-
-export function selectProfileInStore(profileId: string): void {
-  commit(selectProfile(snapshot.profiles, profileId));
-}
-
-export function removeProfileInStore(profileId: string): void {
-  commit(removeProfile(snapshot.profiles, profileId));
 }
 
 /** Test helper: drops every subscriber and returns the store to its initial snapshot. */

@@ -11,17 +11,13 @@ import {
 import type { GuardianConsent } from "@/features/guardian/guardianConsent";
 import type { ProfilesDocument } from "@/features/profiles/localProfiles";
 import {
-  addProfileInStore,
   authorizeGuardianInStore,
   withdrawGuardianInStore,
-  clearEverythingInStore,
   completeLevelInStore,
   getProgressSnapshot,
   markOnboardedInStore,
   getServerProgressSnapshot,
-  removeProfileInStore,
   resetProgressInStore,
-  selectProfileInStore,
   subscribeToProgress
 } from "./progressStore";
 
@@ -34,11 +30,6 @@ export type ProgressApi = {
   guardian: GuardianConsent | null;
   authorizeGuardian: (authorizedOn: string) => void;
   withdrawGuardian: () => void;
-  addProfile: () => void;
-  selectProfile: (profileId: string) => void;
-  removeProfile: (profileId: string) => void;
-  /** Wipes the whole phone, not only the active player. */
-  clearEverything: () => void;
   lastResult?: LevelResult;
   /** Raw state, for the zone and level helpers that derive from it. */
   progressState: ProgressState;
@@ -68,10 +59,6 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       guardian: state.guardian,
       authorizeGuardian: authorizeGuardianInStore,
       withdrawGuardian: withdrawGuardianInStore,
-      addProfile: addProfileInStore,
-      selectProfile: selectProfileInStore,
-      removeProfile: removeProfileInStore,
-      clearEverything: clearEverythingInStore,
       lastResult: state.lastResult,
       progressState: state,
       onboarded: state.onboarded === true,

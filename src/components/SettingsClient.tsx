@@ -3,16 +3,13 @@
 import { useState } from "react";
 import {
   Brain,
-  GraduationCap,
-  Check,
   ChevronLeft,
+  GraduationCap,
+  ShieldCheck,
   Smartphone,
   Sparkles,
-  ShieldCheck,
   Trash2,
-  Type,
-  UserPlus,
-  Users
+  Type
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useProgress } from "@/features/progress/ProgressProvider";
@@ -30,19 +27,13 @@ import styles from "./SettingsClient.module.css";
 export function SettingsClient() {
   const t = useTranslations("settings");
   const tStorage = useTranslations("storage");
-  const tProfiles = useTranslations("profiles");
   const tGuardian = useTranslations("guardian");
   const tTeacherAccount = useTranslations("teacherAccount");
   const {
     hydrated,
     resetProgress,
     completedLevelIds,
-    guardian,
-    profiles,
-    addProfile,
-    selectProfile,
-    removeProfile,
-    clearEverything
+    guardian
   } = useProgress();
   const { account: teacherAccount } = useTeacherAccount();
   /*
@@ -51,8 +42,6 @@ export function SettingsClient() {
    */
   const isTeacherDevice = teacherAccount !== null && completedLevelIds.length === 0;
   const [confirmingReset, setConfirmingReset] = useState(false);
-  const [confirmingErase, setConfirmingErase] = useState(false);
-  const [removingId, setRemovingId] = useState<string | null>(null);
 
   const upcoming = [
     { key: "largerText", Icon: Type },
@@ -151,105 +140,6 @@ export function SettingsClient() {
             >
               <Trash2 aria-hidden="true" size={15} />
               {t("resetStart")}
-            </button>
-          )}
-        </div>
-      </section>
-
-      <section aria-labelledby="settings-players" className={styles.group}>
-        <h2 className={styles.groupTitle} id="settings-players">
-          {tProfiles("manageTitle")}
-        </h2>
-        <p className={styles.groupLead}>{tProfiles("manageLead")}</p>
-
-        <ul className={styles.upcomingList}>
-          {profiles.profiles.map((profile, index) => {
-            const name = profile.progress.localNickname ?? tProfiles("unnamed", { number: index + 1 });
-            const isActive = profile.id === profiles.activeId;
-
-            return (
-              <li className={styles.row} key={profile.id}>
-                <span className={styles.rowIcon}>
-                  <Users aria-hidden="true" size={18} />
-                </span>
-                <span className={styles.rowText}>
-                  <span className={styles.rowName}>{name}</span>
-                  <span className={styles.rowDetail}>
-                    {tProfiles("playerMissions", { count: profile.progress.completedLevelIds.length })}
-                  </span>
-                </span>
-
-                {isActive ? (
-                  <span className={styles.stateOn}>
-                    <Check aria-hidden="true" size={13} strokeWidth={3} />
-                    {tProfiles("current")}
-                  </span>
-                ) : (
-                  <button className={styles.resetStart} type="button" onClick={() => selectProfile(profile.id)}>
-                    {tProfiles("switchTo")}
-                  </button>
-                )}
-
-                {profiles.profiles.length > 1 &&
-                  (removingId === profile.id ? (
-                    <span className={styles.resetConfirm}>
-                      <span className={styles.resetQuestion}>{tProfiles("removeConfirm", { name })}</span>
-                      <button
-                        className={styles.resetYes}
-                        type="button"
-                        onClick={() => {
-                          removeProfile(profile.id);
-                          setRemovingId(null);
-                        }}
-                      >
-                        {tProfiles("removeYes")}
-                      </button>
-                      <button className={styles.resetNo} type="button" onClick={() => setRemovingId(null)}>
-                        {tProfiles("removeNo")}
-                      </button>
-                    </span>
-                  ) : (
-                    <button
-                      aria-label={tProfiles("removePlayer")}
-                      className={styles.resetNo}
-                      type="button"
-                      onClick={() => setRemovingId(profile.id)}
-                    >
-                      <Trash2 aria-hidden="true" size={15} />
-                    </button>
-                  ))}
-              </li>
-            );
-          })}
-        </ul>
-
-        <button className={styles.resetStart} type="button" onClick={addProfile}>
-          <UserPlus aria-hidden="true" size={15} />
-          {tProfiles("addPlayer")}
-        </button>
-
-        <div className={styles.resetRow}>
-          <p className={styles.resetText}>{tProfiles("eraseAllConfirm")}</p>
-          {confirmingErase ? (
-            <span className={styles.resetConfirm}>
-              <button
-                className={styles.resetYes}
-                type="button"
-                onClick={() => {
-                  clearEverything();
-                  setConfirmingErase(false);
-                }}
-              >
-                <Trash2 aria-hidden="true" size={15} />
-                {tProfiles("eraseAllYes")}
-              </button>
-              <button className={styles.resetNo} type="button" onClick={() => setConfirmingErase(false)}>
-                {t("resetNo")}
-              </button>
-            </span>
-          ) : (
-            <button className={styles.resetNo} type="button" onClick={() => setConfirmingErase(true)}>
-              {tProfiles("eraseAll")}
             </button>
           )}
         </div>

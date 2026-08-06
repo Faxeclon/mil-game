@@ -3,14 +3,11 @@ import { emptyProfilesDocument } from "@/features/profiles/localProfiles";
 import { initialProgressState } from "./progressState";
 import { PROFILES_STORAGE_KEY, PROGRESS_STORAGE_KEY } from "./progressStorage";
 import {
-  addProfileInStore,
-  clearEverythingInStore,
   completeLevelInStore,
   getProgressSnapshot,
   getServerProgressSnapshot,
   resetProgressInStore,
   resetProgressStoreForTests,
-  selectProfileInStore,
   subscribeToProgress
 } from "./progressStore";
 
@@ -109,43 +106,27 @@ describe("progress store", () => {
     unsubscribe();
   });
 
-  it("returns the active player to the start on reset, leaving the others alone", () => {
+  it("returns the player to the start on reset", () => {
     stubStorage();
     const unsubscribe = subscribeToProgress(() => {});
-    completeLevelInStore("basics-1", attemptedLevel);
-    addProfileInStore();
     completeLevelInStore("basics-1", attemptedLevel);
 
     resetProgressInStore();
 
     expect(getProgressSnapshot().state.completedLevelIds).toEqual([]);
-    expect(getProgressSnapshot().profiles.profiles[0].progress.completedLevelIds).toEqual(["basics-1"]);
     unsubscribe();
   });
 
-  it("wipes the whole phone only when that is what was asked", () => {
-    const entries = stubStorage();
-    const unsubscribe = subscribeToProgress(() => {});
-    completeLevelInStore("basics-1", attemptedLevel);
-
-    clearEverythingInStore();
-
-    expect(entries.has(PROFILES_STORAGE_KEY)).toBe(false);
-    expect(getProgressSnapshot().profiles.profiles).toEqual([]);
-    unsubscribe();
-  });
-
-  it("keeps two players on the phone apart", () => {
+  it("leaves the device empty enough to start over after a reset", () => {
     stubStorage();
     const unsubscribe = subscribeToProgress(() => {});
     completeLevelInStore("basics-1", attemptedLevel);
-    addProfileInStore();
 
-    expect(getProgressSnapshot().state.completedLevelIds).toEqual([]);
-    expect(getProgressSnapshot().profiles.profiles).toHaveLength(2);
+    resetProgressInStore();
 
-    selectProfileInStore("player-1");
-    expect(getProgressSnapshot().state.completedLevelIds).toEqual(["basics-1"]);
+    // Nothing to unlock, nothing recorded, no nickname: the same as a new device.
+    expect(getProgressSnapshot().state).toEqual(initialProgressState);
     unsubscribe();
   });
+
 });

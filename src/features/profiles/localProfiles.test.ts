@@ -1,17 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { completeLevel, initialProgressState, type LevelAttempt } from "@/features/progress/progressState";
 import {
-  addProfile,
-  canAddProfile,
   createProfileId,
   emptyProfilesDocument,
   getActiveProgress,
-  MAX_LOCAL_PROFILES,
+  isProfileId,
   parseProfilesDocument,
-  removeProfile,
-  selectProfile,
-  updateActiveProgress,
-  type ProfilesDocument
+  updateActiveProgress
 } from "./localProfiles";
 
 const attempt: LevelAttempt = {
@@ -24,105 +19,68 @@ const attempt: LevelAttempt = {
   playedOn: "2026-08-05"
 };
 
-function withTwoPlayers(): ProfilesDocument {
-  return addProfile(addProfile(emptyProfilesDocument));
-}
-
 describe("naming a profile", () => {
   it("counts up and never reuses an id that is taken", () => {
     expect(createProfileId([])).toBe("player-1");
     expect(createProfileId(["player-1"])).toBe("player-2");
     expect(createProfileId(["player-1", "player-3"])).toBe("player-2");
   });
+
+  it("recognises its own ids and nothing else", () => {
+    expect(isProfileId("player-1")).toBe(true);
+    expect(isProfileId("player-")).toBe(false);
+    expect(isProfileId("jugador-1")).toBe(false);
+    expect(isProfileId(1)).toBe(false);
+  });
 });
 
-describe("sharing the phone", () => {
-  it("starts with nobody, then hands the phone to the first player added", () => {
+describe("the player of this device", () => {
+  it("starts with nobody at all", () => {
     expect(emptyProfilesDocument.profiles).toEqual([]);
-
-    const first = addProfile(emptyProfilesDocument);
-    expect(first.profiles).toHaveLength(1);
-    expect(first.activeId).toBe("player-1");
+    expect(getActiveProgress(emptyProfilesDocument)).toEqual(initialProgressState);
   });
 
-  it("hands the phone to a newly added player straight away", () => {
-    expect(withTwoPlayers().activeId).toBe("player-2");
-  });
+  it("creates the profile on the first thing worth saving", () => {
+    const played = completeLevel(initialProgressState, "basics-1", attempt);
+    const document = updateActiveProgress(emptyProfilesDocument, played);
 
-  it("keeps adding players without a rule about how many a family has", () => {
-    let document = emptyProfilesDocument;
-    for (let index = 0; index < 10; index += 1) document = addProfile(document);
-
-    expect(document.profiles).toHaveLength(10);
-    expect(canAddProfile(document)).toBe(true);
-  });
-
-  it("still refuses to grow without end, so a loop cannot fill the device", () => {
-    let document = emptyProfilesDocument;
-    for (let index = 0; index < MAX_LOCAL_PROFILES + 5; index += 1) document = addProfile(document);
-
-    expect(document.profiles).toHaveLength(MAX_LOCAL_PROFILES);
-    expect(canAddProfile(document)).toBe(false);
-  });
-
-  it("switches between players and ignores an unknown one", () => {
-    const document = withTwoPlayers();
-
-    expect(selectProfile(document, "player-1").activeId).toBe("player-1");
-    expect(selectProfile(document, "player-9")).toBe(document);
-  });
-});
-
-describe("keeping the players apart", () => {
-  it("writes progress only into the player who is holding the phone", () => {
-    let document = withTwoPlayers();
-    document = updateActiveProgress(document, completeLevel(initialProgressState, "basics-1", attempt));
-
+    expect(document.profiles).toHaveLength(1);
+    expect(document.activeId).toBe("player-1");
     expect(getActiveProgress(document).completedLevelIds).toEqual(["basics-1"]);
-    expect(document.profiles[0].progress.completedLevelIds).toEqual([]);
   });
 
-  it("gives each sibling their own medals and streak", () => {
-    let document = withTwoPlayers();
-    document = updateActiveProgress(document, completeLevel(initialProgressState, "basics-1", attempt));
-    document = selectProfile(document, "player-1");
-    document = updateActiveProgress(
-      document,
-      completeLevel(initialProgressState, "basics-1", { ...attempt, score: 400 })
+  it("writes later progress into the same profile rather than making another", () => {
+    const first = updateActiveProgress(
+      emptyProfilesDocument,
+      completeLevel(initialProgressState, "basics-1", attempt)
+    );
+    const second = updateActiveProgress(
+      first,
+      completeLevel(getActiveProgress(first), "basics-2", {
+        ...attempt,
+        attemptId: "attempt_223e4567-e89b-12d3-a456-426614174000"
+      })
     );
 
-    expect(document.profiles[0].progress.bestResultsByLevelId["basics-1"]?.score).toBe(400);
-    expect(document.profiles[1].progress.bestResultsByLevelId["basics-1"]?.score).toBe(900);
-    expect(document.profiles[0].progress.streak.currentDays).toBe(1);
+    expect(second.profiles).toHaveLength(1);
+    expect(getActiveProgress(second).completedLevelIds).toEqual(["basics-1", "basics-2"]);
   });
 
-  it("does not rewrite anything when the active progress is unchanged", () => {
-    const document = withTwoPlayers();
+  it("does not rewrite anything when the progress is unchanged", () => {
+    const document = updateActiveProgress(emptyProfilesDocument, initialProgressState);
 
     expect(updateActiveProgress(document, getActiveProgress(document))).toBe(document);
   });
 });
 
-describe("removing a player", () => {
-  it("takes the profile away and passes the phone to whoever is left", () => {
-    const document = removeProfile(withTwoPlayers(), "player-2");
-
-    expect(document.profiles.map((profile) => profile.id)).toEqual(["player-1"]);
-    expect(document.activeId).toBe("player-1");
-  });
-
-  it("refuses to empty the phone, which is what the reset action is for", () => {
-    const single = addProfile(emptyProfilesDocument);
-
-    expect(removeProfile(single, "player-1")).toBe(single);
-  });
-});
-
 describe("reading stored profiles", () => {
   it("keeps a valid document", () => {
-    const document = withTwoPlayers();
+    const document = updateActiveProgress(
+      emptyProfilesDocument,
+      completeLevel(initialProgressState, "basics-1", attempt)
+    );
 
-    expect(parseProfilesDocument(document).profiles).toHaveLength(2);
+    expect(parseProfilesDocument(JSON.parse(JSON.stringify(document)))).toEqual(document);
   });
 
   it("turns a device that already played into that child's profile", () => {
@@ -139,7 +97,7 @@ describe("reading stored profiles", () => {
     expect(parseProfilesDocument(undefined)).toEqual(emptyProfilesDocument);
   });
 
-  it("survives corrupt data without losing the readable profiles", () => {
+  it("survives corrupt data without losing the readable profile", () => {
     const document = parseProfilesDocument({
       version: 1,
       activeId: "player-9",
@@ -150,8 +108,19 @@ describe("reading stored profiles", () => {
     expect(document.activeId).toBe("player-1");
   });
 
-  it("falls back to an empty phone for a document from another version", () => {
+  it("falls back to an empty device for a document from another version", () => {
     expect(parseProfilesDocument({ version: 99, profiles: [] })).toEqual(emptyProfilesDocument);
     expect(parseProfilesDocument("nonsense")).toEqual(emptyProfilesDocument);
+  });
+
+  it("refuses to grow without end, so a corrupt file cannot fill the device", () => {
+    const many = Array.from({ length: 200 }, (_, index) => ({
+      id: `player-${index + 1}`,
+      progress: initialProgressState
+    }));
+
+    expect(parseProfilesDocument({ version: 1, activeId: "player-1", profiles: many }).profiles.length).toBeLessThan(
+      many.length
+    );
   });
 });

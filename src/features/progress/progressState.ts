@@ -258,7 +258,21 @@ export function completeLevel(
     bestResultsByLevelId,
     // Replaying on the same day is welcome but adds nothing: a streak counts days, not runs.
     streak: attempt.playedOn ? recordPlayedDay(state.streak, attempt.playedOn) : state.streak,
-    lastResult: { levelId, ...attempt, score }
+    /*
+     * Built field by field rather than spread from the attempt: the attempt also carries
+     * the local day, which belongs to the streak and not to a result. Spreading it in
+     * stored something the reader does not restore, so a saved state and a reloaded one
+     * quietly disagreed.
+     */
+    lastResult: {
+      levelId,
+      attemptId: attempt.attemptId,
+      correctRounds: attempt.correctRounds,
+      totalRounds: attempt.totalRounds,
+      elapsedMs: attempt.elapsedMs,
+      completedAt: attempt.completedAt,
+      score
+    }
   };
 }
 

@@ -1,9 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import {
-  addProfile,
-  emptyProfilesDocument,
-  updateActiveProgress
-} from "@/features/profiles/localProfiles";
+import { emptyProfilesDocument, updateActiveProgress } from "@/features/profiles/localProfiles";
 import { completeLevel, initialProgressState, markOnboarded } from "./progressState";
 import {
   clearProfilesDocument,
@@ -39,7 +35,7 @@ function withWindow(storage: unknown) {
 
 /** One profile holding the given progress, as the store would write it. */
 function documentWith(progress: Parameters<typeof updateActiveProgress>[1]) {
-  return updateActiveProgress(addProfile(emptyProfilesDocument), progress);
+  return updateActiveProgress(emptyProfilesDocument, progress);
 }
 
 afterEach(() => {

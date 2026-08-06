@@ -17,7 +17,6 @@ import {
   Smartphone,
   Swords,
   Turtle,
-  UserPlus,
   Users,
   Wind,
   Zap,
@@ -38,7 +37,7 @@ import { needsLocalNicknameCompletion } from "@/features/progress/progressState"
 import { getLocalPlayedOn, getStreakToday } from "@/features/progress/streak";
 import { readClassSet } from "@/features/teacher/classSetStorage";
 import { useTeacherAccount } from "@/features/teacher/teacherAccountStore";
-import { getLocalStandings, getPlayerRank } from "@/features/ranks/playerRank";
+import { getPlayerRank } from "@/features/ranks/playerRank";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link, useRouter } from "@/i18n/navigation";
 import styles from "./HomeLanding.module.css";
@@ -64,7 +63,6 @@ export function HomeLanding() {
   const tIslands = useTranslations("islands");
   const tStorage = useTranslations("storage");
   const tVersus = useTranslations("versus");
-  const tProfiles = useTranslations("profiles");
   const tRank = useTranslations("rank");
   const tRush = useTranslations("rush");
   const tGuardian = useTranslations("guardian");
@@ -79,10 +77,7 @@ export function HomeLanding() {
     progressState,
     localNickname: savedLocalNickname,
     apprenticeAvatarId: savedApprenticeAvatarId,
-    profiles,
-    guardian,
-    addProfile,
-    selectProfile
+    guardian
   } = useProgress();
 
   const lines = t.raw("dialogue") as string[];
@@ -96,7 +91,6 @@ export function HomeLanding() {
   // Read once per mount: the hub only renders after hydration, so the device clock is
   // available here and the streak cannot differ between server and client markup.
   const [today] = useState(() => getLocalPlayedOn(new Date()));
-  const [playerChosen, setPlayerChosen] = useState(false);
   const { account: teacherAccount } = useTeacherAccount();
   const [showChildSetup, setShowChildSetup] = useState(false);
   // Read once on mount: the card set belongs to this device and nothing else writes it.
@@ -106,68 +100,6 @@ export function HomeLanding() {
   // sees the sign-up screen flash before their own home.
   if (!hydrated) {
     return <div className={`${styles.splash} app-chrome-hidden`} />;
-  }
-
-  /*
-   * More than one child shares this phone, so it asks who is holding it before anything
-   * else. With a single player there is no question to ask and no screen appears: a
-   * seven-year-old should never meet a decision before they meet the game.
-   */
-  if (profiles.profiles.length > 1 && !playerChosen && step !== "intro") {
-    return (
-      <div className={`${styles.landing} app-chrome-hidden`}>
-        <section aria-labelledby="who-plays-title" className={styles.profile}>
-          <h1 className={styles.profileTitle} id="who-plays-title">
-            {tProfiles("whoPlays")}
-          </h1>
-          <p className={styles.profileNote}>{tProfiles("whoPlaysHint")}</p>
-
-          <ul className={styles.playerList}>
-            {profiles.profiles.map((profile, index) => {
-              const Icon = apprenticeAvatarIcons[profile.progress.apprenticeAvatarId ?? defaultApprenticeAvatarId];
-              const done = profile.progress.completedLevelIds.length;
-
-              return (
-                <li key={profile.id}>
-                  <button
-                    className={`${styles.playerCard} ${profile.id === profiles.activeId ? styles.playerCurrent : ""}`}
-                    type="button"
-                    onClick={() => {
-                      selectProfile(profile.id);
-                      setPlayerChosen(true);
-                    }}
-                  >
-                    <span className={styles.playerIcon}>
-                      <Icon aria-hidden="true" size={24} strokeWidth={2} />
-                    </span>
-                    <span className={styles.playerText}>
-                      <span className={styles.playerName}>
-                        {profile.progress.localNickname ?? tProfiles("unnamed", { number: index + 1 })}
-                      </span>
-                      <span className={styles.playerDetail}>{tProfiles("playerMissions", { count: done })}</span>
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-
-          <button
-            className={styles.addPlayer}
-            type="button"
-            onClick={() => {
-              addProfile();
-              setPlayerChosen(true);
-            }}
-          >
-            <UserPlus aria-hidden="true" size={16} />
-            {tProfiles("addPlayer")}
-          </button>
-
-          <p className={styles.profileNote}>{tProfiles("separateNote")}</p>
-        </section>
-      </div>
-    );
   }
 
   /*
@@ -181,7 +113,6 @@ export function HomeLanding() {
     const activeIsland = getAvailableIsland(progressState);
     const streak = today ? getStreakToday(progressState.streak, today) : progressState.streak;
     const rank = getPlayerRank(progressState);
-    const standings = getLocalStandings(profiles.profiles);
     const hubApprenticeAvatarId = savedApprenticeAvatarId ?? defaultApprenticeAvatarId;
     const HubApprenticeIcon = apprenticeAvatarIcons[hubApprenticeAvatarId];
 
@@ -325,33 +256,6 @@ export function HomeLanding() {
               <span className={styles.versusLead}>{tRush("notAMission")}</span>
             </span>
           </Link>
-
-          {/* The only comparison the game makes: between the children of this phone,
-              sitting next to each other. No server, no strangers, no league. */}
-          {standings.length > 1 && (
-            <section aria-labelledby="standings-title" className={styles.standings}>
-              <h2 className={styles.standingsTitle} id="standings-title">
-                {tRank("standingsTitle")}
-              </h2>
-              <ol className={styles.standingsList}>
-                {standings.map((entry, index) => (
-                  <li
-                    className={`${styles.standing} ${entry.profileId === profiles.activeId ? styles.standingYou : ""}`}
-                    key={entry.profileId}
-                  >
-                    <span className={styles.standingPosition}>{tRank("position", { position: index + 1 })}</span>
-                    <span className={styles.standingName}>
-                      {entry.nickname ?? tProfiles("unnamed", { number: index + 1 })}
-                    </span>
-                    <span className={styles.standingStars}>
-                      {tRank("stars", { stars: entry.rank.stars, max: entry.rank.maxStars })}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-              <p className={styles.standingsNote}>{tRank("standingsLead")}</p>
-            </section>
-          )}
 
           <p className={styles.guestNotice}>
             {guardian ? tGuardian("grantedPending") : tStorage("guestNotice")}
