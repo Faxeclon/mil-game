@@ -7,7 +7,6 @@ import {
   BookOpenCheck,
   Cat,
   Check,
-  ChevronRight,
   Feather,
   Flame,
   Medal,
@@ -133,11 +132,11 @@ export function HomeLanding() {
           </div>
 
           {/*
-            The apprentice and the earned title on one line, right under the greeting.
-            Where the progress lives is said once, at the foot of the page, instead of
-            twice: a badge repeating the notice below it only costs room.
+            Who the player is: apprentice, earned title, and a tick once a responsible
+            adult has been linked. It goes nowhere on purpose - it is an identity, not a
+            menu - and where the progress lives is said once, at the foot of the page.
           */}
-          <Link className={styles.identity} href="/ranks">
+          <p className={styles.identity}>
             <span
               aria-label={t("profileAvatarAria", {
                 name: apprenticeNames[apprenticeAvatarIds.indexOf(hubApprenticeAvatarId)]
@@ -148,8 +147,12 @@ export function HomeLanding() {
               <HubApprenticeIcon aria-hidden="true" strokeWidth={2} />
             </span>
             <span className={styles.identityTitle}>{tRank(`titles.${rank.titleKey}`)}</span>
-            <ChevronRight aria-hidden="true" className={styles.identityChevron} size={16} />
-          </Link>
+            {guardian && (
+              <span aria-label={tGuardian("badge")} className={styles.identityCheck} role="img">
+                <Check aria-hidden="true" size={13} strokeWidth={3.5} />
+              </span>
+            )}
+          </p>
 
           <div className={styles.hubNext}>
             {nextMission ? (
