@@ -48,12 +48,13 @@ describe("telling the player where their progress lives", () => {
     }
   });
 
-  it("marks the account as not built yet rather than offering a button that does not exist", () => {
+  it("describes one active local profile rather than a future account", () => {
     for (const { locale, messages } of locales) {
       const t = createTranslator({ locale, messages, namespace: "storage" });
 
-      expect(t("accountSoon").toLowerCase()).toMatch(/próximamente|coming soon/);
-      expect(t("roquiSaveHint").toLowerCase()).toMatch(/pronto|soon/);
+      expect(t("guestBadge").toLowerCase()).toMatch(/perfil|profile/);
+      expect(t("guestNotice").toLowerCase()).toMatch(/activo|active/);
+      expect(t("roquiSaveHint").toLowerCase()).not.toMatch(/account|cuenta/);
     }
   });
 });

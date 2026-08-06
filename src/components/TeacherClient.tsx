@@ -15,7 +15,7 @@ import { useTeacherAccount } from "@/features/teacher/teacherAccountStore";
 import { Link } from "@/i18n/navigation";
 import styles from "./TeacherClient.module.css";
 
-const CARD_STEPS = ["create", "print", "hand", "ask", "raise", "read"] as const;
+const CARD_STEPS = ["create", "print", "hand", "ask", "raise"] as const;
 const DISCUSSION_PROMPTS = ["one", "two", "three", "four"] as const;
 
 /**
@@ -76,7 +76,7 @@ export function TeacherClient() {
           </span>
           <span className={styles.wayText}>
             <span className={styles.wayName}>{t("wayCardsName")}</span>
-            <span className={styles.wayDetail}>{t("wayCardsDetail")}</span>
+            <span className={styles.wayDetail}>{tCards("lead")}</span>
           </span>
         </div>
 
@@ -97,6 +97,7 @@ export function TeacherClient() {
           {t("cardsHowTitle")}
         </h2>
         <p className={styles.groupLead}>{t("cardsHowLead")}</p>
+        <p className={styles.groupLead}>{tCards("lead")}</p>
 
         <ol className={styles.steps}>
           {CARD_STEPS.map((step, index) => (

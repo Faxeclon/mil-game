@@ -2,8 +2,7 @@
 
 import { Volume2, VolumeX } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useHasMounted } from "@/features/app/useHasMounted";
-import { toggleSound, useSoundEnabled } from "@/features/audio/soundPreference";
+import { useBackgroundMusic } from "./BackgroundMusicProvider";
 import styles from "./SoundToggle.module.css";
 
 /**
@@ -18,22 +17,18 @@ import styles from "./SoundToggle.module.css";
  */
 export function SoundToggle() {
   const t = useTranslations("sound");
-  const hasMounted = useHasMounted();
-  const enabled = useSoundEnabled();
-
-  // Until mounted the stored answer is unknown, and guessing would flip the icon on load.
-  const isOn = hasMounted ? enabled : true;
+  const { enabled, toggleMusic } = useBackgroundMusic();
 
   return (
     <button
-      aria-label={isOn ? t("turnOff") : t("turnOn")}
-      aria-pressed={isOn}
-      className={`${styles.toggle} ${isOn ? styles.on : styles.off}`}
-      title={isOn ? t("on") : t("off")}
+      aria-label={enabled ? t("pause") : t("play")}
+      aria-pressed={enabled}
+      className={`${styles.toggle} ${enabled ? styles.on : styles.off}`}
+      title={enabled ? t("on") : t("off")}
       type="button"
-      onClick={toggleSound}
+      onClick={toggleMusic}
     >
-      {isOn ? <Volume2 aria-hidden="true" size={18} /> : <VolumeX aria-hidden="true" size={18} />}
+      {enabled ? <Volume2 aria-hidden="true" size={18} /> : <VolumeX aria-hidden="true" size={18} />}
     </button>
   );
 }

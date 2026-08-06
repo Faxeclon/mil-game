@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { AppHeader } from "@/components/AppHeader";
+import { BackgroundMusicProvider } from "@/components/BackgroundMusicProvider";
 import { MobileNavigation } from "@/components/MobileNavigation";
 import { OfflineReadiness } from "@/features/offline/OfflineReadiness";
 import { ProgressProvider } from "@/features/progress/ProgressProvider";
@@ -48,6 +49,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <html className={gameFont.variable} lang={locale}>
       <body>
         <NextIntlClientProvider messages={messages}>
+          <BackgroundMusicProvider>
           <ProgressProvider>
             {/* Prepares the game to open with no signal, from the very first visit. */}
             <OfflineReadiness />
@@ -56,6 +58,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
             {children}
             <MobileNavigation />
           </ProgressProvider>
+          </BackgroundMusicProvider>
         </NextIntlClientProvider>
       </body>
     </html>

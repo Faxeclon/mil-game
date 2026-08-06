@@ -126,13 +126,14 @@ describe("what the adult is told before deciding", () => {
     }
   });
 
-  it("says the address is the adult's and that nothing is sent", () => {
+  it("states that the adult contact is local, unverified, and not sent", () => {
     for (const { locale, messages } of locales) {
       const t = createTranslator({ locale, messages, namespace: "guardian" });
 
-      expect(t("emailHint").toLowerCase()).toMatch(/niñ|child/);
-      expect(t("promises.nothingYet").toLowerCase()).toMatch(/por ahora no se sube|nothing is uploaded/);
-      expect(t("withdrawKeeps").toLowerCase()).toMatch(/no se pierde|loses no/);
+      expect(t("emailHint").toLowerCase()).toMatch(/adult/);
+      expect(t("emailHint").toLowerCase()).toMatch(/verifica|verified/);
+      expect(t("promises.nothingYet").toLowerCase()).toMatch(/no se sube|nothing is uploaded/);
+      expect(t("withdrawKeeps").toLowerCase()).toMatch(/no pierde|loses no/);
     }
   });
 });

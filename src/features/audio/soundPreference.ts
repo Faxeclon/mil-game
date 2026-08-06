@@ -9,8 +9,7 @@ import { useSyncExternalStore } from "react";
  * or a shared room is silenced for everyone in it, which is what a teacher or a parent
  * actually wants when they reach for the control.
  *
- * It starts on. Sound is part of the game for a child who reads with difficulty, so the
- * quiet choice is offered rather than imposed.
+ * It starts off. Background music never starts until someone on this device asks for it.
  */
 export const SOUND_STORAGE_KEY = "kikiria.sound.v1";
 
@@ -25,11 +24,11 @@ function getStorage(): Storage | null {
 
 export function readSoundEnabled(): boolean {
   const storage = getStorage();
-  if (!storage) return true;
+  if (!storage) return false;
   try {
-    return storage.getItem(SOUND_STORAGE_KEY) !== "off";
+    return storage.getItem(SOUND_STORAGE_KEY) === "on";
   } catch {
-    return true;
+    return false;
   }
 }
 
@@ -43,7 +42,7 @@ function writeSoundEnabled(enabled: boolean): void {
   }
 }
 
-let snapshot: { hydrated: boolean; enabled: boolean } = { hydrated: false, enabled: true };
+let snapshot: { hydrated: boolean; enabled: boolean } = { hydrated: false, enabled: false };
 const listeners = new Set<() => void>();
 
 function publish(next: typeof snapshot): void {
@@ -59,12 +58,15 @@ function subscribe(listener: () => void): () => void {
   };
 }
 
-const serverSnapshot = { hydrated: false, enabled: true };
+const serverSnapshot = { hydrated: false, enabled: false };
 
-export function toggleSound(): void {
-  const enabled = !snapshot.enabled;
+export function setSoundEnabled(enabled: boolean): void {
   writeSoundEnabled(enabled);
   publish({ hydrated: true, enabled });
+}
+
+export function toggleSound(): void {
+  setSoundEnabled(!snapshot.enabled);
 }
 
 /** Test helper: drops every subscriber and returns the store to its initial snapshot. */
