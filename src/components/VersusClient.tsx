@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { useReducer, useState } from "react";
-import { Check, ChevronLeft, Smartphone, Sparkles, Target, Trophy, Users } from "lucide-react";
+import { Check, ChevronLeft, Smartphone, Sparkles, Target, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
+import { useProgress } from "@/features/progress/ProgressProvider";
 import type { TutorialRound } from "@/content/schemas/tutorial";
 import {
   buildVersusDeck,
@@ -16,7 +17,8 @@ import {
 import { Link } from "@/i18n/navigation";
 import styles from "./VersusClient.module.css";
 
-const TURNS_PER_PLAYER = 3;
+/** Short matches on purpose: a shared phone changes hands, and patience is finite. */
+const TURN_CHOICES = [3, 5] as const;
 
 /**
  * Versus on a single phone, played in turns.
@@ -28,12 +30,30 @@ const TURNS_PER_PLAYER = 3;
 export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
   const t = useTranslations("versus");
   const tTutorial = useTranslations("tutorial");
+  const { profiles } = useProgress();
   const [state, dispatch] = useReducer(versusReducer, initialVersusState);
-  // Dealt once per mount, so a rematch reshuffles by remounting rather than mid-match.
-  const [deck, setDeck] = useState(() => buildVersusDeck(rounds, TURNS_PER_PLAYER));
+  const [turnsPerPlayer, setTurnsPerPlayer] = useState<number>(TURN_CHOICES[0]);
+  const [deck, setDeck] = useState<TutorialRound[]>([]);
   const totalRounds = deck.length;
 
-  const playerName = (player: VersusPlayer) => t(player === 1 ? "playerOne" : "playerTwo");
+  /*
+   * The two seats take the nicknames of the players already on this phone, when there
+   * are two. Nobody has to type anything: the children who share the device are exactly
+   * the ones who are about to share the match.
+   */
+  const localNames = profiles.profiles
+    .map((profile) => profile.progress.localNickname)
+    .filter((nickname): nickname is string => Boolean(nickname));
+  const usesLocalNames = localNames.length >= 2;
+  const playerName = (player: VersusPlayer) =>
+    usesLocalNames ? localNames[player - 1] : t(player === 1 ? "playerOne" : "playerTwo");
+
+  const beginMatch = (turns: number) => {
+    setTurnsPerPlayer(turns);
+    setDeck(buildVersusDeck(rounds, turns));
+    dispatch({ type: "restart" });
+    dispatch({ type: "start" });
+  };
 
   if (state.status === "lobby") {
     return (
@@ -44,11 +64,16 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
         </h1>
         <p className={styles.lead}>{t("lead")}</p>
 
+        <p className={styles.lineup}>
+          <span className={styles.lineupName}>{playerName(1)}</span>
+          <span aria-hidden="true" className={styles.lineupVs}>
+            vs
+          </span>
+          <span className={styles.lineupName}>{playerName(2)}</span>
+        </p>
+        {usesLocalNames && <p className={styles.lineupNote}>{t("namesFromProfiles")}</p>}
+
         <ol className={styles.rules}>
-          <li className={styles.rule}>
-            <Users aria-hidden="true" size={16} />
-            {t("ruleTurns", { turns: TURNS_PER_PLAYER })}
-          </li>
           <li className={styles.rule}>
             <Smartphone aria-hidden="true" size={16} />
             {t("rulePass")}
@@ -59,7 +84,24 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
           </li>
         </ol>
 
-        <button className={styles.primary} type="button" onClick={() => dispatch({ type: "start" })}>
+        <fieldset className={styles.turnPicker}>
+          <legend className={styles.turnLegend}>{t("chooseTurns")}</legend>
+          <span className={styles.turnOptions}>
+            {TURN_CHOICES.map((turns) => (
+              <button
+                aria-pressed={turns === turnsPerPlayer}
+                className={`${styles.turnOption} ${turns === turnsPerPlayer ? styles.turnOptionOn : ""}`}
+                key={turns}
+                type="button"
+                onClick={() => setTurnsPerPlayer(turns)}
+              >
+                {t("ruleTurns", { turns })}
+              </button>
+            ))}
+          </span>
+        </fieldset>
+
+        <button className={styles.primary} type="button" onClick={() => beginMatch(turnsPerPlayer)}>
           {t("start")}
         </button>
         <Link className={styles.secondary} href="/worlds">
@@ -96,14 +138,7 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
 
         <p className={styles.lead}>{t("closing")}</p>
 
-        <button
-          className={styles.primary}
-          type="button"
-          onClick={() => {
-            setDeck(buildVersusDeck(rounds, TURNS_PER_PLAYER));
-            dispatch({ type: "restart" });
-          }}
-        >
+        <button className={styles.primary} type="button" onClick={() => beginMatch(turnsPerPlayer)}>
           {t("rematch")}
         </button>
         <Link className={styles.secondary} href="/worlds">

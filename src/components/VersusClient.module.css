@@ -90,6 +90,89 @@
   text-align: left;
 }
 
+/* Who is playing, before anything else: the match is between these two people. */
+.lineup {
+  margin: 0.3rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.lineupName {
+  padding: 0.28rem 0.85rem;
+  border-radius: 999px;
+  background: var(--v-accent-soft);
+  color: var(--v-accent-ink);
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.lineupVs {
+  color: var(--v-ink-soft);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.lineupNote {
+  max-width: 30ch;
+  margin: 0;
+  color: var(--v-ink-soft);
+  font-size: 0.76rem;
+  line-height: 1.35;
+}
+
+/* --------------------------------------------------------- Match length */
+
+.turnPicker {
+  margin: 0.3rem 0 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+}
+
+.turnLegend {
+  padding: 0;
+  color: var(--v-ink-soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.turnOptions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.turnOption {
+  min-height: 2.9rem;
+  padding: 0.45rem 1.1rem;
+  border: 2px solid var(--v-hairline-strong);
+  border-radius: 999px;
+  background: var(--v-paper);
+  color: var(--v-ink);
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* The chosen length is filled as well as outlined, so it reads without the colour. */
+.turnOptionOn {
+  border-color: var(--v-accent);
+  background: var(--v-accent-soft);
+  color: var(--v-accent-ink);
+}
+
+.turnOption:focus-visible {
+  outline: 3px solid var(--v-accent-strong);
+  outline-offset: 3px;
+}
+
 .privacy {
   max-width: 32ch;
   margin: 0.4rem 0 0;
