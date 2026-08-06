@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
-  CARDS_PER_PAGE,
+  CARDS_PER_SHEET,
   clampStudentCount,
+  countSheets,
   createClassSet,
   createToken,
   encodeCardPayload,
@@ -9,8 +10,7 @@ import {
   isCardToken,
   MAX_STUDENTS,
   parseCardPayload,
-  parseClassSet,
-  splitIntoPages
+  parseClassSet
 } from "./classCards";
 
 /** A predictable draw, so a generated set is the same in every run of the tests. */
@@ -186,24 +186,21 @@ describe("reading a stored set", () => {
   });
 });
 
-describe("laying the cards out for printing", () => {
-  it("fills whole pages and leaves the last one partly empty", () => {
-    const set = createClassSet(10, "2026-08-05");
-    const pages = splitIntoPages(set.cards);
-
-    expect(pages).toHaveLength(Math.ceil(10 / CARDS_PER_PAGE));
-    expect(pages[0]).toHaveLength(CARDS_PER_PAGE);
-    expect(pages[pages.length - 1]).toHaveLength(10 % CARDS_PER_PAGE);
+describe("printing the cards", () => {
+  it("gives each student a whole sheet, so nothing has to be cut", () => {
+    expect(CARDS_PER_SHEET).toBe(1);
+    expect(countSheets(25)).toBe(25);
+    expect(countSheets(1)).toBe(1);
   });
 
-  it("keeps every card exactly once across the pages", () => {
-    const set = createClassSet(MAX_STUDENTS, "2026-08-05");
-    const numbers = splitIntoPages(set.cards).flat().map((card) => card.number);
-
-    expect(numbers).toEqual(set.cards.map((card) => card.number));
+  it("counts no sheets for no cards", () => {
+    expect(countSheets(0)).toBe(0);
+    expect(countSheets(-3)).toBe(0);
   });
 
-  it("prints nothing for an empty list rather than a blank page", () => {
-    expect(splitIntoPages([])).toEqual([]);
+  it("costs exactly one sheet per student, whatever the class size", () => {
+    for (const size of [1, 7, 25, MAX_STUDENTS]) {
+      expect(countSheets(createClassSet(size, "2026-08-05").cards.length), `${size}`).toBe(size);
+    }
   });
 });

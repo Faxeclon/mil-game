@@ -1,14 +1,14 @@
 "use client";
 
 import { useId, useState } from "react";
-import { ChevronLeft, Printer, RotateCcw, Scissors } from "lucide-react";
+import { ChevronLeft, Printer, RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   clampStudentCount,
+  countSheets,
   createClassSet,
   encodeCardPayload,
   MAX_STUDENTS,
-  splitIntoPages,
   type TeacherCard,
   type TeacherClassSet
 } from "@/features/teacher/classCards";
@@ -94,8 +94,6 @@ export function TeacherCardsClient() {
     );
   }
 
-  const pages = splitIntoPages(set.cards);
-
   return (
     <div className={styles.cards}>
       <div className={styles.noPrint}>
@@ -113,6 +111,9 @@ export function TeacherCardsClient() {
           <li className={styles.step}>{t("stepHand")}</li>
           <li className={styles.step}>{t("stepTurn")}</li>
         </ol>
+
+        {/* The paper cost is shown before printing, not discovered at the printer. */}
+        <p className={styles.sheetCount}>{t("sheetCount", { sheets: countSheets(set.cards.length) })}</p>
 
         <p className={styles.keep}>{t("keepToken", { token: set.classToken })}</p>
 
@@ -135,20 +136,20 @@ export function TeacherCardsClient() {
         </div>
       </div>
 
+      {/* One sheet per student: nothing to cut, and the code stays big enough to read
+          from the back of the room. */}
       <div className={styles.sheets}>
-        {pages.map((page, pageIndex) => (
-          <section className={styles.sheet} key={pageIndex}>
-            {page.map((card) => (
-              <PrintableCard card={card} classToken={set.classToken} key={card.cardId} labels={{
+        {set.cards.map((card) => (
+          <section className={styles.sheet} key={card.cardId}>
+            <PrintableCard
+              card={card}
+              classToken={set.classToken}
+              labels={{
                 top: t("answerA"),
                 bottom: t("answerB"),
                 student: t("studentNumber", { number: card.number })
-              }} />
-            ))}
-            <p aria-hidden="true" className={styles.cutHint}>
-              <Scissors size={13} />
-              {t("cutHere")}
-            </p>
+              }}
+            />
           </section>
         ))}
       </div>

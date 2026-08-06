@@ -176,13 +176,16 @@ export function parseClassSet(value: unknown): TeacherClassSet | null {
   };
 }
 
-/** How many cards fit on one printed page, so the sheets can be cut apart cleanly. */
-export const CARDS_PER_PAGE = 4;
+/**
+ * One card per sheet.
+ *
+ * A full page makes the code and the A/B frame large enough to read from the back of a
+ * classroom, and it removes the scissors entirely: the teacher prints and hands them out.
+ * It costs more paper than packing several to a page, and that is the trade taken on
+ * purpose - a card that will not scan from row four is worth nothing at any price.
+ */
+export const CARDS_PER_SHEET = 1;
 
-export function splitIntoPages(cards: readonly TeacherCard[]): TeacherCard[][] {
-  const pages: TeacherCard[][] = [];
-  for (let index = 0; index < cards.length; index += CARDS_PER_PAGE) {
-    pages.push(cards.slice(index, index + CARDS_PER_PAGE));
-  }
-  return pages;
+export function countSheets(cardCount: number): number {
+  return Math.max(0, Math.trunc(cardCount));
 }
