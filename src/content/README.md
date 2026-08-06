@@ -2,6 +2,15 @@
 
 Each pack in `packs/*.json` describes one mission's learning sequence; it contains localization keys and provenance, never child-facing copy. `schemas/tutorial.ts` defines the strict content model and `validators/validateTutorialPack.ts` rejects invalid packs during development and builds.
 
+## The two pack shapes
+
+| Shape | File | What a round holds |
+|---|---|---|
+| Comparison | `animals-compare.json`, … | Two images; the player picks the AI one |
+| Single image | `animals-single.json`, `creators-uncertain.json` | One image; the player judges it alone |
+
+A single-image pack declares `allowsUncertain`. When it is true, "you cannot tell by looking" is offered as a third answer **and at least one round must actually answer `unknown`**; when it is false the answer may not appear at all. Offering a button that can never be right would teach a child that doubting is a mistake, which is the opposite of the lesson, so `validateSinglePack` refuses both mismatches.
+
 ## Adding a mission's content
 
 1. Write `packs/<name>.json` with exactly three rounds.
