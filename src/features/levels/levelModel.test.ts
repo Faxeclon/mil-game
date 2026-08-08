@@ -48,10 +48,13 @@ describe("island, category and mission blueprint", () => {
   });
 
   it("orders islands and their categories", () => {
-    expect(islandOrder).toEqual(["training", "difference", "source"]);
+    // Training opens the game; the rest are content and may grow.
+    expect(islandOrder.at(0)).toBe("training");
+    expect(islandOrder).toEqual([...islands].sort((a, b) => a.order - b.order).map((island) => island.key));
     expect(getCategoriesByIsland("difference").map((category) => category.key)).toEqual([
       "animals",
-      "sports"
+      "sports",
+      "memes"
     ]);
   });
 

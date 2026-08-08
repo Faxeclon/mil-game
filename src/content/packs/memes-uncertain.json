@@ -1,0 +1,79 @@
+{
+  "id": "memes-uncertain-v1",
+  "allowsUncertain": true,
+  "rounds": [
+    {
+      "id": "memes-uncertain-round-1",
+      "order": 1,
+      "learningGoal": "uncertainty",
+      "promptKey": "singleQuestion",
+      "media": {
+        "id": "memes-cat-caption",
+        "src": "/media/tutorial/placeholders/memes/cat-caption.svg",
+        "altKey": "media.memes.catCaption",
+        "origin": "unknown",
+        "reliability": "unverified",
+        "provenance": {
+          "sourceType": "project-placeholder",
+          "sourceName": "UNESCO Youth Hackathon temporary media team",
+          "licenseStatus": "Project placeholder; not for final use",
+          "temporary": true
+        }
+      },
+      "answer": "unknown",
+      "feedback": {
+        "verificationKey": "packs.memesUncertain.r1.verification",
+        "uncertaintyKey": "packs.memesUncertain.r1.remember"
+      }
+    },
+    {
+      "id": "memes-uncertain-round-2",
+      "order": 2,
+      "learningGoal": "source-and-purpose",
+      "promptKey": "singleQuestion",
+      "media": {
+        "id": "memes-rocket-caption",
+        "src": "/media/tutorial/placeholders/memes/rocket-caption.svg",
+        "altKey": "media.memes.rocketCaption",
+        "origin": "ai-generated",
+        "reliability": "unverified",
+        "provenance": {
+          "sourceType": "project-placeholder",
+          "sourceName": "UNESCO Youth Hackathon temporary media team",
+          "licenseStatus": "Project placeholder; not for final use",
+          "generationMethod": "Hand-drawn vector placeholder, not an AI sample",
+          "temporary": true
+        }
+      },
+      "answer": "ai-generated",
+      "feedback": {
+        "questionKey": "packs.memesUncertain.r2.question",
+        "uncertaintyKey": "packs.memesUncertain.r2.remember"
+      }
+    },
+    {
+      "id": "memes-uncertain-round-3",
+      "order": 3,
+      "learningGoal": "uncertainty",
+      "promptKey": "singleQuestion",
+      "media": {
+        "id": "memes-planet-caption",
+        "src": "/media/tutorial/placeholders/memes/planet-caption.svg",
+        "altKey": "media.memes.planetCaption",
+        "origin": "unknown",
+        "reliability": "unverified",
+        "provenance": {
+          "sourceType": "project-placeholder",
+          "sourceName": "UNESCO Youth Hackathon temporary media team",
+          "licenseStatus": "Project placeholder; not for final use",
+          "temporary": true
+        }
+      },
+      "answer": "unknown",
+      "feedback": {
+        "verificationKey": "packs.memesUncertain.r3.verification",
+        "uncertaintyKey": "packs.memesUncertain.r3.remember"
+      }
+    }
+  ]
+}
