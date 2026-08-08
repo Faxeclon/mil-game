@@ -6,9 +6,11 @@ import {
   completeLevelInStore,
   getProgressSnapshot,
   getServerProgressSnapshot,
+  leaveLocalProfileInStore,
   markOnboardedInStore,
   resetProgressInStore,
   resetProgressStoreForTests,
+  startAdultPlayInStore,
   subscribeToProgress
 } from "./progressStore";
 
@@ -144,4 +146,74 @@ describe("progress store", () => {
     unsubscribe();
   });
 
+});
+
+/**
+ * A grown-up who signed in already answered the only question this game asks - who are
+ * you - so the game has to open, not a second sign-up form.
+ */
+describe("a grown-up playing as themselves", () => {
+  it("becomes a player with no form and no questions", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+
+    startAdultPlayInStore("marta@example.com", "marta");
+    const { state } = getProgressSnapshot();
+
+    expect(state.onboarded).toBe(true);
+    expect(state.localNickname).toBe("marta");
+    expect(state.adultEmail).toBe("marta@example.com");
+    unsubscribe();
+  });
+
+  /*
+   * Their game is a profile like any other, so leaving to run a lesson and coming back
+   * has to return them to their own medals rather than a blank start.
+   */
+  it("returns to the same game rather than starting another one", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    startAdultPlayInStore("marta@example.com", "marta");
+    completeLevelInStore("basics-1", attemptedLevel);
+    leaveLocalProfileInStore();
+
+    startAdultPlayInStore("marta@example.com", "marta");
+    const { state, profiles } = getProgressSnapshot();
+
+    expect(profiles.profiles).toHaveLength(1);
+    expect(state.completedLevelIds).toEqual(["basics-1"]);
+    unsubscribe();
+  });
+
+  /*
+   * The child keeps everything. A grown-up picking up the phone to try a round must not
+   * cost the player whose medals were on it.
+   */
+  it("steps away from the child playing instead of writing over them", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    markOnboardedInStore("Lu", "fox");
+    completeLevelInStore("basics-1", attemptedLevel);
+
+    startAdultPlayInStore("marta@example.com", "marta");
+    const { state, profiles } = getProgressSnapshot();
+
+    expect(profiles.profiles).toHaveLength(2);
+    expect(profiles.profiles[0].progress.localNickname).toBe("Lu");
+    expect(profiles.profiles[0].progress.completedLevelIds).toEqual(["basics-1"]);
+    // The grown-up starts their own game, not inside the child's.
+    expect(state.completedLevelIds).toEqual([]);
+    expect(state.localNickname).toBe("marta");
+    unsubscribe();
+  });
+
+  it("refuses to make a nameless profile out of nothing", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+
+    startAdultPlayInStore("   ", "   ");
+
+    expect(getProgressSnapshot().profiles.profiles).toHaveLength(0);
+    unsubscribe();
+  });
 });

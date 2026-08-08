@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { IslandsNavLink } from "@/components/IslandsNavLink";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { SoundToggle } from "@/components/SoundToggle";
-import { TeacherNavLink } from "@/components/TeacherNavLink";
+import { AdultNavLink } from "@/components/AdultNavLink";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { Link } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
@@ -30,8 +30,8 @@ export async function AppHeader({ locale }: { locale: AppLocale }) {
             <Accessibility aria-hidden="true" size={19} />
             <span>{t("accessibility")}</span>
           </Link>
-          {/* Appears only where a teacher registered; a child never meets it. */}
-          <TeacherNavLink className={styles.navLink} />
+          {/* Appears only where a grown-up signed in; a child never meets it. */}
+          <AdultNavLink className={styles.navLink} />
         </nav>
 
         <div className={styles.controls}>

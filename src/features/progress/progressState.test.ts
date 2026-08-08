@@ -8,6 +8,7 @@ import {
   needsLocalNicknameCompletion,
   parseProgressState,
   PROGRESS_VERSION,
+  resetProgressKeepingProfile,
   resetProgressState
 } from "./progressState";
 
@@ -31,7 +32,9 @@ describe("canonical level progress", () => {
       apprenticeAvatarId: null,
       bestResultsByLevelId: {},
       streak: { currentDays: 0, bestDays: 0, lastPlayedOn: null },
-      guardian: null
+      guardian: null,
+      adultEmail: null,
+      playedMs: 0
     });
     expect(initialProgressState.localNickname).toBeNull();
     expect(initialProgressState.apprenticeAvatarId).toBeNull();
@@ -118,6 +121,8 @@ describe("legacy migration", () => {
       bestResultsByLevelId: {},
       streak: { currentDays: 0, bestDays: 0, lastPlayedOn: null },
       guardian: null,
+      adultEmail: null,
+      playedMs: 0,
       lastResult: {
         levelId: "animals-1",
         correctRounds: 2,
@@ -151,6 +156,25 @@ describe("results", () => {
 
     expect(state.completedLevelIds).toEqual(["animals-1"]);
     expect(state.lastResult).toEqual({ levelId: "animals-1", ...completedAttempt, score: null });
+  });
+
+  /*
+   * A grown-up reading "how long has my child been on this" needs the honest total, and
+   * the records only keep each mission's best run - so replaying five times would look
+   * like playing once if this were worked out from them.
+   */
+  it("adds up every run, replays included, not only the best ones", () => {
+    let state = completeLevel(initialProgressState, "animals-1", completedAttempt);
+    state = completeLevel(state, "animals-1", completedAttempt);
+
+    expect(state.completedLevelIds).toEqual(["animals-1"]);
+    expect(state.playedMs).toBe(completedAttempt.elapsedMs * 2);
+  });
+
+  it("starts the clock again when the child asks to start over", () => {
+    const played = completeLevel(initialProgressState, "animals-1", completedAttempt);
+
+    expect(resetProgressKeepingProfile(played).playedMs).toBe(0);
   });
 
   it("ignores an invalid runtime level id", () => {
