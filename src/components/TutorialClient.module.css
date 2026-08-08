@@ -646,8 +646,20 @@
   text-transform: uppercase;
 }
 
+/*
+ * The shape of a photo taken on a phone.
+ *
+ * The two pictures are the whole exercise, so they get the height. A square crop was
+ * throwing away the top and bottom of every image, which is often exactly where the thing
+ * worth noticing is - a hand, a sign, the edge of a roof. It is also the shape a child
+ * meets everywhere else, so the exercise looks like the thing it is teaching about.
+ *
+ * The submit button ends up below the fold on a small phone. That is the trade taken on
+ * purpose: looking closely is the skill, and a picture too small to look at closely would
+ * defeat the point of the button.
+ */
 .cardMedia {
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 9 / 16;
   position: relative;
   display: block;
   overflow: hidden;

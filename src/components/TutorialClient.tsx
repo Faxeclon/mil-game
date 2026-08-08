@@ -356,12 +356,22 @@ export function TutorialClient({
             {t(round.promptKey)}
           </h1>
           {/*
-           * Reading the question aloud is the one support with measured benefit for both
-           * of the difficulties this game is most likely to meet, so it sits with the
-           * question rather than buried in a menu. It renders nothing unless the child
-           * asked for it and this phone can actually speak their language.
+           * Reading aloud is the one support with measured benefit for both of the
+           * difficulties this game is most likely to meet, so it sits with the question
+           * rather than buried in a menu. It renders nothing unless the child asked for it
+           * and this phone can actually speak their language.
+           *
+           * It reads the two options as well as the question: a child who cannot read the
+           * choices cannot answer, however clearly the question was put.
            */}
-          <ListenButton lines={[t(round.promptKey)]} />
+          <ListenButton
+            lines={[
+              t(round.promptKey),
+              ...round.choices.map(
+                (choice) => `${t(choice.position)}: ${t(choice.media.altKey)}`
+              )
+            ]}
+          />
 
           <div aria-labelledby="tutorial-question" className={styles.choices} role="group">
             {round.choices.map((choice) => {
@@ -504,6 +514,16 @@ export function TutorialClient({
                   </span>
                   </p>
                 ))}
+                {/*
+                 * The explanation is the part that teaches; leaving it unread would mean
+                 * the child can play the game without ever reaching the lesson in it.
+                 */}
+                <ListenButton
+                  lines={[
+                    selectedIsCorrect ? t("correct") : t("tryAgain"),
+                    ...feedbackBlocks.map((block) => `${t(block.labelKey)}: ${t(block.textKey)}`)
+                  ]}
+                />
               </div>
 
               <footer className={styles.panelFooter}>

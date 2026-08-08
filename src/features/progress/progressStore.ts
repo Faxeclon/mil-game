@@ -12,6 +12,7 @@ import {
   initialProgressState,
   markOnboarded,
   advanceMapOnboarding,
+  resetProgressKeepingProfile,
   withdrawGuardian,
   type LevelAttempt,
   type ProgressState
@@ -101,9 +102,15 @@ export function advanceMapOnboardingInStore(): void {
   applyToActiveProgress(advanceMapOnboarding);
 }
 
-/** Clears only the player holding the phone; the others keep everything they earned. */
+/**
+ * Starts the game over for the player holding the phone, without unmaking them.
+ *
+ * Their missions, records, streak and Rush rewards go, and the map tour plays again. Their
+ * name, avatar and the adult who authorised them stay - so this is a new game, not a new
+ * child, and nobody is asked what they are called for a second time.
+ */
 export function resetProgressInStore(): void {
-  applyToActiveProgress(() => initialProgressState);
+  applyToActiveProgress(resetProgressKeepingProfile);
   if (snapshot.profiles.profiles.length === 0) publish(fromDocument(emptyProfilesDocument));
 }
 

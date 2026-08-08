@@ -147,7 +147,17 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
           {t(round.promptKey)}
         </h1>
 
-        <ListenButton lines={[t(round.promptKey)]} />
+        {/*
+         * The question, what to do about it, and the answers themselves. A child who
+         * cannot read the options cannot answer, however clearly the question was put.
+         */}
+        <ListenButton
+          lines={[
+            t(round.promptKey),
+            pack.allowsUncertain ? t("uncertainHint") : t("singleHint"),
+            ...answers.map(({ labelKey }) => t(labelKey))
+          ]}
+        />
 
         <figure className={styles.figure}>
           <Image
@@ -222,6 +232,16 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
                   </span>
                 </p>
               ))}
+              {/*
+               * The explanation is the part that teaches; leaving it unread would mean the
+               * child can play the game without ever reaching the lesson in it.
+               */}
+              <ListenButton
+                lines={[
+                  isCorrect ? t("correct") : t("tryAgain"),
+                  ...feedbackBlocks.map((block) => `${t(block.labelKey)}: ${t(block.textKey)}`)
+                ]}
+              />
             </div>
             <button
               className={styles.primaryButton}

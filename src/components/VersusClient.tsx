@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useReducer, useState } from "react";
 import { Check, ChevronLeft, Smartphone, Sparkles, Target, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { ListenButton } from "@/components/ListenButton";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import type { TutorialRound } from "@/content/schemas/tutorial";
@@ -192,6 +193,20 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
       <h1 className={styles.question} id="versus-question">
         {tTutorial(round.promptKey)}
       </h1>
+
+      {/*
+       * Passing the phone back and forth is no reason to make one of the two players read
+       * silently. Whose turn it is gets read too, since that is the part being handed over.
+       */}
+      <ListenButton
+        lines={[
+          t("yourTurn", { player: playerName(state.player) }),
+          tTutorial(round.promptKey),
+          ...round.choices.map(
+            (choice) => `${tTutorial(choice.position)}: ${tTutorial(choice.media.altKey)}`
+          )
+        ]}
+      />
 
       <div aria-labelledby="versus-question" className={styles.choices} role="group">
         {round.choices.map((choice) => {

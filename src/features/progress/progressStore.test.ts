@@ -6,6 +6,7 @@ import {
   completeLevelInStore,
   getProgressSnapshot,
   getServerProgressSnapshot,
+  markOnboardedInStore,
   resetProgressInStore,
   resetProgressStoreForTests,
   subscribeToProgress
@@ -117,15 +118,29 @@ describe("progress store", () => {
     unsubscribe();
   });
 
-  it("leaves the device empty enough to start over after a reset", () => {
+  /*
+   * A reset restarts the game, it does not unmake the child. Wiping the nickname too was
+   * the old behaviour, and it landed them back on the form asking who they are - which is
+   * exactly what "erase my progress" should never do.
+   */
+  it("clears the game but keeps the player after a reset", () => {
     stubStorage();
     const unsubscribe = subscribeToProgress(() => {});
+    markOnboardedInStore("Roqui 47", "fox");
     completeLevelInStore("basics-1", attemptedLevel);
 
     resetProgressInStore();
+    const state = getProgressSnapshot().state;
 
-    // Nothing to unlock, nothing recorded, no nickname: the same as a new device.
-    expect(getProgressSnapshot().state).toEqual(initialProgressState);
+    expect(state.completedLevelIds).toEqual([]);
+    expect(state.bestResultsByLevelId).toEqual({});
+    expect(state.rushUnlockedIslands).toEqual([]);
+    // The map is new again, so its one-time tour plays again.
+    expect(state.mapOnboardingStage).toBe("map-island");
+
+    expect(state.localNickname).toBe("Roqui 47");
+    expect(state.apprenticeAvatarId).toBe("fox");
+    expect(state.onboarded).toBe(true);
     unsubscribe();
   });
 

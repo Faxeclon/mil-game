@@ -128,6 +128,35 @@ export const initialProgressState: ProgressState = {
   guardian: null
 };
 
+/**
+ * Starts the game over for the child already holding the phone.
+ *
+ * The distinction that makes this correct is that there are two different onboardings in
+ * here, and only one of them is progress:
+ *
+ *   `onboarded`          they created a profile   - kept, or the game asks their name again
+ *   `mapOnboardingStage` the one-time map tour    - replayed, since the map is new again
+ *
+ * Wiping the whole state was the old behaviour, and it took the nickname with it, which is
+ * why erasing progress could end up looking like losing your account. Everything that is
+ * genuinely progress goes; who you are, and how you like to be spoken to, stays.
+ *
+ * The Rush rewards go too. They are stored rather than derived precisely so a reward
+ * already earned survives new content, and that same durability would otherwise let them
+ * survive a reset the child deliberately asked for.
+ */
+export function resetProgressKeepingProfile(state: ProgressState): ProgressState {
+  return {
+    ...initialProgressState,
+    // Who they are, kept exactly as it was.
+    localNickname: state.localNickname,
+    apprenticeAvatarId: state.apprenticeAvatarId,
+    onboarded: state.onboarded,
+    // Consent belongs to the adult who gave it, not to a run of the game.
+    guardian: state.guardian
+  };
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
