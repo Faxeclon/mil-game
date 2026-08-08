@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { getTeacherRouteAccess } from "@/features/teacher/teacherRouteAccess";
 import { useTeacherAccount } from "@/features/teacher/teacherAccountStore";
 import { Link } from "@/i18n/navigation";
+import { LoadingRoqui } from "./LoadingRoqui";
 import styles from "./ProfileRouteGuard.module.css";
 
 /** Keeps local teacher-only tools off direct URLs without claiming server authentication. */
@@ -15,16 +16,7 @@ export function TeacherRouteGuard({ children }: { children: ReactNode }) {
   const access = getTeacherRouteAccess(hydrated, account);
 
   if (access === "checking") {
-    return (
-      <section aria-labelledby="teacher-route-guard-loading-title" className={`${styles.guard} app-chrome-hidden`}>
-        <h1 className={styles.title} id="teacher-route-guard-loading-title">
-          {t("title")}
-        </h1>
-        <p className={styles.text} role="status">
-          {t("locked")}
-        </p>
-      </section>
-    );
+    return <LoadingRoqui message={t("locked")} title={t("title")} />;
   }
 
   if (access === "denied") {

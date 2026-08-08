@@ -1,0 +1,97 @@
+/*
+ * The waiting moment. Centred, calm, and never a spinner that implies a percentage we do
+ * not know.
+ */
+
+.loading {
+  width: min(100%, 44rem);
+  min-height: 60vh;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: #1f2a44;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.4rem, 5vw, 1.8rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* Roqui rocks gently rather than spinning: he is waiting, not working. */
+.mascot {
+  animation: sway 2.4s ease-in-out infinite;
+}
+
+.message {
+  margin: 0;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.15rem;
+  color: #5b6780;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.dots {
+  display: inline-flex;
+  gap: 0.15rem;
+}
+
+.dots span {
+  width: 0.25rem;
+  height: 0.25rem;
+  align-self: center;
+  border-radius: 50%;
+  background: currentColor;
+  animation: blink 1.2s ease-in-out infinite;
+}
+
+.dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/*
+ * A phone asking for less movement gets none. The dots stay visible so the message still
+ * reads as "in progress" without anything moving.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .mascot,
+  .dots span {
+    animation: none;
+  }
+
+  .dots span {
+    opacity: 0.6;
+  }
+}

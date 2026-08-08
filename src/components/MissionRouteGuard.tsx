@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { isMissionUnlocked } from "@/features/levels/levelProgress";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link } from "@/i18n/navigation";
+import { LoadingRoqui } from "./LoadingRoqui";
 import styles from "./MissionRouteGuard.module.css";
 
 /**
@@ -18,13 +19,7 @@ export function MissionRouteGuard({ missionId, children }: { missionId: string; 
   const { hydrated, progressState } = useProgress();
 
   // Progress lives in the browser, so the answer is only trustworthy after hydration.
-  if (!hydrated) {
-    return (
-      <p className={`${styles.loading} app-chrome-hidden`} role="status">
-        {t("checking")}
-      </p>
-    );
-  }
+  if (!hydrated) return <LoadingRoqui message={t("checking")} />;
 
   if (!isMissionUnlocked(progressState, missionId)) {
     return (

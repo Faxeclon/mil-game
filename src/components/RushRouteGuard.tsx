@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { isIslandRushUnlocked } from "@/features/levels/progressSummary";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link } from "@/i18n/navigation";
+import { LoadingRoqui } from "./LoadingRoqui";
 import styles from "./MissionRouteGuard.module.css";
 
 /** Prevents an island challenge from being opened by a direct URL before its path is complete. */
@@ -14,16 +15,7 @@ export function RushRouteGuard({ island, children }: { island: string; children:
   const { hydrated, progressState } = useProgress();
 
   if (!hydrated) {
-    return (
-      <section aria-labelledby="rush-guard-loading-title" className={`${styles.locked} app-chrome-hidden`}>
-        <h1 className={styles.title} id="rush-guard-loading-title">
-          {t("title")}
-        </h1>
-        <p className={styles.text} role="status">
-          {t("checking")}
-        </p>
-      </section>
-    );
+    return <LoadingRoqui message={t("checking")} title={t("title")} />;
   }
 
   if (!isIslandRushUnlocked(progressState, island)) {

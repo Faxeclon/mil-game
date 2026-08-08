@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { getProfileRouteAccess } from "@/features/profiles/profileRouteAccess";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link } from "@/i18n/navigation";
+import { LoadingRoqui } from "./LoadingRoqui";
 import styles from "./ProfileRouteGuard.module.css";
 
 /**
@@ -25,16 +26,7 @@ export function ProfileRouteGuard({ children }: { children: ReactNode }) {
   const access = getProfileRouteAccess(hydrated, onboarded, progressState);
 
   if (access === "checking") {
-    return (
-      <section aria-labelledby="profile-guard-loading-title" className={`${styles.guard} app-chrome-hidden`}>
-        <h1 className={styles.title} id="profile-guard-loading-title">
-          {t("profileTitle")}
-        </h1>
-        <p className={styles.text} role="status">
-          {tLocked("checking")}
-        </p>
-      </section>
-    );
+    return <LoadingRoqui message={tLocked("checking")} title={t("profileTitle")} />;
   }
 
   if (access === "denied") {
