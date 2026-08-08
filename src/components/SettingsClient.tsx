@@ -31,6 +31,7 @@ import {
   useAccessibility
 } from "@/features/accessibility/accessibilityStore";
 import { setSoundEnabled } from "@/features/audio/soundPreference";
+import { Narrator } from "@/components/Narrator";
 import { useSpeech } from "@/features/speech/useSpeech";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { signOutTeacher, useTeacherAccount } from "@/features/teacher/teacherAccountStore";
@@ -67,6 +68,10 @@ export function SettingsClient() {
         <ChevronLeft aria-hidden="true" size={18} />
         {t("back")}
       </Link>
+
+      {/* Read out too: a child who turned the voice on here should not have to read the
+          screen that offers it. */}
+      <Narrator lines={[t("title"), t("lead")]} />
 
       <h1 className={styles.title}>{t("title")}</h1>
       <p className={styles.lead}>{t("lead")}</p>
@@ -207,6 +212,8 @@ export function SettingsClient() {
         </div>
       </dialog>
 
+      <ResetSection />
+
     </div>
   );
 }
@@ -224,10 +231,8 @@ function DataSection() {
   const tGuardian = useTranslations("guardian");
   const tTeacherAccount = useTranslations("teacherAccount");
   const router = useRouter();
-  const { hydrated, resetProgress, completedLevelIds, guardian } = useProgress();
+  const { completedLevelIds, guardian } = useProgress();
   const { account: teacherAccount } = useTeacherAccount();
-  const [confirmingReset, setConfirmingReset] = useState(false);
-  const [confirmingSettingsReset, setConfirmingSettingsReset] = useState(false);
   /*
    * On a teacher's device there is no child playing, so the guest badge and the
    * grown-up's permission are answering a question nobody asked here.
@@ -293,11 +298,32 @@ function DataSection() {
         </div>
         )}
 
-        {/*
-         * Two actions that sound alike and are not. The wording, the icon and the weight
-         * of each button all have to say which one throws work away, because a child who
-         * reaches for the wrong one loses every medal they earned.
-         */}
+    </section>
+  );
+}
+
+/**
+ * The two ways to start something over.
+ *
+ * Last on the screen on purpose. Everything above is a choice a child came here to make;
+ * these two undo work, and nothing that erases medals should sit above the thing somebody
+ * actually opened this page for.
+ *
+ * They sound alike and are not, so the wording, the icon and the weight of each button all
+ * have to say which one throws work away.
+ */
+function ResetSection() {
+  const t = useTranslations("settings");
+  const { hydrated, resetProgress, completedLevelIds } = useProgress();
+  const [confirmingReset, setConfirmingReset] = useState(false);
+  const [confirmingSettingsReset, setConfirmingSettingsReset] = useState(false);
+
+  return (
+    <section aria-labelledby="settings-reset" className={styles.group}>
+        <h2 className={styles.groupTitle} id="settings-reset">
+          {t("resetTitle")}
+        </h2>
+
         <div className={styles.resetRow}>
           <p className={styles.resetText}>
             <span className={styles.resetName}>{t("resetProgressName")}</span>

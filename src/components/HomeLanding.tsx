@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { Narrator } from "@/components/Narrator";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { getAvailableIsland, getNextMission } from "@/features/levels/levelProgress";
 import { getGlobalProgress } from "@/features/levels/progressSummary";
@@ -125,6 +126,16 @@ export function HomeLanding() {
         <section aria-labelledby="hub-title" className={styles.hub}>
           {/* Roqui greets the child the same way he greets the teacher: standing beside
               a speech bubble. It is the guide talking, not a header. */}
+          {/* The greeting and, above all, where to go next: the one instruction on this
+              screen that decides whether a child knows what to do. */}
+          <Narrator
+            lines={[
+              savedLocalNickname ? t("hubGreetingNamed", { name: savedLocalNickname }) : t("hubGreeting"),
+              nextMission
+                ? t("hubNextHint", { category: tIslands(`categories.${nextMission.category}.title`) })
+                : t("hubAllDone")
+            ]}
+          />
           <div className={styles.mascotRow}>
             <div className={styles.bubble}>
               <h1 className={styles.line} id="hub-title">
@@ -143,6 +154,10 @@ export function HomeLanding() {
             Who the player is: apprentice, earned title, and a tick once a responsible
             adult has been linked. It goes nowhere on purpose - it is an identity, not a
             menu - and where the progress lives is said once, at the foot of the page.
+
+            The title is labelled rather than left on its own. Beside the apprentice icon
+            and with nothing to explain it, "Curious eyes" reads as the name of the bird
+            instead of as something the child earned with stars.
           */}
           <p className={styles.identity}>
             <span
@@ -154,7 +169,10 @@ export function HomeLanding() {
             >
               <HubApprenticeIcon aria-hidden="true" strokeWidth={2} />
             </span>
-            <span className={styles.identityTitle}>{tRank(`titles.${rank.titleKey}`)}</span>
+            <span className={styles.identityText}>
+              <span className={styles.identityLabel}>{tRank("titleNow")}</span>
+              <span className={styles.identityTitle}>{tRank(`titles.${rank.titleKey}`)}</span>
+            </span>
             {guardian && (
               <span aria-label={tGuardian("badge")} className={styles.identityCheck} role="img">
                 <Check aria-hidden="true" size={13} strokeWidth={3.5} />
@@ -277,6 +295,7 @@ export function HomeLanding() {
           <LanguageSwitcher />
         </div>
         <section aria-labelledby="nickname-completion-title" className={styles.profile}>
+          <Narrator lines={[t("profileCompletionTitle"), t("profileNicknameLabel"), t("profileNicknameHint")]} />
           <h1 className={styles.profileTitle} id="nickname-completion-title">
             {t("profileCompletionTitle")}
           </h1>
@@ -375,6 +394,12 @@ export function HomeLanding() {
         <span aria-live="polite" className={styles.srOnly}>
           {lines[lineIndex]}
         </span>
+        {/*
+         * Roqui introducing himself is the first text of the whole game, and a child who
+         * cannot read it yet has nothing else to go on. It renders nothing, so it can sit
+         * inside the tap target the whole screen is.
+         */}
+        <Narrator lines={[lines[lineIndex]]} />
       </button>
     );
   }
@@ -475,6 +500,14 @@ export function HomeLanding() {
       </div>
 
       <section aria-labelledby="profile-title" className={styles.profile}>
+        {/*
+         * The first screen of the whole game, and the one where a child who cannot read
+         * would get stuck before playing a single round. If the voice reaches anywhere, it
+         * has to reach here.
+         */}
+        <Narrator
+          lines={[t("profileTitle"), t("profileAvatar"), t("profileNicknameLabel"), t("profileNicknameHint")]}
+        />
         <h1 className={styles.profileTitle} id="profile-title">
           {t("profileTitle")}
         </h1>

@@ -658,8 +658,15 @@
  * purpose: looking closely is the skill, and a picture too small to look at closely would
  * defeat the point of the button.
  */
+/* Holds the card and its magnifier, which cannot live inside a button. */
+.cardWrap {
+  min-width: 0;
+  position: relative;
+  display: grid;
+}
+
 .cardMedia {
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 1 / 2;
   position: relative;
   display: block;
   overflow: hidden;

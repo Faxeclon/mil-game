@@ -660,10 +660,17 @@
 }
 
 /* What Roqui says to the child, under the greeting inside the same bubble. */
+/*
+ * Roqui's line to the child, so it is read like speech rather than like a caption.
+ *
+ * Soft grey at 0.92rem with no weight put the one instruction on the screen below the
+ * legibility of the furniture around it. It is the sentence that says what to do next.
+ */
 .hubWelcome {
-  margin: 0.35rem 0 0;
-  color: var(--h-ink-soft);
-  font-size: 0.92rem;
+  margin: 0.4rem 0 0;
+  color: var(--h-ink);
+  font-size: 1.02rem;
+  font-weight: 700;
   line-height: 1.4;
   text-wrap: balance;
 }
@@ -704,8 +711,28 @@
   color: #b8380a;
 }
 
+/*
+ * The label above the title exists so the title means something.
+ *
+ * "Curious eyes" beside a bird, with nothing to explain it, reads as the bird's name. Two
+ * words of context turn it back into what it is: a rank the child earned with stars.
+ */
+.identityText {
+  display: grid;
+  gap: 0.05rem;
+  line-height: 1.15;
+}
+
+.identityLabel {
+  color: var(--h-ink-soft);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 .identityTitle {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 800;
 }
 

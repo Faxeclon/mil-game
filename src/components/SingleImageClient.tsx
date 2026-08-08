@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useReducer, useRef, useState } from "react";
 import { Camera, Check, ChevronLeft, HelpCircle, Sparkles, Target } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ListenButton } from "@/components/ListenButton";
+import { Narrator } from "@/components/Narrator";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import type { SinglePack } from "@/content/schemas/tutorial";
@@ -18,6 +18,7 @@ import { useProgress } from "@/features/progress/ProgressProvider";
 import { getResultsAttemptPath } from "@/features/results/resultNavigation";
 import { calculateLevelScore } from "@/features/scoring/levelScore";
 import { Link, useRouter } from "@/i18n/navigation";
+import { ImageZoom } from "./ImageZoom";
 import styles from "./SingleImageClient.module.css";
 
 type SingleImageClientProps = {
@@ -151,7 +152,7 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
          * The question, what to do about it, and the answers themselves. A child who
          * cannot read the options cannot answer, however clearly the question was put.
          */}
-        <ListenButton
+        <Narrator
           lines={[
             t(round.promptKey),
             pack.allowsUncertain ? t("uncertainHint") : t("singleHint"),
@@ -159,6 +160,10 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
           ]}
         />
 
+        {/*
+          With nothing to compare it against, the detail is all the child has. This is the
+          screen where looking closer matters most, so the magnifier belongs here first.
+        */}
         <figure className={styles.figure}>
           <Image
             alt={t(round.media.altKey)}
@@ -167,6 +172,7 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
             sizes="(max-width: 700px) 88vw, 420px"
             src={round.media.src}
           />
+          <ImageZoom alt={t(round.media.altKey)} src={round.media.src} />
         </figure>
 
         {state.answerSubmitted ? (
@@ -236,7 +242,7 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
                * The explanation is the part that teaches; leaving it unread would mean the
                * child can play the game without ever reaching the lesson in it.
                */}
-              <ListenButton
+              <Narrator
                 lines={[
                   isCorrect ? t("correct") : t("tryAgain"),
                   ...feedbackBlocks.map((block) => `${t(block.labelKey)}: ${t(block.textKey)}`)

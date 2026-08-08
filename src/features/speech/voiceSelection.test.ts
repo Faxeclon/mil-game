@@ -60,6 +60,28 @@ describe("picking the voice to read with", () => {
     expect(pickVoice(installed, "es")?.name).toBe("Local");
   });
 
+  /*
+   * Tone is the last thing considered, never the first: a warmer-sounding name that needs
+   * a server is still silence on a phone with no signal.
+   */
+  it("prefers a friendlier-sounding voice among the offline ones", () => {
+    const installed = [
+      voice({ name: "Microsoft Raul", lang: "es-MX", default: true }),
+      voice({ name: "Microsoft Sabina", lang: "es-MX" })
+    ];
+
+    expect(pickVoice(installed, "es-MX")?.name).toBe("Microsoft Sabina");
+  });
+
+  it("does not chase tone across the line into a network voice", () => {
+    const installed = [
+      voice({ name: "Paulina", lang: "es-MX", localService: false }),
+      voice({ name: "Diego", lang: "es-MX", localService: true })
+    ];
+
+    expect(pickVoice(installed, "es-MX")?.name).toBe("Diego");
+  });
+
   it("falls back to a network voice rather than none at all", () => {
     const installed = [voice({ name: "Nube", lang: "es-ES", localService: false })];
 

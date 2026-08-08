@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Check, ChevronLeft, Copy, Inbox, Swords, UserMinus, UserPlus, Users, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Narrator } from "@/components/Narrator";
 import { getGuardian } from "@/features/friends/friendsDirectory";
 import {
   CODE_LENGTH,
@@ -49,7 +50,29 @@ export function FriendsClient() {
   const [typed, setTyped] = useState("");
   const [feedback, setFeedback] = useState<{ result: AddResult; alias?: string } | null>(null);
   const [copied, setCopied] = useState<"done" | "failed" | null>(null);
+  const [requestsOpen, setRequestsOpen] = useState(false);
   const copyTimer = useRef<number | null>(null);
+  const closeRequestsRef = useRef<HTMLButtonElement | null>(null);
+
+  // Escape closes the sheet, and the page underneath must not scroll away behind it.
+  useEffect(() => {
+    if (!requestsOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setRequestsOpen(false);
+    };
+    // `document` here is the saved friends list, so the page itself is named in full.
+    const page = globalThis.document;
+    const previousOverflow = page.body.style.overflow;
+    page.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+    closeRequestsRef.current?.focus();
+
+    return () => {
+      page.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [requestsOpen]);
 
   // The confirmation fades on its own; a message that stays becomes furniture.
   useEffect(() => () => {
@@ -88,42 +111,33 @@ export function FriendsClient() {
         {tCards("back")}
       </Link>
 
-      <h1 className={styles.title}>{t("title")}</h1>
+      {/* The title and the lead. Codes and aliases stay on the page: a synthesiser
+          spelling out "ABC123" helps nobody. */}
+      <Narrator lines={[t("title"), t("lead")]} />
+
+      {/*
+        The requests live behind the icon rather than down the page.
+        Sharing your code is what a child comes here to do; answering a request is an
+        occasional interruption. Giving the interruption the top of the screen pushed the
+        everyday thing below it, so it moved into a badge that says how many are waiting.
+      */}
+      <div className={styles.titleRow}>
+        <h1 className={styles.title}>{t("title")}</h1>
+        <button
+          aria-label={t("openRequests", { count: requests.length })}
+          className={styles.requestsButton}
+          type="button"
+          onClick={() => setRequestsOpen(true)}
+        >
+          <Inbox aria-hidden="true" size={20} />
+          {requests.length > 0 && (
+            <span aria-hidden="true" className={styles.badge}>
+              {requests.length}
+            </span>
+          )}
+        </button>
+      </div>
       <p className={styles.lead}>{t("lead")}</p>
-      <p className={styles.prototypeNotice} role="status">{t("prototypeNotice")}</p>
-
-      {/* What needs an answer comes first: an inbox below the fold is an inbox unread. */}
-      {requests.length > 0 && (
-        <section aria-labelledby="requests" className={styles.requestBox}>
-          <h2 className={styles.sectionTitle} id="requests">
-            <Inbox aria-hidden="true" size={16} />
-            {t("requestsTitle", { count: requests.length })}
-          </h2>
-          <p className={styles.requestsHint}>{t("requestsHint")}</p>
-
-          <ul className={styles.list}>
-            {requests.map((player) => (
-              <li className={styles.row} key={player.id}>
-                <Who player={player} />
-                <span className={styles.actions}>
-                  <button className={styles.accept} type="button" onClick={() => acceptFrom(player.id)}>
-                    <Check aria-hidden="true" size={15} />
-                    {t("accept")}
-                  </button>
-                  <button
-                    aria-label={t("rejectNamed", { alias: player.alias })}
-                    className={styles.reject}
-                    type="button"
-                    onClick={() => rejectFrom(player.id)}
-                  >
-                    <X aria-hidden="true" size={15} />
-                  </button>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
 
       <section aria-labelledby="my-code" className={styles.codeBox}>
         <h2 className={styles.sectionTitle} id="my-code">
@@ -250,6 +264,60 @@ export function FriendsClient() {
       )}
 
       <p className={styles.privacy}>{t("privacy")}</p>
+
+      {requestsOpen && (
+        <div
+          aria-label={t("requestsTitle", { count: requests.length })}
+          aria-modal="true"
+          className={styles.overlay}
+          role="dialog"
+          onClick={() => setRequestsOpen(false)}
+        >
+          <div className={styles.sheet} onClick={(event) => event.stopPropagation()}>
+            <div className={styles.sheetHead}>
+              <h2 className={styles.sheetTitle}>{t("requestsTitle", { count: requests.length })}</h2>
+              <button
+                aria-label={t("closeRequests")}
+                className={styles.sheetClose}
+                ref={closeRequestsRef}
+                type="button"
+                onClick={() => setRequestsOpen(false)}
+              >
+                <X aria-hidden="true" size={18} />
+              </button>
+            </div>
+
+            {requests.length === 0 ? (
+              <p className={styles.empty}>{t("noRequests")}</p>
+            ) : (
+              <>
+                <p className={styles.requestsHint}>{t("requestsHint")}</p>
+                <ul className={styles.list}>
+                  {requests.map((player) => (
+                    <li className={styles.row} key={player.id}>
+                      <Who player={player} />
+                      <span className={styles.actions}>
+                        <button className={styles.accept} type="button" onClick={() => acceptFrom(player.id)}>
+                          <Check aria-hidden="true" size={15} />
+                          {t("accept")}
+                        </button>
+                        <button
+                          aria-label={t("rejectNamed", { alias: player.alias })}
+                          className={styles.reject}
+                          type="button"
+                          onClick={() => rejectFrom(player.id)}
+                        >
+                          <X aria-hidden="true" size={15} />
+                        </button>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

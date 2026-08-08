@@ -2,6 +2,7 @@
 
 import { Check, ChevronLeft, Hourglass, LockKeyhole, Play, Star, Timer, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Narrator } from "@/components/Narrator";
 import {
   getCategoriesByIsland,
   getLevelDifficulty,
@@ -61,6 +62,18 @@ export function IslandView({ island }: { island: IslandKey }) {
 
       <h1 className={styles.title}>{t("islandTitle", { name: t(`list.${island}.title`) })}</h1>
       <p className={styles.subtitle}>{t(`list.${island}.description`)}</p>
+
+      {/* Where the child is and how much of the island is left: the two things this screen
+          exists to tell them, and both of them are text. */}
+      <Narrator
+        lines={[
+          t("islandTitle", { name: t(`list.${island}.title`) }),
+          t(`list.${island}.description`),
+          islandProgress.isEmpty
+            ? t("islandEmpty")
+            : t("islandProgressAria", { done: islandProgress.done, total: islandProgress.total })
+        ]}
+      />
 
       {/* An island with nothing playable says so; it is not a mission left at zero. */}
       {islandProgress.isEmpty ? (

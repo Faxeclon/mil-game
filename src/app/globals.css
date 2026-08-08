@@ -214,6 +214,38 @@ html[data-clear-reading="on"] body {
   line-height: 1.7;
 }
 
+/* Inheriting from body is not enough, and the gap was visible: every heading in this game
+   sets its own tight, negative tracking for looks, and an element's own declaration beats
+   an inherited value whatever the specificity. So "Elige tu isla" kept its display
+   tracking while the paragraph under it opened up.
+ *
+ * Stated again here, on the elements that carry text, with the weight to win. An
+ * accessibility preference has to override the design rather than lose to it — the same
+ * reason the reduced-motion block below is written this way. */
+html[data-clear-reading="on"] h1,
+html[data-clear-reading="on"] h2,
+html[data-clear-reading="on"] h3,
+html[data-clear-reading="on"] h4,
+html[data-clear-reading="on"] p,
+html[data-clear-reading="on"] li,
+html[data-clear-reading="on"] a,
+html[data-clear-reading="on"] button,
+html[data-clear-reading="on"] label,
+html[data-clear-reading="on"] span,
+html[data-clear-reading="on"] strong,
+html[data-clear-reading="on"] em {
+  letter-spacing: 0.06em !important;
+  word-spacing: 0.24em !important;
+}
+
+/* Headings are already large, so they need less air between the words than body text to
+   stay on one line on a 360px screen. */
+html[data-clear-reading="on"] h1,
+html[data-clear-reading="on"] h2 {
+  line-height: 1.3;
+  word-spacing: 0.14em !important;
+}
+
 html[data-clear-reading="on"] p,
 html[data-clear-reading="on"] li,
 html[data-clear-reading="on"] button,

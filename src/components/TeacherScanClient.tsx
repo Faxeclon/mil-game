@@ -39,6 +39,7 @@ import {
   type ScanSession
 } from "@/features/teacher/scanSession";
 import { Link } from "@/i18n/navigation";
+import { ImageZoom } from "./ImageZoom";
 import { LoadingRoqui } from "./LoadingRoqui";
 import styles from "./TeacherScanClient.module.css";
 
@@ -364,6 +365,7 @@ export function TeacherScanClient() {
           one when the question is who made it - and the sides say which is which. */}
       {round.kind === "single" ? (
         <figure className={styles.single}>
+          {/* A class four rows back needs this more than anyone. */}
           <div className={styles.singleMedia}>
             <Image
               alt={tTutorial(round.media[0].altKey)}
@@ -371,6 +373,7 @@ export function TeacherScanClient() {
               sizes="(max-width: 700px) 90vw, 420px"
               src={round.media[0].src}
             />
+            <ImageZoom alt={tTutorial(round.media[0].altKey)} src={round.media[0].src} />
           </div>
         </figure>
       ) : (
@@ -388,6 +391,7 @@ export function TeacherScanClient() {
                     sizes="(max-width: 700px) 45vw, 320px"
                     src={asset.src}
                   />
+                  <ImageZoom alt={tTutorial(asset.altKey)} src={asset.src} />
                 </div>
                 <figcaption className={styles.optionLabel}>
                   {letter}

@@ -508,37 +508,6 @@
 
 /* --------------------------------------------------------- Why it is named so */
 
-.why {
-  margin-top: 1rem;
-  padding: 0.85rem 0.9rem;
-  border: 1px dashed var(--s-hairline-strong);
-  border-radius: 1rem;
-  background: #fffdfb;
-}
-
-.whyTitle {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: 800;
-}
-
-.whyBody {
-  max-width: 46ch;
-  margin: 0.4rem 0 0;
-  color: var(--s-ink-soft);
-  font-size: 0.82rem;
-  line-height: 1.5;
-}
-
-.whyHonest {
-  max-width: 46ch;
-  margin: 0.5rem 0 0;
-  color: var(--s-ink);
-  font-size: 0.82rem;
-  font-weight: 700;
-  line-height: 1.45;
-}
-
 /* ------------------------------------------------------------------- Reset */
 
 .resetRow {

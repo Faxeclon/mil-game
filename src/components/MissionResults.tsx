@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { Bird, Cat, Feather, Star, Trophy, Turtle, Wind, Rabbit, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Narrator } from "@/components/Narrator";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { getMissionById } from "@/features/levels/levelModel";
@@ -116,6 +117,22 @@ export function MissionResults() {
       </h1>
       <p className={styles.levelIdentity}>{levelIdentity}</p>
       <p className={styles.text}>{t("description")}</p>
+
+      {/*
+       * How it went, and whether a record fell. Reading only the question and never the
+       * outcome would leave a child who cannot read guessing at whether they did well.
+       */}
+      <Narrator
+        lines={[
+          t("title"),
+          levelIdentity,
+          t("description"),
+          summary.isNewRecord ? t("newRecord") : null,
+          summary.score === null
+            ? t("scoreUnavailable")
+            : `${t("scoreLabel")}: ${summary.score}. ${t("starsAria", { stars: summary.stars, total: 3 })}`
+        ]}
+      />
 
       {/* The score of this attempt, and the mission record it did or did not beat. Nothing
           here announces itself: the heading already took focus, so a reload stays quiet. */}

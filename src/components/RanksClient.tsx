@@ -2,6 +2,7 @@
 
 import { Check, ChevronLeft, Medal, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Narrator } from "@/components/Narrator";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import {
@@ -58,6 +59,10 @@ export function RanksClient() {
       </Link>
 
       <MascotSlot alt={tHome("mascotAlt")} className={styles.mascot} mood="celebrating" priority />
+      {/* The title and how it is earned. The ladder itself is a list of names and numbers,
+          which a synthesiser reads as a drone, so it is left on the page. */}
+      <Narrator lines={[t("ladderTitle"), t("howItWorks")]} />
+
       <h1 className={styles.title}>{t("ladderTitle")}</h1>
       <p className={styles.lead}>{t("howItWorks")}</p>
 

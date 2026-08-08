@@ -88,7 +88,13 @@ export function useSpeech({ onSpeechStart, onSpeechEnd }: SpeechCallbacks = {}):
       utterance.lang = voice.lang;
       const match = synthesis.getVoices().find((candidate) => candidate.name === voice.name);
       if (match) utterance.voice = match;
+      /*
+       * A shade slower and a shade higher than the default: the standard rate outruns a
+       * child still reading along, and the flat default pitch is the part that makes a
+       * synthesiser sound like a machine reading a form.
+       */
       utterance.rate = 0.9;
+      utterance.pitch = 1.2;
       utterance.onend = () => finish(speechId);
       utterance.onerror = () => finish(speechId);
 

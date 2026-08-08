@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useReducer, useState } from "react";
 import { Check, ChevronLeft, Smartphone, Sparkles, Target, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ListenButton } from "@/components/ListenButton";
+import { Narrator } from "@/components/Narrator";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import type { TutorialRound } from "@/content/schemas/tutorial";
@@ -16,6 +16,7 @@ import {
   type VersusPlayer
 } from "@/features/versus/versusState";
 import { Link } from "@/i18n/navigation";
+import { ImageZoom } from "./ImageZoom";
 import styles from "./VersusClient.module.css";
 
 /** Short matches on purpose: a shared phone changes hands, and patience is finite. */
@@ -198,14 +199,10 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
        * Passing the phone back and forth is no reason to make one of the two players read
        * silently. Whose turn it is gets read too, since that is the part being handed over.
        */}
-      <ListenButton
-        lines={[
-          t("yourTurn", { player: playerName(state.player) }),
-          tTutorial(round.promptKey),
-          ...round.choices.map(
-            (choice) => `${tTutorial(choice.position)}: ${tTutorial(choice.media.altKey)}`
-          )
-        ]}
+      {/* Whose turn it is and what is being asked. Never what is in the pictures: that is
+          the part the player is here to work out. */}
+      <Narrator
+        lines={[t("yourTurn", { player: playerName(state.player) }), tTutorial(round.promptKey)]}
       />
 
       <div aria-labelledby="versus-question" className={styles.choices} role="group">
@@ -223,6 +220,13 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
             .join(" ");
 
           return (
+            /*
+              The magnifier is a sibling of the card, not a child of it: the card is a
+              button, one button cannot live inside another, and looking closer must never
+              be mistaken for choosing.
+            */
+            <div className={styles.cardWrap} key={choice.id}>
+            <ImageZoom alt={tTutorial(choice.media.altKey)} src={choice.media.src} />
             <button
               aria-label={tTutorial("choiceAria", {
                 position: tTutorial(choice.position),
@@ -231,7 +235,6 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
               aria-pressed={selected}
               className={className}
               disabled={revealed}
-              key={choice.id}
               type="button"
               onClick={() => dispatch({ type: "select", choiceId: choice.id })}
             >
@@ -255,6 +258,7 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
                 </span>
               )}
             </button>
+            </div>
           );
         })}
       </div>
