@@ -3,11 +3,18 @@
 import { createContext, useCallback, useContext, useEffect, useRef } from "react";
 import {
   configureBackgroundMusic,
+  pauseBackgroundMusicForSpeech,
+  resumeBackgroundMusicAfterSpeech,
   playBackgroundMusic
 } from "@/features/audio/backgroundMusicController";
 import { setSoundEnabled, useSoundEnabled } from "@/features/audio/soundPreference";
 
-type BackgroundMusicContextValue = { enabled: boolean; toggleMusic: () => void };
+type BackgroundMusicContextValue = {
+  enabled: boolean;
+  toggleMusic: () => void;
+  pauseForSpeech: () => boolean;
+  resumeAfterSpeech: (wasPlaying: boolean) => void;
+};
 
 const BackgroundMusicContext = createContext<BackgroundMusicContextValue | null>(null);
 
@@ -40,6 +47,18 @@ export function BackgroundMusicProvider({ children }: { children: React.ReactNod
       audioRef.current?.pause();
     }
   }, [enabled, resume]);
+
+  const pauseForSpeech = useCallback(
+    () => pauseBackgroundMusicForSpeech(audioRef.current, enabled),
+    [enabled]
+  );
+
+  const resumeAfterSpeech = useCallback(
+    (wasPlaying: boolean) => {
+      void resumeBackgroundMusicAfterSpeech(audioRef.current, enabled, wasPlaying);
+    },
+    [enabled]
+  );
 
   useEffect(() => {
     if (!enabled || playbackAllowed.current) return;
@@ -80,7 +99,7 @@ export function BackgroundMusicProvider({ children }: { children: React.ReactNod
   }, []);
 
   return (
-    <BackgroundMusicContext.Provider value={{ enabled, toggleMusic }}>
+    <BackgroundMusicContext.Provider value={{ enabled, toggleMusic, pauseForSpeech, resumeAfterSpeech }}>
       {children}
     </BackgroundMusicContext.Provider>
   );

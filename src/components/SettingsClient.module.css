@@ -178,7 +178,6 @@
 
 /* ------------------------------------------------------ How you want to play */
 
-.presetList,
 .switchList {
   margin: 0.85rem 0 0;
   padding: 0;
@@ -191,7 +190,6 @@
  * The whole card is the button. A child aiming at a small toggle on a cheap phone with a
  * cracked screen misses; a card the width of the page does not.
  */
-.preset,
 .switch {
   width: 100%;
   padding: 0.8rem 0.9rem;
@@ -208,13 +206,11 @@
   cursor: pointer;
 }
 
-.presetOn,
 .switchOn {
   border-color: var(--s-mint);
   background: var(--s-mint-soft);
 }
 
-.preset:focus-visible,
 .switch:focus-visible {
   outline: 3px solid var(--s-accent-strong);
   outline-offset: 3px;
@@ -224,25 +220,6 @@
   flex: 1 1 12rem;
   display: grid;
   gap: 0.12rem;
-}
-
-.presetName {
-  font-size: 1rem;
-  font-weight: 800;
-  letter-spacing: -0.015em;
-}
-
-/* Who it was built for, said out loud, so nobody has to guess what the name means. */
-.presetFor {
-  color: var(--s-accent-ink);
-  font-size: 0.78rem;
-  font-weight: 800;
-}
-
-.presetDetail {
-  color: var(--s-ink-soft);
-  font-size: 0.8rem;
-  line-height: 1.4;
 }
 
 .switchList {

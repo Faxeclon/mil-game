@@ -7,8 +7,6 @@ import { useTranslations } from "next-intl";
 import { ListenButton } from "@/components/ListenButton";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
-import { allowsCountdown } from "@/features/accessibility/accessibilitySettings";
-import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import { ActiveResponseTimer } from "@/features/game/activeResponseTimer";
 import {
   createRoundDeadline,
@@ -81,7 +79,6 @@ export function TutorialClient({
   const tEducation = useTranslations("education");
   const router = useRouter();
   const { completeLevel } = useProgress();
-  const countdownAllowed = allowsCountdown(useAccessibility());
   const [state, dispatch] = useReducer(tutorialReducer, createInitialTutorialState(showBriefing));
   const [briefingIndex, setBriefingIndex] = useState(0);
   const [responseTimer] = useState(() => new ActiveResponseTimer());
@@ -104,17 +101,7 @@ export function TutorialClient({
   const roundIndex = state.status === "playing" ? state.roundIndex : -1;
   const answerSubmitted = state.status === "playing" ? state.answerSubmitted : false;
   const activeRoundId = isPlaying ? pack.rounds[roundIndex].id : null;
-  /*
-   * The "at your pace" ruleset plays the untimed round that already exists rather than a
-   * special case: the countdown simply never gets a duration. Nothing about unlocking
-   * depends on the clock, so a mission finished without it opens the same doors.
-   *
-   * The clock follows the ruleset and never the presentation settings. Turning on the
-   * voice must not move a child out of the timed game, or listening to a question would
-   * quietly cost them their record.
-   */
-  const timedDurationMs = countdownAllowed
-    && typeof secondsPerRound === "number" && Number.isFinite(secondsPerRound) && secondsPerRound > 0
+  const timedDurationMs = typeof secondsPerRound === "number" && Number.isFinite(secondsPerRound) && secondsPerRound > 0
     ? Math.trunc(secondsPerRound * 1_000)
     : null;
   const isRoundTimed = timedDurationMs !== null && isPlaying && !answerSubmitted;

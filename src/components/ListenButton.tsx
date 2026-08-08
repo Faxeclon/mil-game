@@ -1,9 +1,11 @@
 "use client";
 
+import { useCallback, useEffect, useRef } from "react";
 import { Square, Volume2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import { useSpeech } from "@/features/speech/useSpeech";
+import { useBackgroundMusic } from "./BackgroundMusicProvider";
 import styles from "./ListenButton.module.css";
 
 type ListenButtonProps = {
@@ -11,22 +13,31 @@ type ListenButtonProps = {
   lines: Array<string | null | undefined>;
 };
 
-/**
- * The one control that reads the screen out loud.
- *
- * It appears only when the child asked for it *and* the phone can actually speak their
- * language. A button that stays silent when pressed would be worse than no button at all,
- * and in a game about telling real from fake it would be the wrong thing to ship.
- */
 export function ListenButton({ lines }: ListenButtonProps) {
   const t = useTranslations("accessModes");
   const { readAloud } = useAccessibility();
-  const { available, speaking, speak, stop } = useSpeech();
-
-  if (!readAloud || !available) return null;
+  const { pauseForSpeech, resumeAfterSpeech } = useBackgroundMusic();
+  const resumeMusicRef = useRef(false);
+  const pauseMusic = useCallback(() => {
+    resumeMusicRef.current = pauseForSpeech();
+  }, [pauseForSpeech]);
+  const resumeMusic = useCallback(() => {
+    const shouldResume = resumeMusicRef.current;
+    resumeMusicRef.current = false;
+    resumeAfterSpeech(shouldResume);
+  }, [resumeAfterSpeech]);
+  const { available, speaking, speak, stop } = useSpeech({
+    onSpeechStart: pauseMusic,
+    onSpeechEnd: resumeMusic
+  });
 
   const text = lines.filter((line): line is string => Boolean(line && line.trim())).join(". ");
-  if (!text) return null;
+
+  useEffect(() => {
+    stop();
+  }, [stop, text]);
+
+  if (!readAloud || !available || !text) return null;
 
   return (
     <button

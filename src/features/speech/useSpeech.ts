@@ -1,24 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale } from "next-intl";
 import { isWorthSpeaking, pickVoice, toSpokenText, type InstalledVoice } from "./voiceSelection";
 
-/**
- * Reading the game out loud, when the device can.
- *
- * Never automatic. The child presses the button, and pressing it again stops. Speech that
- * starts on its own is a distraction for the children who did not ask for it, and the
- * evidence for background sound cuts both ways depending on who is listening.
- *
- * `available` is false whenever this phone cannot read the current language, so callers
- * can hide the control rather than offer a button that stays silent.
- */
 export type Speech = {
   available: boolean;
   speaking: boolean;
   speak: (text: string) => void;
   stop: () => void;
+};
+
+type SpeechCallbacks = {
+  onSpeechStart?: () => void;
+  onSpeechEnd?: () => void;
 };
 
 function getSynthesis(): SpeechSynthesis | null {
@@ -30,16 +25,29 @@ function getSynthesis(): SpeechSynthesis | null {
   }
 }
 
-export function useSpeech(): Speech {
+export function useSpeech({ onSpeechStart, onSpeechEnd }: SpeechCallbacks = {}): Speech {
   const locale = useLocale();
   const [voice, setVoice] = useState<InstalledVoice | null>(null);
   const [speaking, setSpeaking] = useState(false);
+  const onSpeechStartRef = useRef(onSpeechStart);
+  const onSpeechEndRef = useRef(onSpeechEnd);
+  const activeSpeechIdRef = useRef<number | null>(null);
+  const nextSpeechIdRef = useRef(0);
 
-  /*
-   * Android populates the voice list asynchronously, and often returns an empty array on
-   * the first call. Listening for the change event is the only reliable way to learn that
-   * a phone does have a Spanish voice after all.
-   */
+  useEffect(() => {
+    onSpeechStartRef.current = onSpeechStart;
+    onSpeechEndRef.current = onSpeechEnd;
+  }, [onSpeechEnd, onSpeechStart]);
+
+  const finish = useCallback((speechId?: number) => {
+    if (activeSpeechIdRef.current === null) return;
+    if (speechId !== undefined && activeSpeechIdRef.current !== speechId) return;
+
+    activeSpeechIdRef.current = null;
+    setSpeaking(false);
+    onSpeechEndRef.current?.();
+  }, []);
+
   useEffect(() => {
     const synthesis = getSynthesis();
     if (!synthesis) return;
@@ -57,35 +65,43 @@ export function useSpeech(): Speech {
     return () => {
       synthesis.removeEventListener?.("voiceschanged", refresh);
       synthesis.cancel();
+      finish();
     };
-  }, [locale]);
+  }, [finish, locale]);
 
   const stop = useCallback(() => {
     getSynthesis()?.cancel();
-    setSpeaking(false);
-  }, []);
+    finish();
+  }, [finish]);
 
   const speak = useCallback(
     (text: string) => {
       const synthesis = getSynthesis();
       if (!synthesis || !voice || !isWorthSpeaking(text)) return;
 
-      // A second press interrupts the first rather than queueing behind it.
       synthesis.cancel();
+      finish();
 
+      const speechId = nextSpeechIdRef.current + 1;
+      nextSpeechIdRef.current = speechId;
       const utterance = new SpeechSynthesisUtterance(toSpokenText(text));
       utterance.lang = voice.lang;
       const match = synthesis.getVoices().find((candidate) => candidate.name === voice.name);
       if (match) utterance.voice = match;
-      /* Slightly under the default: the standard rate outruns a child who is still reading along. */
       utterance.rate = 0.9;
-      utterance.onend = () => setSpeaking(false);
-      utterance.onerror = () => setSpeaking(false);
+      utterance.onend = () => finish(speechId);
+      utterance.onerror = () => finish(speechId);
 
+      activeSpeechIdRef.current = speechId;
+      onSpeechStartRef.current?.();
       setSpeaking(true);
-      synthesis.speak(utterance);
+      try {
+        synthesis.speak(utterance);
+      } catch {
+        finish(speechId);
+      }
     },
-    [voice]
+    [finish, voice]
   );
 
   return { available: voice !== null, speaking, speak, stop };

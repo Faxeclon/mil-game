@@ -3,26 +3,19 @@
 import { useState } from "react";
 import {
   ALargeSmall,
-  Brain,
   Check,
   ChevronLeft,
   GraduationCap,
   Pause,
   ShieldCheck,
   Smartphone,
-  Sparkles,
   Trash2,
   Type,
-  Volume2,
-  Zap
+  Volume2
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { PRESENTATION_KEYS } from "@/features/accessibility/accessibilitySettings";
 import {
-  PRESENTATION_KEYS,
-  RULESET_KEYS
-} from "@/features/accessibility/accessibilitySettings";
-import {
-  chooseRuleset,
   togglePresentationSetting,
   useAccessibility
 } from "@/features/accessibility/accessibilityStore";
@@ -62,15 +55,12 @@ export function SettingsClient() {
   const isTeacherDevice = teacherAccount !== null && completedLevelIds.length === 0;
   const [confirmingReset, setConfirmingReset] = useState(false);
 
-  const upcoming = [{ key: "sound", Icon: Sparkles }] as const;
-
   const presentationIcons = {
     readAloud: Volume2,
     clearReading: Type,
     reducedMotion: Pause,
     largerText: ALargeSmall
   } as const;
-  const rulesetIcons = { challenge: Zap, ownPace: Brain } as const;
 
   return (
     <div className={styles.settings}>
@@ -86,11 +76,7 @@ export function SettingsClient() {
        * How to play comes before what is stored: it is the part a child is here to change,
        * and the part a teacher needs to find in the thirty seconds before a class starts.
        */}
-      {/*
-       * Presentation first, and on its own. Keeping it apart from the ruleset is the
-       * point: a child who needs to hear the question is answering the same question as
-       * everyone else, so none of these may cost them a point.
-       */}
+      {/* Presentation choices change how content is presented, never the answer or progress. */}
       <section aria-labelledby="settings-presentation" className={styles.group}>
         <h2 className={styles.groupTitle} id="settings-presentation">
           {tModes("presentationTitle")}
@@ -134,54 +120,7 @@ export function SettingsClient() {
         </ul>
 
         <p className={styles.noPenalty}>{tModes("noPenalty")}</p>
-      </section>
 
-      {/* The other axis: same map, same unlocking, different place for the difficulty. */}
-      <section aria-labelledby="settings-ruleset" className={styles.group}>
-        <h2 className={styles.groupTitle} id="settings-ruleset">
-          {tModes("rulesetTitle")}
-        </h2>
-        <p className={styles.groupLead}>{tModes("rulesetLead")}</p>
-
-        <ul className={styles.presetList}>
-          {RULESET_KEYS.map((key) => {
-            const Icon = rulesetIcons[key];
-            const chosen = accessibility.ruleset === key;
-            const name = tModes(`${key}Name`);
-
-            return (
-              <li key={key}>
-                <button
-                  aria-label={tModes("chooseRuleset", { mode: name })}
-                  aria-pressed={chosen}
-                  className={`${styles.preset} ${chosen ? styles.presetOn : ""}`}
-                  type="button"
-                  onClick={() => chooseRuleset(key)}
-                >
-                  <span className={styles.rowIcon}>
-                    <Icon aria-hidden="true" size={18} />
-                  </span>
-                  <span className={styles.presetText}>
-                    <span className={styles.presetName}>{name}</span>
-                    <span className={styles.presetDetail}>{tModes(`${key}Detail`)}</span>
-                  </span>
-                  <span className={chosen ? styles.stateOn : styles.stateOff}>
-                    {chosen && <Check aria-hidden="true" size={13} />}
-                    {chosen ? tModes("selected") : ""}
-                  </span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-
-        <p className={styles.noPenalty}>{tModes("rulesetNote")}</p>
-
-        {/*
-         * The reason is on the screen, not only in a document nobody opens. A game that
-         * teaches children to ask where something comes from should answer that about
-         * itself.
-         */}
         <div className={styles.why}>
           <h3 className={styles.whyTitle}>{tModes("whyTitle")}</h3>
           <p className={styles.whyBody}>{tModes("whyBody")}</p>
@@ -283,30 +222,6 @@ export function SettingsClient() {
         </div>
       </section>
 
-      <section aria-labelledby="settings-upcoming" className={styles.group}>
-        <h2 className={styles.groupTitle} id="settings-upcoming">
-          {t("upcomingTitle")}
-        </h2>
-        <p className={styles.groupLead}>{t("upcomingLead")}</p>
-
-        <ul className={styles.upcomingList}>
-          {upcoming.map(({ key, Icon }) => (
-            <li className={styles.row} key={key}>
-              <span className={styles.rowIcon}>
-                <Icon aria-hidden="true" size={18} />
-              </span>
-              <span className={styles.rowText}>
-                <span className={styles.rowName}>{t(`${key}Name`)}</span>
-                <span className={styles.rowDetail}>{t(`${key}Detail`)}</span>
-              </span>
-              <span className={styles.soon}>
-                <Sparkles aria-hidden="true" size={12} />
-                {t("soon")}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </section>
     </div>
   );
 }

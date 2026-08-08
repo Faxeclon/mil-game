@@ -4,11 +4,9 @@ import { useSyncExternalStore } from "react";
 import {
   DEFAULT_ACCESSIBILITY,
   parseAccessibility,
-  selectRuleset,
   togglePresentation,
   type AccessibilitySettings,
-  type PresentationSettings,
-  type RulesetKey
+  type PresentationSettings
 } from "./accessibilitySettings";
 
 /**
@@ -82,10 +80,6 @@ export function setAccessibility(settings: AccessibilitySettings): void {
 
 export function togglePresentationSetting(key: keyof PresentationSettings): void {
   commit(togglePresentation(snapshot.settings, key));
-}
-
-export function chooseRuleset(ruleset: RulesetKey): void {
-  commit(selectRuleset(snapshot.settings, ruleset));
 }
 
 /** Test helper: drops every subscriber and returns the store to its initial snapshot. */

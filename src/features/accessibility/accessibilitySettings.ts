@@ -1,15 +1,8 @@
 /**
- * Two independent choices, deliberately kept apart.
- *
  * **How the game is presented** — the voice, the spacing, the stillness — never changes a
  * score. A child who needs to hear the question is answering the same question as
  * everyone else, so making them play for a separate record would be a penalty for a
  * reading difficulty, which is the opposite of the point.
- *
- * **Which ruleset they play** is a different decision, closer to picking Normal or Time
- * Attack in any other game. It changes how points are earned, so records are kept per
- * ruleset. Both rulesets unlock the map identically: progression and ranking are separate
- * systems.
  *
  * Nothing here is named after a diagnosis. A child does not have to declare anything to
  * reach the setting that helps them, and most of the children this is built for have
@@ -18,7 +11,7 @@
 
 /** Presentation. None of these may ever affect scoring, stars or unlocking. */
 export type PresentationSettings = {
-  /** Speaks the instruction, question, options and feedback when asked. */
+  /** Enables an on-demand prompt reader where a compatible mission provides one. */
   readAloud: boolean;
   /**
    * Everything that makes text easier to follow, moved together: size, letter spacing,
@@ -35,25 +28,13 @@ export type PresentationSettings = {
   largerText: boolean;
 };
 
-/** The rules the round is played and scored under. */
-export type RulesetKey = "challenge" | "ownPace";
-
-export const RULESET_KEYS: RulesetKey[] = ["challenge", "ownPace"];
-
-export const DEFAULT_RULESET: RulesetKey = "challenge";
-
-export function isRulesetKey(value: unknown): value is RulesetKey {
-  return typeof value === "string" && (RULESET_KEYS as string[]).includes(value);
-}
-
-export type AccessibilitySettings = PresentationSettings & { ruleset: RulesetKey };
+export type AccessibilitySettings = PresentationSettings;
 
 export const DEFAULT_ACCESSIBILITY: AccessibilitySettings = {
   readAloud: false,
   clearReading: false,
   reducedMotion: false,
-  largerText: false,
-  ruleset: DEFAULT_RULESET
+  largerText: false
 };
 
 export const PRESENTATION_KEYS = [
@@ -63,28 +44,11 @@ export const PRESENTATION_KEYS = [
   "largerText"
 ] as const satisfies ReadonlyArray<keyof PresentationSettings>;
 
-/** Whether a countdown may run at all. The ruleset decides; presentation never does. */
-export function allowsCountdown(settings: AccessibilitySettings): boolean {
-  return settings.ruleset === "challenge";
-}
-
-/** Whether a round ends by asking which clue was used. */
-export function asksForClue(settings: AccessibilitySettings): boolean {
-  return settings.ruleset === "ownPace";
-}
-
 export function togglePresentation(
   settings: AccessibilitySettings,
   key: keyof PresentationSettings
 ): AccessibilitySettings {
   return { ...settings, [key]: !settings[key] };
-}
-
-export function selectRuleset(
-  settings: AccessibilitySettings,
-  ruleset: RulesetKey
-): AccessibilitySettings {
-  return { ...settings, ruleset };
 }
 
 /**
@@ -103,7 +67,5 @@ export function parseAccessibility(raw: unknown): AccessibilitySettings {
   for (const key of PRESENTATION_KEYS) {
     if (typeof record[key] === "boolean") parsed[key] = record[key];
   }
-  if (isRulesetKey(record.ruleset)) parsed.ruleset = record.ruleset;
-
   return parsed;
 }
