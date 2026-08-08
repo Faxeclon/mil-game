@@ -16,6 +16,7 @@ import {
   completeLevelInStore,
   getProgressSnapshot,
   markOnboardedInStore,
+  completeMapOnboardingInStore,
   getServerProgressSnapshot,
   resetProgressInStore,
   subscribeToProgress
@@ -39,6 +40,7 @@ export type ProgressApi = {
   localNickname: string | null;
   apprenticeAvatarId: ApprenticeAvatarId | null;
   markOnboarded: (localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId) => void;
+  completeMapOnboarding: () => void;
   resetProgress: () => void;
 };
 
@@ -67,6 +69,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       completedLevelIds: state.completedLevelIds,
       completeLevel: completeLevelInStore,
       markOnboarded: markOnboardedInStore,
+      completeMapOnboarding: completeMapOnboardingInStore,
       resetProgress: resetProgressInStore
     }),
     [hydrated, profiles, state]

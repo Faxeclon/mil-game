@@ -23,6 +23,7 @@ export function SoundToggle() {
     <button
       aria-label={enabled ? t("pause") : t("play")}
       aria-pressed={enabled}
+      data-onboarding-allow="music"
       className={`${styles.toggle} ${enabled ? styles.on : styles.off}`}
       title={enabled ? t("on") : t("off")}
       type="button"

@@ -275,13 +275,31 @@
 }
 
 @media print {
+  :global(html),
+  :global(body) {
+    width: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+  }
+
+  :global(.app-header),
+  :global(.mobile-bottom-nav),
+  :global(footer),
+  :global(main > :not(:has(.cards))) {
+    display: none !important;
+  }
+
   .noPrint,
   .cards::before {
     display: none;
   }
 
   .cards {
+    position: static;
     width: 100%;
+    margin: 0;
     padding: 0;
   }
 
@@ -292,9 +310,12 @@
 
   /* One student per sheet: the card fills the page, so it reads from the back row. */
   .sheet {
-    height: 100vh;
+    min-height: calc(100vh - 2cm);
     padding: 0;
     border: 0;
+    break-after: page;
+    page-break-after: always;
+    break-inside: avoid;
     page-break-after: always;
   }
 
@@ -303,8 +324,10 @@
   }
 
   .card {
-    height: 100%;
+    min-height: calc(100vh - 2cm);
+    height: auto;
     padding: 0.5cm;
+    break-inside: avoid;
   }
 
   .qr {

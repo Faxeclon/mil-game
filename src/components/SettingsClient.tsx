@@ -121,11 +121,6 @@ export function SettingsClient() {
 
         <p className={styles.noPenalty}>{tModes("noPenalty")}</p>
 
-        <div className={styles.why}>
-          <h3 className={styles.whyTitle}>{tModes("whyTitle")}</h3>
-          <p className={styles.whyBody}>{tModes("whyBody")}</p>
-          <p className={styles.whyHonest}>{tModes("whyHonest")}</p>
-        </div>
       </section>
 
       <section aria-labelledby="settings-data" className={styles.group}>

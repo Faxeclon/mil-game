@@ -39,6 +39,8 @@ import { useFriends } from "@/features/friends/friendsStore";
 import { getPlayerRank } from "@/features/ranks/playerRank";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link, useRouter } from "@/i18n/navigation";
+import { enableSoundForNewProfile } from "@/features/audio/soundPreference";
+import { useBackgroundMusic } from "./BackgroundMusicProvider";
 import styles from "./HomeLanding.module.css";
 
 const apprenticeAvatarIcons: Record<ApprenticeAvatarId, LucideIcon> = {
@@ -69,6 +71,7 @@ export function HomeLanding() {
   const tTeacherAccount = useTranslations("teacherAccount");
   const tCards = useTranslations("cards");
   const router = useRouter();
+  const { enableForNewProfile } = useBackgroundMusic();
   const nameFieldId = useId();
   const {
     hydrated,
@@ -83,7 +86,7 @@ export function HomeLanding() {
   const lines = t.raw("dialogue") as string[];
   const apprenticeNames = t.raw("profileAvatars") as string[];
 
-  const [step, setStep] = useState<"account" | "intro">("account");
+  const step = "account" as "account" | "intro";
   const [lineIndex, setLineIndex] = useState(0);
   const [apprenticeAvatarId, setApprenticeAvatarId] = useState<ApprenticeAvatarId>(defaultApprenticeAvatarId);
   const [localNickname, setLocalNickname] = useState("");
@@ -539,8 +542,9 @@ export function HomeLanding() {
               setNicknameError(true);
               return;
             }
-            setLocalNickname(nickname);
-            setStep("intro");
+            if (enableSoundForNewProfile()) enableForNewProfile();
+            markOnboarded(nickname, apprenticeAvatarId);
+            router.push("/worlds");
           }}
         >
           {t("profileSubmit")}

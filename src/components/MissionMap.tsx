@@ -28,6 +28,7 @@ import { getIslandState, islandHasContent, type PlayState } from "@/features/lev
 import { getIslandProgress } from "@/features/levels/progressSummary";
 import type { MissionKind } from "@/features/missions/missionMap";
 import { useProgress } from "@/features/progress/ProgressProvider";
+import { OnboardingSpotlight } from "./OnboardingSpotlight";
 import styles from "./MissionMap.module.css";
 
 const missionIcons: Record<MissionKind, LucideIcon> = {
@@ -86,7 +87,7 @@ export function MissionMap() {
   const t = useTranslations("worlds");
   const tIslands = useTranslations("islands");
   const tStorage = useTranslations("storage");
-  const { progressState } = useProgress();
+  const { progressState, completeMapOnboarding } = useProgress();
 
   /*
    * Each island on the trail is a zone: a themed group of levels. An island with no
@@ -103,6 +104,7 @@ export function MissionMap() {
   }));
 
   const positions = getNodePositions(missions.length);
+  const tutorialIsland = islands.find((island) => island.key === "training")?.key;
 
   const statusLabel = (state: PlayState, isUpcoming: boolean) =>
     state === "available"
@@ -208,7 +210,15 @@ export function MissionMap() {
                 <MissionMarker kind={mission.kind} />
                 <div className={styles.nodeStage}>
                   {href ? (
-                    <Link aria-label={ariaLabel} className={styles.world} href={href}>
+                    <Link
+                      aria-label={ariaLabel}
+                      className={styles.world}
+                      data-onboarding-target={mission.key === tutorialIsland ? "tutorial-island" : undefined}
+                      href={href}
+                      onClick={() => {
+                        if (mission.key === tutorialIsland) completeMapOnboarding();
+                      }}
+                    >
                       {world}
                     </Link>
                   ) : (
@@ -225,6 +235,12 @@ export function MissionMap() {
           })}
         </ol>
       </div>
+      <OnboardingSpotlight
+        active={!progressState.mapOnboardingCompleted}
+        instruction={t("journeyHint")}
+        targetSelector='[data-onboarding-target="tutorial-island"]'
+        title={t("mascotTip")}
+      />
     </div>
   );
 }

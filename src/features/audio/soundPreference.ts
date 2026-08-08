@@ -65,6 +65,19 @@ export function setSoundEnabled(enabled: boolean): void {
   publish({ hydrated: true, enabled });
 }
 
+/** Enables sound for a newly created profile only when this device has no choice yet. */
+export function enableSoundForNewProfile(): boolean {
+  const storage = getStorage();
+  if (!storage) return false;
+  try {
+    if (storage.getItem(SOUND_STORAGE_KEY) !== null) return false;
+    setSoundEnabled(true);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function toggleSound(): void {
   setSoundEnabled(!snapshot.enabled);
 }

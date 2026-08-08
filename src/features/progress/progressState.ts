@@ -60,6 +60,8 @@ export type ProgressState = {
   rushUnlockedIslands: IslandKey[];
   /** The number of missions that formed this player's rank scale when it was last earned. */
   rankMissionCeiling: number;
+  /** Only profiles created after map onboarding existed may need its one-time guide. */
+  mapOnboardingCompleted: boolean;
   /** True once the player has completed local profile setup and the introduction. */
   onboarded?: boolean;
   /** A private display label stored only on this device. */
@@ -116,6 +118,7 @@ export const initialProgressState: ProgressState = {
   completedLevelIds: [],
   rushUnlockedIslands: [],
   rankMissionCeiling: playableMissionCount,
+  mapOnboardingCompleted: false,
   localNickname: null,
   apprenticeAvatarId: null,
   bestResultsByLevelId: {},
@@ -229,6 +232,8 @@ export function parseProgressState(value: unknown): ProgressState {
     completedLevelIds,
     rushUnlockedIslands: storedRushUnlocks,
     rankMissionCeiling: Math.max(completedLevelIds.length, storedCeiling),
+    // Missing means a profile predates this optional onboarding and must not be interrupted.
+    mapOnboardingCompleted: value.mapOnboardingCompleted !== false,
     // Finishing anything proves the player already went through onboarding.
     ...(value.onboarded === true || completedLevelIds.length > 0
       ? { onboarded: true }
@@ -331,6 +336,11 @@ export function completeLevel(
       score
     }
   };
+}
+
+/** Completing the guided map step is separate from missions and never changes progress. */
+export function completeMapOnboarding(state: ProgressState): ProgressState {
+  return state.mapOnboardingCompleted ? state : { ...state, mapOnboardingCompleted: true };
 }
 
 export function isLevelCompleted(state: ProgressState, levelId: string): boolean {

@@ -12,6 +12,7 @@ import { setSoundEnabled, useSoundEnabled } from "@/features/audio/soundPreferen
 type BackgroundMusicContextValue = {
   enabled: boolean;
   toggleMusic: () => void;
+  enableForNewProfile: () => void;
   pauseForSpeech: () => boolean;
   resumeAfterSpeech: (wasPlaying: boolean) => void;
 };
@@ -47,6 +48,11 @@ export function BackgroundMusicProvider({ children }: { children: React.ReactNod
       audioRef.current?.pause();
     }
   }, [enabled, resume]);
+
+  const enableForNewProfile = useCallback(() => {
+    setSoundEnabled(true);
+    void resume();
+  }, [resume]);
 
   const pauseForSpeech = useCallback(
     () => pauseBackgroundMusicForSpeech(audioRef.current, enabled),
@@ -99,7 +105,7 @@ export function BackgroundMusicProvider({ children }: { children: React.ReactNod
   }, []);
 
   return (
-    <BackgroundMusicContext.Provider value={{ enabled, toggleMusic, pauseForSpeech, resumeAfterSpeech }}>
+    <BackgroundMusicContext.Provider value={{ enabled, toggleMusic, enableForNewProfile, pauseForSpeech, resumeAfterSpeech }}>
       {children}
     </BackgroundMusicContext.Provider>
   );
