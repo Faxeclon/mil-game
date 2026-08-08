@@ -1,0 +1,1678 @@
+{
+  "es": [
+    {
+      "name": "11926fbf",
+      "text": "3 rondas · Sin límite de tiempo"
+    },
+    {
+      "name": "287c27c8",
+      "text": "A veces los cuadros no alcanzan: hay que buscar el video completo y su fuente."
+    },
+    {
+      "name": "148508ce",
+      "text": "A veces no se puede saber solo mirando."
+    },
+    {
+      "name": "2992e7dc",
+      "text": "Accesibilidad y tus datos"
+    },
+    {
+      "name": "f46554f4",
+      "text": "Ahora decides tú: no hay con qué comparar."
+    },
+    {
+      "name": "1412281a",
+      "text": "Antes de compartirla, busca quién la publicó primero."
+    },
+    {
+      "name": "8d5f3ba2",
+      "text": "Antes de creerla, busca quién la publicó primero."
+    },
+    {
+      "name": "805feb16",
+      "text": "Aprende a mirar con atención antes de creer."
+    },
+    {
+      "name": "18839483",
+      "text": "Aquí están tus amigos, para jugar un versus pasándose el celular."
+    },
+    {
+      "name": "d8a611c1",
+      "text": "Aquí no hay con qué compararla. Mírala con calma."
+    },
+    {
+      "name": "6d829f66",
+      "text": "Aquí solo aparece lo que el juego hace de verdad. Lo que todavía no existe está marcado como tal."
+    },
+    {
+      "name": "e2f23158",
+      "text": "Busca de dónde salió antes de creerla."
+    },
+    {
+      "name": "fdaeb543",
+      "text": "Busca la foto sin la frase antes de reenviarla."
+    },
+    {
+      "name": "6ef193c1",
+      "text": "Busca la fuente y revisa el contexto."
+    },
+    {
+      "name": "22f124d4",
+      "text": "Calle con edificios dañados y escombros."
+    },
+    {
+      "name": "e9fcda51",
+      "text": "Calle urbana con grandes grietas y automóviles."
+    },
+    {
+      "name": "a70fc2bf",
+      "text": "Casi. Mira otra vez."
+    },
+    {
+      "name": "56b1f0ed",
+      "text": "Cerrada por ahora"
+    },
+    {
+      "name": "87bc58d9",
+      "text": "Compara cuadro con cuadro: cuenta los dedos en cada uno."
+    },
+    {
+      "name": "867c4300",
+      "text": "Compartir sin comprobar también es parte del problema."
+    },
+    {
+      "name": "8814aa4d",
+      "text": "Completa tu perfil"
+    },
+    {
+      "name": "0eb03726",
+      "text": "Comprobar la fuente"
+    },
+    {
+      "name": "411376e8",
+      "text": "Comprobar respuesta"
+    },
+    {
+      "name": "7da47a12",
+      "text": "Comprueba si algún medio conocido la publicó."
+    },
+    {
+      "name": "98a30b22",
+      "text": "Crea tu perfil en este dispositivo"
+    },
+    {
+      "name": "44209b0a",
+      "text": "Cuando sí se puede saber, dilo. Dudar de todo tampoco sirve."
+    },
+    {
+      "name": "1a09e17d",
+      "text": "Decir «no se puede saber» es una respuesta de detective, no una rendición."
+    },
+    {
+      "name": "a645eaf6",
+      "text": "Decir «no sé» es mejor que inventar."
+    },
+    {
+      "name": "cc669c47",
+      "text": "Desbloqueaste tus herramientas de detective."
+    },
+    {
+      "name": "c703fbc5",
+      "text": "Descubre quién comparte algo y por qué."
+    },
+    {
+      "name": "0e2ec33a",
+      "text": "Detrás de cada publicación hay una intención."
+    },
+    {
+      "name": "093e582e",
+      "text": "Detrás de una imagen siempre hay alguien."
+    },
+    {
+      "name": "6917b064",
+      "text": "Diferenciar imágenes"
+    },
+    {
+      "name": "30cbcc41",
+      "text": "Dudar no es fallar: es lo que hace un detective."
+    },
+    {
+      "name": "892fc6e6",
+      "text": "Dudar también es una respuesta válida."
+    },
+    {
+      "name": "9a67c325",
+      "text": "El contenido creado con IA no es automáticamente falso, y el contenido creado por personas no es automáticamente confiable. Revisa la evidencia y el contexto."
+    },
+    {
+      "name": "5da21c3e",
+      "text": "El rango personal es un nivel de progreso local basado en tus mejores resultados guardados en este dispositivo."
+    },
+    {
+      "name": "24fd7f53",
+      "text": "El texto dentro de un video suele ser lo primero que falla."
+    },
+    {
+      "name": "9e4c1a97",
+      "text": "El texto encima no dice nada del origen de la imagen."
+    },
+    {
+      "name": "1436e258",
+      "text": "Elige a tu aprendiz"
+    },
+    {
+      "name": "e1074951",
+      "text": "Elige una imagen para continuar."
+    },
+    {
+      "name": "a0e2a40b",
+      "text": "En este ejercicio conocemos el origen. Fuera del juego, una pista sola no demuestra de dónde proviene el contenido."
+    },
+    {
+      "name": "d0667cee",
+      "text": "Entrenamiento"
+    },
+    {
+      "name": "6ccd5ce1",
+      "text": "Equivocarse está bien: así se aprende."
+    },
+    {
+      "name": "7bd671a8",
+      "text": "Es una pista, no una prueba."
+    },
+    {
+      "name": "3079632f",
+      "text": "Esta isla todavía no tiene misiones para jugar."
+    },
+    {
+      "name": "093125da",
+      "text": "Esta no se podía saber solo mirando."
+    },
+    {
+      "name": "97eef9a3",
+      "text": "Este intento se jugó antes de que existieran los puntajes, así que no tiene uno."
+    },
+    {
+      "name": "49410be1",
+      "text": "Estás entrando a"
+    },
+    {
+      "name": "8d4766c0",
+      "text": "Fíjate en el público y el fondo, no solo en el protagonista."
+    },
+    {
+      "name": "90610673",
+      "text": "Fíjate en la foto, no en la frase. La frase la puede escribir cualquiera."
+    },
+    {
+      "name": "6b0b4687",
+      "text": "Fíjate si algo se repite igualito muchas veces."
+    },
+    {
+      "name": "699590f7",
+      "text": "Gato blanco recostado mirando a cámara."
+    },
+    {
+      "name": "535e1176",
+      "text": "Gato naranja sentado sobre una mesa de cocina."
+    },
+    {
+      "name": "8b021660",
+      "text": "Guardando tu resultado…"
+    },
+    {
+      "name": "f0b37a6e",
+      "text": "Hecha con IA"
+    },
+    {
+      "name": "be32bf4e",
+      "text": "Hoy las computadoras inventan fotos que parecen reales."
+    },
+    {
+      "name": "9e918c4b",
+      "text": "Ilustración temporal de un aro de básquet bajo luces muy brillantes."
+    },
+    {
+      "name": "ca9c9124",
+      "text": "Ilustración temporal de un bus en una calle de la ciudad."
+    },
+    {
+      "name": "78c79e74",
+      "text": "Ilustración temporal de un búho en una rama bajo un cielo de noche."
+    },
+    {
+      "name": "2d56bf48",
+      "text": "Ilustración temporal de un caballo en un campo al atardecer."
+    },
+    {
+      "name": "f0dee0f5",
+      "text": "Ilustración temporal de un cohete con una frase escrita encima."
+    },
+    {
+      "name": "150cccdf",
+      "text": "Ilustración temporal de un conejo sentado entre pasto alto."
+    },
+    {
+      "name": "d5e2fc31",
+      "text": "Ilustración temporal de un escenario con luces sobre un público de siluetas."
+    },
+    {
+      "name": "13b08821",
+      "text": "Ilustración temporal de un escritorio con una pantalla, una lámpara y una taza."
+    },
+    {
+      "name": "1f877307",
+      "text": "Ilustración temporal de un gallo parado en el corral de una granja."
+    },
+    {
+      "name": "940c5fce",
+      "text": "Ilustración temporal de un gato con una frase escrita encima."
+    },
+    {
+      "name": "e0792ac5",
+      "text": "Ilustración temporal de un gato cuyo pelaje repite siempre el mismo dibujo."
+    },
+    {
+      "name": "c39e45aa",
+      "text": "Ilustración temporal de un micrófono sobre un pie, frente a una pared lisa."
+    },
+    {
+      "name": "4b59370b",
+      "text": "Ilustración temporal de un perro con una frase escrita encima."
+    },
+    {
+      "name": "2e1b4d0e",
+      "text": "Ilustración temporal de un perro parado sobre el pasto de un parque."
+    },
+    {
+      "name": "bd54fc0b",
+      "text": "Ilustración temporal de un pez nadando bajo el agua, con burbujas."
+    },
+    {
+      "name": "8b6e6ca0",
+      "text": "Ilustración temporal de un planeta con anillo y una frase escrita encima."
+    },
+    {
+      "name": "76bb75d4",
+      "text": "Ilustración temporal de un plato de comida visto desde arriba sobre una mesa."
+    },
+    {
+      "name": "dedda66f",
+      "text": "Ilustración temporal de un puente cruzando un río ancho."
+    },
+    {
+      "name": "71179f41",
+      "text": "Ilustración temporal de un pájaro posado en una rama, con el cielo detrás."
+    },
+    {
+      "name": "f24ff491",
+      "text": "Ilustración temporal de un ring de box con dos guantes colgados de la cuerda."
+    },
+    {
+      "name": "6ffdfe94",
+      "text": "Ilustración temporal de un trofeo con una frase escrita encima."
+    },
+    {
+      "name": "c716f63c",
+      "text": "Ilustración temporal de un venado entre los árboles de un bosque."
+    },
+    {
+      "name": "65298ec7",
+      "text": "Ilustración temporal de un zorro caminando sobre la nieve."
+    },
+    {
+      "name": "edfdb16c",
+      "text": "Ilustración temporal de un árbol grande sobre una colina."
+    },
+    {
+      "name": "1250c413",
+      "text": "Ilustración temporal de una banca bajo un árbol en un parque."
+    },
+    {
+      "name": "1f8f2c48",
+      "text": "Ilustración temporal de una bicicleta en una carretera junto a unas colinas."
+    },
+    {
+      "name": "68f106d7",
+      "text": "Ilustración temporal de una cancha de tenis vista desde arriba, con una pelota."
+    },
+    {
+      "name": "a092e053",
+      "text": "Ilustración temporal de una casa cuyas ventanas se repiten de forma extraña."
+    },
+    {
+      "name": "35c3a2f1",
+      "text": "Ilustración temporal de una esquina con una tienda y un poste de luz."
+    },
+    {
+      "name": "0d25feb6",
+      "text": "Ilustración temporal de una fuente en medio de una plaza."
+    },
+    {
+      "name": "309cd4de",
+      "text": "Ilustración temporal de una hamburguesa con una frase escrita encima."
+    },
+    {
+      "name": "e568f22e",
+      "text": "Ilustración temporal de una mariposa posada sobre una flor grande."
+    },
+    {
+      "name": "0dd1611d",
+      "text": "Ilustración temporal de una oveja parada en un campo verde."
+    },
+    {
+      "name": "97522f2d",
+      "text": "Ilustración temporal de una pelota de fútbol en una cancha con líneas blancas."
+    },
+    {
+      "name": "6f7ae8f5",
+      "text": "Ilustración temporal de una pelota de vóley sobre una red en la arena."
+    },
+    {
+      "name": "a02e5624",
+      "text": "Ilustración temporal de una piscina vista desde arriba, con carriles."
+    },
+    {
+      "name": "474dd8d1",
+      "text": "Ilustración temporal de una pista de atletismo con alguien corriendo."
+    },
+    {
+      "name": "3b16554c",
+      "text": "Ilustración temporal de una rampa de skate con una tabla en el aire."
+    },
+    {
+      "name": "0134f151",
+      "text": "Ilustración temporal de una rana sentada sobre una hoja flotante."
+    },
+    {
+      "name": "90777801",
+      "text": "Ilustración temporal de una tortuga cruzando la arena."
+    },
+    {
+      "name": "7a7f03b1",
+      "text": "Ilustración temporal de una vaca parada en un campo abierto."
+    },
+    {
+      "name": "8ce12c14",
+      "text": "Ilustración temporal del retrato de una persona sobre un fondo liso."
+    },
+    {
+      "name": "68d66330",
+      "text": "Ir rápido no es ir sin mirar."
+    },
+    {
+      "name": "5fb648e1",
+      "text": "La IA suele fallar en lo que nadie mira."
+    },
+    {
+      "name": "deda9560",
+      "text": "La apariencia no cuenta toda la historia."
+    },
+    {
+      "name": "c3a72162",
+      "text": "La foto sola no cuenta toda la historia."
+    },
+    {
+      "name": "fb0ffeae",
+      "text": "La frase de encima puede cambiar por completo lo que parece la foto."
+    },
+    {
+      "name": "51e1312c",
+      "text": "La fuente pesa más que el detalle."
+    },
+    {
+      "name": "4b3832f7",
+      "text": "Lee el cartel en los tres cuadros: ¿dice lo mismo siempre?"
+    },
+    {
+      "name": "74f096b8",
+      "text": "Lo bonito no siempre es lo cierto."
+    },
+    {
+      "name": "b2afd41e",
+      "text": "Lo común y aburrido suele ser real."
+    },
+    {
+      "name": "a8fa0467",
+      "text": "Lo gracioso también puede estar hecho para engañar."
+    },
+    {
+      "name": "f74a725e",
+      "text": "Lo que cambia sin motivo entre cuadros es una pista."
+    },
+    {
+      "name": "50d3ba0b",
+      "text": "Lo que se mueve también se puede inventar."
+    },
+    {
+      "name": "647a0a3b",
+      "text": "Mira las manos y los pies: son lo más difícil de imitar."
+    },
+    {
+      "name": "68e55e68",
+      "text": "Mira las patas y las orejas: ¿algo se ve raro?"
+    },
+    {
+      "name": "ac0b7091",
+      "text": "Mira los monos con atención: ¿qué detalles notas?"
+    },
+    {
+      "name": "07b47400",
+      "text": "Mira si el fondo y los objetos encajan entre sí."
+    },
+    {
+      "name": "59791893",
+      "text": "Mirar te da pistas. La fuente te da la respuesta."
+    },
+    {
+      "name": "37f2d2ee",
+      "text": "Mono junto a una persona en un mercado."
+    },
+    {
+      "name": "01b9e5b8",
+      "text": "Mono mirando a cámara con la boca abierta."
+    },
+    {
+      "name": "a21281a6",
+      "text": "Muchas fotos buscan que las compartas."
+    },
+    {
+      "name": "d4073db2",
+      "text": "No se puede saber"
+    },
+    {
+      "name": "d5e8a00b",
+      "text": "No siempre podemos saberlo solo mirando."
+    },
+    {
+      "name": "e47c3b6b",
+      "text": "Ojo: a veces la respuesta correcta es que no se puede saber solo mirando."
+    },
+    {
+      "name": "fd7eaa80",
+      "text": "Pasos para pensar: Mira, Pregunta y Comprueba"
+    },
+    {
+      "name": "3b20b84c",
+      "text": "Practica con temas que te gustan."
+    },
+    {
+      "name": "132ea466",
+      "text": "Pregúntale a un adulto de dónde viene la imagen."
+    },
+    {
+      "name": "e4b2c568",
+      "text": "Próximamente"
+    },
+    {
+      "name": "cc179912",
+      "text": "Puedes cambiar tu elección antes de comprobar."
+    },
+    {
+      "name": "d12c140d",
+      "text": "Que encaje no prueba de dónde salió."
+    },
+    {
+      "name": "b847f2d9",
+      "text": "Queda 1 segundo"
+    },
+    {
+      "name": "4fb0416e",
+      "text": "Quedan 5 segundos"
+    },
+    {
+      "name": "7f95d1f5",
+      "text": "Rango personal y títulos"
+    },
+    {
+      "name": "2cf68c4b",
+      "text": "Reenviar sin comprobar es parte del problema."
+    },
+    {
+      "name": "ee22d291",
+      "text": "Repetir misión"
+    },
+    {
+      "name": "966db87b",
+      "text": "Respuesta confirmada"
+    },
+    {
+      "name": "5db048e5",
+      "text": "Revisa quién publicó la imagen, de dónde proviene y si fuentes confiables la confirman."
+    },
+    {
+      "name": "e2e4e328",
+      "text": "Roqui, tu guía."
+    },
+    {
+      "name": "73351eae",
+      "text": "Rápido: revisa el fondo, no solo al animal."
+    },
+    {
+      "name": "79e84552",
+      "text": "Se acabó el tiempo"
+    },
+    {
+      "name": "d0349b1e",
+      "text": "Seleccionada"
+    },
+    {
+      "name": "2e6d2daa",
+      "text": "Separa la imagen del texto: son dos cosas distintas."
+    },
+    {
+      "name": "cc18592e",
+      "text": "Si dudas, dilo y busca de dónde salió."
+    },
+    {
+      "name": "7fc75abd",
+      "text": "Si el video se ve raro, busca de dónde salió antes de creerlo."
+    },
+    {
+      "name": "e44d8de0",
+      "text": "Si nadie la confirma, todavía no lo sabemos."
+    },
+    {
+      "name": "6c6ccc6d",
+      "text": "Si no te da el tiempo, mejor di que no sabes."
+    },
+    {
+      "name": "93cb908c",
+      "text": "Siguiente ronda"
+    },
+    {
+      "name": "6872f40a",
+      "text": "Sin otra foto al lado, busca bordes borrosos y cosas que se repiten."
+    },
+    {
+      "name": "9d79f25d",
+      "text": "Sin otro video al lado, revisa que el movimiento sea parejo entre cuadros."
+    },
+    {
+      "name": "e4c818a4",
+      "text": "Tira temporal de tres cuadros de un cartel cuyas letras cambian entre cuadros."
+    },
+    {
+      "name": "44379760",
+      "text": "Tira temporal de tres cuadros de un cartel cuyas letras no cambian."
+    },
+    {
+      "name": "5dcef671",
+      "text": "Tira temporal de tres cuadros de una figura que cambia la posición de los brazos."
+    },
+    {
+      "name": "ff00cd0c",
+      "text": "Tira temporal de tres cuadros de una mano a la que le cambia el número de dedos."
+    },
+    {
+      "name": "3a4e1557",
+      "text": "Tira temporal de tres cuadros de una mano que mantiene siempre cinco dedos."
+    },
+    {
+      "name": "baa6f517",
+      "text": "Tira temporal de tres cuadros de una patineta recorriendo una rampa."
+    },
+    {
+      "name": "c18624ca",
+      "text": "Tira temporal de tres cuadros de una pelota que cambia de tamaño mientras se mueve."
+    },
+    {
+      "name": "1132cd8c",
+      "text": "Tira temporal de tres cuadros de una pelota que rebota parejo."
+    },
+    {
+      "name": "99e1dee5",
+      "text": "Tira temporal de tres cuadros de unas banderas moviéndose en fila."
+    },
+    {
+      "name": "adedb93a",
+      "text": "Toca la pantalla"
+    },
+    {
+      "name": "58e65a01",
+      "text": "Toca la que creas que hizo la computadora."
+    },
+    {
+      "name": "11b7322c",
+      "text": "Tomada con cámara"
+    },
+    {
+      "name": "846bca01",
+      "text": "Un detalle extraño puede ser una pista, pero no es una prueba por sí solo."
+    },
+    {
+      "name": "e1cee512",
+      "text": "Un detalle raro no siempre significa IA."
+    },
+    {
+      "name": "0dbe6aa3",
+      "text": "Un detalle visual puede ser una pista, pero la edición, la compresión o errores normales también pueden producir detalles extraños."
+    },
+    {
+      "name": "8a7f3bc1",
+      "text": "Un meme suele venir de otro meme. Casi nunca se sabe quién hizo la foto original."
+    },
+    {
+      "name": "977f8834",
+      "text": "Un meme viaja porque alguien quiso que viajara."
+    },
+    {
+      "name": "6ef59da0",
+      "text": "Un movimiento raro es una pista, no una prueba."
+    },
+    {
+      "name": "c5045912",
+      "text": "Un rostro puede inventarse o ser real. Solo la fuente lo aclara."
+    },
+    {
+      "name": "d3cc051c",
+      "text": "Un video corto se hace para que lo compartas rápido."
+    },
+    {
+      "name": "3dd83fc7",
+      "text": "Un video puede verse perfecto y aun así no saberse su origen."
+    },
+    {
+      "name": "0481608c",
+      "text": "Una foto así de común puede ser de cualquiera. Hay que buscar de dónde salió."
+    },
+    {
+      "name": "05c0ff6d",
+      "text": "Una imagen siempre viene de alguien con una intención."
+    },
+    {
+      "name": "a9875c80",
+      "text": "Una pista es para seguir mirando, no para decidir."
+    },
+    {
+      "name": "1f7d55a5",
+      "text": "Usa un apodo. Evita escribir tu nombre completo."
+    },
+    {
+      "name": "2ef86d1f",
+      "text": "Ver resultado"
+    },
+    {
+      "name": "04120be9",
+      "text": "Verás dos imágenes: una es una foto y la otra la hizo una computadora."
+    },
+    {
+      "name": "10abb63c",
+      "text": "¡Bien visto!"
+    },
+    {
+      "name": "d621d6b0",
+      "text": "¡Bienvenido a la isla del Entrenamiento! Aquí aprendes a mirar antes de creer."
+    },
+    {
+      "name": "1d63a5d0",
+      "text": "¡Buen intento!"
+    },
+    {
+      "name": "09690b97",
+      "text": "¡Buena observación!"
+    },
+    {
+      "name": "d9e4673b",
+      "text": "¡Completaste todos los niveles!"
+    },
+    {
+      "name": "6117e54d",
+      "text": "¡Elige tu isla!"
+    },
+    {
+      "name": "675490fa",
+      "text": "¡Esta es la isla de Comprobar la fuente! Aquí mirar ya no alcanza."
+    },
+    {
+      "name": "6c64b796",
+      "text": "¡Exacto! Aquí mirar no alcanzaba."
+    },
+    {
+      "name": "4ec03fd0",
+      "text": "¡Hola de nuevo, detective!"
+    },
+    {
+      "name": "a57332c2",
+      "text": "¡Hola! Soy Roqui, el gallito detective."
+    },
+    {
+      "name": "9f4b7b65",
+      "text": "¡Llegaste a la isla de Diferenciar imágenes! Ahora buscamos pistas en las fotos."
+    },
+    {
+      "name": "80f6d8de",
+      "text": "¡Llegaste a la isla de los Videos! Aquí se mira cuadro por cuadro."
+    },
+    {
+      "name": "586bb8f1",
+      "text": "¡Misión 1! Encuentra la imagen hecha con IA."
+    },
+    {
+      "name": "65d77bcb",
+      "text": "¡Misión 1! Este ejercicio tiene una respuesta definida por sus autores."
+    },
+    {
+      "name": "f1503cd4",
+      "text": "¡Misión completada!"
+    },
+    {
+      "name": "94203507",
+      "text": "¡Nuevo récord!"
+    },
+    {
+      "name": "215e06f6",
+      "text": "¡Toca para empezar!"
+    },
+    {
+      "name": "1f168911",
+      "text": "¡Yo te enseño a descubrirlas!"
+    },
+    {
+      "name": "485461b4",
+      "text": "«No se puede saber» es la respuesta honesta muchas veces."
+    },
+    {
+      "name": "6aa058fd",
+      "text": "«No se puede saber» sigue siendo una respuesta de detective."
+    },
+    {
+      "name": "d8ebc239",
+      "text": "¿Alguna vez viste una foto y no supiste si era de verdad?"
+    },
+    {
+      "name": "bab83a7b",
+      "text": "¿Cuál fue hecha con IA?"
+    },
+    {
+      "name": "e08caf89",
+      "text": "¿Cómo quieres que te llamemos?"
+    },
+    {
+      "name": "c0021ea8",
+      "text": "¿La imagen aparece en su contexto original y hay evidencia suficiente para decidir?"
+    },
+    {
+      "name": "0009bf0b",
+      "text": "¿Para qué querría alguien publicar esto?"
+    },
+    {
+      "name": "34af26d5",
+      "text": "¿Para qué se habrá hecho este video?"
+    },
+    {
+      "name": "65ece185",
+      "text": "¿Para qué se publicaría una foto así?"
+    },
+    {
+      "name": "8e48a2b2",
+      "text": "¿Por qué querrían que compartas esto?"
+    },
+    {
+      "name": "fe2065a3",
+      "text": "¿Por qué te la estarían mostrando a ti?"
+    },
+    {
+      "name": "78320bb9",
+      "text": "¿Quién comparte esta foto del animal y por qué?"
+    },
+    {
+      "name": "da87524f",
+      "text": "¿Quién estaba ahí y para qué tomó esta foto?"
+    },
+    {
+      "name": "6a18e5ce",
+      "text": "¿Quién ganó algo con que este meme se comparta?"
+    },
+    {
+      "name": "458c66ce",
+      "text": "¿Quién ganó algo publicando esta imagen?"
+    },
+    {
+      "name": "90d90949",
+      "text": "¿Quién hizo esta imagen?"
+    },
+    {
+      "name": "2022f43e",
+      "text": "¿Quién publicó esta imagen y por qué?"
+    },
+    {
+      "name": "38ee3fec",
+      "text": "¿Quién publicó esto y está disponible la fuente original? Compáralo con fuentes confiables."
+    },
+    {
+      "name": "6524fc96",
+      "text": "¿Quién subió esta foto y para qué?"
+    },
+    {
+      "name": "df096c43",
+      "text": "¿Se parece a una foto que cualquiera podría tomar?"
+    }
+  ],
+  "en": [
+    {
+      "name": "5cb8d7fc",
+      "text": "1 second remaining"
+    },
+    {
+      "name": "23e304ed",
+      "text": "3 rounds · No time limit"
+    },
+    {
+      "name": "ac597151",
+      "text": "5 seconds remaining"
+    },
+    {
+      "name": "950efa9d",
+      "text": "A clue tells you to keep looking, not to decide."
+    },
+    {
+      "name": "fa5dd8b7",
+      "text": "A face can be invented or real. Only the source settles it."
+    },
+    {
+      "name": "013f2012",
+      "text": "A meme travels because somebody wanted it to."
+    },
+    {
+      "name": "5532f93c",
+      "text": "A meme usually comes from another meme. Who took the first photo is almost never known."
+    },
+    {
+      "name": "851b4355",
+      "text": "A photo this ordinary could be anyone's. You have to find where it came from."
+    },
+    {
+      "name": "54ad5723",
+      "text": "A short video is made to be shared quickly."
+    },
+    {
+      "name": "551c4b8b",
+      "text": "A strange detail can be a clue, but it is not proof by itself."
+    },
+    {
+      "name": "a0ad54ad",
+      "text": "A video can look perfect and its origin still be unknown."
+    },
+    {
+      "name": "1257ffa0",
+      "text": "A visual detail may be a clue, but editing, compression, or ordinary mistakes can cause odd details too."
+    },
+    {
+      "name": "75f29398",
+      "text": "AI usually slips where nobody is looking."
+    },
+    {
+      "name": "c4c78817",
+      "text": "AI-made content is not automatically false, and human-made content is not automatically trustworthy. Check the evidence and context."
+    },
+    {
+      "name": "dea86317",
+      "text": "Accessibility and your data"
+    },
+    {
+      "name": "685d60aa",
+      "text": "An image always comes from someone with a purpose."
+    },
+    {
+      "name": "abaa1006",
+      "text": "Answer confirmed"
+    },
+    {
+      "name": "dbd2b4f9",
+      "text": "Appearance does not tell the whole story."
+    },
+    {
+      "name": "d2fc6fbf",
+      "text": "Ask a grown-up where the image came from."
+    },
+    {
+      "name": "13a9a0dc",
+      "text": "Before believing it, find who published it first."
+    },
+    {
+      "name": "62f3a655",
+      "text": "Before sharing it, find who published it first."
+    },
+    {
+      "name": "a58d8961",
+      "text": "Behind every post there is an intention."
+    },
+    {
+      "name": "645a204d",
+      "text": "Being unsure is a valid answer too."
+    },
+    {
+      "name": "0698259f",
+      "text": "Being unsure is not failing: it is what a detective does."
+    },
+    {
+      "name": "4611484d",
+      "text": "Careful: sometimes the right answer is that looking is not enough to know."
+    },
+    {
+      "name": "f5be185f",
+      "text": "Check answer"
+    },
+    {
+      "name": "58dfcd8e",
+      "text": "Check the crowd and the background, not only the main figure."
+    },
+    {
+      "name": "1a027451",
+      "text": "Check the source"
+    },
+    {
+      "name": "ebdc0378",
+      "text": "Check whether a known outlet published it."
+    },
+    {
+      "name": "f15b03c7",
+      "text": "Check whether something repeats in exactly the same way."
+    },
+    {
+      "name": "6624fa9a",
+      "text": "Check whether the background and the objects fit together."
+    },
+    {
+      "name": "a76e57b6",
+      "text": "Check who published an image, where it came from, and whether reliable sources confirm it."
+    },
+    {
+      "name": "29227cf2",
+      "text": "Choose an image to continue."
+    },
+    {
+      "name": "0b68d046",
+      "text": "Choose your apprentice"
+    },
+    {
+      "name": "213bd163",
+      "text": "Choose your island!"
+    },
+    {
+      "name": "6e1f41d4",
+      "text": "Close. Look again."
+    },
+    {
+      "name": "d7edc9ae",
+      "text": "Closed for now"
+    },
+    {
+      "name": "660c4af8",
+      "text": "Compare frame with frame: count the fingers in each one."
+    },
+    {
+      "name": "408575d0",
+      "text": "Computers can now invent photos that look real."
+    },
+    {
+      "name": "b48f7f58",
+      "text": "Create your profile on this device"
+    },
+    {
+      "name": "df6e8cfc",
+      "text": "Current step"
+    },
+    {
+      "name": "a015d639",
+      "text": "Does it look like a photo anyone could have taken?"
+    },
+    {
+      "name": "7e10a3ed",
+      "text": "Exactly! Looking was not enough here."
+    },
+    {
+      "name": "e69b4dae",
+      "text": "Find out who shared something and why."
+    },
+    {
+      "name": "23be1557",
+      "text": "Find the photo without the caption before forwarding it."
+    },
+    {
+      "name": "890bf599",
+      "text": "Find the source and review the context."
+    },
+    {
+      "name": "a857a745",
+      "text": "Find where it came from before believing it."
+    },
+    {
+      "name": "4d0944cc",
+      "text": "Finish your profile"
+    },
+    {
+      "name": "26105814",
+      "text": "Fitting together does not prove where it came from."
+    },
+    {
+      "name": "d468a21a",
+      "text": "Forwarding without checking is part of the problem."
+    },
+    {
+      "name": "ae8a2a90",
+      "text": "Getting it wrong is fine: that is how we learn."
+    },
+    {
+      "name": "fbddac0f",
+      "text": "Going fast is not the same as not looking."
+    },
+    {
+      "name": "46c06ed7",
+      "text": "Great observation!"
+    },
+    {
+      "name": "bf5aa739",
+      "text": "Have you ever seen a photo and wondered if it was real?"
+    },
+    {
+      "name": "277a3afa",
+      "text": "Hi! I’m Roqui, the detective rooster."
+    },
+    {
+      "name": "7052b79f",
+      "text": "If a video looks odd, find where it came from before believing it."
+    },
+    {
+      "name": "d09b264c",
+      "text": "If nobody confirms it, we still do not know."
+    },
+    {
+      "name": "8d8dfeb8",
+      "text": "If you are unsure, say so and find where it came from."
+    },
+    {
+      "name": "b37bc275",
+      "text": "If you run out of time, say you do not know."
+    },
+    {
+      "name": "f0f7ca51",
+      "text": "In this exercise the origin is known. Outside the game, a clue alone does not prove where content came from."
+    },
+    {
+      "name": "d92403f8",
+      "text": "Is the image in its original context, and is there enough evidence to decide?"
+    },
+    {
+      "name": "9bc051af",
+      "text": "It is a clue, not proof."
+    },
+    {
+      "name": "970280bd",
+      "text": "I’ll teach you how to spot them!"
+    },
+    {
+      "name": "141c6ce8",
+      "text": "Learn to look closely before believing."
+    },
+    {
+      "name": "6635a072",
+      "text": "Look at the hands and the feet: they are the hardest to fake."
+    },
+    {
+      "name": "180ed838",
+      "text": "Look at the paws and the ears: does anything look odd?"
+    },
+    {
+      "name": "3ca2378f",
+      "text": "Look at the photo, not at the caption. Anyone can write a caption."
+    },
+    {
+      "name": "875c8624",
+      "text": "Look closely at the monkeys: what details do you notice?"
+    },
+    {
+      "name": "82e4225d",
+      "text": "Looking gives you clues. The source gives you the answer."
+    },
+    {
+      "name": "3450b80e",
+      "text": "Made with AI"
+    },
+    {
+      "name": "97d6ea27",
+      "text": "Many pictures are made to be shared."
+    },
+    {
+      "name": "c93c039d",
+      "text": "Mission 1! Find the image made with AI."
+    },
+    {
+      "name": "b7e58fe8",
+      "text": "Mission 1! This exercise has an authored answer."
+    },
+    {
+      "name": "bdb4d28b",
+      "text": "Mission complete!"
+    },
+    {
+      "name": "a1d956ac",
+      "text": "Monkey beside a person in a market."
+    },
+    {
+      "name": "78b1c2b3",
+      "text": "Monkey looking at the camera with its mouth open."
+    },
+    {
+      "name": "a6454b6c",
+      "text": "Odd movement is a clue, not proof."
+    },
+    {
+      "name": "fe171af3",
+      "text": "One odd detail does not always mean AI."
+    },
+    {
+      "name": "919bd2eb",
+      "text": "Only what the game really does appears here. Anything that does not exist yet is marked as such."
+    },
+    {
+      "name": "a9b1a287",
+      "text": "Orange cat sitting on a kitchen counter."
+    },
+    {
+      "name": "5d70a171",
+      "text": "Ordinary and dull is often real."
+    },
+    {
+      "name": "3756f8e7",
+      "text": "Personal rank and titles"
+    },
+    {
+      "name": "03b6a544",
+      "text": "Personal rank is a local progress tier based on your best results on this device."
+    },
+    {
+      "name": "1b84837a",
+      "text": "Practise with themes you like."
+    },
+    {
+      "name": "38192e82",
+      "text": "Pretty does not mean true."
+    },
+    {
+      "name": "a8740eb3",
+      "text": "Quick: check the background, not only the animal."
+    },
+    {
+      "name": "9dced9d2",
+      "text": "Read the sign in all three frames: does it say the same thing every time?"
+    },
+    {
+      "name": "e7798d48",
+      "text": "Replay mission"
+    },
+    {
+      "name": "2a374f66",
+      "text": "Roqui, your guide."
+    },
+    {
+      "name": "15a2313f",
+      "text": "Saving your result…"
+    },
+    {
+      "name": "7d253762",
+      "text": "Saying \"I don't know\" beats making it up."
+    },
+    {
+      "name": "34919b47",
+      "text": "Saying \"you cannot tell\" is a detective's answer, not giving up."
+    },
+    {
+      "name": "5719a053",
+      "text": "Separate the picture from the text: they are two different things."
+    },
+    {
+      "name": "4e536d5b",
+      "text": "Sharing without checking is part of the problem too."
+    },
+    {
+      "name": "d0d347dc",
+      "text": "Something funny can also be made to mislead."
+    },
+    {
+      "name": "7d8123d7",
+      "text": "Something that changes for no reason between frames is a clue."
+    },
+    {
+      "name": "1e00a077",
+      "text": "Sometimes looking is not enough to know."
+    },
+    {
+      "name": "3dfd87f5",
+      "text": "Sometimes the frames are not enough: find the whole video and its source."
+    },
+    {
+      "name": "8a570e51",
+      "text": "Street with damaged buildings and rubble."
+    },
+    {
+      "name": "e4d795d2",
+      "text": "Taken with a camera"
+    },
+    {
+      "name": "9509fecf",
+      "text": "Tap the one you think the computer made."
+    },
+    {
+      "name": "1615427b",
+      "text": "Tap the screen"
+    },
+    {
+      "name": "6fa4a536",
+      "text": "Tap to start!"
+    },
+    {
+      "name": "2b9db25a",
+      "text": "Telling images apart"
+    },
+    {
+      "name": "19e83fac",
+      "text": "Temporary illustration of a basketball hoop under very bright lights."
+    },
+    {
+      "name": "42665651",
+      "text": "Temporary illustration of a bench under a tree in a park."
+    },
+    {
+      "name": "63f9e6bb",
+      "text": "Temporary illustration of a bicycle on a road beside some hills."
+    },
+    {
+      "name": "71d030e9",
+      "text": "Temporary illustration of a bird perched on a branch against the sky."
+    },
+    {
+      "name": "c7b82369",
+      "text": "Temporary illustration of a boxing ring with two gloves hanging on the rope."
+    },
+    {
+      "name": "ce8a0f39",
+      "text": "Temporary illustration of a bridge crossing a wide river."
+    },
+    {
+      "name": "50a001ff",
+      "text": "Temporary illustration of a burger with a caption written across it."
+    },
+    {
+      "name": "19211a24",
+      "text": "Temporary illustration of a bus on a city street."
+    },
+    {
+      "name": "f4d07c0d",
+      "text": "Temporary illustration of a butterfly resting on a large flower."
+    },
+    {
+      "name": "e33c941a",
+      "text": "Temporary illustration of a cat whose coat repeats the very same pattern."
+    },
+    {
+      "name": "2fbecc62",
+      "text": "Temporary illustration of a cat with a caption written across it."
+    },
+    {
+      "name": "b71d7989",
+      "text": "Temporary illustration of a cow standing in an open field."
+    },
+    {
+      "name": "17512ce5",
+      "text": "Temporary illustration of a deer among the trees of a forest."
+    },
+    {
+      "name": "dc16537c",
+      "text": "Temporary illustration of a desk with a screen, a lamp and a mug."
+    },
+    {
+      "name": "0eb3cda0",
+      "text": "Temporary illustration of a dog standing on the grass in a park."
+    },
+    {
+      "name": "2ae0bc7c",
+      "text": "Temporary illustration of a dog with a caption written across it."
+    },
+    {
+      "name": "48427543",
+      "text": "Temporary illustration of a fish swimming underwater with bubbles."
+    },
+    {
+      "name": "c0dedf17",
+      "text": "Temporary illustration of a football on a pitch with white lines."
+    },
+    {
+      "name": "cf50f50e",
+      "text": "Temporary illustration of a fountain in the middle of a square."
+    },
+    {
+      "name": "1b4330e7",
+      "text": "Temporary illustration of a fox walking across the snow."
+    },
+    {
+      "name": "de1358f8",
+      "text": "Temporary illustration of a frog sitting on a floating leaf."
+    },
+    {
+      "name": "95fac264",
+      "text": "Temporary illustration of a horse in a field at sunset."
+    },
+    {
+      "name": "942115f2",
+      "text": "Temporary illustration of a house whose windows repeat in an odd way."
+    },
+    {
+      "name": "e247b91a",
+      "text": "Temporary illustration of a large tree on a hill."
+    },
+    {
+      "name": "8976b7e4",
+      "text": "Temporary illustration of a microphone on a stand against a plain wall."
+    },
+    {
+      "name": "dd31d68b",
+      "text": "Temporary illustration of a plate of food seen from above on a table."
+    },
+    {
+      "name": "6768c946",
+      "text": "Temporary illustration of a portrait of a person against a plain background."
+    },
+    {
+      "name": "2ae684f6",
+      "text": "Temporary illustration of a rabbit sitting in tall grass."
+    },
+    {
+      "name": "cbcb710d",
+      "text": "Temporary illustration of a ringed planet with a caption written across it."
+    },
+    {
+      "name": "67f36fce",
+      "text": "Temporary illustration of a rocket with a caption written across it."
+    },
+    {
+      "name": "c92889f6",
+      "text": "Temporary illustration of a rooster standing in a farmyard."
+    },
+    {
+      "name": "590e670f",
+      "text": "Temporary illustration of a running track with someone running."
+    },
+    {
+      "name": "fa499896",
+      "text": "Temporary illustration of a sheep standing in a green field."
+    },
+    {
+      "name": "0d436a87",
+      "text": "Temporary illustration of a skate ramp with a board in the air."
+    },
+    {
+      "name": "e01db191",
+      "text": "Temporary illustration of a stage with lights above a crowd of shapes."
+    },
+    {
+      "name": "965e8ef7",
+      "text": "Temporary illustration of a street corner with a shop and a lamp post."
+    },
+    {
+      "name": "d9164568",
+      "text": "Temporary illustration of a swimming pool seen from above, with lanes."
+    },
+    {
+      "name": "711451ce",
+      "text": "Temporary illustration of a tennis court seen from above, with a ball."
+    },
+    {
+      "name": "787f1604",
+      "text": "Temporary illustration of a trophy with a caption written across it."
+    },
+    {
+      "name": "a834adb5",
+      "text": "Temporary illustration of a turtle crossing the sand."
+    },
+    {
+      "name": "0ee21e81",
+      "text": "Temporary illustration of a volleyball above a net on the sand."
+    },
+    {
+      "name": "f49898da",
+      "text": "Temporary illustration of an owl on a branch under a night sky."
+    },
+    {
+      "name": "a3e5e704",
+      "text": "Temporary strip of three frames of a ball bouncing evenly."
+    },
+    {
+      "name": "591606f4",
+      "text": "Temporary strip of three frames of a ball that changes size as it moves."
+    },
+    {
+      "name": "b166962f",
+      "text": "Temporary strip of three frames of a figure whose arms change position."
+    },
+    {
+      "name": "c521a5a6",
+      "text": "Temporary strip of three frames of a hand that keeps the same five fingers."
+    },
+    {
+      "name": "57571ae1",
+      "text": "Temporary strip of three frames of a hand whose number of fingers changes."
+    },
+    {
+      "name": "ae45b5f3",
+      "text": "Temporary strip of three frames of a sign whose letters change between frames."
+    },
+    {
+      "name": "4cca2fcd",
+      "text": "Temporary strip of three frames of a sign whose letters stay the same."
+    },
+    {
+      "name": "b9ea3ad3",
+      "text": "Temporary strip of three frames of a skateboard moving along a ramp."
+    },
+    {
+      "name": "6fb31445",
+      "text": "Temporary strip of three frames of flags moving in a row."
+    },
+    {
+      "name": "fbacf0ff",
+      "text": "Text inside a video is usually the first thing to slip."
+    },
+    {
+      "name": "3a1084d7",
+      "text": "Text on top says nothing about where the image came from."
+    },
+    {
+      "name": "6708ca93",
+      "text": "The picture alone does not tell the whole story."
+    },
+    {
+      "name": "54509a62",
+      "text": "The source counts for more than the detail."
+    },
+    {
+      "name": "efd8735d",
+      "text": "The words on top can completely change what the photo seems to show."
+    },
+    {
+      "name": "7501e5d4",
+      "text": "There is always someone behind an image."
+    },
+    {
+      "name": "d3564590",
+      "text": "There is nothing to compare it with. Take your time."
+    },
+    {
+      "name": "975ae5b0",
+      "text": "These are your friends, for playing a versus by passing the phone between you."
+    },
+    {
+      "name": "9985459a",
+      "text": "Things that move can be invented too."
+    },
+    {
+      "name": "37483d8d",
+      "text": "Thinking steps: Look, Ask and Check"
+    },
+    {
+      "name": "3e658b19",
+      "text": "This attempt was played before scores existed, so it does not have one."
+    },
+    {
+      "name": "e69455ac",
+      "text": "This is Checking the source! Here looking is not enough."
+    },
+    {
+      "name": "a9f19fbb",
+      "text": "This island has no missions to play yet."
+    },
+    {
+      "name": "5aab6002",
+      "text": "This one could not be known by looking alone."
+    },
+    {
+      "name": "bbc72625",
+      "text": "This time it is your call: there is nothing to compare."
+    },
+    {
+      "name": "7d94c922",
+      "text": "Urban street with large cracks and cars."
+    },
+    {
+      "name": "857078f5",
+      "text": "Use a nickname. Avoid entering your full name."
+    },
+    {
+      "name": "4bdd45ac",
+      "text": "We cannot always know just by looking."
+    },
+    {
+      "name": "66d5e7a0",
+      "text": "Welcome back, detective!"
+    },
+    {
+      "name": "22f9cbe7",
+      "text": "Welcome to Training island! Here you learn to look before believing."
+    },
+    {
+      "name": "d4253f67",
+      "text": "Well spotted!"
+    },
+    {
+      "name": "42e5d188",
+      "text": "What might this video have been made for?"
+    },
+    {
+      "name": "81789dea",
+      "text": "What should we call you?"
+    },
+    {
+      "name": "69ce2e8e",
+      "text": "What would a picture like this be posted for?"
+    },
+    {
+      "name": "f20ed860",
+      "text": "When you can tell, say so. Doubting everything is no use either."
+    },
+    {
+      "name": "3d4c50ff",
+      "text": "Which one was made with AI?"
+    },
+    {
+      "name": "d9779b52",
+      "text": "White cat lying down and looking at the camera."
+    },
+    {
+      "name": "fddaed8c",
+      "text": "Who gained something by posting this image?"
+    },
+    {
+      "name": "a0176814",
+      "text": "Who gained something from this meme being shared?"
+    },
+    {
+      "name": "a1f5cc4f",
+      "text": "Who is sharing this animal picture, and why?"
+    },
+    {
+      "name": "52001712",
+      "text": "Who made this image?"
+    },
+    {
+      "name": "bc258683",
+      "text": "Who posted this picture, and what for?"
+    },
+    {
+      "name": "8026598e",
+      "text": "Who published this image, and why?"
+    },
+    {
+      "name": "5c77b823",
+      "text": "Who published this, and is the original source available? Compare it with reliable sources."
+    },
+    {
+      "name": "91cb82d1",
+      "text": "Who was there, and what did they take this photo for?"
+    },
+    {
+      "name": "b4037e32",
+      "text": "Why would someone want to post this?"
+    },
+    {
+      "name": "10f40eca",
+      "text": "Why would they want you to share this?"
+    },
+    {
+      "name": "33d4814f",
+      "text": "Why would this be shown to you?"
+    },
+    {
+      "name": "a71d6000",
+      "text": "With no second picture, look for blurry edges and things that repeat."
+    },
+    {
+      "name": "cfeaac7c",
+      "text": "With no second video beside it, check the movement is even between frames."
+    },
+    {
+      "name": "e3787934",
+      "text": "You are entering"
+    },
+    {
+      "name": "12f5ba8d",
+      "text": "You can change your choice before checking."
+    },
+    {
+      "name": "370d0426",
+      "text": "You cannot tell"
+    },
+    {
+      "name": "94d5c8e7",
+      "text": "You completed every level!"
+    },
+    {
+      "name": "c16de3a2",
+      "text": "You reached Telling images apart! Now we hunt for clues in photos."
+    },
+    {
+      "name": "4da40a5f",
+      "text": "You reached the Videos island! Here we look frame by frame."
+    },
+    {
+      "name": "5bb0762a",
+      "text": "You unlocked your detective tools."
+    },
+    {
+      "name": "e8082a85",
+      "text": "You will see two images: one is a photo and the other was made by a computer."
+    },
+    {
+      "name": "2e66441b",
+      "text": "Your friends"
+    },
+    {
+      "name": "164a6954",
+      "text": "\\\"You cannot tell\\\" is often the honest answer."
+    },
+    {
+      "name": "41f5ee3a",
+      "text": "\\\"You cannot tell\\\" is still a detective's answer."
+    }
+  ]
+}

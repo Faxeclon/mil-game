@@ -1,13 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocale } from "next-intl";
 import { isWorthSpeaking, pickVoice, toSpokenText, type InstalledVoice } from "./voiceSelection";
 
 export type Speech = {
   available: boolean;
   speaking: boolean;
-  speak: (text: string) => void;
+  /** `onDone` fires once this line has finished, however it finished. */
+  speak: (text: string, onDone?: () => void) => void;
   stop: () => void;
 };
 
@@ -74,10 +75,18 @@ export function useSpeech({ onSpeechStart, onSpeechEnd }: SpeechCallbacks = {}):
     finish();
   }, [finish]);
 
+  /**
+   * `onDone` fires once this particular line is finished, however it finished, and only
+   * while it is still the current one. It is what lets a caller read several lines in a
+   * row without guessing at durations.
+   */
   const speak = useCallback(
-    (text: string) => {
+    (text: string, onDone?: () => void) => {
       const synthesis = getSynthesis();
-      if (!synthesis || !voice || !isWorthSpeaking(text)) return;
+      if (!synthesis || !voice || !isWorthSpeaking(text)) {
+        onDone?.();
+        return;
+      }
 
       synthesis.cancel();
       finish();
@@ -95,8 +104,14 @@ export function useSpeech({ onSpeechStart, onSpeechEnd }: SpeechCallbacks = {}):
        */
       utterance.rate = 0.9;
       utterance.pitch = 1.2;
-      utterance.onend = () => finish(speechId);
-      utterance.onerror = () => finish(speechId);
+      const done = () => {
+        // Only the line that is still current may report itself finished.
+        if (nextSpeechIdRef.current !== speechId) return;
+        finish(speechId);
+        onDone?.();
+      };
+      utterance.onend = done;
+      utterance.onerror = done;
 
       activeSpeechIdRef.current = speechId;
       onSpeechStartRef.current?.();
@@ -104,11 +119,19 @@ export function useSpeech({ onSpeechStart, onSpeechEnd }: SpeechCallbacks = {}):
       try {
         synthesis.speak(utterance);
       } catch {
-        finish(speechId);
+        done();
       }
     },
     [finish, voice]
   );
 
-  return { available: voice !== null, speaking, speak, stop };
+  /*
+   * Memoised so a caller can safely put this in an effect's dependency list. Returning a
+   * fresh object every render once made the narrator repeat its greeting endlessly: the
+   * effect that speaks saw a new value, spoke, set state, rendered, and went round again.
+   */
+  return useMemo(
+    () => ({ available: voice !== null, speaking, speak, stop }),
+    [speak, speaking, stop, voice]
+  );
 }

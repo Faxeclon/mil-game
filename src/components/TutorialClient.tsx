@@ -527,13 +527,25 @@ export function TutorialClient({
                   </p>
                 ))}
                 {/*
+                 * The one idea this game cannot afford to leave out: where something came
+                 * from is not the same question as whether it is true. Without it a child
+                 * learns to distrust anything a computer touched, which is the documented
+                 * way this kind of game goes wrong.
+                 *
+                 * It sits after the answer rather than before it. As an opening line it was
+                 * four sentences of adult prose in front of a seven-year-old who had not
+                 * yet seen a picture; here it lands on something they just decided.
+                 */}
+                {showBriefing && <p className={styles.originNote}>{tEducation("originVsTruth")}</p>}
+                {/*
                  * The explanation is the part that teaches; leaving it unread would mean
                  * the child can play the game without ever reaching the lesson in it.
                  */}
                 <Narrator
                   lines={[
                     selectedIsCorrect ? t("correct") : t("tryAgain"),
-                    ...feedbackBlocks.map((block) => `${t(block.labelKey)}: ${t(block.textKey)}`)
+                    ...feedbackBlocks.map((block) => `${t(block.labelKey)}: ${t(block.textKey)}`),
+                    showBriefing ? tEducation("originVsTruth") : null
                   ]}
                 />
               </div>
