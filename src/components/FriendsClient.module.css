@@ -1,0 +1,360 @@
+/*
+ * The friends list, read by a child on a shared phone.
+ *
+ * Rows are tall and buttons are wide because the hand holding this is small and the screen
+ * is 360 px. No state is carried by colour alone: every one of them says its word.
+ */
+
+.friends::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background: #fff9f6;
+  content: "";
+  pointer-events: none;
+}
+
+.friends > * {
+  position: relative;
+  z-index: 1;
+}
+
+.friends {
+  --c-ink: #1f2a44;
+  --c-ink-soft: #5b6780;
+  --c-hairline: #ece7e6;
+  --c-hairline-strong: #d5cfcd;
+  --c-accent-strong: #c93c0b;
+  --c-accent-ink: #b8380a;
+  --c-accent-soft: #ffece4;
+
+  width: min(100%, 44rem);
+  margin: 0 auto;
+  padding-bottom: 3rem;
+  color: var(--c-ink);
+}
+
+.back {
+  min-height: 2.75rem;
+  margin-top: clamp(0.5rem, 3vw, 1.25rem);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--c-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.title {
+  margin: 0.6rem 0 0;
+  font-size: clamp(1.6rem, 6vw, 2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.lead {
+  max-width: 46ch;
+  margin: 0.45rem 0 0;
+  color: var(--c-ink-soft);
+  font-size: 0.96rem;
+  line-height: 1.5;
+}
+
+.sectionTitle {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.codeBox,
+.addBox,
+.sentBox {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border: 2px solid var(--c-hairline);
+  border-radius: 1.1rem;
+  background: #fff;
+}
+
+/* The inbox is the one thing on this page waiting on the child, so it looks like it. */
+.requestBox {
+  margin-top: 1.25rem;
+  padding: 1rem;
+  border: 2px solid var(--c-accent-strong);
+  border-radius: 1.1rem;
+  background: var(--c-accent-soft);
+}
+
+.requestBox .sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--c-accent-ink);
+}
+
+.requestsHint {
+  margin: 0 0 0.5rem;
+  color: var(--c-accent-ink);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.accept {
+  min-height: 2.75rem;
+  padding: 0 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 0;
+  border-radius: 0.7rem;
+  background: var(--c-accent-strong);
+  color: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.reject {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--c-hairline-strong);
+  border-radius: 0.7rem;
+  background: #fff;
+  color: var(--c-ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.waiting {
+  color: var(--c-ink-soft);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+/* Read out across a table, so it is the biggest thing on the screen. */
+.code {
+  margin: 0;
+  font-size: clamp(1.9rem, 9vw, 2.6rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+}
+
+.codeHint {
+  margin: 0.35rem 0 0.75rem;
+  color: var(--c-ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.copy {
+  min-height: 2.75rem;
+  padding: 0 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 2px solid var(--c-hairline-strong);
+  border-radius: 0.7rem;
+  background: #fff;
+  color: var(--c-ink);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* The copy button confirms itself, so the tap is never silent. */
+.copy:has(svg + *) {
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.fieldLabel {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--c-ink-soft);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.addRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  min-height: 3rem;
+  padding: 0 0.75rem;
+  border: 2px solid var(--c-hairline-strong);
+  border-radius: 0.7rem;
+  background: #fff;
+  color: var(--c-ink);
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.good,
+.bad {
+  margin: 0.7rem 0 0;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.7rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.good {
+  background: #f1f8f3;
+  color: #1c6b3f;
+}
+
+.bad {
+  background: var(--c-accent-soft);
+  color: var(--c-accent-ink);
+}
+
+.empty {
+  margin: 0.5rem 0 0;
+  padding: 1rem;
+  border: 2px dashed var(--c-hairline-strong);
+  border-radius: 0.9rem;
+  color: var(--c-ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.count {
+  margin: 1.25rem 0 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--c-ink-soft);
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  padding: 0.7rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  border-top: 1px solid var(--c-hairline);
+}
+
+.row:first-child {
+  border-top: 0;
+}
+
+.avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--c-accent-soft);
+  color: var(--c-accent-ink);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.who {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.alias {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.guardian {
+  color: var(--c-ink-soft);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.add,
+.versus,
+.remove {
+  min-height: 2.75rem;
+  padding: 0 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 0.7rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.remove {
+  min-width: 2.75rem;
+  justify-content: center;
+  padding: 0;
+  border: 2px solid var(--c-hairline-strong);
+  background: #fff;
+  color: var(--c-ink);
+}
+
+.add,
+.versus {
+  border: 0;
+  background: var(--c-accent-strong);
+  color: #fff;
+}
+
+.add {
+  min-height: 3rem;
+  padding: 0 1rem;
+}
+
+.add:disabled {
+  background: var(--c-hairline-strong);
+  cursor: not-allowed;
+}
+
+.privacy {
+  margin: 1.75rem 0 0;
+  color: var(--c-ink-soft);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}

@@ -34,6 +34,8 @@ import { needsLocalNicknameCompletion } from "@/features/progress/progressState"
 import { getLocalPlayedOn, getStreakToday } from "@/features/progress/streak";
 import { readClassSet } from "@/features/teacher/classSetStorage";
 import { useTeacherAccount } from "@/features/teacher/teacherAccountStore";
+import { countFriends } from "@/features/friends/friendsModel";
+import { useFriends } from "@/features/friends/friendsStore";
 import { getPlayerRank } from "@/features/ranks/playerRank";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -60,6 +62,8 @@ export function HomeLanding() {
   const tIslands = useTranslations("islands");
   const tStorage = useTranslations("storage");
   const tVersus = useTranslations("versus");
+  const tFriends = useTranslations("friends");
+  const friendCount = countFriends(useFriends().document);
   const tRank = useTranslations("rank");
   const tGuardian = useTranslations("guardian");
   const tTeacherAccount = useTranslations("teacherAccount");
@@ -230,12 +234,15 @@ export function HomeLanding() {
                 <span className={styles.hubStatDetail}>{t("streakBest", { days: streak.bestDays })}</span>
               )}
             </li>
+            {/* Friends used to be a dead tile promising a future. It leads somewhere now. */}
             <li className={styles.hubStat}>
-              <span className={`${styles.hubStatIcon} ${styles.hubStatFriends}`}>
-                <Users aria-hidden="true" size={20} />
-              </span>
-              <span className={styles.hubStatLabel}>{t("hubFriends")}</span>
-              <span className={styles.hubStatSoon}>{t("hubSoon")}</span>
+              <Link className={styles.hubStatLink} href="/friends">
+                <span className={`${styles.hubStatIcon} ${styles.hubStatFriends}`}>
+                  <Users aria-hidden="true" size={20} />
+                </span>
+                <span className={styles.hubStatLabel}>{t("hubFriends")}</span>
+                <span className={styles.hubStatValue}>{tFriends("friendCount", { count: friendCount })}</span>
+              </Link>
             </li>
           </ul>
 
