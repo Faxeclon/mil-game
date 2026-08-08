@@ -87,7 +87,7 @@ export function MissionMap() {
   const t = useTranslations("worlds");
   const tIslands = useTranslations("islands");
   const tStorage = useTranslations("storage");
-  const { progressState, completeMapOnboarding } = useProgress();
+  const { progressState, advanceMapOnboarding } = useProgress();
 
   /*
    * Each island on the trail is a zone: a themed group of levels. An island with no
@@ -216,7 +216,7 @@ export function MissionMap() {
                       data-onboarding-target={mission.key === tutorialIsland ? "tutorial-island" : undefined}
                       href={href}
                       onClick={() => {
-                        if (mission.key === tutorialIsland) completeMapOnboarding();
+                        if (mission.key === tutorialIsland) advanceMapOnboarding();
                       }}
                     >
                       {world}
@@ -236,7 +236,7 @@ export function MissionMap() {
         </ol>
       </div>
       <OnboardingSpotlight
-        active={!progressState.mapOnboardingCompleted}
+        active={progressState.mapOnboardingStage === "map-island"}
         instruction={t("journeyHint")}
         targetSelector='[data-onboarding-target="tutorial-island"]'
         title={t("mascotTip")}

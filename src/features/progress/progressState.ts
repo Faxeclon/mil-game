@@ -12,6 +12,8 @@ import {
 } from "@/features/guardian/guardianConsent";
 
 export const PROGRESS_VERSION = 1;
+export const mapOnboardingStages = ["map-island", "island-first-level", "complete"] as const;
+export type MapOnboardingStage = (typeof mapOnboardingStages)[number];
 
 /** The published catalog before the four new content missions were added. */
 const LEGACY_CATALOG_LEVEL_IDS: readonly LevelId[] = [
@@ -61,7 +63,7 @@ export type ProgressState = {
   /** The number of missions that formed this player's rank scale when it was last earned. */
   rankMissionCeiling: number;
   /** Only profiles created after map onboarding existed may need its one-time guide. */
-  mapOnboardingCompleted: boolean;
+  mapOnboardingStage: MapOnboardingStage;
   /** True once the player has completed local profile setup and the introduction. */
   onboarded?: boolean;
   /** A private display label stored only on this device. */
@@ -118,7 +120,7 @@ export const initialProgressState: ProgressState = {
   completedLevelIds: [],
   rushUnlockedIslands: [],
   rankMissionCeiling: playableMissionCount,
-  mapOnboardingCompleted: false,
+  mapOnboardingStage: "map-island",
   localNickname: null,
   apprenticeAvatarId: null,
   bestResultsByLevelId: {},
@@ -233,7 +235,9 @@ export function parseProgressState(value: unknown): ProgressState {
     rushUnlockedIslands: storedRushUnlocks,
     rankMissionCeiling: Math.max(completedLevelIds.length, storedCeiling),
     // Missing means a profile predates this optional onboarding and must not be interrupted.
-    mapOnboardingCompleted: value.mapOnboardingCompleted !== false,
+    mapOnboardingStage: mapOnboardingStages.includes(value.mapOnboardingStage as MapOnboardingStage)
+      ? value.mapOnboardingStage as MapOnboardingStage
+      : value.mapOnboardingCompleted === false ? "map-island" : "complete",
     // Finishing anything proves the player already went through onboarding.
     ...(value.onboarded === true || completedLevelIds.length > 0
       ? { onboarded: true }
@@ -339,8 +343,9 @@ export function completeLevel(
 }
 
 /** Completing the guided map step is separate from missions and never changes progress. */
-export function completeMapOnboarding(state: ProgressState): ProgressState {
-  return state.mapOnboardingCompleted ? state : { ...state, mapOnboardingCompleted: true };
+export function advanceMapOnboarding(state: ProgressState): ProgressState {
+  const next = state.mapOnboardingStage === "map-island" ? "island-first-level" : "complete";
+  return state.mapOnboardingStage === next ? state : { ...state, mapOnboardingStage: next };
 }
 
 export function isLevelCompleted(state: ProgressState, levelId: string): boolean {

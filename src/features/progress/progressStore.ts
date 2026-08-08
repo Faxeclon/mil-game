@@ -11,7 +11,7 @@ import {
   completeLevel,
   initialProgressState,
   markOnboarded,
-  completeMapOnboarding,
+  advanceMapOnboarding,
   withdrawGuardian,
   type LevelAttempt,
   type ProgressState
@@ -97,8 +97,8 @@ export function markOnboardedInStore(localNickname?: string, apprenticeAvatarId?
   applyToActiveProgress((state) => markOnboarded(state, localNickname, apprenticeAvatarId));
 }
 
-export function completeMapOnboardingInStore(): void {
-  applyToActiveProgress(completeMapOnboarding);
+export function advanceMapOnboardingInStore(): void {
+  applyToActiveProgress(advanceMapOnboarding);
 }
 
 /** Clears only the player holding the phone; the others keep everything they earned. */

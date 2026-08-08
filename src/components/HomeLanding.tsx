@@ -91,6 +91,7 @@ export function HomeLanding() {
   const [apprenticeAvatarId, setApprenticeAvatarId] = useState<ApprenticeAvatarId>(defaultApprenticeAvatarId);
   const [localNickname, setLocalNickname] = useState("");
   const [nicknameError, setNicknameError] = useState(false);
+  const [creatingProfile, setCreatingProfile] = useState(false);
   // Read once per mount: the hub only renders after hydration, so the device clock is
   // available here and the streak cannot differ between server and client markup.
   const [today] = useState(() => getLocalPlayedOn(new Date()));
@@ -101,7 +102,7 @@ export function HomeLanding() {
 
   // Nothing is rendered until the stored progress is known, so a returning player never
   // sees the sign-up screen flash before their own home.
-  if (!hydrated) {
+  if (!hydrated || creatingProfile) {
     return <div className={`${styles.splash} app-chrome-hidden`} />;
   }
 
@@ -543,8 +544,9 @@ export function HomeLanding() {
               return;
             }
             if (enableSoundForNewProfile()) enableForNewProfile();
+            setCreatingProfile(true);
             markOnboarded(nickname, apprenticeAvatarId);
-            router.push("/worlds");
+            router.replace("/worlds");
           }}
         >
           {t("profileSubmit")}

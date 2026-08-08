@@ -284,12 +284,10 @@
     background: #fff;
   }
 
-  :global(.app-header),
-  :global(.mobile-bottom-nav),
-  :global(footer),
-  :global(main > :not(:has(.cards))) {
-    display: none !important;
-  }
+  :global(body) * { visibility: hidden; }
+  :global([data-print-root]),
+  :global([data-print-root] *) { visibility: visible; }
+  :global([data-print-root]) { position: absolute; top: 0; left: 0; width: 100%; }
 
   .noPrint,
   .cards::before {

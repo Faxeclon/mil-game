@@ -20,6 +20,7 @@ import { getBestResult } from "@/features/progress/bestResults";
 import { getStarCount } from "@/features/scoring/levelScore";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link } from "@/i18n/navigation";
+import { OnboardingSpotlight } from "./OnboardingSpotlight";
 import styles from "./IslandView.module.css";
 
 /**
@@ -32,10 +33,12 @@ import styles from "./IslandView.module.css";
 export function IslandView({ island }: { island: IslandKey }) {
   const t = useTranslations("islands");
   const tRush = useTranslations("rush");
-  const { progressState } = useProgress();
+  const { progressState, advanceMapOnboarding } = useProgress();
   const categories = getCategoriesByIsland(island);
   const islandProgress = getIslandProgress(progressState, island);
   const rushUnlocked = isIslandRushUnlocked(progressState, island);
+  const isFirstLevelGuide = island === "training" && progressState.mapOnboardingStage === "island-first-level";
+  const firstPlayableLevel = categories.flatMap((category) => getMissionsByCategory(category.key)).find((mission) => Boolean(mission.packId));
 
   /** Names a mission the way it is written on the map, for the "finish X first" line. */
   const describeMission = (missionId: string): string => {
@@ -236,7 +239,11 @@ export function IslandView({ island }: { island: IslandKey }) {
                           status: isAvailable ? t("available") : t("completed")
                         })}
                         className={styles.mission}
+                        data-onboarding-target={isFirstLevelGuide && mission.id === firstPlayableLevel?.id ? "training-first-level" : undefined}
                         href={`/level/${mission.id}`}
+                        onClick={() => {
+                          if (isFirstLevelGuide && mission.id === firstPlayableLevel?.id) advanceMapOnboarding();
+                        }}
                       >
                         {body}
                       </Link>
@@ -250,6 +257,12 @@ export function IslandView({ island }: { island: IslandKey }) {
           </section>
         );
       })}
+      <OnboardingSpotlight
+        active={isFirstLevelGuide}
+        instruction={t("available")}
+        targetSelector='[data-onboarding-target="training-first-level"]'
+        title={t("available")}
+      />
     </div>
   );
 }

@@ -165,7 +165,7 @@ export function TeacherCardsClient() {
 
       {/* One sheet per student: nothing to cut, and the code stays big enough to read
           from the back of the room. */}
-      <div className={styles.sheets}>
+      <div className={styles.sheets} data-print-root>
         {set.cards.map((card) => (
           <section className={styles.sheet} key={card.cardId}>
             <PrintableCard

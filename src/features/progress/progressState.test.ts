@@ -26,7 +26,7 @@ describe("canonical level progress", () => {
       completedLevelIds: [],
       rushUnlockedIslands: [],
       rankMissionCeiling: 13,
-      mapOnboardingCompleted: false,
+      mapOnboardingStage: "map-island",
       localNickname: null,
       apprenticeAvatarId: null,
       bestResultsByLevelId: {},
@@ -56,7 +56,7 @@ describe("canonical level progress", () => {
     expect(parseProgressState({ version: 99, completedLevelIds: ["basics-1"] }).localNickname).toBeNull();
     expect(parseProgressState({ version: PROGRESS_VERSION, completedLevelIds: "basics-1" })).toEqual({
       ...initialProgressState,
-      mapOnboardingCompleted: true,
+      mapOnboardingStage: "complete",
       localNickname: null
     });
   });
@@ -111,7 +111,7 @@ describe("legacy migration", () => {
       completedLevelIds: ["animals-1"],
       rushUnlockedIslands: [],
       rankMissionCeiling: 8,
-      mapOnboardingCompleted: true,
+      mapOnboardingStage: "complete",
       onboarded: true,
       localNickname: "Faxe",
       apprenticeAvatarId: "fox",
