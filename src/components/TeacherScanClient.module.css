@@ -1,0 +1,473 @@
+/*
+ * The scanning screen, used one-handed while walking between desks.
+ *
+ * Everything is sized for a glance: the teacher is looking at the room, not at the phone,
+ * so the count has to be readable from arm's length and every control has to be hittable
+ * without aiming. Meaning never rests on colour alone - a tick and a cross carry it.
+ */
+
+.scan::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background: #fff9f6;
+  content: "";
+  pointer-events: none;
+}
+
+.scan > * {
+  position: relative;
+  z-index: 1;
+}
+
+.scan {
+  --c-ink: #1f2a44;
+  --c-ink-soft: #5b6780;
+  --c-hairline: #ece7e6;
+  --c-hairline-strong: #d5cfcd;
+  --c-accent-strong: #c93c0b;
+  --c-accent-ink: #b8380a;
+  --c-accent-soft: #ffece4;
+  --c-right: #1c6b3f;
+  --c-wrong: #a3341b;
+
+  width: min(100%, 44rem);
+  margin: 0 auto;
+  padding-bottom: 3rem;
+  color: var(--c-ink);
+}
+
+.back {
+  min-height: 2.75rem;
+  margin-top: clamp(0.5rem, 3vw, 1.25rem);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--c-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.title {
+  margin: 0.6rem 0 0;
+  font-size: clamp(1.6rem, 6vw, 2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.lead {
+  max-width: 46ch;
+  margin: 0.45rem 0 0;
+  color: var(--c-ink-soft);
+  font-size: 0.96rem;
+  line-height: 1.5;
+}
+
+.sectionTitle {
+  margin: 0 0 0.6rem;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+/* Choosing what the class will be asked. */
+.missionList {
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+  list-style: none;
+}
+
+.missionButton {
+  width: 100%;
+  min-height: 3.5rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  border: 2px solid var(--c-hairline-strong);
+  border-radius: 0.9rem;
+  background: #fff;
+  color: var(--c-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.missionName {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.missionMeta {
+  color: var(--c-ink-soft);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/*
+ * The two images the class is judging. Shown side by side and labelled A and B to match
+ * the printed card, so a child looking up from their paper sees the same two letters.
+ */
+.options {
+  margin: 1.25rem 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.option,
+.optionRight {
+  margin: 0;
+  padding: 0.5rem;
+  border: 2px solid var(--c-hairline-strong);
+  border-radius: 0.9rem;
+  background: #fff;
+}
+
+.optionRight {
+  border-color: var(--c-right);
+  background: #f1f8f3;
+}
+
+.optionMedia {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 0.6rem;
+  background: var(--c-hairline);
+}
+
+.optionMedia img {
+  object-fit: cover;
+}
+
+.optionLabel {
+  margin-top: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+/* One picture, judged on its own. It gets the width the pair would have shared. */
+.single {
+  margin: 1.25rem 0 0;
+  padding: 0.5rem;
+  border: 2px solid var(--c-hairline-strong);
+  border-radius: 0.9rem;
+  background: #fff;
+}
+
+.singleMedia {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 0.6rem;
+  background: var(--c-hairline);
+}
+
+.singleMedia img {
+  object-fit: cover;
+}
+
+/*
+ * What each side of the card means for this question. Read out before anybody lifts one,
+ * because the letters do not always mean the same thing.
+ */
+.meaning {
+  margin: 0.75rem 0 0;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.meaningItem,
+.meaningRight {
+  margin: 0;
+  padding: 0.55rem 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: 2px solid var(--c-hairline-strong);
+  border-radius: 0.8rem;
+  background: #fff;
+}
+
+.meaningRight {
+  border-color: var(--c-right);
+  background: #f1f8f3;
+}
+
+.meaningLetter {
+  min-width: 1.5rem;
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.meaningText {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.missionNote {
+  color: var(--c-accent-ink);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* The instrument. Big enough to read while looking mostly at the classroom. */
+.tally {
+  margin: 1.25rem 0 0;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.tallyItem {
+  padding: 0.7rem 0.6rem;
+  border: 2px solid var(--c-hairline-strong);
+  border-radius: 0.9rem;
+  background: #fff;
+  text-align: center;
+}
+
+.tallyLabel {
+  margin: 0;
+  color: var(--c-ink-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tallyValue {
+  margin: 0.15rem 0 0;
+  font-size: clamp(1.25rem, 5vw, 1.6rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.cameraBox,
+.listBox {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 2px solid var(--c-hairline);
+  border-radius: 1.1rem;
+  background: #fff;
+}
+
+.video {
+  width: 100%;
+  max-height: 18rem;
+  margin-bottom: 0.8rem;
+  display: block;
+  border-radius: 0.9rem;
+  background: #1f2a44;
+  object-fit: cover;
+}
+
+.videoHidden {
+  display: none;
+}
+
+.failure {
+  padding: 0.85rem;
+  border: 2px solid var(--c-accent-strong);
+  border-radius: 0.9rem;
+  background: var(--c-accent-soft);
+}
+
+.failureText {
+  margin: 0;
+  color: var(--c-accent-ink);
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.failureHint {
+  margin: 0.4rem 0 0.75rem;
+  color: var(--c-ink-soft);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.pending {
+  margin: 0 0 0.8rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.75rem;
+  background: var(--c-accent-soft);
+  color: var(--c-accent-ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  padding: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-top: 1px solid var(--c-hairline);
+}
+
+.row:first-child {
+  border-top: 0;
+}
+
+.rowNumber {
+  min-width: 2.25rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.rowAnswer {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--c-ink-soft);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.right {
+  color: var(--c-right);
+}
+
+.wrong {
+  color: var(--c-wrong);
+}
+
+.rowActions {
+  display: inline-flex;
+  gap: 0.35rem;
+}
+
+/* Large targets: this is tapped while standing, holding a phone in one hand. */
+.markButton {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  border: 2px solid var(--c-hairline-strong);
+  border-radius: 0.7rem;
+  background: #fff;
+  color: var(--c-ink);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.markButton[aria-pressed="true"] {
+  border-color: var(--c-accent-strong);
+  background: var(--c-accent-soft);
+  color: var(--c-accent-ink);
+}
+
+.actions {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.primary,
+.secondary {
+  min-height: 3rem;
+  padding: 0 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 0.9rem;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.primary {
+  border: 0;
+  background: var(--c-accent-strong);
+  color: #fff;
+}
+
+.secondary {
+  border: 2px solid var(--c-hairline-strong);
+  background: #fff;
+  color: var(--c-ink);
+}
+
+.reveal {
+  padding: 0.85rem;
+  border: 2px solid var(--c-hairline-strong);
+  border-radius: 0.9rem;
+  background: #fff;
+}
+
+.revealLead {
+  margin: 0 0 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.revealButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.revealButtons .secondary {
+  flex: 1;
+}
+
+.summary {
+  margin: 0;
+  padding: 0.85rem;
+  border-radius: 0.9rem;
+  background: var(--c-accent-soft);
+  color: var(--c-accent-ink);
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.privacy {
+  margin: 1.5rem 0 0;
+  color: var(--c-ink-soft);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (min-width: 30rem) {
+  .actions {
+    flex-direction: row;
+  }
+
+  .actions > * {
+    flex: 1;
+  }
+}

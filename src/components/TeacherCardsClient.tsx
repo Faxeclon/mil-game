@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { ChevronLeft, Printer, RotateCcw } from "lucide-react";
+import { ChevronLeft, Printer, RotateCcw, ScanLine } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   clampStudentCount,
@@ -16,6 +16,7 @@ import { clearClassSet, readClassSet, writeClassSet } from "@/features/teacher/c
 import { createQrMatrix, getQrViewBox } from "@/features/teacher/qrMatrix";
 import { getLocalPlayedOn } from "@/features/progress/streak";
 import { Link } from "@/i18n/navigation";
+import { LoadingRoqui } from "./LoadingRoqui";
 import styles from "./TeacherCardsClient.module.css";
 
 /**
@@ -28,6 +29,7 @@ import styles from "./TeacherCardsClient.module.css";
  */
 export function TeacherCardsClient() {
   const t = useTranslations("cards");
+  const tScan = useTranslations("scan");
   const tLocked = useTranslations("locked");
   const countFieldId = useId();
   const nameFieldId = useId();
@@ -61,16 +63,7 @@ export function TeacherCardsClient() {
     setSet(created);
   };
 
-  if (!storageReady) {
-    return (
-      <div className={styles.cards}>
-        <h1 className={styles.title}>{t("title")}</h1>
-        <p className={styles.lead} role="status">
-          {tLocked("checking")}
-        </p>
-      </div>
-    );
-  }
+  if (!storageReady) return <LoadingRoqui message={tLocked("checking")} title={t("title")} />;
 
   if (!set) {
     return (
@@ -147,7 +140,12 @@ export function TeacherCardsClient() {
         <p className={styles.keep}>{t("keepToken", { token: set.classToken })}</p>
 
         <div className={styles.actions}>
-          <button className={styles.primary} type="button" onClick={() => window.print()}>
+          {/* Printing is only half the job: the sheets exist to be read back. */}
+          <Link className={styles.primary} href="/teacher/scan">
+            <ScanLine aria-hidden="true" size={16} />
+            {tScan("scanLink")}
+          </Link>
+          <button className={styles.secondary} type="button" onClick={() => window.print()}>
             <Printer aria-hidden="true" size={16} />
             {t("print")}
           </button>
