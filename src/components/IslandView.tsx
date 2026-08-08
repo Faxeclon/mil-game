@@ -33,6 +33,7 @@ import styles from "./IslandView.module.css";
 export function IslandView({ island }: { island: IslandKey }) {
   const t = useTranslations("islands");
   const tRush = useTranslations("rush");
+  const tOnboarding = useTranslations("onboarding");
   const { progressState, advanceMapOnboarding } = useProgress();
   const categories = getCategoriesByIsland(island);
   const islandProgress = getIslandProgress(progressState, island);
@@ -259,9 +260,9 @@ export function IslandView({ island }: { island: IslandKey }) {
       })}
       <OnboardingSpotlight
         active={isFirstLevelGuide}
-        instruction={t("available")}
+        instruction=""
         targetSelector='[data-onboarding-target="training-first-level"]'
-        title={t("available")}
+        title={tOnboarding("firstChallenge")}
       />
     </div>
   );
