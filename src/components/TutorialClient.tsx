@@ -399,7 +399,11 @@ export function TutorialClient({
                   onClick={() => dispatch({ type: "select", choiceId: choice.id })}
                 >
                   <span className={styles.cardPosition}>{position}</span>
-                  <span className={styles.cardMedia}>
+                  <span
+                    className={`${styles.cardMedia} ${
+                      choice.media.src.startsWith("/media/tutorial/basics/basics-1/") ? styles.cardMediaContained : ""
+                    }`}
+                  >
                     <Image alt={description} fill sizes="(max-width: 700px) 45vw, 360px" src={choice.media.src} />
                     {selected && !state.answerSubmitted && (
                       <span aria-hidden="true" className={styles.selectedMark}>

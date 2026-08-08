@@ -11,16 +11,16 @@
           "id": "round-1-left",
           "position": "left",
           "media": {
-            "id": "garden-poster-camera-placeholder",
-            "src": "/media/tutorial/placeholders/garden-poster.svg",
+            "id": "basics-1-r1-monkey-camera",
+            "src": "/media/tutorial/basics/basics-1/r1-monkey-camera.png",
             "altKey": "media.round1LeftAlt",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true
+              "sourceType": "project-created",
+              "sourceName": "Project-supplied basics-1 media",
+              "licenseStatus": "Provided to the project for use",
+              "temporary": false
             }
           }
         },
@@ -28,17 +28,16 @@
           "id": "round-1-right",
           "position": "right",
           "media": {
-            "id": "word-poster-ai-placeholder",
-            "src": "/media/tutorial/placeholders/word-poster.svg",
+            "id": "basics-1-r1-monkey-ai",
+            "src": "/media/tutorial/basics/basics-1/r1-monkey-ai.png",
             "altKey": "media.round1RightAlt",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only.",
-              "temporary": true
+              "sourceType": "project-created",
+              "sourceName": "Project-supplied basics-1 media",
+              "licenseStatus": "Provided to the project for use",
+              "temporary": false
             }
           }
         }
@@ -59,16 +58,16 @@
           "id": "round-2-left",
           "position": "left",
           "media": {
-            "id": "library-camera-placeholder",
-            "src": "/media/tutorial/placeholders/library-scene.svg",
+            "id": "basics-1-r2-earthquake-camera",
+            "src": "/media/tutorial/basics/basics-1/r2-earthquake-camera.jpg",
             "altKey": "media.round2LeftAlt",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true
+              "sourceType": "project-created",
+              "sourceName": "Project-supplied basics-1 media",
+              "licenseStatus": "Provided to the project for use",
+              "temporary": false
             }
           }
         },
@@ -76,17 +75,16 @@
           "id": "round-2-right",
           "position": "right",
           "media": {
-            "id": "festival-scene-ai-placeholder",
-            "src": "/media/tutorial/placeholders/festival-scene.svg",
+            "id": "basics-1-r2-earthquake-ai",
+            "src": "/media/tutorial/basics/basics-1/r2-earthquake-ai.png",
             "altKey": "media.round2RightAlt",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only.",
-              "temporary": true
+              "sourceType": "project-created",
+              "sourceName": "Project-supplied basics-1 media",
+              "licenseStatus": "Provided to the project for use",
+              "temporary": false
             }
           }
         }
@@ -107,17 +105,16 @@
           "id": "round-3-left",
           "position": "left",
           "media": {
-            "id": "night-market-ai-placeholder",
-            "src": "/media/tutorial/placeholders/night-market.svg",
+            "id": "basics-1-r3-cat-ai",
+            "src": "/media/tutorial/basics/basics-1/r3-cat-ai.jpeg",
             "altKey": "media.round3LeftAlt",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only.",
-              "temporary": true
+              "sourceType": "project-created",
+              "sourceName": "Project-supplied basics-1 media",
+              "licenseStatus": "Provided to the project for use",
+              "temporary": false
             }
           }
         },
@@ -125,16 +122,16 @@
           "id": "round-3-right",
           "position": "right",
           "media": {
-            "id": "market-camera-placeholder",
-            "src": "/media/tutorial/placeholders/market-scene.svg",
+            "id": "basics-1-r3-cat-camera",
+            "src": "/media/tutorial/basics/basics-1/r3-cat-camera.jpg",
             "altKey": "media.round3RightAlt",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true
+              "sourceType": "project-created",
+              "sourceName": "Project-supplied basics-1 media",
+              "licenseStatus": "Provided to the project for use",
+              "temporary": false
             }
           }
         }

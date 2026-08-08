@@ -73,17 +73,21 @@ describe("every mission plays its own rounds", () => {
     }
   });
 
-  it("keeps every image a marked placeholder until reviewed media replaces it", () => {
+  it("keeps every placeholder image marked temporary", () => {
     for (const pack of Object.values(contentPacks)) {
       for (const round of pack.rounds) {
         for (const choice of round.choices) {
-          expect(choice.media.provenance.temporary, choice.media.src).toBe(true);
+          if (choice.media.src.includes("/placeholders/")) {
+            expect(choice.media.provenance.temporary, choice.media.src).toBe(true);
+          }
         }
       }
     }
     for (const pack of Object.values(singlePacks)) {
       for (const round of pack.rounds) {
-        expect(round.media.provenance.temporary, round.media.src).toBe(true);
+        if (round.media.src.includes("/placeholders/")) {
+          expect(round.media.provenance.temporary, round.media.src).toBe(true);
+        }
       }
     }
   });
