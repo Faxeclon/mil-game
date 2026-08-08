@@ -5,10 +5,15 @@ import { validateSinglePack } from "@/content/validators/validateSinglePack";
 import { validateTutorialPack } from "@/content/validators/validateTutorialPack";
 import animalsCompareJson from "./animals-compare.json";
 import animalsSingleJson from "./animals-single.json";
+import creatorsSingleJson from "./creators-single.json";
 import creatorsUncertainJson from "./creators-uncertain.json";
+import memesSingleJson from "./memes-single.json";
+import memesUncertainJson from "./memes-uncertain.json";
 import sportsSingleJson from "./sports-single.json";
 import animalsTimedJson from "./animals-timed.json";
 import cityBasicsTimedJson from "./city-basics-timed.json";
+import clipsCompareJson from "./clips-compare.json";
+import clipsSingleJson from "./clips-single.json";
 import sportsCompareJson from "./sports-compare.json";
 import tutorialPackJson from "./introductory-tutorial.json";
 
@@ -42,7 +47,8 @@ export const contentPacks: Readonly<Record<string, TutorialPack>> = {
   "city-basics-timed-v1": load(cityBasicsTimedJson),
   "animals-compare-v1": load(animalsCompareJson),
   "animals-timed-v1": load(animalsTimedJson),
-  "sports-compare-v1": load(sportsCompareJson)
+  "sports-compare-v1": load(sportsCompareJson),
+  "clips-compare-v1": load(clipsCompareJson)
 };
 
 export function getContentPack(packId: string | undefined): TutorialPack | undefined {
@@ -56,7 +62,11 @@ export function getContentPack(packId: string | undefined): TutorialPack | undef
 export const singlePacks: Readonly<Record<string, SinglePack>> = {
   "animals-single-v1": validateSinglePack(animalsSingleJson, hasTutorialLocalizationKey),
   "sports-single-v1": validateSinglePack(sportsSingleJson, hasTutorialLocalizationKey),
-  "creators-uncertain-v1": validateSinglePack(creatorsUncertainJson, hasTutorialLocalizationKey)
+  "creators-uncertain-v1": validateSinglePack(creatorsUncertainJson, hasTutorialLocalizationKey),
+  "creators-single-v1": validateSinglePack(creatorsSingleJson, hasTutorialLocalizationKey),
+  "memes-uncertain-v1": validateSinglePack(memesUncertainJson, hasTutorialLocalizationKey),
+  "memes-single-v1": validateSinglePack(memesSingleJson, hasTutorialLocalizationKey),
+  "clips-single-v1": validateSinglePack(clipsSingleJson, hasTutorialLocalizationKey)
 };
 
 export function getSinglePack(packId: string | undefined): SinglePack | undefined {

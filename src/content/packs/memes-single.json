@@ -1,0 +1,79 @@
+{
+  "id": "memes-single-v1",
+  "allowsUncertain": false,
+  "rounds": [
+    {
+      "id": "memes-single-round-1",
+      "order": 1,
+      "learningGoal": "visible-clue",
+      "promptKey": "singleQuestion",
+      "media": {
+        "id": "memes-dog-caption",
+        "src": "/media/tutorial/placeholders/memes/dog-caption.svg",
+        "altKey": "media.memes.dogCaption",
+        "origin": "camera-captured",
+        "reliability": "unverified",
+        "provenance": {
+          "sourceType": "project-placeholder",
+          "sourceName": "UNESCO Youth Hackathon temporary media team",
+          "licenseStatus": "Project placeholder; not for final use",
+          "temporary": true
+        }
+      },
+      "answer": "camera-captured",
+      "feedback": {
+        "observationKey": "packs.memesSingle.r1.observation",
+        "uncertaintyKey": "packs.memesSingle.r1.remember"
+      }
+    },
+    {
+      "id": "memes-single-round-2",
+      "order": 2,
+      "learningGoal": "source-and-purpose",
+      "promptKey": "singleQuestion",
+      "media": {
+        "id": "memes-trophy-caption",
+        "src": "/media/tutorial/placeholders/memes/trophy-caption.svg",
+        "altKey": "media.memes.trophyCaption",
+        "origin": "ai-generated",
+        "reliability": "unverified",
+        "provenance": {
+          "sourceType": "project-placeholder",
+          "sourceName": "UNESCO Youth Hackathon temporary media team",
+          "licenseStatus": "Project placeholder; not for final use",
+          "generationMethod": "Hand-drawn vector placeholder, not an AI sample",
+          "temporary": true
+        }
+      },
+      "answer": "ai-generated",
+      "feedback": {
+        "questionKey": "packs.memesSingle.r2.question",
+        "uncertaintyKey": "packs.memesSingle.r2.remember"
+      }
+    },
+    {
+      "id": "memes-single-round-3",
+      "order": 3,
+      "learningGoal": "uncertainty",
+      "promptKey": "singleQuestion",
+      "media": {
+        "id": "memes-burger-caption",
+        "src": "/media/tutorial/placeholders/memes/burger-caption.svg",
+        "altKey": "media.memes.burgerCaption",
+        "origin": "camera-captured",
+        "reliability": "unverified",
+        "provenance": {
+          "sourceType": "project-placeholder",
+          "sourceName": "UNESCO Youth Hackathon temporary media team",
+          "licenseStatus": "Project placeholder; not for final use",
+          "temporary": true
+        }
+      },
+      "answer": "camera-captured",
+      "feedback": {
+        "verificationKey": "packs.memesSingle.r3.verification",
+        "uncertaintyKey": "packs.memesSingle.r3.remember"
+      }
+    }
+  ]
+}

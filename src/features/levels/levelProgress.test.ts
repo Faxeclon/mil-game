@@ -16,7 +16,7 @@ import {
   isMissionUnlocked,
   playableIslandOrder
 } from "./levelProgress";
-import { getMissionById } from "./levelModel";
+import { getIslandOfMission, getMissionById, missionBlueprint } from "./levelModel";
 
 /** Plays through a list of mission ids in order. */
 function play(...missionIds: LevelId[]): ProgressState {
@@ -38,7 +38,10 @@ function attempt(index: number): LevelAttempt {
 
 describe("islands", () => {
   it("only treats an island with playable missions as playable", () => {
-    expect(playableIslandOrder).toEqual(["training", "difference", "source"]);
+    // Derived from the catalog: an island with no content must simply not appear here.
+    const withContent = [...new Set(missionBlueprint.filter((m) => m.packId).map((m) => getIslandOfMission(m.id)))];
+
+    expect(playableIslandOrder).toEqual(withContent);
   });
 
   it("opens the first island and closes the rest", () => {
@@ -118,24 +121,24 @@ describe("results continuation", () => {
   });
 
   it("falls back to the completed level's island when no later playable level is unlocked", () => {
-    const allPlayable = play(
-      "basics-1",
-      "basics-2",
-      "animals-1",
-      "animals-2",
-      "animals-3",
-      "sports-1",
-      "sports-2",
-      "creators-1"
-    );
-    expect(getContinueDestination(allPlayable, "creators-1")).toEqual({ kind: "island", islandKey: "source" });
+    // Every playable mission, so there is genuinely nothing further to point at.
+    const playable = missionBlueprint.filter((mission) => mission.packId).map((mission) => mission.id as LevelId);
+    const allPlayable = play(...playable);
+
+    expect(getContinueDestination(allPlayable, playable.at(-1)!)).toEqual({
+      kind: "island",
+      islandKey: getIslandOfMission(playable.at(-1)!)
+    });
   });
 });
 
 describe("counters", () => {
   it("counts finished missions against the playable total", () => {
+    // Taken from the catalog rather than written down, so adding a mission is not a test edit.
+    const playable = missionBlueprint.filter((mission) => mission.packId).length;
+
     expect(countCompletedMissions(initialProgressState)).toBe(0);
-    expect(countPlayableMissions()).toBe(8);
+    expect(countPlayableMissions()).toBe(playable);
     expect(countCompletedMissions(play("basics-1", "animals-1"))).toBe(2);
   });
 

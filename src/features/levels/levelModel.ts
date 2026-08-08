@@ -20,7 +20,8 @@ export type MapIcon = "training" | "source" | "context" | "voices" | "videos" | 
 export const islands = [
   { key: "training", order: 1, icon: "training" },
   { key: "difference", order: 2, icon: "context" },
-  { key: "source", order: 3, icon: "source" }
+  { key: "source", order: 3, icon: "source" },
+  { key: "videos", order: 4, icon: "videos" }
 ] as const satisfies readonly { key: string; order: number; icon: MapIcon }[];
 
 export type IslandKey = (typeof islands)[number]["key"];
@@ -29,7 +30,9 @@ export const categories = [
   { key: "basics", island: "training", order: 1, icon: "training" },
   { key: "animals", island: "difference", order: 1, icon: "context" },
   { key: "sports", island: "difference", order: 2, icon: "videos" },
-  { key: "creators", island: "source", order: 1, icon: "voices" }
+  { key: "creators", island: "source", order: 1, icon: "voices" },
+  { key: "memes", island: "difference", order: 3, icon: "share" },
+  { key: "clips", island: "videos", order: 1, icon: "videos" }
 ] as const satisfies readonly { key: string; island: IslandKey; order: number; icon: MapIcon }[];
 
 export type CategoryKey = (typeof categories)[number]["key"];
@@ -74,6 +77,11 @@ const levelBlueprintEntries = [
   { id: "sports-1", category: "sports", order: 1, mode: "compare", packId: "sports-compare-v1" },
   { id: "sports-2", category: "sports", order: 2, mode: "single", packId: "sports-single-v1" },
 
+  // Memes belong with the images they are made of: a meme is a photo somebody wrote on,
+  // and the thing being judged is still the photo underneath.
+  { id: "memes-1", category: "memes", order: 1, mode: "meme", packId: "memes-uncertain-v1" },
+  { id: "memes-2", category: "memes", order: 2, mode: "meme", packId: "memes-single-v1" },
+
   // Island 3 - Checking the source: the image stops being enough, and admitting that is
   // the answer. This is where "I cannot tell by looking" becomes a correct thing to say.
   {
@@ -82,7 +90,14 @@ const levelBlueprintEntries = [
     order: 1,
     mode: "single-uncertain",
     packId: "creators-uncertain-v1"
-  }
+  },
+  { id: "creators-2", category: "creators", order: 2, mode: "single", packId: "creators-single-v1" },
+
+  // Island 4 - Videos: the same question asked of moving pictures. A clip is judged from
+  // its frames, because what gives an AI video away is what changes between one frame and
+  // the next - a hand that grows a finger, a word on a sign that rewrites itself.
+  { id: "clips-1", category: "clips", order: 1, mode: "compare", packId: "clips-compare-v1" },
+  { id: "clips-2", category: "clips", order: 2, mode: "single", packId: "clips-single-v1" }
 ] as const satisfies readonly MissionBlueprint[];
 
 /** A level identifier authored in the current level catalog. */

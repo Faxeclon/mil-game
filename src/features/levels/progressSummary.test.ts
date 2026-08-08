@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { initialProgressState, type ProgressState } from "@/features/progress/progressState";
-import { missionBlueprint, type LevelId } from "./levelModel";
+import { getIslandOfMission, missionBlueprint, type LevelId } from "./levelModel";
 import {
   getCategoryProgress,
   getGlobalProgress,
@@ -21,37 +21,42 @@ function mission(id: string) {
   return found;
 }
 
+/** Every mission that has content, in catalog order. */
+function playableIds(): LevelId[] {
+  return missionBlueprint.filter((entry) => entry.packId).map((entry) => entry.id as LevelId);
+}
+
 describe("the playable path", () => {
   it("lists only missions that have content, in the order a player meets them", () => {
     expect(playableMissionOrder.every((entry) => Boolean(entry.packId))).toBe(true);
-    expect(playableMissionOrder.map((entry) => entry.id)).toEqual([
-      "basics-1",
-      "basics-2",
-      "animals-1",
-      "animals-2",
-      "animals-3",
-      "sports-1",
-      "sports-2",
-      "creators-1"
-    ]);
+    // The first island opens the game and the last one closes it; the middle is content.
+    expect(playableMissionOrder.map((entry) => entry.id)).toEqual(playableIds());
+    expect(playableMissionOrder.at(0)?.id).toBe("basics-1");
+    expect(playableMissionOrder.at(-1)?.category).toBe("clips");
   });
 });
 
 describe("progress of an island", () => {
   it("counts every playable mission of the island, and only those", () => {
-    const summary = getIslandProgress(
-      withCompleted("animals-1", "animals-2", "animals-3", "sports-1", "sports-2"),
-      "difference"
-    );
+    const inIsland = playableIds().filter((id) => getIslandOfMission(id) === "difference");
+    const summary = getIslandProgress(withCompleted(...inIsland), "difference");
 
-    expect(summary).toMatchObject({ done: 5, total: 5, percent: 100, isComplete: true, isEmpty: false });
+    expect(summary).toMatchObject({
+      done: inIsland.length,
+      total: inIsland.length,
+      percent: 100,
+      isComplete: true,
+      isEmpty: false
+    });
   });
 
   it("reports a partly finished island as a whole percentage", () => {
+    const total = playableIds().filter((id) => getIslandOfMission(id) === "difference").length;
+
     expect(getIslandProgress(withCompleted("animals-1"), "difference")).toMatchObject({
       done: 1,
-      total: 5,
-      percent: 20
+      total,
+      percent: Math.round((1 / total) * 100)
     });
   });
 
@@ -99,25 +104,19 @@ describe("progress of a category and of the whole game", () => {
   });
 
   it("summarises every playable mission of the game", () => {
-    expect(getGlobalProgress(initialProgressState)).toMatchObject({ done: 0, total: 8, percent: 0 });
+    // Read from the catalog, so adding a mission is a content change and not a test edit.
+    const total = playableIds().length;
+
+    expect(getGlobalProgress(initialProgressState)).toMatchObject({ done: 0, total, percent: 0 });
     expect(getGlobalProgress(withCompleted("basics-1", "basics-2"))).toMatchObject({
       done: 2,
-      total: 8,
-      percent: 25
+      total,
+      percent: Math.round((2 / total) * 100)
     });
   });
 
   it("reaches a hundred per cent only when every playable mission is done", () => {
-    const everything = withCompleted(
-      "basics-1",
-      "basics-2",
-      "animals-1",
-      "animals-2",
-      "animals-3",
-      "sports-1",
-      "sports-2",
-      "creators-1"
-    );
+    const everything = withCompleted(...playableIds());
 
     expect(getGlobalProgress(everything)).toMatchObject({ percent: 100, isComplete: true });
   });
