@@ -176,6 +176,127 @@
   white-space: nowrap;
 }
 
+/* ------------------------------------------------------ How you want to play */
+
+.presetList,
+.switchList {
+  margin: 0.85rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+  list-style: none;
+}
+
+/*
+ * The whole card is the button. A child aiming at a small toggle on a cheap phone with a
+ * cracked screen misses; a card the width of the page does not.
+ */
+.preset,
+.switch {
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  border: 1px solid var(--s-hairline-strong);
+  border-radius: 1rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.presetOn,
+.switchOn {
+  border-color: var(--s-mint);
+  background: var(--s-mint-soft);
+}
+
+.preset:focus-visible,
+.switch:focus-visible {
+  outline: 3px solid var(--s-accent-strong);
+  outline-offset: 3px;
+}
+
+.presetText {
+  flex: 1 1 12rem;
+  display: grid;
+  gap: 0.12rem;
+}
+
+.presetName {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+/* Who it was built for, said out loud, so nobody has to guess what the name means. */
+.presetFor {
+  color: var(--s-accent-ink);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.presetDetail {
+  color: var(--s-ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.switchList {
+  margin-top: 0.55rem;
+}
+
+.switch {
+  padding: 0.65rem 0.8rem;
+  border-radius: 0.85rem;
+}
+
+/* The promise that makes the two axes worth separating, said where the switches are. */
+.noPenalty {
+  max-width: 44ch;
+  margin: 0.7rem 0 0;
+  color: var(--s-mint);
+  font-size: 0.8rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+/* --------------------------------------------------------- Why it is named so */
+
+.why {
+  margin-top: 1rem;
+  padding: 0.85rem 0.9rem;
+  border: 1px dashed var(--s-hairline-strong);
+  border-radius: 1rem;
+  background: #fffdfb;
+}
+
+.whyTitle {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.whyBody {
+  max-width: 46ch;
+  margin: 0.4rem 0 0;
+  color: var(--s-ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.whyHonest {
+  max-width: 46ch;
+  margin: 0.5rem 0 0;
+  color: var(--s-ink);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
 /* ------------------------------------------------------------------- Reset */
 
 .resetRow {
