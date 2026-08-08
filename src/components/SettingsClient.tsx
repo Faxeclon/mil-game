@@ -2,16 +2,31 @@
 
 import { useState } from "react";
 import {
+  ALargeSmall,
   Brain,
+  Check,
   ChevronLeft,
   GraduationCap,
+  Pause,
   ShieldCheck,
   Smartphone,
   Sparkles,
   Trash2,
-  Type
+  Type,
+  Volume2,
+  Zap
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import {
+  PRESENTATION_KEYS,
+  RULESET_KEYS
+} from "@/features/accessibility/accessibilitySettings";
+import {
+  chooseRuleset,
+  togglePresentationSetting,
+  useAccessibility
+} from "@/features/accessibility/accessibilityStore";
+import { useSpeech } from "@/features/speech/useSpeech";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { signOutTeacher, useTeacherAccount } from "@/features/teacher/teacherAccountStore";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -26,6 +41,7 @@ import styles from "./SettingsClient.module.css";
  */
 export function SettingsClient() {
   const t = useTranslations("settings");
+  const tModes = useTranslations("accessModes");
   const tStorage = useTranslations("storage");
   const tGuardian = useTranslations("guardian");
   const tTeacherAccount = useTranslations("teacherAccount");
@@ -37,6 +53,8 @@ export function SettingsClient() {
     guardian
   } = useProgress();
   const { account: teacherAccount } = useTeacherAccount();
+  const accessibility = useAccessibility();
+  const speech = useSpeech();
   /*
    * On a teacher's device there is no child playing, so the guest badge and the
    * grown-up's permission are answering a question nobody asked here.
@@ -44,10 +62,15 @@ export function SettingsClient() {
   const isTeacherDevice = teacherAccount !== null && completedLevelIds.length === 0;
   const [confirmingReset, setConfirmingReset] = useState(false);
 
-  const upcoming = [
-    { key: "largerText", Icon: Type },
-    { key: "neurodivergent", Icon: Brain }
-  ] as const;
+  const upcoming = [{ key: "sound", Icon: Sparkles }] as const;
+
+  const presentationIcons = {
+    readAloud: Volume2,
+    clearReading: Type,
+    reducedMotion: Pause,
+    largerText: ALargeSmall
+  } as const;
+  const rulesetIcons = { challenge: Zap, ownPace: Brain } as const;
 
   return (
     <div className={styles.settings}>
@@ -58,6 +81,113 @@ export function SettingsClient() {
 
       <h1 className={styles.title}>{t("title")}</h1>
       <p className={styles.lead}>{t("lead")}</p>
+
+      {/*
+       * How to play comes before what is stored: it is the part a child is here to change,
+       * and the part a teacher needs to find in the thirty seconds before a class starts.
+       */}
+      {/*
+       * Presentation first, and on its own. Keeping it apart from the ruleset is the
+       * point: a child who needs to hear the question is answering the same question as
+       * everyone else, so none of these may cost them a point.
+       */}
+      <section aria-labelledby="settings-presentation" className={styles.group}>
+        <h2 className={styles.groupTitle} id="settings-presentation">
+          {tModes("presentationTitle")}
+        </h2>
+        <p className={styles.groupLead}>{tModes("presentationLead")}</p>
+
+        <ul className={styles.switchList}>
+          {PRESENTATION_KEYS.map((key) => {
+            const Icon = presentationIcons[key];
+            const active = accessibility[key];
+            const name = tModes(`${key}Name`);
+            /* A voice this phone does not have would be a button that stays silent. */
+            const unavailable = key === "readAloud" && active && !speech.available;
+
+            return (
+              <li key={key}>
+                <button
+                  aria-label={active ? tModes("turnOff", { mode: name }) : tModes("turnOn", { mode: name })}
+                  aria-pressed={active}
+                  className={`${styles.switch} ${active ? styles.switchOn : ""}`}
+                  type="button"
+                  onClick={() => togglePresentationSetting(key)}
+                >
+                  <span className={styles.rowIcon}>
+                    <Icon aria-hidden="true" size={18} />
+                  </span>
+                  <span className={styles.presetText}>
+                    <span className={styles.rowName}>{name}</span>
+                    <span className={styles.rowDetail}>
+                      {unavailable ? tModes("readAloudUnavailable") : tModes(`${key}Detail`)}
+                    </span>
+                  </span>
+                  <span className={active ? styles.stateOn : styles.stateOff}>
+                    {active && <Check aria-hidden="true" size={13} />}
+                    {active ? tModes("on") : tModes("off")}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+
+        <p className={styles.noPenalty}>{tModes("noPenalty")}</p>
+      </section>
+
+      {/* The other axis: same map, same unlocking, different place for the difficulty. */}
+      <section aria-labelledby="settings-ruleset" className={styles.group}>
+        <h2 className={styles.groupTitle} id="settings-ruleset">
+          {tModes("rulesetTitle")}
+        </h2>
+        <p className={styles.groupLead}>{tModes("rulesetLead")}</p>
+
+        <ul className={styles.presetList}>
+          {RULESET_KEYS.map((key) => {
+            const Icon = rulesetIcons[key];
+            const chosen = accessibility.ruleset === key;
+            const name = tModes(`${key}Name`);
+
+            return (
+              <li key={key}>
+                <button
+                  aria-label={tModes("chooseRuleset", { mode: name })}
+                  aria-pressed={chosen}
+                  className={`${styles.preset} ${chosen ? styles.presetOn : ""}`}
+                  type="button"
+                  onClick={() => chooseRuleset(key)}
+                >
+                  <span className={styles.rowIcon}>
+                    <Icon aria-hidden="true" size={18} />
+                  </span>
+                  <span className={styles.presetText}>
+                    <span className={styles.presetName}>{name}</span>
+                    <span className={styles.presetDetail}>{tModes(`${key}Detail`)}</span>
+                  </span>
+                  <span className={chosen ? styles.stateOn : styles.stateOff}>
+                    {chosen && <Check aria-hidden="true" size={13} />}
+                    {chosen ? tModes("selected") : ""}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+
+        <p className={styles.noPenalty}>{tModes("rulesetNote")}</p>
+
+        {/*
+         * The reason is on the screen, not only in a document nobody opens. A game that
+         * teaches children to ask where something comes from should answer that about
+         * itself.
+         */}
+        <div className={styles.why}>
+          <h3 className={styles.whyTitle}>{tModes("whyTitle")}</h3>
+          <p className={styles.whyBody}>{tModes("whyBody")}</p>
+          <p className={styles.whyHonest}>{tModes("whyHonest")}</p>
+        </div>
+      </section>
 
       <section aria-labelledby="settings-data" className={styles.group}>
         <h2 className={styles.groupTitle} id="settings-data">

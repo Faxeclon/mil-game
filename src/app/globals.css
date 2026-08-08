@@ -185,3 +185,56 @@ body:has(.app-chrome-hidden) .mobile-bottom-nav { display: none; }
 /* Nothing may turn the page into a canvas that drags sideways. clip is used instead
    of hidden so it does not create a scroll container and sticky positioning survives. */
 html, body { overflow-x: clip; max-width: 100%; }
+
+/* ------------------------------------------------- Easier-to-read text ---- */
+
+/* Letter spacing and word spacing move together, and that pairing is the whole point.
+   Galliussi et al. (2020) found reading speed is *impaired* by wider letter spacing when
+   word spacing is not widened to match: the letters separate, and the eye can no longer
+   tell where one word ends and the next begins. Changing only one of these would make
+   reading worse for the very children the setting exists for.
+
+   Text is never justified for the same reason: justification stretches the gaps between
+   words unevenly, which reintroduces the problem this setting is trying to solve.
+
+   The letterform itself is deliberately left alone. Two independent studies found fonts
+   sold as dyslexia-friendly give no advantage over an ordinary font at the same spacing,
+   so shipping one would cost every child a download and buy them nothing. */
+html[data-clear-reading="on"] body {
+  font-size: 1.06em;
+  letter-spacing: 0.06em;
+  word-spacing: 0.24em;
+  line-height: 1.7;
+}
+
+html[data-clear-reading="on"] p,
+html[data-clear-reading="on"] li,
+html[data-clear-reading="on"] button,
+html[data-clear-reading="on"] a {
+  text-align: left;
+  text-wrap: pretty;
+}
+
+/* Long measures are hard to track back to the start of the next line. */
+html[data-clear-reading="on"] p {
+  max-width: 42ch;
+}
+
+/* Size on its own, for someone who wants only that. */
+html[data-larger-text="on"] body {
+  font-size: 1.14em;
+}
+
+/* --------------------------------------------------------- Less movement -- */
+
+/* Children with ADHD are affected by visual distraction more than their classmates are,
+   so this is one of the few settings where the benefit is specific rather than general.
+   Decoration stops; nothing that carries meaning is hidden. */
+html[data-reduced-motion="on"] *,
+html[data-reduced-motion="on"] *::before,
+html[data-reduced-motion="on"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}

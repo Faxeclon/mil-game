@@ -3,6 +3,7 @@ import { Baloo_2 } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
+import { AccessibilityDocument } from "@/components/AccessibilityDocument";
 import { AppHeader } from "@/components/AppHeader";
 import { BackgroundMusicProvider } from "@/components/BackgroundMusicProvider";
 import { MobileNavigation } from "@/components/MobileNavigation";
@@ -53,6 +54,8 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           <ProgressProvider>
             {/* Prepares the game to open with no signal, from the very first visit. */}
             <OfflineReadiness />
+            {/* Carries the reading and calm-screen choices to the root element. */}
+            <AccessibilityDocument />
             <a className="skip-link" href="#main-content">{t("skipToContent")}</a>
             <AppHeader locale={locale as AppLocale} />
             {children}
