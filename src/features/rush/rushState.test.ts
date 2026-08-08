@@ -20,7 +20,7 @@ function answer(state: RushState, saidAi: boolean, item: RushItem, total = 10): 
 }
 
 describe("the pool of images", () => {
-  it("takes every authored image, from both kinds of pack", () => {
+  it("takes only authored images with a definite binary answer, from both kinds of pack", () => {
     expect(pool.length).toBeGreaterThan(20);
     expect(pool.some((item) => item.isAi)).toBe(true);
     expect(pool.some((item) => !item.isAi)).toBe(true);
@@ -37,6 +37,15 @@ describe("the pool of images", () => {
     const aiChoice = compareRound.choices.find((choice) => choice.id === compareRound.correctChoiceId);
 
     expect(pool.find((item) => item.src === aiChoice?.media.src)?.isAi).toBe(true);
+  });
+
+  it("never turns an honest unknown into a camera answer", () => {
+    const unknownRound = Object.values(singlePacks)
+      .flatMap((pack) => pack.rounds)
+      .find((round) => round.answer === "unknown");
+
+    expect(unknownRound).toBeDefined();
+    expect(pool.some((item) => item.src === unknownRound?.media.src)).toBe(false);
   });
 
   it("deals every image once per run, in some order", () => {

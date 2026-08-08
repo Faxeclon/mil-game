@@ -94,8 +94,7 @@ const levelBlueprintEntries = [
   { id: "creators-2", category: "creators", order: 2, mode: "single", packId: "creators-single-v1" },
 
   // Island 4 - Videos: the same question asked of moving pictures. A clip is judged from
-  // its frames, because what gives an AI video away is what changes between one frame and
-  // the next - a hand that grows a finger, a word on a sign that rewrites itself.
+  // its frames, where changes can be worth checking but never prove an origin on their own.
   { id: "clips-1", category: "clips", order: 1, mode: "compare", packId: "clips-compare-v1" },
   { id: "clips-2", category: "clips", order: 2, mode: "single", packId: "clips-single-v1" }
 ] as const satisfies readonly MissionBlueprint[];

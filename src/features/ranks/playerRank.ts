@@ -8,8 +8,8 @@ import { getStarCount } from "@/features/scoring/levelScore";
  * A rank and a title, both worked out from what the player actually did.
  *
  * Nothing here is stored. A rank is a conclusion, so it is recalculated every time from
- * the recorded best runs; that way it can never drift from the medals on the map, and
- * adding missions later cannot leave an old rank stranded.
+ * the recorded best runs. Its scale is kept with the player's progress, so adding a
+ * mission later cannot demote a rank earned from an earlier catalog.
  *
  * It is deliberately not a comparison with other children: there is no league and no
  * position. The only thing being measured is a player against their own map.
@@ -76,8 +76,8 @@ export function countEarnedStars(state: ProgressState): number {
 }
 
 export function getPlayerRank(state: ProgressState): PlayerRank {
-  const missionsPlayable = playableMissionOrder.length;
   const missionsCompleted = playableMissionOrder.filter((mission) => isLevelCompleted(state, mission.id)).length;
+  const missionsPlayable = Math.max(state.rankMissionCeiling, missionsCompleted);
   const stars = countEarnedStars(state);
   const maxStars = missionsPlayable * STARS_PER_MISSION;
   // A game with no playable missions has nothing to rank, and must not divide by zero.

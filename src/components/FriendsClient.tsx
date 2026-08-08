@@ -90,6 +90,7 @@ export function FriendsClient() {
 
       <h1 className={styles.title}>{t("title")}</h1>
       <p className={styles.lead}>{t("lead")}</p>
+      <p className={styles.prototypeNotice} role="status">{t("prototypeNotice")}</p>
 
       {/* What needs an answer comes first: an inbox below the fold is an inbox unread. */}
       {requests.length > 0 && (

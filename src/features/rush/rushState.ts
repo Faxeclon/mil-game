@@ -63,7 +63,7 @@ export function rushReducer(state: RushState, action: RushAction): RushState {
 }
 
 /**
- * Every authored image, as something that can be judged on its own.
+ * Every authored image with a definite origin, as something that can be judged on its own.
  *
  * Both pack shapes contribute: a comparison round holds two pictures, and each of them
  * has a recorded origin, so it can stand alone here without any new artwork.
@@ -90,6 +90,9 @@ export function buildRushPool(
   }
   for (const pack of singlePacks) {
     for (const round of pack.rounds) {
+      // Rush asks a binary question. An honest "unknown" answer cannot be squeezed into
+      // it without falsely treating the item as camera-captured.
+      if (round.answer === "unknown") continue;
       push(round.media.id, round.media.src, round.media.altKey, round.answer === "ai-generated");
     }
   }

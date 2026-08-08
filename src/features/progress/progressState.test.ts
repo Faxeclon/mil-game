@@ -24,6 +24,8 @@ describe("canonical level progress", () => {
     expect(initialProgressState).toEqual({
       version: PROGRESS_VERSION,
       completedLevelIds: [],
+      rushUnlockedIslands: [],
+      rankMissionCeiling: 13,
       localNickname: null,
       apprenticeAvatarId: null,
       bestResultsByLevelId: {},
@@ -80,6 +82,17 @@ describe("legacy migration", () => {
     expect(state.completedLevelIds).toEqual(["basics-2", "basics-1"]);
   });
 
+  it("keeps Rush rewards and rank scale earned before the catalog grew without inventing missions", () => {
+    const state = parseProgressState({
+      version: PROGRESS_VERSION,
+      completedLevelIds: ["basics-1", "basics-2", "animals-1", "animals-2", "animals-3", "sports-1", "sports-2", "creators-1"]
+    });
+
+    expect(state.completedLevelIds).toHaveLength(8);
+    expect(state.rushUnlockedIslands).toEqual(["training", "difference", "source"]);
+    expect(state.rankMissionCeiling).toBe(8);
+  });
+
   it("migrates playerName to the canonical device-only local nickname without losing progress", () => {
     const state = parseProgressState({
       version: PROGRESS_VERSION,
@@ -94,6 +107,8 @@ describe("legacy migration", () => {
     expect(state).toEqual({
       version: PROGRESS_VERSION,
       completedLevelIds: ["animals-1"],
+      rushUnlockedIslands: [],
+      rankMissionCeiling: 8,
       onboarded: true,
       localNickname: "Faxe",
       apprenticeAvatarId: "fox",

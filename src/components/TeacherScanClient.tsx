@@ -42,7 +42,11 @@ import { Link } from "@/i18n/navigation";
 import { LoadingRoqui } from "./LoadingRoqui";
 import styles from "./TeacherScanClient.module.css";
 
-type CameraState = { kind: "idle" } | { kind: "running" } | { kind: "failed"; reason: CameraFailure };
+type CameraState =
+  | { kind: "idle" }
+  | { kind: "starting" }
+  | { kind: "running" }
+  | { kind: "failed"; reason: CameraFailure };
 
 /**
  * Every mission a class can actually answer with paper.
@@ -75,6 +79,7 @@ export function TeacherScanClient() {
   const streamRef = useRef<MediaStream | null>(null);
   const sessionRef = useRef<ScanSession | null>(null);
   const detectorRef = useRef<CardDetector | null>(null);
+  const cameraStartTokenRef = useRef(0);
 
   const [set, setSet] = useState<TeacherClassSet | null>(null);
   const [ready, setReady] = useState(false);
@@ -94,6 +99,8 @@ export function TeacherScanClient() {
   }, []);
 
   const stop = useCallback(() => {
+    // Invalidate an in-flight permission prompt before releasing any current stream.
+    cameraStartTokenRef.current += 1;
     closeCamera(streamRef.current);
     streamRef.current = null;
     if (videoRef.current) videoRef.current.srcObject = null;
@@ -104,16 +111,22 @@ export function TeacherScanClient() {
   useEffect(() => stop, [stop]);
 
   const start = useCallback(async () => {
+    const startToken = ++cameraStartTokenRef.current;
+    setCamera({ kind: "starting" });
     // The decoder and the camera are both settled here, in the handler the teacher tapped,
     // so the sweep below never has to change state to report a browser it cannot use.
     const detector = canDetectCodes() ? createCardDetector() : null;
     if (!detector) {
-      setCamera({ kind: "failed", reason: "unsupported" });
+      if (startToken === cameraStartTokenRef.current) setCamera({ kind: "failed", reason: "unsupported" });
       return;
     }
     detectorRef.current = detector;
 
     const result = await openCamera();
+    if (startToken !== cameraStartTokenRef.current) {
+      if (result.kind === "ready") closeCamera(result.stream);
+      return;
+    }
     if (result.kind === "failed") {
       setCamera({ kind: "failed", reason: result.reason });
       return;
@@ -438,6 +451,8 @@ export function TeacherScanClient() {
               {t("startCamera")}
             </button>
           )}
+
+          {camera.kind === "starting" && <p className={styles.failureText} role="status">{t("cameraStarting")}</p>}
 
           {camera.kind === "running" && (
             <button className={styles.secondary} type="button" onClick={stop}>

@@ -18,8 +18,7 @@ export const seededGuardians: readonly Guardian[] = [
 ];
 
 /**
- * Two households and one classroom: the smallest set that shows the model works, since a
- * teacher can authorise several children at once and a parent usually has one or two.
+ * Static aliases for the local demonstration. They are not people or remote accounts.
  */
 /*
  * The codes use only the shared alphabet, which has no O/0 and no I/1: these get read out
@@ -36,9 +35,7 @@ export const seededPlayers: readonly Player[] = [
 /**
  * Who already used this child's code and is waiting for an answer.
  *
- * These are the requests the inbox shows. With no server nobody can knock in real time,
- * so two are seeded - enough for a child, or a jury, to see that saying yes and saying no
- * both do something and both stick.
+ * These are sample inbox rows. With no server nobody can knock in real time.
  */
 export const seededIncoming: readonly string[] = ["p-quri-08", "p-wayra-23"];
 

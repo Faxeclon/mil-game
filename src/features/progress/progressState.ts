@@ -1,4 +1,4 @@
-import { isLevelId, type LevelId } from "@/features/levels/levelModel";
+import { categories, islands, missionBlueprint, isLevelId, type IslandKey, type LevelId } from "@/features/levels/levelModel";
 import { isApprenticeAvatarId, type ApprenticeAvatarId } from "@/features/profile/apprenticeAvatar";
 import { normalizeLocalNickname } from "@/features/profile/localNickname";
 import { isAttemptId, parseCompletedAt, parseElapsedMs } from "./attemptMetadata";
@@ -13,6 +13,41 @@ import {
 
 export const PROGRESS_VERSION = 1;
 
+/** The published catalog before the four new content missions were added. */
+const LEGACY_CATALOG_LEVEL_IDS: readonly LevelId[] = [
+  "basics-1", "basics-2", "animals-1", "animals-2", "animals-3", "sports-1", "sports-2", "creators-1"
+];
+
+const playableMissionCount = missionBlueprint.filter((mission) => mission.packId).length;
+
+function isIslandKey(value: unknown): value is IslandKey {
+  return typeof value === "string" && islands.some((island) => island.key === value);
+}
+
+function completedIslands(levelIds: readonly LevelId[]): IslandKey[] {
+  return islands.flatMap((island) => {
+    const islandMissions = missionBlueprint.filter(
+      (mission) => mission.packId && categories.find((category) => category.key === mission.category)?.island === island.key
+    );
+    return islandMissions.length > 0 && islandMissions.every((mission) => levelIds.includes(mission.id as LevelId))
+      ? [island.key]
+      : [];
+  });
+}
+
+function legacyUnlockedIslands(levelIds: readonly LevelId[]): IslandKey[] {
+  const legacyCompleted = new Set(levelIds.filter((levelId) => LEGACY_CATALOG_LEVEL_IDS.includes(levelId)));
+  return islands.flatMap((island) => {
+    const required = LEGACY_CATALOG_LEVEL_IDS.filter(
+      (levelId) => {
+        const mission = missionBlueprint.find((entry) => entry.id === levelId);
+        return mission && categories.find((category) => category.key === mission.category)?.island === island.key;
+      }
+    );
+    return required.length > 0 && required.every((levelId) => legacyCompleted.has(levelId)) ? [island.key] : [];
+  });
+}
+
 /**
  * The only completion data persisted is the set of authored levels that were finished.
  * Everything the map needs - what is open and what remains closed - is derived from it.
@@ -21,6 +56,10 @@ export type ProgressState = {
   version: typeof PROGRESS_VERSION;
   /** Levels finished, in the order they were finished. */
   completedLevelIds: LevelId[];
+  /** A Rush reward already earned. It survives later catalog additions without inventing completions. */
+  rushUnlockedIslands: IslandKey[];
+  /** The number of missions that formed this player's rank scale when it was last earned. */
+  rankMissionCeiling: number;
   /** True once the player has completed local profile setup and the introduction. */
   onboarded?: boolean;
   /** A private display label stored only on this device. */
@@ -75,6 +114,8 @@ export type LevelAttempt = {
 export const initialProgressState: ProgressState = {
   version: PROGRESS_VERSION,
   completedLevelIds: [],
+  rushUnlockedIslands: [],
+  rankMissionCeiling: playableMissionCount,
   localNickname: null,
   apprenticeAvatarId: null,
   bestResultsByLevelId: {},
@@ -174,9 +215,20 @@ export function parseProgressState(value: unknown): ProgressState {
     ? value.apprenticeAvatarId
     : null;
 
+  const storedRushUnlocks = Array.isArray(value.rushUnlockedIslands)
+    ? [...new Set(value.rushUnlockedIslands.filter(isIslandKey))]
+    : legacyUnlockedIslands(completedLevelIds);
+  const storedCeiling = typeof value.rankMissionCeiling === "number" && Number.isFinite(value.rankMissionCeiling)
+    ? Math.trunc(value.rankMissionCeiling)
+    : Array.isArray(value.completedLevelIds) || Array.isArray(value.completedMissionIds)
+      ? Math.max(LEGACY_CATALOG_LEVEL_IDS.length, completedLevelIds.length)
+      : playableMissionCount;
+
   return {
     version: PROGRESS_VERSION,
     completedLevelIds,
+    rushUnlockedIslands: storedRushUnlocks,
+    rankMissionCeiling: Math.max(completedLevelIds.length, storedCeiling),
     // Finishing anything proves the player already went through onboarding.
     ...(value.onboarded === true || completedLevelIds.length > 0
       ? { onboarded: true }
@@ -251,9 +303,14 @@ export function completeLevel(
           completedAt: attempt.completedAt
         });
 
+  const completedLevelIds = alreadyCompleted ? state.completedLevelIds : [...state.completedLevelIds, levelId];
+  const newlyCompletedIslands = completedIslands(completedLevelIds);
+
   return {
     ...state,
-    completedLevelIds: alreadyCompleted ? state.completedLevelIds : [...state.completedLevelIds, levelId],
+    completedLevelIds,
+    rushUnlockedIslands: [...new Set([...state.rushUnlockedIslands, ...newlyCompletedIslands])],
+    rankMissionCeiling: Math.max(state.rankMissionCeiling, completedLevelIds.length),
     onboarded: true,
     bestResultsByLevelId,
     // Replaying on the same day is welcome but adds nothing: a streak counts days, not runs.

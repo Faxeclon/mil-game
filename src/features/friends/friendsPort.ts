@@ -9,10 +9,9 @@ import {
 /**
  * The seam.
  *
- * The rules and the screens talk to a `FriendsPort` and never to storage. Today the only
- * implementation keeps the list on this device and resolves codes against the seeded
- * table. The day there is a server, a second implementation answers the same three
- * questions against it and gets passed in instead: no rule changes, no screen changes.
+ * The rules and screens talk to a `FriendsPort` and never to storage. Today the sole
+ * implementation is a local demo: it keeps sample rows on this device and never sends a
+ * request anywhere. Any networked feature would require a new specification and review.
  *
  * The methods return promises even though the local one has nothing to wait for, so a
  * caller written today still works when the answer starts taking a moment.

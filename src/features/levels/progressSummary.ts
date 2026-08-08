@@ -68,12 +68,12 @@ export function getIslandProgress(state: ProgressState, island: IslandKey): Prog
 }
 
 /**
- * Rush is the island's completed-path challenge. The page guard and the island card use
- * this same derived rule, so a typed URL cannot open it earlier than the visible path.
+ * Rush is the island's completed-path reward. The page guard and island card share this
+ * rule; a reward already earned remains open if later content extends that island.
  */
 export function isIslandRushUnlocked(state: ProgressState, island: string): boolean {
   if (!islands.some((entry) => entry.key === island)) return false;
-  return getIslandProgress(state, island as IslandKey).isComplete;
+  return state.rushUnlockedIslands.includes(island as IslandKey) || getIslandProgress(state, island as IslandKey).isComplete;
 }
 
 export function getGlobalProgress(state: ProgressState): ProgressSummary {

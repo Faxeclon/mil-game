@@ -500,13 +500,7 @@ export function TutorialClient({
                   <p className={styles.clue} key={block.labelKey}>
                     <span className={styles.clueLabel}>{t(block.labelKey)}</span>
                   <span className={styles.clueText}>
-                    {block.labelKey === "look"
-                      ? tEducation("visualClue")
-                      : block.labelKey === "ask"
-                        ? tEducation("sourceQuestion")
-                        : block.labelKey === "check"
-                          ? tEducation("evidenceCheck")
-                          : tEducation("remember")}
+                    {t(block.textKey)}
                   </span>
                   </p>
                 ))}

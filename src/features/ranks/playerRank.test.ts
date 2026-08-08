@@ -99,6 +99,16 @@ describe("the rank a player has earned", () => {
     expect(rank.tier).toBe("bronze");
   });
 
+  it("does not demote a returning player merely because the catalog grows", () => {
+    const returning = { ...playerWith(8, 1_000), rankMissionCeiling: 8 };
+    const rank = getPlayerRank(returning);
+
+    expect(rank.missionsCompleted).toBe(8);
+    expect(rank.missionsPlayable).toBe(8);
+    expect(rank.percent).toBe(100);
+    expect(rank.tier).toBe("gold");
+  });
+
   it("is recalculated, never stored, so it cannot disagree with the map", () => {
     const state = playerWith(2, 900);
 

@@ -89,6 +89,16 @@ describe("Rush access", () => {
     expect(isIslandRushUnlocked(withCompleted("basics-1", "basics-2"), "training")).toBe(true);
   });
 
+  it("keeps a Rush reward already earned under an earlier catalog without completing new missions", () => {
+    const returning = {
+      ...withCompleted("animals-1", "animals-2", "animals-3", "sports-1", "sports-2"),
+      rushUnlockedIslands: ["difference" as const]
+    };
+
+    expect(getIslandProgress(returning, "difference").isComplete).toBe(false);
+    expect(isIslandRushUnlocked(returning, "difference")).toBe(true);
+  });
+
   it("does not unlock unknown or empty islands", () => {
     expect(isIslandRushUnlocked(initialProgressState, "ghost-island")).toBe(false);
   });

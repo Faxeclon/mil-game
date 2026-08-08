@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useReducer, useRef, useState } from "react";
 import { Camera, Check, ChevronLeft, HelpCircle, Sparkles, Target } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { ListenButton } from "@/components/ListenButton";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import type { SinglePack } from "@/content/schemas/tutorial";
@@ -43,7 +44,6 @@ function monotonicNow(): number {
  */
 export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryMeta }: SingleImageClientProps) {
   const t = useTranslations("tutorial");
-  const tEducation = useTranslations("education");
   const router = useRouter();
   const { completeLevel } = useProgress();
   const [state, dispatch] = useReducer(tutorialReducer, createInitialTutorialState(false));
@@ -147,6 +147,8 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
           {t(round.promptKey)}
         </h1>
 
+        <ListenButton lines={[t(round.promptKey)]} />
+
         <figure className={styles.figure}>
           <Image
             alt={t(round.media.altKey)}
@@ -216,13 +218,7 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
                 <p className={styles.clue} key={block.labelKey}>
                   <span className={styles.clueLabel}>{t(block.labelKey)}</span>
                   <span className={styles.clueText}>
-                    {block.labelKey === "look"
-                      ? tEducation("visualClue")
-                      : block.labelKey === "ask"
-                        ? tEducation("sourceQuestion")
-                        : block.labelKey === "check"
-                          ? tEducation("evidenceCheck")
-                          : tEducation("remember")}
+                    {t(block.textKey)}
                   </span>
                 </p>
               ))}
