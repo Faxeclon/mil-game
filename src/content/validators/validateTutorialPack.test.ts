@@ -68,6 +68,7 @@ describe("validateTutorialPack", () => {
     expect(() => validateTutorialPack(missingProvenanceInput, hasLocalizationKey)).toThrow(/provenance is required/);
 
     const unmarkedPlaceholder = clonePack();
+    unmarkedPlaceholder.rounds[0].choices[0].media.src = "/media/tutorial/placeholders/test.svg";
     unmarkedPlaceholder.rounds[0].choices[0].media.provenance.temporary = false;
     expect(() => validateTutorialPack(unmarkedPlaceholder, hasLocalizationKey)).toThrow(/temporary must be true/);
   });
