@@ -118,6 +118,8 @@ export type ContinueDestination =
 export type SectionCompletionEvent = {
   categoryKey: CategoryKey;
   islandKey: IslandKey;
+  /** Stored with the completion, so rendering the results cannot mint another event. */
+  completionAttemptId: string;
   islandCompleted: boolean;
   destination: ContinueDestination;
 };
@@ -130,18 +132,20 @@ export function getSectionCompletionEvent(
   if (!mission) return null;
 
   const missions = getPlayableMissions(mission.category);
+  const completionAttemptId = state.sectionCompletionEvent?.attemptId;
   const closesCategory =
     missions.at(-1)?.id === completedLevelId &&
     isCategoryCompleted(state, mission.category) &&
     state.sectionCompletionEvent?.categoryKey === mission.category &&
-    state.sectionCompletionEvent.attemptId === state.lastResult?.attemptId;
+    completionAttemptId === state.lastResult?.attemptId;
   const islandKey = getIslandOfCategory(mission.category);
-  if (!closesCategory || !islandKey) return null;
+  if (!closesCategory || !islandKey || !completionAttemptId) return null;
 
   const islandCompleted = isIslandCompleted(state, islandKey);
   return {
     categoryKey: mission.category,
     islandKey,
+    completionAttemptId,
     islandCompleted,
     destination: islandCompleted ? { kind: "worlds" } : { kind: "island", islandKey }
   };

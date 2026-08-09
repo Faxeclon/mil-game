@@ -9,6 +9,8 @@ import { initialProgressState } from "./progressState";
 import { PROFILES_STORAGE_KEY, PROGRESS_STORAGE_KEY } from "./progressStorage";
 import {
   completeLevelInStore,
+  createBonusOpportunityInStore,
+  consumeBonusOpportunityInStore,
   authorizeGuardianInStore,
   getProgressSnapshot,
   getServerProgressSnapshot,
@@ -16,6 +18,7 @@ import {
   markOnboardedInStore,
   removeProfileInStore,
   resetProgressInStore,
+  selectProfileInStore,
   resetProgressStoreForTests,
   startAdultPlayInStore,
   subscribeToProgress,
@@ -153,6 +156,28 @@ describe("progress store", () => {
     expect(state.localNickname).toBe("Roqui 47");
     expect(state.apprenticeAvatarId).toBe("fox");
     expect(state.onboarded).toBe(true);
+    unsubscribe();
+  });
+
+  it("keeps Bonus opportunities with the active profile only", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    markOnboardedInStore("Lu", "fox");
+    const firstId = getProgressSnapshot().profiles.activeId;
+    createBonusOpportunityInStore({
+      id: "section-bonus:animals:attempt-1",
+      categoryKey: "animals",
+      islandKey: "difference",
+      destination: { kind: "island", islandKey: "difference" }
+    });
+    leaveLocalProfileInStore();
+    markOnboardedInStore("Noa", "owl");
+
+    expect(getProgressSnapshot().state.bonusOpportunities).toEqual([]);
+    selectProfileInStore(firstId ?? "");
+    expect(getProgressSnapshot().state.bonusOpportunities).toHaveLength(1);
+    consumeBonusOpportunityInStore("section-bonus:animals:attempt-1");
+    expect(getProgressSnapshot().state.bonusOpportunities[0]?.status).toBe("consumed");
     unsubscribe();
   });
 

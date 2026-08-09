@@ -22,6 +22,12 @@ import {
   type LevelAttempt,
   type ProgressState
 } from "./progressState";
+import {
+  activateBonusOpportunity,
+  consumeBonusOpportunity,
+  createBonusOpportunity,
+  type BonusOpportunityInput
+} from "@/features/bonus/bonusOpportunity";
 import { requestPersistentStorage } from "@/features/offline/registerServiceWorker";
 import { readProfilesDocument, writeProfilesDocument } from "./progressStorage";
 
@@ -97,6 +103,19 @@ export function completeLevelInStore(levelId: LevelId, result: LevelAttempt): vo
    * exactly that moment. Best effort: a refusal must never interrupt the game.
    */
   void requestPersistentStorage();
+}
+
+/** Each write goes through the selected player's progress, keeping Bonus tickets isolated. */
+export function createBonusOpportunityInStore(input: BonusOpportunityInput): void {
+  applyToActiveProgress((state) => createBonusOpportunity(state, input));
+}
+
+export function activateBonusOpportunityInStore(id: string): void {
+  applyToActiveProgress((state) => activateBonusOpportunity(state, id));
+}
+
+export function consumeBonusOpportunityInStore(id: string): void {
+  applyToActiveProgress((state) => consumeBonusOpportunity(state, id));
 }
 
 export function markOnboardedInStore(localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId): void {

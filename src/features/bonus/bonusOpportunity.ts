@@ -24,6 +24,10 @@ export function getBonusOpportunityId(categoryKey: CategoryKey, completionAttemp
   return `section-bonus:${categoryKey}:${completionAttemptId}`;
 }
 
+export function getBonusDestinationPath(destination: BonusDestination): string {
+  return destination.kind === "island" ? `/island/${destination.islandKey}` : "/worlds";
+}
+
 export function getPendingBonus(state: ProgressState): BonusOpportunity | undefined {
   return state.bonusOpportunities.find((bonus) => bonus.status === "pending");
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { initialProgressState, parseProgressState, resetProgressKeepingProfile } from "@/features/progress/progressState";
-import { activateBonusOpportunity, consumeBonusOpportunity, createBonusOpportunity, getActiveBonus, getBonusOpportunityId, getPendingBonus } from "./bonusOpportunity";
+import { activateBonusOpportunity, consumeBonusOpportunity, createBonusOpportunity, getActiveBonus, getBonusDestinationPath, getBonusOpportunityId, getPendingBonus } from "./bonusOpportunity";
 
 const first = { id: "animals:attempt-1", categoryKey: "animals" as const, islandKey: "difference" as const, destination: { kind: "island" as const, islandKey: "difference" as const } };
 const second = { id: "animals:attempt-2", categoryKey: "animals" as const, islandKey: "difference" as const, destination: { kind: "worlds" as const } };
@@ -21,6 +21,10 @@ describe("per-profile bonus opportunities", () => {
   it("uses a stable completion-event id and a new id for a later replay", () => {
     expect(getBonusOpportunityId("animals", "attempt-1")).toBe(getBonusOpportunityId("animals", "attempt-1"));
     expect(getBonusOpportunityId("animals", "attempt-1")).not.toBe(getBonusOpportunityId("animals", "attempt-2"));
+  });
+  it("keeps the section's already calculated destination for declining the offer", () => {
+    expect(getBonusDestinationPath(first.destination)).toBe("/island/difference");
+    expect(getBonusDestinationPath(second.destination)).toBe("/worlds");
   });
   it("creates one pending opportunity per completion event and survives a refresh", () => {
     const pending = createBonusOpportunity(initialProgressState, first);

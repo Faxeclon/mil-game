@@ -12,8 +12,11 @@ import type { GuardianConsent } from "@/features/guardian/guardianConsent";
 import { listProfiles, type LocalProfile, type ProfilesDocument } from "@/features/profiles/localProfiles";
 import {
   authorizeGuardianInStore,
+  activateBonusOpportunityInStore,
   withdrawGuardianInStore,
   completeLevelInStore,
+  consumeBonusOpportunityInStore,
+  createBonusOpportunityInStore,
   getProgressSnapshot,
   markOnboardedInStore,
   advanceMapOnboardingInStore,
@@ -26,6 +29,7 @@ import {
   startAdultPlayInStore,
   subscribeToProgress
 } from "./progressStore";
+import type { BonusOpportunityInput } from "@/features/bonus/bonusOpportunity";
 
 export type ProgressApi = {
   /** False until the stored progress has been read on the client. */
@@ -42,6 +46,9 @@ export type ProgressApi = {
   onboarded: boolean;
   completedLevelIds: LevelId[];
   completeLevel: (levelId: LevelId, result: LevelAttempt) => void;
+  createBonusOpportunity: (input: BonusOpportunityInput) => void;
+  activateBonusOpportunity: (id: string) => void;
+  consumeBonusOpportunity: (id: string) => void;
   localNickname: string | null;
   apprenticeAvatarId: ApprenticeAvatarId | null;
   markOnboarded: (localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId) => void;
@@ -83,6 +90,9 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       apprenticeAvatarId: state.apprenticeAvatarId,
       completedLevelIds: state.completedLevelIds,
       completeLevel: completeLevelInStore,
+      createBonusOpportunity: createBonusOpportunityInStore,
+      activateBonusOpportunity: activateBonusOpportunityInStore,
+      consumeBonusOpportunity: consumeBonusOpportunityInStore,
       markOnboarded: markOnboardedInStore,
       startAdultPlay: startAdultPlayInStore,
       advanceMapOnboarding: advanceMapOnboardingInStore,

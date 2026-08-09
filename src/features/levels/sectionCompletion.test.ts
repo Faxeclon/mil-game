@@ -31,7 +31,7 @@ describe("section completion events", () => {
   it("returns to the same island when a completed section leaves other sections", () => {
     const state = play(["basics-1", "basics-2", "animals-1", "animals-2", "animals-3"]);
     expect(getSectionCompletionEvent(state, "animals-3")).toEqual({
-      categoryKey: "animals", islandKey: "difference", islandCompleted: false,
+      categoryKey: "animals", islandKey: "difference", completionAttemptId: "attempt_section-00000004", islandCompleted: false,
       destination: { kind: "island", islandKey: "difference" }
     });
     expect(getContinueDestination(state, "animals-3")).toEqual({ kind: "island", islandKey: "difference" });
