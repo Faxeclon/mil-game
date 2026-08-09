@@ -32,10 +32,9 @@ import styles from "./FriendsClient.module.css";
 /**
  * The people a child plays with, reached by code and answered by hand.
  *
- * The whole flow is one rule seen from both sides: a code lets you knock, and the person
- * whose code it is decides. So a request sent from here waits, and a request arriving here
- * sits in the inbox until this child says yes or no. Nobody lands on anybody's list without
- * having agreed to it.
+ * This is a local demonstration of that flow. Codes resolve only against the sample
+ * profiles on this device, and the request states let a child try the interactions without
+ * sending anything to anyone else.
  *
  * There is no search and no directory: a child cannot discover another child in this game,
  * only be introduced to one. Every player is an alias and every grown-up is a role.
@@ -138,6 +137,10 @@ export function FriendsClient() {
         </button>
       </div>
       <p className={styles.lead}>{t("lead")}</p>
+      <aside aria-labelledby="friends-demo-title" className={styles.prototypeNotice}>
+        <strong id="friends-demo-title">{t("demoTitle")}</strong>
+        <span> {t("demoLead")}</span>
+      </aside>
 
       <section aria-labelledby="my-code" className={styles.codeBox}>
         <h2 className={styles.sectionTitle} id="my-code">

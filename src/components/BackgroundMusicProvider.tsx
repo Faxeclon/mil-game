@@ -3,8 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef } from "react";
 import {
   configureBackgroundMusic,
-  duckBackgroundMusicForSpeech,
-  restoreBackgroundMusicAfterSpeech,
+  NarrationDuckingController,
   playBackgroundMusic
 } from "@/features/audio/backgroundMusicController";
 import { setSoundEnabled, useSoundEnabled } from "@/features/audio/soundPreference";
@@ -24,6 +23,7 @@ export function BackgroundMusicProvider({ children }: { children: React.ReactNod
   const enabled = useSoundEnabled();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const playbackAllowed = useRef(false);
+  const duckingController = useRef(new NarrationDuckingController(audioRef));
 
   const getAudio = useCallback(() => {
     if (!audioRef.current) {
@@ -55,9 +55,9 @@ export function BackgroundMusicProvider({ children }: { children: React.ReactNod
     void resume();
   }, [resume]);
 
-  const duckForSpeech = useCallback(() => duckBackgroundMusicForSpeech(audioRef.current), []);
+  const duckForSpeech = useCallback(() => duckingController.current.start(), []);
 
-  const restoreAfterSpeech = useCallback(() => restoreBackgroundMusicAfterSpeech(audioRef.current), []);
+  const restoreAfterSpeech = useCallback(() => duckingController.current.stop(), []);
 
   useEffect(() => {
     if (!enabled || playbackAllowed.current) return;
@@ -91,7 +91,9 @@ export function BackgroundMusicProvider({ children }: { children: React.ReactNod
   }, [enabled, resume]);
 
   useEffect(() => {
+    const controller = duckingController.current;
     return () => {
+      controller.restoreAll();
       audioRef.current?.pause();
       audioRef.current = null;
     };

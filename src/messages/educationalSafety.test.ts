@@ -4,6 +4,18 @@ import spanish from "./es.json";
 
 const locales = [english.education, spanish.education];
 
+function collectText(value: unknown): string[] {
+  if (typeof value === "string") return [value];
+  if (Array.isArray(value)) return value.flatMap(collectText);
+  if (typeof value === "object" && value !== null) return Object.values(value).flatMap(collectText);
+  return [];
+}
+
+const activeTutorialFeedback = {
+  en: collectText(english.tutorial.packs).join(" ").toLowerCase(),
+  es: collectText(spanish.tutorial.packs).join(" ").toLowerCase()
+};
+
 describe("active educational feedback", () => {
   it("treats visual clues as uncertain and directs learners to evidence", () => {
     for (const education of locales) {
@@ -48,10 +60,43 @@ describe("active educational feedback", () => {
     }
   });
 
-  it("does not reuse the known deterministic visual rules in active feedback", () => {
-    const active = locales.map((education) => Object.values(education).flat().join(" ")).join(" ").toLowerCase();
-    for (const phrase of ["hardest to fake", "ordinary and dull", "usually slips", "lo común y aburrido", "suele fallar"]) {
-      expect(active).not.toContain(phrase);
-    }
+  it("does not turn hands, ordinary scenes or AI mistakes into universal detection rules", () => {
+    expect(activeTutorialFeedback.en).not.toMatch(/hands? and (the )?feet[^.]{0,80}hardest to fake/);
+    expect(activeTutorialFeedback.es).not.toMatch(/manos? y (los )?pies[^.]{0,80}difícil de (imitar|falsificar)/);
+    expect(activeTutorialFeedback.en).not.toMatch(/ordinary and dull[^.]{0,40}(is|means) real/);
+    expect(activeTutorialFeedback.es).not.toMatch(/común y aburrido[^.]{0,40}(es|significa) real/);
+    expect(activeTutorialFeedback.en).not.toMatch(/ai (always|usually) (slips|fails)/);
+    expect(activeTutorialFeedback.es).not.toMatch(/la ia (siempre|suele) fallar/);
+    expect(activeTutorialFeedback.en).not.toMatch(/proves? it is ai|gives ai away/);
+    expect(activeTutorialFeedback.es).not.toMatch(/demuestra que es ia|delata que es ia/);
+  });
+
+  it("keeps concrete scene clues while teaching their limits", () => {
+    expect(english.tutorial.packs.sportsCompare.r1.observation).toContain("hands and feet");
+    expect(english.tutorial.packs.sportsCompare.r1.observation).toContain("not proof");
+    expect(spanish.tutorial.packs.sportsCompare.r1.observation).toContain("manos y los pies");
+    expect(spanish.tutorial.packs.sportsCompare.r1.observation).toContain("no una prueba");
+  });
+
+  it("teaches that a visually ordinary or correct image can still be AI-generated", () => {
+    expect(english.tutorial.packs.animalsSingle.r2.remember).toContain("can still be made with AI");
+    expect(spanish.tutorial.packs.animalsSingle.r2.remember).toContain("no demuestra que sea real");
+    expect(english.tutorial.packs.sportsSingle.r1.remember).toContain("can look correct too");
+    expect(spanish.tutorial.packs.sportsSingle.r1.remember).toContain("puede verse correcta");
+  });
+
+  it("points children to source and context where those checks are available", () => {
+    expect(english.tutorial.packs.animalsSingle.r2.remember).toContain("source and context");
+    expect(spanish.tutorial.packs.animalsSingle.r2.remember).toContain("fuente y el contexto");
+    expect(english.tutorial.packs.sportsSingle.r1.remember).toContain("Check the source");
+    expect(spanish.tutorial.packs.sportsSingle.r1.remember).toContain("Revisa la fuente");
+  });
+
+  it("keeps the zoom hint as a clue rather than a visual verdict", () => {
+    expect(spanish.zoom.hint).toContain("pista");
+    expect(spanish.zoom.hint).toContain("no una prueba");
+    expect(english.zoom.hint).toContain("clue");
+    expect(english.zoom.hint).toContain("not proof");
+    expect(`${spanish.zoom.hint} ${english.zoom.hint}`.toLowerCase()).not.toMatch(/delatan|give it away/);
   });
 });

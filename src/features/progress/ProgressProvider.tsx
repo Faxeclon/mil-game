@@ -20,6 +20,7 @@ import {
   getServerProgressSnapshot,
   leaveLocalProfileInStore,
   removeProfileInStore,
+  unlinkChildFromAdultInStore,
   resetProgressInStore,
   selectProfileInStore,
   startAdultPlayInStore,
@@ -45,7 +46,7 @@ export type ProgressApi = {
   apprenticeAvatarId: ApprenticeAvatarId | null;
   markOnboarded: (localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId) => void;
   /** Puts a signed-in grown-up into the game as themselves, asking them nothing. */
-  startAdultPlay: (email: string, nickname: string) => void;
+  startAdultPlay: (email: string, nickname: string) => boolean;
   advanceMapOnboarding: () => void;
   resetProgress: () => void;
   /** Steps away from the profile, keeping it saved under its nickname. */
@@ -54,6 +55,8 @@ export type ProgressApi = {
   savedProfiles: readonly LocalProfile[];
   selectProfile: (id: string) => void;
   removeProfile: (id: string) => void;
+  /** Removes an adult-to-child link while keeping the child's local profile and progress. */
+  unlinkChildFromAdult: (id: string, adultEmail: string) => boolean;
 };
 
 const ProgressContext = createContext<ProgressApi | null>(null);
@@ -87,7 +90,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       leaveProfile: leaveLocalProfileInStore,
       savedProfiles: listProfiles(profiles),
       selectProfile: selectProfileInStore,
-      removeProfile: removeProfileInStore
+      removeProfile: removeProfileInStore,
+      unlinkChildFromAdult: unlinkChildFromAdultInStore
     }),
     [hydrated, profiles, state]
   );

@@ -45,6 +45,7 @@ import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link, useRouter } from "@/i18n/navigation";
 import { enableSoundForNewProfile } from "@/features/audio/soundPreference";
 import { useBackgroundMusic } from "./BackgroundMusicProvider";
+import { AdultPlayLink } from "./AdultPlayLink";
 import styles from "./HomeLanding.module.css";
 
 const apprenticeAvatarIcons: Record<ApprenticeAvatarId, LucideIcon> = {
@@ -441,8 +442,8 @@ export function HomeLanding() {
    *
    * Asking them to invent a nickname and pick an apprentice before they can reach
    * anything would be answering a question they never asked - and asking it twice, since
-   * they already said who they are with their address. Signing in is choosing a profile,
-   * so the game is one tap away rather than behind a form.
+   * they already said who they are with their address. Choosing to play makes their
+   * separate profile, so the game is one tap away rather than behind a form.
    *
    * Only a teacher used to get this. A parent, invisible to the screen, fell through to
    * the child sign-up form: signed in, and yet with no home, no islands and no options.
@@ -474,17 +475,17 @@ export function HomeLanding() {
           <ul className={styles.hubStats}>
             {/*
               The same door the teacher gets: a grown-up who wants to see what their child
-              is doing should be able to play it, not only read about it. Their sign-in is
-              already the profile the map asks for, so nothing stands in between.
+              is doing should be able to play it, not only read about it. It is the explicit
+              choice that opens their separate profile before the map.
             */}
             <li className={styles.hubStat}>
               <span className={`${styles.hubStatIcon} ${styles.hubStatStreak}`}>
                 <Play aria-hidden="true" size={20} fill="currentColor" />
               </span>
               <span className={styles.hubStatLabel}>{tTeacherAccount("homeTryLabel")}</span>
-              <Link className={styles.hubStatLink} href="/worlds">
+              <AdultPlayLink className={styles.hubStatLink}>
                 {t("hubMap")}
-              </Link>
+              </AdultPlayLink>
             </li>
           </ul>
 
@@ -555,11 +556,11 @@ export function HomeLanding() {
                 <Play aria-hidden="true" size={20} fill="currentColor" />
               </span>
               <span className={styles.hubStatLabel}>{tTeacherAccount("homeTryLabel")}</span>
-              {/* The map, like everybody else reaches it. Their sign-in already is the
-                  profile it asks for, so nothing stands between the two. */}
-              <Link className={styles.hubStatLink} href="/worlds">
+              {/* This explicit play action opens the teacher's separate profile before
+                  taking them to the map. */}
+              <AdultPlayLink className={styles.hubStatLink}>
                 {t("hubMap")}
-              </Link>
+              </AdultPlayLink>
             </li>
             <li className={styles.hubStat}>
               <span className={`${styles.hubStatIcon} ${styles.hubStatFriends}`}>

@@ -59,4 +59,10 @@ describe("hooks a caller can safely put in a dependency list", () => {
     expect(source).toMatch(/const \{[^}]*speak: speakLine[^}]*\} = useSpeech\(\)/);
     expect(source).not.toMatch(/speech\.speak\(/);
   });
+
+  it("uses the same stop path when narration unmounts", async () => {
+    const source = await read("useNarration.ts");
+
+    expect(source).toContain("useEffect(() => () => stop(), [stop]);");
+  });
 });

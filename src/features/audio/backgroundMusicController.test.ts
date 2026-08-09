@@ -5,6 +5,7 @@ import {
   BACKGROUND_MUSIC_VOLUME,
   configureBackgroundMusic,
   duckBackgroundMusicForSpeech,
+  NarrationDuckingController,
   playBackgroundMusic,
   restoreBackgroundMusicAfterSpeech,
   type BackgroundMusicAudio
@@ -66,5 +67,24 @@ describe("background music controller", () => {
   it("does nothing at all when there is no track yet", () => {
     expect(() => duckBackgroundMusicForSpeech(null)).not.toThrow();
     expect(() => restoreBackgroundMusicAfterSpeech(null)).not.toThrow();
+  });
+
+  it("restores once after overlapping narration runs and stays safe on repeated cleanup", () => {
+    const audio = createAudio(async () => {});
+    configureBackgroundMusic(audio);
+    const audioRef = { current: audio };
+    const ducking = new NarrationDuckingController(audioRef);
+
+    ducking.start();
+    ducking.start();
+    expect(audio.volume).toBe(BACKGROUND_MUSIC_DUCKED_VOLUME);
+
+    ducking.stop();
+    expect(audio.volume).toBe(BACKGROUND_MUSIC_DUCKED_VOLUME);
+    ducking.stop();
+    ducking.stop();
+    ducking.restoreAll();
+    ducking.restoreAll();
+    expect(audio.volume).toBe(BACKGROUND_MUSIC_VOLUME);
   });
 });

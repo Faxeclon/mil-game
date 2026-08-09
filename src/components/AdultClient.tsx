@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CalendarDays, ChevronLeft, Clock, Flame, Star, Trash2 } from "lucide-react";
+import { CalendarDays, ChevronLeft, Clock, Flame, Star, Unlink } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { getChildrenOf, summariseChildren, getUnlinkedChildren } from "@/features/adults/childrenOfAdult";
 import { useAdultAccount } from "@/features/adults/adultAccountStore";
@@ -11,6 +11,7 @@ import { useProgress } from "@/features/progress/ProgressProvider";
 import { getLocalPlayedOn } from "@/features/progress/streak";
 import { Link } from "@/i18n/navigation";
 import { LoadingRoqui } from "./LoadingRoqui";
+import { AdultPlayLink } from "./AdultPlayLink";
 import styles from "./AdultClient.module.css";
 
 /**
@@ -29,11 +30,12 @@ export function AdultClient() {
   const tRank = useTranslations("rank");
   const tHome = useTranslations("home");
   const tLocked = useTranslations("locked");
+  const tUnlink = useTranslations("adultUnlink");
 
   const { hydrated: accountHydrated, account } = useAdultAccount();
-  const { hydrated, savedProfiles, removeProfile } = useProgress();
+  const { hydrated, savedProfiles, unlinkChildFromAdult } = useProgress();
   const [today] = useState(() => getLocalPlayedOn(new Date()));
-  const [confirmingRemoval, setConfirmingRemoval] = useState<string | null>(null);
+  const [confirmingUnlink, setConfirmingUnlink] = useState<string | null>(null);
 
   /*
    * While developing, a grown-up with nobody linked gets three ready-made children, so
@@ -64,8 +66,8 @@ export function AdultClient() {
   const mine = getChildrenOf(account, savedProfiles);
   const unclaimed = getUnlinkedChildren(savedProfiles);
   const children = summariseChildren(mine, today);
-  const removing = confirmingRemoval
-    ? children.find((child) => child.id === confirmingRemoval) ?? null
+  const unlinking = confirmingUnlink
+    ? children.find((child) => child.id === confirmingUnlink) ?? null
     : null;
 
   return (
@@ -119,9 +121,8 @@ export function AdultClient() {
               </p>
 
               {/*
-                How long, and how recently. The two questions a grown-up actually opens
-                this screen with, and the two the game can answer from what it already
-                records - so neither of them is an estimate.
+                The recorded mission time and the most recent completed mission. These
+                are local progress events, not a measure of general app activity.
               */}
               <p className={styles.stats}>
                 <span className={styles.stat}>
@@ -129,17 +130,17 @@ export function AdultClient() {
                   {/* Hours once there are hours: "214 minutes" makes a parent do the
                       division before they can tell whether it is a lot. */}
                   {child.playedMinutes >= 60
-                    ? t("timePlayedHours", {
+                    ? t("timeInMissionsHours", {
                         hours: Math.floor(child.playedMinutes / 60),
                         minutes: child.playedMinutes % 60
                       })
-                    : t("timePlayed", { minutes: child.playedMinutes })}
+                    : t("timeInMissions", { minutes: child.playedMinutes })}
                 </span>
                 <span className={styles.stat}>
                   <CalendarDays aria-hidden="true" size={14} />
                   {child.daysSincePlayed === null
-                    ? t("lastPlayedNever")
-                    : t("lastPlayed", { days: child.daysSincePlayed })}
+                    ? t("noActivityRecorded")
+                    : t("lastMissionCompleted", { days: child.daysSincePlayed })}
                 </span>
               </p>
 
@@ -150,12 +151,12 @@ export function AdultClient() {
                   point of this screen: it has to be theirs to be worth reading.
                 */}
                 <button
-                  aria-label={t("removeNamed", { name: child.nickname })}
+                  aria-label={tUnlink("named", { name: child.nickname })}
                   className={styles.remove}
                   type="button"
-                  onClick={() => setConfirmingRemoval(child.id)}
+                  onClick={() => setConfirmingUnlink(child.id)}
                 >
-                  <Trash2 aria-hidden="true" size={15} />
+                  <Unlink aria-hidden="true" size={15} />
                 </button>
               </div>
             </li>
@@ -176,30 +177,34 @@ export function AdultClient() {
       */}
       <p className={styles.privacy}>{t("privacy")}</p>
 
-      {/* Erasing a child's medals is the one thing here that cannot be undone. */}
-      {removing && (
+      <section aria-label={t("homePlayLabel")}>
+        <AdultPlayLink className={styles.primary}>{t("homePlayAction")}</AdultPlayLink>
+      </section>
+
+      {/* Unlinking only changes who can see this profile from the adult panel. */}
+      {unlinking && (
         <div
-          aria-label={t("removeConfirm", { name: removing.nickname })}
+          aria-label={tUnlink("confirm", { name: unlinking.nickname })}
           aria-modal="true"
           className={styles.confirmOverlay}
           role="dialog"
-          onClick={() => setConfirmingRemoval(null)}
+          onClick={() => setConfirmingUnlink(null)}
         >
           <div className={styles.confirmSheet} onClick={(event) => event.stopPropagation()}>
-            <p className={styles.confirmQuestion}>{t("removeConfirm", { name: removing.nickname })}</p>
-            <p className={styles.confirmDetail}>{t("removeDetail")}</p>
+            <p className={styles.confirmQuestion}>{tUnlink("confirm", { name: unlinking.nickname })}</p>
+            <p className={styles.confirmDetail}>{tUnlink("detail")}</p>
             <div className={styles.confirmActions}>
               <button
                 className={styles.confirmYes}
                 type="button"
                 onClick={() => {
-                  removeProfile(removing.id);
-                  setConfirmingRemoval(null);
+                  unlinkChildFromAdult(unlinking.id, account.email);
+                  setConfirmingUnlink(null);
                 }}
               >
-                {t("removeYes")}
+                {tUnlink("yes")}
               </button>
-              <button className={styles.confirmNo} type="button" onClick={() => setConfirmingRemoval(null)}>
+              <button className={styles.confirmNo} type="button" onClick={() => setConfirmingUnlink(null)}>
                 {tCards("back")}
               </button>
             </div>

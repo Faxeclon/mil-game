@@ -7,6 +7,7 @@ import { getAdultHome } from "@/features/adults/adultAccount";
 import { useAdultAccount } from "@/features/adults/adultAccountStore";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link, usePathname } from "@/i18n/navigation";
+import { AdultPlayLink } from "./AdultPlayLink";
 
 /**
  * Primary navigation for small screens. Hidden during the tutorial game shell.
@@ -40,9 +41,9 @@ export function MobileNavigation() {
   ];
 
   /*
-   * The map is offered to a player, and to any grown-up who signed in - because signing
-   * in is already choosing a profile, so the islands are one tap away for them too. Only
-   * a device with nobody on it is refused, and there the map could only ask for a name.
+   * The map is offered to a player, and to any grown-up who signed in. For a grown-up,
+   * that explicit navigation selects their own profile before opening the islands. Only a
+   * device with nobody on it is refused, and there the map could only ask for a name.
    */
   if (onboarded || account) destinations.push({ href: "/worlds", icon: Map, label: t("worlds") });
 
@@ -66,6 +67,14 @@ export function MobileNavigation() {
       >
         {destinations.map(({ href, icon: Icon, label }) => {
           const isActive = pathname === href;
+          if (href === "/worlds" && account) {
+            return (
+              <AdultPlayLink aria-label={label} className="mobile-bottom-nav__link" key={href}>
+                <Icon aria-hidden="true" size={21} strokeWidth={2.4} />
+                <span>{label}</span>
+              </AdultPlayLink>
+            );
+          }
           return (
             <Link
               aria-current={isActive ? "page" : undefined}

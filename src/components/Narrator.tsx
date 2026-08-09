@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import { useNarration } from "@/features/speech/useNarration";
 import { useBackgroundMusic } from "./BackgroundMusicProvider";
@@ -8,6 +8,13 @@ import { useBackgroundMusic } from "./BackgroundMusicProvider";
 type NarratorProps = {
   /** Everything that should be read, in the order a child would meet it on screen. */
   lines: Array<string | null | undefined>;
+  /** Lets a timed challenge wait for this first, automatic reading only. */
+  onNarrationStart?: () => void;
+  onNarrationEnd?: () => void;
+  /** A timed challenge must not wait when this device cannot narrate. */
+  onNarrationUnavailable?: () => void;
+  /** A first answer may cancel its initial reading rather than earning free time. */
+  stopSignal?: number;
 };
 
 /**
@@ -25,17 +32,27 @@ type NarratorProps = {
  * anyone is here they have tapped through a menu to switch this on, so the first line is
  * normally allowed.
  */
-export function Narrator({ lines }: NarratorProps) {
+export function Narrator({ lines, onNarrationStart, onNarrationEnd, onNarrationUnavailable, stopSignal = 0 }: NarratorProps) {
   const { readAloud } = useAccessibility();
   const { duckForSpeech, restoreAfterSpeech } = useBackgroundMusic();
+  const narrationCallbacks = useRef({ onNarrationStart, onNarrationEnd, onNarrationUnavailable });
+  useEffect(() => {
+    narrationCallbacks.current = { onNarrationStart, onNarrationEnd, onNarrationUnavailable };
+  }, [onNarrationEnd, onNarrationStart, onNarrationUnavailable]);
   /*
    * The music is turned down while the voice talks, not stopped. Stopping it between
    * every line would make the track spend more time restarting than playing, and the gaps
    * read as the music being broken.
    */
   const { available, say, stop } = useNarration({
-    onStart: duckForSpeech,
-    onEnd: restoreAfterSpeech
+    onStart: () => {
+      duckForSpeech();
+      narrationCallbacks.current.onNarrationStart?.();
+    },
+    onEnd: () => {
+      restoreAfterSpeech();
+      narrationCallbacks.current.onNarrationEnd?.();
+    }
   });
 
   /*
@@ -52,9 +69,16 @@ export function Narrator({ lines }: NarratorProps) {
   useEffect(() => {
     // A new screen interrupts the previous reading rather than queueing behind it.
     stop();
-    if (!readAloud || !available || !script) return;
+    if (!readAloud || !available || !script) {
+      narrationCallbacks.current.onNarrationUnavailable?.();
+      return;
+    }
     say(script.split("\n"));
   }, [available, readAloud, say, script, stop]);
+
+  useEffect(() => {
+    if (stopSignal > 0) stop();
+  }, [stop, stopSignal]);
 
   return null;
 }

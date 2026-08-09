@@ -40,6 +40,28 @@
   background: #0d1220;
 }
 
+/* The game owns this value. It stays above the picture so zoom never hides a timed
+   challenge's essential information, but it does not create or control a second clock. */
+.timer,
+.timerWarning {
+  position: absolute;
+  z-index: 1;
+  top: 0.9rem;
+  left: 50%;
+  margin: 0;
+  padding: 0.35rem 0.75rem;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #17213c;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.timerWarning {
+  background: #ffe16b;
+}
+
 .stage,
 .stageMagnified {
   min-height: 0;

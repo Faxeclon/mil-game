@@ -6,6 +6,7 @@ import {
   getDisplayedRemainingSeconds,
   getRemainingMs,
   hasTimedOut,
+  InitialNarrationCountdownGate,
   RoundClosureGuard
 } from "./roundCountdown";
 
@@ -75,5 +76,43 @@ describe("round countdown deadlines", () => {
 
     closure.startRound("round-2");
     expect(closure.tryClose("round-2")).toBe(true);
+  });
+});
+
+describe("initial narration countdown gate", () => {
+  it("starts a timed round immediately when narration is disabled or unavailable", () => {
+    const gate = new InitialNarrationCountdownGate();
+
+    expect(gate.prepare("round-1", false)).toBe(true);
+    expect(gate.hasStarted("round-1")).toBe(true);
+  });
+
+  it("waits for initial narration, then opens with a full new deadline", () => {
+    const gate = new InitialNarrationCountdownGate();
+
+    expect(gate.prepare("round-1", true)).toBe(false);
+    expect(gate.hasStarted("round-1")).toBe(false);
+    expect(gate.start("round-1")).toBe(true);
+    expect(createRoundDeadline("round-1", 5_000, 12_000)?.deadlineMs).toBe(17_000);
+  });
+
+  it("lets the first interaction open the timer and cannot extend it afterwards", () => {
+    const gate = new InitialNarrationCountdownGate();
+    gate.prepare("round-1", true);
+
+    expect(gate.start("round-1")).toBe(true);
+    expect(gate.start("round-1")).toBe(false);
+    const deadline = createRoundDeadline("round-1", 2_000, 12_000)!;
+    expect(getRemainingMs(deadline, 4_000)).toBe(10_000);
+  });
+
+  it("resets for the next round without giving untimed rounds a deadline", () => {
+    const gate = new InitialNarrationCountdownGate();
+    gate.prepare("round-1", true);
+    gate.start("round-1");
+
+    expect(gate.prepare("round-2", true)).toBe(false);
+    expect(gate.hasStarted("round-2")).toBe(false);
+    expect(createRoundDeadline("round-2", 0, undefined)).toBeNull();
   });
 });

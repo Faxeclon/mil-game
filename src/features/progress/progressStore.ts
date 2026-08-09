@@ -113,17 +113,19 @@ export function markOnboardedInStore(localNickname?: string, apprenticeAvatarId?
  * Whoever was playing is stepped away from, never overwritten. A child's profile stays in
  * the list exactly as they left it.
  */
-export function startAdultPlayInStore(email: string, nickname: string): void {
-  const mine = snapshot.profiles.profiles.find((profile) => profile.progress.adultEmail === email);
-  if (mine) {
-    commit(selectProfile(snapshot.profiles, mine.id));
-    return;
-  }
-
+export function startAdultPlayInStore(email: string, nickname: string): boolean {
   const state = playAsAdult(initialProgressState, email, nickname);
   // An address or a name the model refuses is not turned into a nameless profile.
-  if (state === initialProgressState) return;
+  if (state === initialProgressState || state.adultEmail === null) return false;
+
+  const mine = snapshot.profiles.profiles.find((profile) => profile.progress.adultEmail === state.adultEmail);
+  if (mine) {
+    commit(selectProfile(snapshot.profiles, mine.id));
+    return true;
+  }
+
   commit(updateActiveProgress(leaveActiveProfile(snapshot.profiles), state));
+  return true;
 }
 
 export function advanceMapOnboardingInStore(): void {
@@ -175,6 +177,33 @@ export function addProfilesInStore(states: readonly ProgressState[]): void {
 /** Forgets a saved player for good. Asked for explicitly, never as a side effect. */
 export function removeProfileInStore(id: string): void {
   commit(removeProfile(snapshot.profiles, id));
+}
+
+/**
+ * Removes one adult-to-child link without touching the child's player record.
+ *
+ * The adult panel can read a child who is not the active player, so this cannot use the
+ * active-profile helper. Keeping the update here also makes unlinking deliberately
+ * different from `removeProfileInStore`, which is the explicit local deletion action.
+ */
+export function unlinkChildFromAdultInStore(id: string, adultEmail: string): boolean {
+  const child = snapshot.profiles.profiles.find((profile) => profile.id === id);
+  if (
+    !child ||
+    child.progress.adultEmail !== null ||
+    child.progress.guardian?.email !== adultEmail
+  ) {
+    return false;
+  }
+
+  const progress = withdrawGuardian(child.progress);
+  commit({
+    ...snapshot.profiles,
+    profiles: snapshot.profiles.profiles.map((profile) =>
+      profile.id === id ? { ...profile, progress } : profile
+    )
+  });
+  return true;
 }
 
 export function authorizeGuardianInStore(email: string, authorizedOn: string): void {
