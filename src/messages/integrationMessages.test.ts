@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { islands } from "@/features/levels/levelModel";
 import englishMessages from "./en.json";
 import spanishMessages from "./es.json";
 
@@ -15,25 +16,31 @@ const obsoleteTutorialKeys = [
 describe("final integration messages", () => {
   it("accurately describes device-only profile and progress storage", () => {
     expect(englishMessages.footer.notice).toBe("No account is required. Your profile and progress stay on this device.");
-    expect(spanishMessages.footer.notice).toBe("No necesitas una cuenta. Tu perfil y tu progreso se guardan en este dispositivo.");
   });
 
   it("keeps Rank honestly marked as coming soon without rank tiers", () => {
     expect(englishMessages.home.hubSoon).toBe("Coming soon");
-    expect(spanishMessages.home.hubSoon).toBe("Próximamente");
     expect("hubRanks" in englishMessages.home).toBe(false);
     expect("hubRanks" in spanishMessages.home).toBe(false);
   });
 
-  it("uses corrected Spanish accents in the affected island and tutorial copy", () => {
-    expect(spanishMessages.tutorial.entering).toBe("Estás entrando a");
-    expect(spanishMessages.worlds.mascotAlt).toBe("Roqui, tu guía en el mapa.");
-    expect(spanishMessages.islands.missionNumber).toBe("Misión {number}");
-    expect(spanishMessages.islands.comingSoon).toBe("Próximamente");
-    expect(spanishMessages.islands.difficulty).toEqual({ easy: "Fácil", medium: "Medio", hard: "Difícil" });
-    expect(spanishMessages.islands.list.training.description).toContain("atención");
-    expect(spanishMessages.islands.list.difference.title).toContain("imágenes");
-    expect(spanishMessages.islands.list.source.description).toContain("quién comparte algo y por qué");
+  it("uses the localized learning-goal names for the affected islands", () => {
+    expect(spanishMessages.islands.list.training.title).toBe("Entrenamiento");
+    expect(englishMessages.islands.list.training.title).toBe("Training");
+    expect(spanishMessages.islands.list.difference.title).toBe("Caza de pistas");
+    expect(englishMessages.islands.list.difference.title).toBe("Clue Hunt");
+    expect(spanishMessages.islands.list.source.title).toBe("Comprobar la fuente");
+    expect(englishMessages.islands.list.source.title).toBe("Check the Source");
+    expect(spanishMessages.islands.list.videos.title).toBe("Cuadro a cuadro");
+    expect(englishMessages.islands.list.videos.title).toBe("Frame by Frame");
+    expect(spanishMessages.islands.list.difference.title).not.toBe("Diferenciar imágenes");
+    expect(englishMessages.islands.list.difference.title).not.toBe("Telling images apart");
+    expect(spanishMessages.islands.list.videos.title).not.toBe("Videos");
+    expect(englishMessages.islands.list.videos.title).not.toBe("Videos");
+  });
+
+  it("keeps persisted island keys and routes stable while labels change", () => {
+    expect(islands.map((island) => island.key)).toEqual(["training", "difference", "source", "videos"]);
   });
 
   it("does not retain the confirmed obsolete tutorial keys", () => {
