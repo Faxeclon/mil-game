@@ -34,27 +34,27 @@ describe("finishing the last mission of an island", () => {
    * The behaviour this replaces swept the child straight into the next island, so the
    * hundred per cent and any Rush they had just earned happened behind them.
    */
-  it("sends the player to the general map, not onward", () => {
+  it("keeps a manually restored completed island on its own view", () => {
     for (const island of playableIslands) {
       const missions = missionsOf(island);
       const everythingUpToHere = playableIslands
         .slice(0, playableIslands.indexOf(island) + 1)
         .flatMap(missionsOf);
 
-      expect(getContinueDestination(withCompleted(...everythingUpToHere), missions.at(-1)!), island).toEqual({ kind: "worlds" });
+      expect(getContinueDestination(withCompleted(...everythingUpToHere), missions.at(-1)!), island).toEqual({ kind: "island", islandKey: island });
     }
   });
 
   it("does the same for the very first island, which is where most players see it", () => {
     const training = missionsOf("training");
 
-    expect(getContinueDestination(withCompleted(...training), training.at(-1)!)).toEqual({ kind: "worlds" });
+    expect(getContinueDestination(withCompleted(...training), training.at(-1)!)).toEqual({ kind: "island", islandKey: "training" });
   });
 
-  it("leads to the general map after closing an island", () => {
+  it("keeps the island path safe without a fresh completion event", () => {
     const training = missionsOf("training");
 
-    expect(getContinuePath(withCompleted(...training), training.at(-1)!)).toBe("/worlds");
+    expect(getContinuePath(withCompleted(...training), training.at(-1)!)).toBe("/island/training");
   });
 });
 
@@ -97,6 +97,6 @@ describe("destinations that have to stay safe", () => {
     const training = missionsOf("training");
     const destination = getContinueDestination(withCompleted(...training), training.at(-1)!);
 
-    expect(destination).toEqual({ kind: "worlds" });
+    expect(destination).toEqual({ kind: "island", islandKey: "training" });
   });
 });

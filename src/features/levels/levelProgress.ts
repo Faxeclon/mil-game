@@ -130,7 +130,11 @@ export function getSectionCompletionEvent(
   if (!mission) return null;
 
   const missions = getPlayableMissions(mission.category);
-  const closesCategory = missions.at(-1)?.id === completedLevelId && isCategoryCompleted(state, mission.category);
+  const closesCategory =
+    missions.at(-1)?.id === completedLevelId &&
+    isCategoryCompleted(state, mission.category) &&
+    state.sectionCompletionEvent?.categoryKey === mission.category &&
+    state.sectionCompletionEvent.attemptId === state.lastResult?.attemptId;
   const islandKey = getIslandOfCategory(mission.category);
   if (!closesCategory || !islandKey) return null;
 

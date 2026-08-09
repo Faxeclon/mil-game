@@ -43,10 +43,26 @@ describe("section completion events", () => {
     expect(getContinueDestination(state, "memes-2")).toEqual({ kind: "worlds" });
   });
 
-  it("allows replaying a final mission to create another event without duplicating progress", () => {
+  it("does not create another event by replaying only a section's final mission", () => {
     const finished = play(["basics-1", "basics-2"]);
     const replayed = completeLevel(finished, "basics-2", attempt(9));
+    expect(getSectionCompletionEvent(replayed, "basics-2")).toBeNull();
+    expect(replayed.completedLevelIds).toEqual(finished.completedLevelIds);
+  });
+
+  it("creates one new event after replaying every mission in normal order", () => {
+    const finished = play(["basics-1", "basics-2"]);
+    const replayFirst = completeLevel(finished, "basics-1", attempt(10));
+    const replayed = completeLevel(replayFirst, "basics-2", attempt(11));
     expect(getSectionCompletionEvent(replayed, "basics-2")).toMatchObject({ categoryKey: "basics" });
     expect(replayed.completedLevelIds).toEqual(finished.completedLevelIds);
+  });
+
+  it("consumes the replay event so repeating the final mission cannot create another one", () => {
+    const finished = play(["basics-1", "basics-2"]);
+    const replayed = completeLevel(completeLevel(finished, "basics-1", attempt(12)), "basics-2", attempt(13));
+    const repeatedFinal = completeLevel(replayed, "basics-2", attempt(14));
+    expect(getSectionCompletionEvent(repeatedFinal, "basics-2")).toBeNull();
+    expect(repeatedFinal.completedLevelIds).toEqual(finished.completedLevelIds);
   });
 });
