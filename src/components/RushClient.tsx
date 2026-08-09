@@ -2,19 +2,20 @@
 
 import Image from "next/image";
 import { useEffect, useReducer, useRef, useState } from "react";
-import { Camera, Sparkles, Timer, Zap } from "lucide-react";
+import { Camera, Shield, Sparkles, Timer, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import {
   dealRush,
   getRushAccuracy,
+  getBonusRushDuration,
+  getBonusRushScore,
   initialRushState,
   rushReducer,
-  RUSH_SECONDS,
   type RushItem
 } from "@/features/rush/rushState";
 import type { CategoryKey, IslandKey } from "@/features/levels/levelModel";
-import { getActiveBonusForIsland, getBonusDestinationPath, getBonusRushSecondsLeft, type BonusOpportunity, type BonusRushRun } from "@/features/bonus/bonusOpportunity";
+import { getActiveBonusForIsland, getBonusDestinationPath, getBonusRushSecondsLeft, type BonusOpportunity, type BonusRushRun, type BonusWheelReward } from "@/features/bonus/bonusOpportunity";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { useRouter } from "@/i18n/navigation";
 import { ImageZoom } from "./ImageZoom";
@@ -30,18 +31,33 @@ function restoreDeck(pool: readonly RushItem[], itemIds: readonly string[] | und
 
 function getRushStateFromRun(run: BonusRushRun | undefined) {
   if (!run) return initialRushState;
-  if (run.finished) return { status: "finished" as const, correct: run.correct, wrong: run.wrong, ranOut: run.ranOut };
-  return { status: "playing" as const, index: run.index, correct: run.correct, wrong: run.wrong, lastAnswer: null };
+  if (run.finished) return { status: "finished" as const, rawCorrectCount: run.rawCorrectCount, actualMistakeCount: run.actualMistakeCount, visibleMistakeCount: run.visibleMistakeCount, shieldUsed: run.shieldUsed, ranOut: run.ranOut };
+  return { status: "playing" as const, index: run.index, rawCorrectCount: run.rawCorrectCount, actualMistakeCount: run.actualMistakeCount, visibleMistakeCount: run.visibleMistakeCount, shieldUsed: run.shieldUsed, lastAnswer: null };
 }
 
-function saveRunProgress(run: BonusRushRun, state: ReturnType<typeof getRushStateFromRun>): BonusRushRun {
+function saveRunProgress(run: BonusRushRun, state: ReturnType<typeof getRushStateFromRun>, reward: BonusWheelReward): BonusRushRun {
   if (state.status === "finished") {
-    return { ...run, index: run.deckItemIds.length, correct: state.correct, wrong: state.wrong, finished: true, ranOut: state.ranOut };
+    return { ...run, index: run.deckItemIds.length, rawCorrectCount: state.rawCorrectCount, actualMistakeCount: state.actualMistakeCount, visibleMistakeCount: state.visibleMistakeCount, shieldUsed: state.shieldUsed, score: getBonusRushScore(state.rawCorrectCount, reward), finished: true, ranOut: state.ranOut };
   }
   if (state.status === "playing") {
-    return { ...run, index: state.index, correct: state.correct, wrong: state.wrong };
+    return { ...run, index: state.index, rawCorrectCount: state.rawCorrectCount, actualMistakeCount: state.actualMistakeCount, visibleMistakeCount: state.visibleMistakeCount, shieldUsed: state.shieldUsed, score: getBonusRushScore(state.rawCorrectCount, reward) };
   }
   return run;
+}
+
+function rewardKey(reward: BonusWheelReward): "extraLife" | "doublePoints" | "extra15" | "extra10" | "none" {
+  if (reward === "extra-life") return "extraLife";
+  if (reward === "double-points") return "doublePoints";
+  if (reward === "extra-15") return "extra15";
+  if (reward === "extra-10") return "extra10";
+  return "none";
+}
+
+function BonusRewardChip({ reward, shieldUsed }: { reward: BonusWheelReward; shieldUsed: boolean }) {
+  const t = useTranslations("rush");
+  if (reward === "none") return null;
+  const label = reward === "extra-life" && shieldUsed ? t("shieldUsed") : t(`wheelRewards.${rewardKey(reward)}`);
+  return <span className={styles.rewardChip}>{reward === "extra-life" ? <Shield aria-hidden="true" size={15} /> : reward.startsWith("extra-") ? <Timer aria-hidden="true" size={15} /> : <Sparkles aria-hidden="true" size={15} />}{label}</span>;
 }
 
 /**
@@ -71,11 +87,13 @@ export function RushClient({
   const startedRunRef = useRef(Boolean(activeBonus?.rushRun));
 
   const bonus = activeBonus ?? runBonus;
-  const pool = bonus ? poolsByCategory[bonus.categoryKey] ?? [] : [];
   const run = bonus?.rushRun;
+  const reward: BonusWheelReward = run?.reward ?? (bonus?.wheel?.status === "resolved" ? bonus.wheel.reward : "none");
+  const pool = bonus ? poolsByCategory[bonus.categoryKey] ?? [] : [];
+  const durationSeconds = run?.durationSeconds ?? getBonusRushDuration(reward);
   const [state, dispatch] = useReducer(rushReducer, run, getRushStateFromRun);
   const [deck, setDeck] = useState<RushItem[]>(() => restoreDeck(pool, run?.deckItemIds));
-  const [secondsLeft, setSecondsLeft] = useState(() => run ? getBonusRushSecondsLeft(run.startedAt, RUSH_SECONDS) : RUSH_SECONDS);
+  const [secondsLeft, setSecondsLeft] = useState(() => run ? getBonusRushSecondsLeft(run.startedAt, durationSeconds) : durationSeconds);
   const [wheelContinued, setWheelContinued] = useState(Boolean(run));
 
   const isPlaying = state.status === "playing";
@@ -84,7 +102,7 @@ export function RushClient({
   useEffect(() => {
     if (!isPlaying || !run) return;
     const tick = () => {
-      const remaining = getBonusRushSecondsLeft(run.startedAt, RUSH_SECONDS);
+      const remaining = getBonusRushSecondsLeft(run.startedAt, run.durationSeconds);
       setSecondsLeft(remaining);
       if (remaining === 0) dispatch({ type: "timeUp" });
     };
@@ -97,10 +115,10 @@ export function RushClient({
   useEffect(() => {
     if (state.status !== "finished" || !bonus || consumedRunRef.current) return;
     consumedRunRef.current = true;
-    if (bonus.rushRun) updateBonusRushRun(bonus.id, saveRunProgress(bonus.rushRun, state));
+    if (bonus.rushRun) updateBonusRushRun(bonus.id, saveRunProgress(bonus.rushRun, state, reward));
     retainCompletedBonus(bonus.id);
     consumeBonusOpportunity(bonus.id);
-  }, [bonus, consumeBonusOpportunity, retainCompletedBonus, state, updateBonusRushRun]);
+  }, [bonus, consumeBonusOpportunity, retainCompletedBonus, reward, state, updateBonusRushRun]);
 
   const beginRun = () => {
     if (!bonus || bonus.wheel?.status !== "resolved" || !wheelContinued || bonus.rushRun || startedRunRef.current) return;
@@ -110,15 +128,20 @@ export function RushClient({
     startBonusRushRun(bonus.id, {
       runId: `${bonus.id}:run`,
       startedAt: Date.now(),
+      reward,
+      durationSeconds,
       deckItemIds: nextDeck.map((item) => item.id),
       index: 0,
-      correct: 0,
-      wrong: 0,
+      rawCorrectCount: 0,
+      actualMistakeCount: 0,
+      visibleMistakeCount: 0,
+      shieldUsed: false,
+      score: 0,
       finished: false,
       ranOut: false
     });
     setDeck(nextDeck);
-    setSecondsLeft(RUSH_SECONDS);
+    setSecondsLeft(durationSeconds);
     dispatch({ type: "restart" });
     dispatch({ type: "start" });
   };
@@ -134,11 +157,11 @@ export function RushClient({
 
   const answer = (saidAi: boolean, item: RushItem) => {
     if (!bonus?.rushRun) return;
-    const action = { type: "answer" as const, saidAi, item, total: deck.length };
+    const action = { type: "answer" as const, saidAi, item, total: deck.length, reward };
     const next = rushReducer(state, action);
     if (next === state) return;
     dispatch(action);
-    updateBonusRushRun(bonus.id, saveRunProgress(bonus.rushRun, next));
+    updateBonusRushRun(bonus.id, saveRunProgress(bonus.rushRun, next, reward));
   };
 
   if (!bonus) return null;
@@ -156,8 +179,9 @@ export function RushClient({
         <h1 className={styles.title} id="rush-title">
           {t("title")}
         </h1>
-        <p className={styles.lead}>{t("lead", { seconds: RUSH_SECONDS })}</p>
+        <p className={styles.lead}>{t("lead", { seconds: durationSeconds })}</p>
         <p className={styles.warning}>{t("bonusChallenge")}</p>
+        <BonusRewardChip reward={reward} shieldUsed={false} />
         <button className={styles.primary} type="button" onClick={beginRun}>
           {t("start")}
         </button>
@@ -169,7 +193,8 @@ export function RushClient({
   }
 
   if (state.status === "finished") {
-    const accuracy = getRushAccuracy(state.correct, state.wrong);
+    const accuracy = getRushAccuracy(state.rawCorrectCount, state.actualMistakeCount);
+    const score = getBonusRushScore(state.rawCorrectCount, reward);
 
     return (
       <section aria-labelledby="rush-title" className={styles.rush}>
@@ -177,7 +202,8 @@ export function RushClient({
         <h1 className={styles.title} id="rush-title">
           {t("finished")}
         </h1>
-        <p className={styles.bigScore}>{t("caught", { count: state.correct })}</p>
+        <p className={styles.bigScore}>{t("caught", { count: state.rawCorrectCount })}</p>
+        <p className={styles.rewardScore}>{t("bonusScore", { score })}</p>
         <p className={styles.lead}>{t("accuracy", { percent: accuracy })}</p>
         {!state.ranOut && <p className={styles.warning}>{t("ranOutOfImages")}</p>}
         <p className={styles.warning}>{tEducation("remember")}</p>
@@ -198,7 +224,8 @@ export function RushClient({
           <Timer aria-hidden="true" size={15} />
           {t("secondsLeft", { seconds: secondsLeft })}
         </span>
-        <span className={styles.tally}>{t("tally", { correct: state.correct, wrong: state.wrong })}</span>
+        <span className={styles.tally}>{t("tally", { correct: state.rawCorrectCount, wrong: state.visibleMistakeCount })}</span>
+        <BonusRewardChip reward={reward} shieldUsed={state.shieldUsed} />
       </p>
 
       {/* The countdown is announced only at the very end, so it never chatters. */}

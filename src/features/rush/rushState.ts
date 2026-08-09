@@ -1,6 +1,7 @@
 import type { SinglePack, TutorialPack } from "@/content/schemas/tutorial";
 import type { CategoryKey, IslandKey } from "@/features/levels/levelModel";
 import { getPlayableCategories, getPlayableMissions } from "@/features/levels/levelProgress";
+import type { BonusWheelReward } from "@/features/bonus/bonusOpportunity";
 
 /**
  * Thirty seconds, one image at a time.
@@ -9,7 +10,8 @@ import { getPlayableCategories, getPlayableMissions } from "@/features/levels/le
  * it awards no medals, changes no progress and unlocks nothing. Speed is fun, but the
  * missions are where the lesson lives, and mixing the two would teach a child to hurry.
  *
- * Nothing is stored. A run is a moment, like the versus matches.
+ * A Bonus run persists only enough to resume its one earned attempt; it still never
+ * changes medals, mission completion or unlocks.
  */
 export type RushItem = {
   id: string;
@@ -21,21 +23,42 @@ export type RushItem = {
 
 export const RUSH_SECONDS = 30;
 
+/** One wheel reward changes one axis of this run, never combines with another. */
+export function getBonusRushDuration(reward: BonusWheelReward): number {
+  if (reward === "extra-15") return RUSH_SECONDS + 15;
+  if (reward === "extra-10") return RUSH_SECONDS + 10;
+  return RUSH_SECONDS;
+}
+
+/** The multiplier affects only this arcade score, never normal mission progress. */
+export function getBonusRushScore(rawCorrectCount: number, reward: BonusWheelReward): number {
+  return rawCorrectCount * (reward === "double-points" ? 2 : 1);
+}
+
+type RushCounts = {
+  rawCorrectCount: number;
+  actualMistakeCount: number;
+  visibleMistakeCount: number;
+  shieldUsed: boolean;
+};
+
 export type RushState =
   | { status: "lobby" }
   | {
       status: "playing";
       index: number;
-      correct: number;
-      wrong: number;
+      rawCorrectCount: number;
+      actualMistakeCount: number;
+      visibleMistakeCount: number;
+      shieldUsed: boolean;
       /** What the last answer was, so the card can flash without pausing the clock. */
-      lastAnswer: "right" | "wrong" | null;
+      lastAnswer: "right" | "wrong" | "shield" | null;
     }
-  | { status: "finished"; correct: number; wrong: number; ranOut: boolean };
+  | ({ status: "finished"; ranOut: boolean } & RushCounts);
 
 export type RushAction =
   | { type: "start" }
-  | { type: "answer"; saidAi: boolean; item: RushItem; total: number }
+  | { type: "answer"; saidAi: boolean; item: RushItem; total: number; reward: BonusWheelReward }
   | { type: "timeUp" }
   | { type: "restart" };
 
@@ -44,22 +67,32 @@ export const initialRushState: RushState = { status: "lobby" };
 export function rushReducer(state: RushState, action: RushAction): RushState {
   if (action.type === "restart") return initialRushState;
   if (action.type === "start") {
-    return state.status === "lobby" ? { status: "playing", index: 0, correct: 0, wrong: 0, lastAnswer: null } : state;
+    return state.status === "lobby"
+      ? { status: "playing", index: 0, rawCorrectCount: 0, actualMistakeCount: 0, visibleMistakeCount: 0, shieldUsed: false, lastAnswer: null }
+      : state;
   }
   if (state.status !== "playing") return state;
 
   if (action.type === "timeUp") {
-    return { status: "finished", correct: state.correct, wrong: state.wrong, ranOut: true };
+    return { status: "finished", rawCorrectCount: state.rawCorrectCount, actualMistakeCount: state.actualMistakeCount, visibleMistakeCount: state.visibleMistakeCount, shieldUsed: state.shieldUsed, ranOut: true };
   }
 
   const right = action.saidAi === action.item.isAi;
-  const correct = state.correct + (right ? 1 : 0);
-  const wrong = state.wrong + (right ? 0 : 1);
+  const actualMistakeCount = state.actualMistakeCount + (right ? 0 : 1);
+  if (!right && action.reward === "extra-life" && !state.shieldUsed) {
+    // The real error is retained for a future perfect-run check, but this one retry is free.
+    return { ...state, actualMistakeCount, shieldUsed: true, lastAnswer: "shield" };
+  }
+
+  const rawCorrectCount = state.rawCorrectCount + (right ? 1 : 0);
+  const visibleMistakeCount = state.visibleMistakeCount + (right ? 0 : 1);
   const nextIndex = state.index + 1;
 
   // Running out of images ends the run early rather than looping the same ones round.
-  if (nextIndex >= action.total) return { status: "finished", correct, wrong, ranOut: false };
-  return { status: "playing", index: nextIndex, correct, wrong, lastAnswer: right ? "right" : "wrong" };
+  if (nextIndex >= action.total) {
+    return { status: "finished", rawCorrectCount, actualMistakeCount, visibleMistakeCount, shieldUsed: state.shieldUsed, ranOut: false };
+  }
+  return { status: "playing", index: nextIndex, rawCorrectCount, actualMistakeCount, visibleMistakeCount, shieldUsed: state.shieldUsed, lastAnswer: right ? "right" : "wrong" };
 }
 
 /**
@@ -156,7 +189,7 @@ export function dealRush(pool: readonly RushItem[], random: () => number = Math.
 }
 
 /** What the run says about the player, without turning it into a grade. */
-export function getRushAccuracy(correct: number, wrong: number): number {
-  const answered = correct + wrong;
-  return answered === 0 ? 0 : Math.round((correct / answered) * 100);
+export function getRushAccuracy(rawCorrectCount: number, actualMistakeCount: number): number {
+  const answered = rawCorrectCount + actualMistakeCount;
+  return answered === 0 ? 0 : Math.round((rawCorrectCount / answered) * 100);
 }

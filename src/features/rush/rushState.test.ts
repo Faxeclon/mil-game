@@ -5,6 +5,8 @@ import {
   buildCategoryRushPool,
   dealRush,
   getRushAccuracy,
+  getBonusRushDuration,
+  getBonusRushScore,
   initialRushState,
   rushReducer,
   RUSH_SECONDS,
@@ -16,8 +18,8 @@ const pool = buildRushPool(Object.values(contentPacks), Object.values(singlePack
 const aiItem: RushItem = { id: "ai", src: "/a.svg", altKey: "media.a", isAi: true };
 const cameraItem: RushItem = { id: "camera", src: "/b.svg", altKey: "media.b", isAi: false };
 
-function answer(state: RushState, saidAi: boolean, item: RushItem, total = 10): RushState {
-  return rushReducer(state, { type: "answer", saidAi, item, total });
+function answer(state: RushState, saidAi: boolean, item: RushItem, total = 10, reward: "extra-life" | "double-points" | "extra-15" | "extra-10" | "none" = "none"): RushState {
+  return rushReducer(state, { type: "answer", saidAi, item, total, reward });
 }
 
 describe("the pool of images", () => {
@@ -80,8 +82,10 @@ describe("a thirty-second run", () => {
     expect(rushReducer(initialRushState, { type: "start" })).toEqual({
       status: "playing",
       index: 0,
-      correct: 0,
-      wrong: 0,
+      rawCorrectCount: 0,
+      actualMistakeCount: 0,
+      visibleMistakeCount: 0,
+      shieldUsed: false,
       lastAnswer: null
     });
   });
@@ -89,16 +93,16 @@ describe("a thirty-second run", () => {
   it("counts a right and a wrong call apart", () => {
     let state = rushReducer(initialRushState, { type: "start" });
     state = answer(state, true, aiItem);
-    expect(state).toMatchObject({ correct: 1, wrong: 0, lastAnswer: "right", index: 1 });
+    expect(state).toMatchObject({ rawCorrectCount: 1, actualMistakeCount: 0, visibleMistakeCount: 0, lastAnswer: "right", index: 1 });
 
     state = answer(state, true, cameraItem);
-    expect(state).toMatchObject({ correct: 1, wrong: 1, lastAnswer: "wrong", index: 2 });
+    expect(state).toMatchObject({ rawCorrectCount: 1, actualMistakeCount: 1, visibleMistakeCount: 1, lastAnswer: "wrong", index: 2 });
   });
 
   it("counts calling a camera photo a camera photo as right", () => {
     const state = answer(rushReducer(initialRushState, { type: "start" }), false, cameraItem);
 
-    expect(state).toMatchObject({ correct: 1, wrong: 0 });
+    expect(state).toMatchObject({ rawCorrectCount: 1, actualMistakeCount: 0, visibleMistakeCount: 0 });
   });
 
   it("ends when the clock runs out, keeping what was already counted", () => {
@@ -106,7 +110,7 @@ describe("a thirty-second run", () => {
     state = answer(state, true, aiItem);
     state = rushReducer(state, { type: "timeUp" });
 
-    expect(state).toEqual({ status: "finished", correct: 1, wrong: 0, ranOut: true });
+    expect(state).toEqual({ status: "finished", rawCorrectCount: 1, actualMistakeCount: 0, visibleMistakeCount: 0, shieldUsed: false, ranOut: true });
   });
 
   it("ends when the images run out instead of showing them again", () => {
@@ -114,7 +118,7 @@ describe("a thirty-second run", () => {
     state = answer(state, true, aiItem, 2);
     state = answer(state, true, aiItem, 2);
 
-    expect(state).toEqual({ status: "finished", correct: 2, wrong: 0, ranOut: false });
+    expect(state).toEqual({ status: "finished", rawCorrectCount: 2, actualMistakeCount: 0, visibleMistakeCount: 0, shieldUsed: false, ranOut: false });
   });
 
   it("ignores answers once the run is over, and starts clean on a rerun", () => {
@@ -122,6 +126,30 @@ describe("a thirty-second run", () => {
 
     expect(answer(finished, true, aiItem)).toBe(finished);
     expect(rushReducer(finished, { type: "restart" })).toEqual(initialRushState);
+  });
+});
+
+describe("wheel rewards", () => {
+  it("uses the extra life for one real mistake and retries the same image", () => {
+    let state = rushReducer(initialRushState, { type: "start" });
+    state = answer(state, true, cameraItem, 2, "extra-life");
+    expect(state).toMatchObject({ status: "playing", index: 0, actualMistakeCount: 1, visibleMistakeCount: 0, shieldUsed: true, lastAnswer: "shield" });
+
+    state = answer(state, true, cameraItem, 2, "extra-life");
+    expect(state).toMatchObject({ index: 1, actualMistakeCount: 2, visibleMistakeCount: 1, shieldUsed: true, lastAnswer: "wrong" });
+  });
+
+  it("keeps raw correct answers separate from a double-points score", () => {
+    const state = answer(rushReducer(initialRushState, { type: "start" }), true, aiItem, 2, "double-points");
+    expect(state).toMatchObject({ rawCorrectCount: 1 });
+    expect(getBonusRushScore(1, "double-points")).toBe(2);
+    expect(getBonusRushScore(1, "none")).toBe(1);
+  });
+
+  it("adds time only for the chosen time reward", () => {
+    expect(getBonusRushDuration("extra-10")).toBe(RUSH_SECONDS + 10);
+    expect(getBonusRushDuration("extra-15")).toBe(RUSH_SECONDS + 15);
+    expect(getBonusRushDuration("none")).toBe(RUSH_SECONDS);
   });
 });
 

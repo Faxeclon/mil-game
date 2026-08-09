@@ -22,10 +22,18 @@ export type BonusWheelState =
 export type BonusRushRun = {
   runId: string;
   startedAt: number;
+  /** Snapshotted final wheel reward; results do not depend on a live UI state. */
+  reward: BonusWheelReward;
+  /** Frozen at run start, so a refresh cannot change a time reward. */
+  durationSeconds: number;
   deckItemIds: string[];
   index: number;
-  correct: number;
-  wrong: number;
+  /** Raw game counts stay separate from presentation and reward math. */
+  rawCorrectCount: number;
+  actualMistakeCount: number;
+  visibleMistakeCount: number;
+  shieldUsed: boolean;
+  score: number;
   finished: boolean;
   ranOut: boolean;
 };

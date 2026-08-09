@@ -6,6 +6,7 @@ import { normalizeLocalNickname } from "@/features/profile/localNickname";
 import { isAttemptId, parseCompletedAt, parseElapsedMs } from "./attemptMetadata";
 import { parseBestResults, updateBestResults, type BestResultsByLevelId } from "./bestResults";
 import { parseLevelScore } from "@/features/scoring/levelScore";
+import { RUSH_SECONDS } from "@/features/rush/rushState";
 import { initialStreak, isPlayedOn, parseStreak, recordPlayedDay, type Streak } from "./streak";
 import {
   grantGuardianConsent,
@@ -280,22 +281,36 @@ function parseBonusRushRun(value: unknown): BonusRushRun | undefined {
   if (!value.deckItemIds.every((item) => typeof item === "string" && item.length > 0)) return undefined;
   if (new Set(value.deckItemIds).size !== value.deckItemIds.length) return undefined;
   const index = value.index;
-  const correct = value.correct;
-  const wrong = value.wrong;
+  const rawCorrectCount = value.rawCorrectCount ?? value.correct;
+  const actualMistakeCount = value.actualMistakeCount ?? value.wrong;
+  const visibleMistakeCount = value.visibleMistakeCount ?? value.wrong;
+  const durationSeconds = value.durationSeconds ?? RUSH_SECONDS;
+  const score = value.score ?? rawCorrectCount;
+  const reward = typeof value.reward === "string" && bonusWheelRewards.includes(value.reward as (typeof bonusWheelRewards)[number])
+    ? value.reward as (typeof bonusWheelRewards)[number]
+    : "none";
   if (
     typeof index !== "number" || !Number.isInteger(index) || index < 0 ||
-    typeof correct !== "number" || !Number.isInteger(correct) || correct < 0 ||
-    typeof wrong !== "number" || !Number.isInteger(wrong) || wrong < 0
+    typeof rawCorrectCount !== "number" || !Number.isInteger(rawCorrectCount) || rawCorrectCount < 0 ||
+    typeof actualMistakeCount !== "number" || !Number.isInteger(actualMistakeCount) || actualMistakeCount < 0 ||
+    typeof visibleMistakeCount !== "number" || !Number.isInteger(visibleMistakeCount) || visibleMistakeCount < 0 ||
+    typeof durationSeconds !== "number" || !Number.isInteger(durationSeconds) || durationSeconds < RUSH_SECONDS ||
+    typeof score !== "number" || !Number.isInteger(score) || score < 0
   ) return undefined;
   if (index > value.deckItemIds.length) return undefined;
   if (typeof value.finished !== "boolean" || typeof value.ranOut !== "boolean") return undefined;
   return {
     runId: value.runId,
     startedAt: value.startedAt,
+    reward,
     deckItemIds: [...value.deckItemIds],
     index,
-    correct,
-    wrong,
+    durationSeconds,
+    rawCorrectCount,
+    actualMistakeCount,
+    visibleMistakeCount,
+    shieldUsed: value.shieldUsed === true,
+    score,
     finished: value.finished,
     ranOut: value.ranOut
   };
