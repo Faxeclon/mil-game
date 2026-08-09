@@ -56,6 +56,9 @@ describe("per-profile bonus opportunities", () => {
     expect(getActiveBonusForIsland(active, "training")).toBeUndefined();
     expect(getActiveBonusForIsland(consumeBonusOpportunity(active, first.id), "difference")).toBeUndefined();
   });
+  it("does not treat a legacy Rush unlock as an active Bonus", () => {
+    expect(getActiveBonusForIsland({ ...initialProgressState, rushUnlockedIslands: ["difference"] }, "difference")).toBeUndefined();
+  });
   it("persists one started run with its deck and progress across refresh", () => {
     const active = activateBonusOpportunity(createBonusOpportunity(initialProgressState, first), first.id);
     const started = startBonusRushRun(active, first.id, rushRun);

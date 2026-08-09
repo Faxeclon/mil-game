@@ -66,7 +66,7 @@ export type ProgressState = {
   sectionCompletionEvent?: { categoryKey: CategoryKey; attemptId: string };
   /** Bonus records belong to this profile because the whole state belongs to it. */
   bonusOpportunities: BonusOpportunity[];
-  /** A Rush reward already earned. It survives later catalog additions without inventing completions. */
+  /** Legacy v1 data retained on load; it has no effect on Bonus Rush access. */
   rushUnlockedIslands: IslandKey[];
   /** The number of missions that formed this player's rank scale when it was last earned. */
   rankMissionCeiling: number;

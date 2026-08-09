@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ChevronLeft, Hourglass, LockKeyhole, Play, Star, Timer, Zap } from "lucide-react";
+import { Check, ChevronLeft, Hourglass, LockKeyhole, Play, Star, Timer } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Narrator } from "@/components/Narrator";
 import {
@@ -16,7 +16,7 @@ import {
   getCategoryState,
   getMissionState
 } from "@/features/levels/levelProgress";
-import { getIslandProgress, getMissionRequirement, isIslandRushUnlocked } from "@/features/levels/progressSummary";
+import { getIslandProgress, getMissionRequirement } from "@/features/levels/progressSummary";
 import { getBestResult } from "@/features/progress/bestResults";
 import { getStarCount } from "@/features/scoring/levelScore";
 import { useProgress } from "@/features/progress/ProgressProvider";
@@ -33,12 +33,10 @@ import styles from "./IslandView.module.css";
  */
 export function IslandView({ island }: { island: IslandKey }) {
   const t = useTranslations("islands");
-  const tRush = useTranslations("rush");
   const tOnboarding = useTranslations("onboarding");
   const { progressState, advanceMapOnboarding } = useProgress();
   const categories = getCategoriesByIsland(island);
   const islandProgress = getIslandProgress(progressState, island);
-  const rushUnlocked = isIslandRushUnlocked(progressState, island);
   const isFirstLevelGuide = island === "training" && progressState.mapOnboardingStage === "island-first-level";
   const firstPlayableLevel = categories.flatMap((category) => getMissionsByCategory(category.key)).find((mission) => Boolean(mission.packId));
 
@@ -106,36 +104,6 @@ export function IslandView({ island }: { island: IslandKey }) {
             />
           </div>
         </div>
-      )}
-
-      {/*
-        The island's own challenge, at the end of its path. It opens once the island is
-        finished: the same pictures, now against a clock, which only makes sense as a
-        last look back rather than as a shortcut past the missions.
-      */}
-      {!islandProgress.isEmpty && (
-        <section aria-labelledby={`challenge-${island}`} className={styles.challenge}>
-          <span className={styles.challengeIcon}>
-            <Zap aria-hidden="true" size={20} />
-          </span>
-          <span className={styles.challengeText}>
-            <h2 className={styles.challengeTitle} id={`challenge-${island}`}>
-              {tRush("title")}
-            </h2>
-            <p className={styles.challengeLead}>
-              {rushUnlocked ? tRush("notAMission") : tRush("lockedUntilDone")}
-            </p>
-          </span>
-          {rushUnlocked ? (
-            <Link className={styles.challengeAction} href={`/island/${island}/rush`}>
-              {tRush("start")}
-            </Link>
-          ) : (
-            <span className={styles.challengeLocked}>
-              <LockKeyhole aria-hidden="true" size={15} />
-            </span>
-          )}
-        </section>
       )}
 
       {categories.map((category) => {

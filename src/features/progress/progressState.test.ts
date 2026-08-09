@@ -99,6 +99,18 @@ describe("legacy migration", () => {
     expect(state.rankMissionCeiling).toBe(8);
   });
 
+  it("retains legacy Rush unlock data without turning it into a Bonus ticket", () => {
+    const state = parseProgressState({
+      version: PROGRESS_VERSION,
+      completedLevelIds: ["animals-1"],
+      rushUnlockedIslands: ["difference"]
+    });
+
+    expect(state.completedLevelIds).toEqual(["animals-1"]);
+    expect(state.rushUnlockedIslands).toEqual(["difference"]);
+    expect(state.bonusOpportunities).toEqual([]);
+  });
+
   it("migrates playerName to the canonical device-only local nickname without losing progress", () => {
     const state = parseProgressState({
       version: PROGRESS_VERSION,
