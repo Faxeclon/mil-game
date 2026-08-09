@@ -72,22 +72,22 @@ describe("active educational feedback", () => {
   });
 
   it("keeps concrete scene clues while teaching their limits", () => {
-    expect(english.tutorial.packs.sportsCompare.r1.observation).toContain("hands and feet");
-    expect(english.tutorial.packs.sportsCompare.r1.observation).toContain("not proof");
-    expect(spanish.tutorial.packs.sportsCompare.r1.observation).toContain("manos y los pies");
-    expect(spanish.tutorial.packs.sportsCompare.r1.observation).toContain("no una prueba");
+    expect(english.tutorial.packs.animalsTimed.r3.verification).toContain("mirror");
+    expect(english.tutorial.packs.animalsTimed.r3.remember).toContain("clue, not proof");
+    expect(spanish.tutorial.packs.animalsTimed.r3.verification).toContain("espejo");
+    expect(spanish.tutorial.packs.animalsTimed.r3.remember).toContain("pista, no una prueba");
   });
 
   it("teaches that a visually ordinary or correct image can still be AI-generated", () => {
-    expect(english.tutorial.packs.animalsSingle.r2.remember).toContain("can still be made with AI");
-    expect(spanish.tutorial.packs.animalsSingle.r2.remember).toContain("no demuestra que sea real");
+    expect(english.tutorial.rounds.round3.verification).toContain("can also be made with AI");
+    expect(spanish.tutorial.rounds.round3.verification).toContain("tambi\u00e9n puede ser creada con IA");
     expect(english.tutorial.packs.sportsSingle.r1.remember).toContain("can look correct too");
     expect(spanish.tutorial.packs.sportsSingle.r1.remember).toContain("puede verse correcta");
   });
 
-  it("points children to source and context where those checks are available", () => {
-    expect(english.tutorial.packs.animalsSingle.r2.remember).toContain("source and context");
-    expect(spanish.tutorial.packs.animalsSingle.r2.remember).toContain("fuente y el contexto");
+  it("points children to evidence beyond appearance where those checks are available", () => {
+    expect(english.tutorial.packs.cityTimed.r3.remember).toContain("evidence beyond the image");
+    expect(spanish.tutorial.packs.cityTimed.r3.remember).toContain("evidencia fuera de la imagen");
     expect(english.tutorial.packs.sportsSingle.r1.remember).toContain("Check the source");
     expect(spanish.tutorial.packs.sportsSingle.r1.remember).toContain("Revisa la fuente");
   });
