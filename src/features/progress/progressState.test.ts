@@ -26,6 +26,7 @@ describe("canonical level progress", () => {
       version: PROGRESS_VERSION,
       completedLevelIds: [],
       bonusOpportunities: [],
+      achievementIds: [],
       rushUnlockedIslands: [],
       rankMissionCeiling: 13,
       mapOnboardingStage: "map-island",
@@ -109,6 +110,13 @@ describe("legacy migration", () => {
     expect(state.completedLevelIds).toEqual(["animals-1"]);
     expect(state.rushUnlockedIslands).toEqual(["difference"]);
     expect(state.bonusOpportunities).toEqual([]);
+    expect(state.achievementIds).toEqual([]);
+  });
+
+  it("normalizes older progress without achievements without losing other progress", () => {
+    const state = parseProgressState({ version: PROGRESS_VERSION, completedLevelIds: ["animals-1"] });
+    expect(state.completedLevelIds).toEqual(["animals-1"]);
+    expect(state.achievementIds).toEqual([]);
   });
 
   it("migrates playerName to the canonical device-only local nickname without losing progress", () => {
@@ -126,6 +134,7 @@ describe("legacy migration", () => {
       version: PROGRESS_VERSION,
       completedLevelIds: ["animals-1"],
       bonusOpportunities: [],
+      achievementIds: [],
       rushUnlockedIslands: [],
       rankMissionCeiling: 8,
       mapOnboardingStage: "complete",
@@ -212,6 +221,19 @@ describe("results", () => {
     const played = completeLevel(initialProgressState, "animals-1", completedAttempt);
 
     expect(resetProgressKeepingProfile(played).playedMs).toBe(0);
+  });
+
+  it("clears achievements on reset while keeping identity and guardian", () => {
+    const state = {
+      ...initialProgressState,
+      achievementIds: ["bonus-perfect-training" as const],
+      localNickname: "Luz",
+      guardian: { email: "adult@example.com", authorizedOn: "2026-08-09", syncPending: true }
+    };
+    const reset = resetProgressKeepingProfile(state);
+    expect(reset.achievementIds).toEqual([]);
+    expect(reset.localNickname).toBe("Luz");
+    expect(reset.guardian).toEqual(state.guardian);
   });
 
   it("ignores an invalid runtime level id", () => {

@@ -20,6 +20,7 @@ import {
   spinBonusWheelInStore,
   startBonusRushRunInStore,
   updateBonusRushRunInStore,
+  unlockAchievementsInStore,
   getProgressSnapshot,
   markOnboardedInStore,
   advanceMapOnboardingInStore,
@@ -33,6 +34,7 @@ import {
   subscribeToProgress
 } from "./progressStore";
 import type { BonusOpportunityInput, BonusRushRun, BonusWheelState } from "@/features/bonus/bonusOpportunity";
+import type { AchievementId } from "@/features/achievements/achievementModel";
 
 export type ProgressApi = {
   /** False until the stored progress has been read on the client. */
@@ -55,6 +57,7 @@ export type ProgressApi = {
   spinBonusWheel: (id: string, random?: () => number) => BonusWheelState | undefined;
   startBonusRushRun: (id: string, run: BonusRushRun) => void;
   updateBonusRushRun: (id: string, run: BonusRushRun) => void;
+  unlockAchievements: (candidates: readonly AchievementId[]) => AchievementId[];
   localNickname: string | null;
   apprenticeAvatarId: ApprenticeAvatarId | null;
   markOnboarded: (localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId) => void;
@@ -102,6 +105,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       spinBonusWheel: spinBonusWheelInStore,
       startBonusRushRun: startBonusRushRunInStore,
       updateBonusRushRun: updateBonusRushRunInStore,
+      unlockAchievements: unlockAchievementsInStore,
       markOnboarded: markOnboardedInStore,
       startAdultPlay: startAdultPlayInStore,
       advanceMapOnboarding: advanceMapOnboardingInStore,
