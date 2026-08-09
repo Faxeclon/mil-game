@@ -1,5 +1,5 @@
 import { categories, islands, missionBlueprint, isLevelId, type CategoryKey, type IslandKey, type LevelId } from "@/features/levels/levelModel";
-import type { BonusOpportunity, BonusRushRun } from "@/features/bonus/bonusOpportunity";
+import { bonusWheelRewards, type BonusOpportunity, type BonusRushRun, type BonusWheelState } from "@/features/bonus/bonusOpportunity";
 import { normalizeAdultEmail } from "@/features/adults/adultAccount";
 import { isApprenticeAvatarId, type ApprenticeAvatarId } from "@/features/profile/apprenticeAvatar";
 import { normalizeLocalNickname } from "@/features/profile/localNickname";
@@ -301,6 +301,21 @@ function parseBonusRushRun(value: unknown): BonusRushRun | undefined {
   };
 }
 
+function parseBonusWheel(value: unknown): BonusWheelState | undefined {
+  if (!isRecord(value)) return undefined;
+  if (value.status === "pending" && value.rerollUsed === false) return { status: "pending", rerollUsed: false };
+  if (value.status === "reroll" && value.rerollUsed === true) return { status: "reroll", rerollUsed: true };
+  if (
+    value.status === "resolved" &&
+    typeof value.rerollUsed === "boolean" &&
+    typeof value.reward === "string" &&
+    bonusWheelRewards.includes(value.reward as (typeof bonusWheelRewards)[number])
+  ) {
+    return { status: "resolved", rerollUsed: value.rerollUsed, reward: value.reward as (typeof bonusWheelRewards)[number] };
+  }
+  return undefined;
+}
+
 function parseBonusOpportunities(value: unknown): BonusOpportunity[] {
   if (!Array.isArray(value)) return [];
   const seen = new Set<string>();
@@ -311,6 +326,7 @@ function parseBonusOpportunities(value: unknown): BonusOpportunity[] {
     if (!isRecord(entry.destination) || (entry.destination.kind !== "worlds" && entry.destination.kind !== "island")) return [];
     if (entry.destination.kind === "island" && !isIslandKey(entry.destination.islandKey)) return [];
     const rushRun = entry.status === "active" ? parseBonusRushRun(entry.rushRun) : undefined;
+    const wheel = entry.status === "active" ? parseBonusWheel(entry.wheel) : undefined;
     seen.add(entry.id);
     return [{
       id: entry.id,
@@ -318,6 +334,7 @@ function parseBonusOpportunities(value: unknown): BonusOpportunity[] {
       islandKey: entry.islandKey,
       destination: entry.destination.kind === "worlds" ? { kind: "worlds" } : { kind: "island", islandKey: entry.destination.islandKey as IslandKey },
       status: entry.status,
+      ...(wheel ? { wheel } : {}),
       ...(rushRun ? { rushRun } : {})
     }];
   });

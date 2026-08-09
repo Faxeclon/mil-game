@@ -19,6 +19,7 @@ import { useProgress } from "@/features/progress/ProgressProvider";
 import { useRouter } from "@/i18n/navigation";
 import { ImageZoom } from "./ImageZoom";
 import { useRushCompletionRetention } from "./RushRouteGuard";
+import { BonusRewardWheel } from "./BonusRewardWheel";
 import styles from "./RushClient.module.css";
 
 function restoreDeck(pool: readonly RushItem[], itemIds: readonly string[] | undefined): RushItem[] {
@@ -75,6 +76,7 @@ export function RushClient({
   const [state, dispatch] = useReducer(rushReducer, run, getRushStateFromRun);
   const [deck, setDeck] = useState<RushItem[]>(() => restoreDeck(pool, run?.deckItemIds));
   const [secondsLeft, setSecondsLeft] = useState(() => run ? getBonusRushSecondsLeft(run.startedAt, RUSH_SECONDS) : RUSH_SECONDS);
+  const [wheelContinued, setWheelContinued] = useState(Boolean(run));
 
   const isPlaying = state.status === "playing";
 
@@ -101,7 +103,7 @@ export function RushClient({
   }, [bonus, consumeBonusOpportunity, retainCompletedBonus, state, updateBonusRushRun]);
 
   const beginRun = () => {
-    if (!bonus || bonus.rushRun || startedRunRef.current) return;
+    if (!bonus || bonus.wheel?.status !== "resolved" || !wheelContinued || bonus.rushRun || startedRunRef.current) return;
     const nextDeck = dealRush(pool);
     if (nextDeck.length === 0) return;
     startedRunRef.current = true;
@@ -140,6 +142,12 @@ export function RushClient({
   };
 
   if (!bonus) return null;
+
+  // Existing in-progress runs predate the wheel and continue uninterrupted. Every new
+  // run must have a persisted final reward before its lobby (and timer) are available.
+  if (!run && (bonus.wheel?.status !== "resolved" || !wheelContinued)) {
+    return <BonusRewardWheel bonus={bonus} onContinue={() => setWheelContinued(true)} />;
+  }
 
   if (state.status === "lobby") {
     return (

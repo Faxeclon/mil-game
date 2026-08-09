@@ -26,10 +26,12 @@ import {
   activateBonusOpportunity,
   consumeBonusOpportunity,
   createBonusOpportunity,
+  spinBonusWheel,
   startBonusRushRun,
   updateBonusRushRun,
   type BonusRushRun,
-  type BonusOpportunityInput
+  type BonusOpportunityInput,
+  type BonusWheelState
 } from "@/features/bonus/bonusOpportunity";
 import { requestPersistentStorage } from "@/features/offline/registerServiceWorker";
 import { readProfilesDocument, writeProfilesDocument } from "./progressStorage";
@@ -119,6 +121,14 @@ export function activateBonusOpportunityInStore(id: string): void {
 
 export function consumeBonusOpportunityInStore(id: string): void {
   applyToActiveProgress((state) => consumeBonusOpportunity(state, id));
+}
+
+/** Writes a wheel result before it is animated, preventing a refresh from rerolling it. */
+export function spinBonusWheelInStore(id: string, random?: () => number): BonusWheelState | undefined {
+  const before = snapshot.state.bonusOpportunities.find((bonus) => bonus.id === id)?.wheel;
+  applyToActiveProgress((state) => spinBonusWheel(state, id, random));
+  const after = snapshot.state.bonusOpportunities.find((bonus) => bonus.id === id)?.wheel;
+  return after ?? before;
 }
 
 export function startBonusRushRunInStore(id: string, run: BonusRushRun): void {

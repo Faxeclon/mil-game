@@ -9,6 +9,7 @@ import { initialProgressState } from "./progressState";
 import { PROFILES_STORAGE_KEY, PROGRESS_STORAGE_KEY } from "./progressStorage";
 import {
   completeLevelInStore,
+  activateBonusOpportunityInStore,
   createBonusOpportunityInStore,
   consumeBonusOpportunityInStore,
   authorizeGuardianInStore,
@@ -20,6 +21,7 @@ import {
   resetProgressInStore,
   selectProfileInStore,
   resetProgressStoreForTests,
+  spinBonusWheelInStore,
   startAdultPlayInStore,
   subscribeToProgress,
   unlinkChildFromAdultInStore
@@ -170,12 +172,16 @@ describe("progress store", () => {
       islandKey: "difference",
       destination: { kind: "island", islandKey: "difference" }
     });
+    // Activate it in the same profile so a persisted wheel result is profile-local too.
+    activateBonusOpportunityInStore("section-bonus:animals:attempt-1");
+    spinBonusWheelInStore("section-bonus:animals:attempt-1", () => 0);
     leaveLocalProfileInStore();
     markOnboardedInStore("Noa", "owl");
 
     expect(getProgressSnapshot().state.bonusOpportunities).toEqual([]);
     selectProfileInStore(firstId ?? "");
     expect(getProgressSnapshot().state.bonusOpportunities).toHaveLength(1);
+    expect(getProgressSnapshot().state.bonusOpportunities[0]?.wheel).toMatchObject({ status: "resolved", reward: "extra-life" });
     consumeBonusOpportunityInStore("section-bonus:animals:attempt-1");
     expect(getProgressSnapshot().state.bonusOpportunities[0]?.status).toBe("consumed");
     unsubscribe();

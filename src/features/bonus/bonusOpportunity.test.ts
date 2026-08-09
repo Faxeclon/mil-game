@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { initialProgressState, parseProgressState, resetProgressKeepingProfile } from "@/features/progress/progressState";
-import { activateBonusOpportunity, consumeBonusOpportunity, createBonusOpportunity, getActiveBonus, getActiveBonusForIsland, getBonusDestinationPath, getBonusOpportunityId, getPendingBonus, startBonusRushRun, updateBonusRushRun } from "./bonusOpportunity";
+import { activateBonusOpportunity, bonusWheelSegments, chooseBonusWheelSegment, consumeBonusOpportunity, createBonusOpportunity, getActiveBonus, getActiveBonusForIsland, getBonusDestinationPath, getBonusOpportunityId, getPendingBonus, spinBonusWheel, startBonusRushRun, updateBonusRushRun } from "./bonusOpportunity";
 
 const first = { id: "animals:attempt-1", categoryKey: "animals" as const, islandKey: "difference" as const, destination: { kind: "island" as const, islandKey: "difference" as const } };
 const second = { id: "animals:attempt-2", categoryKey: "animals" as const, islandKey: "difference" as const, destination: { kind: "worlds" as const } };
@@ -83,5 +83,36 @@ describe("per-profile bonus opportunities", () => {
     expect(next.completedLevelIds).toEqual(initialProgressState.completedLevelIds);
     expect(next.bestResultsByLevelId).toEqual(initialProgressState.bestResultsByLevelId);
     expect(next.rushUnlockedIslands).toEqual(initialProgressState.rushUnlockedIslands);
+  });
+
+  it("persists a first spin before animation, so refresh cannot reroll it", () => {
+    const active = activateBonusOpportunity(createBonusOpportunity(initialProgressState, first), first.id);
+    const spun = spinBonusWheel(active, first.id, () => 0.2);
+    const restored = parseProgressState(JSON.parse(JSON.stringify(spun)));
+
+    expect(restored.bonusOpportunities[0]?.wheel).toEqual({ status: "resolved", rerollUsed: false, reward: "double-points" });
+    expect(spinBonusWheel(restored, first.id, () => 0.8)).toBe(restored);
+  });
+
+  it("allows exactly one persisted reroll and excludes reroll from its second spin", () => {
+    const active = activateBonusOpportunity(createBonusOpportunity(initialProgressState, first), first.id);
+    const firstSpin = spinBonusWheel(active, first.id, () => 0.999);
+    expect(firstSpin.bonusOpportunities[0]?.wheel).toEqual({ status: "reroll", rerollUsed: true });
+
+    const secondSpin = spinBonusWheel(parseProgressState(JSON.parse(JSON.stringify(firstSpin))), first.id, () => 0.999);
+    expect(secondSpin.bonusOpportunities[0]?.wheel).toEqual({ status: "resolved", rerollUsed: true, reward: "none" });
+    expect(spinBonusWheel(secondSpin, first.id, () => 0)).toBe(secondSpin);
+    expect(chooseBonusWheelSegment(true, () => 0.999)).not.toBe("reroll");
+  });
+
+  it("keeps wheel state isolated to each opportunity and leaves normal progress alone", () => {
+    const active = activateBonusOpportunity(createBonusOpportunity({ ...initialProgressState, completedLevelIds: ["animals-1"] }, first), first.id);
+    const spun = spinBonusWheel(active, first.id, () => 0);
+    const later = createBonusOpportunity(consumeBonusOpportunity(spun, first.id), second);
+
+    expect(later.bonusOpportunities[0]?.wheel).toEqual({ status: "resolved", rerollUsed: false, reward: "extra-life" });
+    expect(later.bonusOpportunities[1]?.wheel).toBeUndefined();
+    expect(later.completedLevelIds).toEqual(["animals-1"]);
+    expect(bonusWheelSegments).toHaveLength(6);
   });
 });

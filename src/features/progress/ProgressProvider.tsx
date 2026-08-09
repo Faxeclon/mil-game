@@ -17,6 +17,7 @@ import {
   completeLevelInStore,
   consumeBonusOpportunityInStore,
   createBonusOpportunityInStore,
+  spinBonusWheelInStore,
   startBonusRushRunInStore,
   updateBonusRushRunInStore,
   getProgressSnapshot,
@@ -31,7 +32,7 @@ import {
   startAdultPlayInStore,
   subscribeToProgress
 } from "./progressStore";
-import type { BonusOpportunityInput, BonusRushRun } from "@/features/bonus/bonusOpportunity";
+import type { BonusOpportunityInput, BonusRushRun, BonusWheelState } from "@/features/bonus/bonusOpportunity";
 
 export type ProgressApi = {
   /** False until the stored progress has been read on the client. */
@@ -51,6 +52,7 @@ export type ProgressApi = {
   createBonusOpportunity: (input: BonusOpportunityInput) => void;
   activateBonusOpportunity: (id: string) => void;
   consumeBonusOpportunity: (id: string) => void;
+  spinBonusWheel: (id: string, random?: () => number) => BonusWheelState | undefined;
   startBonusRushRun: (id: string, run: BonusRushRun) => void;
   updateBonusRushRun: (id: string, run: BonusRushRun) => void;
   localNickname: string | null;
@@ -97,6 +99,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       createBonusOpportunity: createBonusOpportunityInStore,
       activateBonusOpportunity: activateBonusOpportunityInStore,
       consumeBonusOpportunity: consumeBonusOpportunityInStore,
+      spinBonusWheel: spinBonusWheelInStore,
       startBonusRushRun: startBonusRushRunInStore,
       updateBonusRushRun: updateBonusRushRunInStore,
       markOnboarded: markOnboardedInStore,
