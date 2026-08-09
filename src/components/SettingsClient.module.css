@@ -178,12 +178,104 @@
 
 /* ------------------------------------------------------ How you want to play */
 
+.presetList,
 .switchList {
   margin: 0.85rem 0 0;
   padding: 0;
   display: grid;
   gap: 0.6rem;
   list-style: none;
+}
+
+/*
+ * The whole card is the button. A child aiming at a small toggle on a cheap phone with a
+ * cracked screen misses; a card the width of the page does not.
+ */
+.preset {
+  width: 100%;
+  padding: 0.85rem 0.9rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  border: 1px solid var(--s-hairline-strong);
+  border-radius: 1rem;
+  background: var(--s-paper);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.presetOn {
+  border-color: var(--s-mint);
+  background: var(--s-mint-soft);
+}
+
+.preset:focus-visible {
+  outline: 3px solid var(--s-accent-strong);
+  outline-offset: 3px;
+}
+
+.presetIcon {
+  width: 2.4rem;
+  height: 2.4rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 0.85rem;
+  background: #f4f1ef;
+  color: var(--s-ink-soft);
+}
+
+.presetOn .presetIcon {
+  background: #fff;
+  color: var(--s-mint);
+}
+
+.presetBody {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.presetName {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+}
+
+.presetDetail {
+  color: var(--s-ink-soft);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+/* Who it was built for. Present, because guessing is the thing we set out to remove —
+   but quieter than the name, because nobody has to qualify to press the button. */
+.presetFor {
+  color: var(--s-ink-soft);
+  font-size: 0.74rem;
+  line-height: 1.3;
+  opacity: 0.85;
+}
+
+/* A tick and a ring, never colour alone. Fixed width so it cannot wrap under the text. */
+.presetMark {
+  width: 1.6rem;
+  height: 1.6rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--s-hairline-strong);
+  border-radius: 999px;
+  color: transparent;
+}
+
+.presetOn .presetMark {
+  border-color: var(--s-mint);
+  background: var(--s-mint);
+  color: #fff;
 }
 
 /*
@@ -241,38 +333,180 @@
   line-height: 1.4;
 }
 
-/* --------------------------------------------------------- Why it is named so */
-
-.why {
-  margin-top: 1rem;
-  padding: 0.85rem 0.9rem;
-  border: 1px dashed var(--s-hairline-strong);
-  border-radius: 1rem;
-  background: #fffdfb;
+/* The gear sits with the heading, not in the list it opens. */
+.groupHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
 }
 
-.whyTitle {
-  margin: 0;
+.gear {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0 0.55rem;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 1px solid var(--s-hairline-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--s-ink-soft);
+  font: inherit;
+  cursor: pointer;
+}
+
+/* When neither card matches, the gear says so rather than leaving two dark cards
+   and no explanation. */
+.gearOn {
+  border-color: var(--s-mint);
+  background: var(--s-mint-soft);
+  color: var(--s-mint);
+}
+
+.gearLabel {
+  font-size: 0.76rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.gear:focus-visible {
+  outline: 3px solid var(--s-accent-strong);
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------------ Two kinds of reset -- */
+
+.resetName {
+  display: block;
+  color: var(--s-ink);
   font-size: 0.9rem;
   font-weight: 800;
 }
 
-.whyBody {
-  max-width: 46ch;
-  margin: 0.4rem 0 0;
+.resetDetail {
+  display: block;
+  margin-top: 0.12rem;
   color: var(--s-ink-soft);
-  font-size: 0.82rem;
-  line-height: 1.5;
+  font-size: 0.78rem;
+  line-height: 1.4;
 }
 
-.whyHonest {
-  max-width: 46ch;
-  margin: 0.5rem 0 0;
-  color: var(--s-ink);
-  font-size: 0.82rem;
-  font-weight: 700;
-  line-height: 1.45;
+/* Erasing every medal earns a heavier button than putting four switches back. */
+.resetDanger {
+  min-height: 2.75rem;
+  padding: 0.45rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--s-accent-strong);
+  border-radius: 999px;
+  background: var(--s-accent-soft);
+  color: var(--s-accent-ink);
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
 }
+
+.resetDanger:disabled {
+  border-color: var(--s-hairline-strong);
+  background: transparent;
+  color: var(--s-ink-soft);
+  cursor: not-allowed;
+}
+
+.resetDanger:focus-visible {
+  outline: 3px solid var(--s-accent-strong);
+  outline-offset: 3px;
+}
+
+/* The gentler of the two: a question, not a warning. */
+.resetSoftQuestion {
+  max-width: 34ch;
+  color: var(--s-ink-soft);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* ------------------------------------------------------------------ Modal --- */
+
+/* The four switches live behind the gear so the screen a child meets first stays down to
+   two choices. A native dialog is used so Escape, the backdrop and the focus trap come
+   from the browser instead of being reimplemented badly. */
+.modal {
+  width: min(100%, 28rem);
+  max-height: 85dvh;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 1.25rem;
+  background: var(--s-paper);
+  color: var(--s-ink);
+  overflow: hidden;
+}
+
+.modal::backdrop {
+  background: rgb(31 42 68 / 45%);
+}
+
+.modalInner {
+  max-height: 85dvh;
+  padding: clamp(1rem, 4vw, 1.35rem);
+  overflow-y: auto;
+}
+
+.modalHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.modalClose {
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--s-hairline-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--s-ink-soft);
+  cursor: pointer;
+}
+
+.modalClose:focus-visible,
+.modalDone:focus-visible {
+  outline: 3px solid var(--s-accent-strong);
+  outline-offset: 3px;
+}
+
+.modalDone {
+  width: 100%;
+  min-height: 2.75rem;
+  margin-top: 0.9rem;
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--s-accent-strong);
+  color: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------- Why it is named so */
 
 /* ------------------------------------------------------------------- Reset */
 
@@ -306,6 +540,99 @@
   font-size: 0.85rem;
   font-weight: 800;
   cursor: pointer;
+}
+
+/*
+ * The way into teacher mode, kept to one line.
+ *
+ * It used to be a full row with a description, which gave a door most people will never
+ * open the same weight as the child's own data. A button says the same thing and asks for
+ * a fraction of the screen.
+ */
+/*
+ * Leaving, at the foot of the page and set apart.
+ *
+ * It is the only control here that ends the session rather than adjusting it, so it gets
+ * distance from the settings above rather than sitting among them like another toggle.
+ */
+.leaveRow {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid var(--s-hairline, #ece7e6);
+}
+
+.leaveButton {
+  min-height: 3rem;
+  padding: 0 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 2px solid var(--s-hairline-strong, #d5cfcd);
+  border-radius: 999px;
+  background: #fff;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+/* The question, asked over the page so it costs nothing until it is asked. */
+.confirmOverlay {
+  position: fixed;
+  z-index: 60;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(13, 18, 32, 0.55);
+}
+
+.confirmSheet {
+  width: min(100%, 24rem);
+  padding: 1.35rem 1.2rem 1.2rem;
+  border-radius: 1.25rem;
+  background: #fff;
+  text-align: center;
+}
+
+.confirmQuestion {
+  margin: 0 0 1.1rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.confirmActions {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+/* Both doors on one line where there is room, stacked where there is not. */
+.adultDoors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.teacherEntry {
+  min-height: 2.9rem;
+  margin-top: 0.6rem;
+  padding: 0 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 2px solid var(--s-hairline-strong, #d5cfcd);
+  border-radius: 999px;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-decoration: none;
 }
 
 .resetStart {

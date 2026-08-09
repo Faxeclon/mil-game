@@ -1,4 +1,5 @@
 import { categories, islands, missionBlueprint, isLevelId, type IslandKey, type LevelId } from "@/features/levels/levelModel";
+import { normalizeAdultEmail } from "@/features/adults/adultAccount";
 import { isApprenticeAvatarId, type ApprenticeAvatarId } from "@/features/profile/apprenticeAvatar";
 import { normalizeLocalNickname } from "@/features/profile/localNickname";
 import { isAttemptId, parseCompletedAt, parseElapsedMs } from "./attemptMetadata";
@@ -88,6 +89,24 @@ export type ProgressState = {
    * siblings on the same phone can perfectly well have one authorised and one not.
    */
   guardian: GuardianConsent | null;
+  /**
+   * The grown-up whose own game this is, or null when the profile belongs to a child.
+   *
+   * A teacher or a parent already said who they are when they signed in, so asking them
+   * to invent a nickname and pick an apprentice before they may play is asking the same
+   * question twice. Their address is kept here for one reason: so their own game is never
+   * counted among the children they look after.
+   */
+  adultEmail: string | null;
+  /**
+   * Time spent inside missions, in milliseconds, added up as they are finished.
+   *
+   * Stored rather than derived because the records only keep each mission's best run, so
+   * adding those up would quietly under-report a child who played the same mission five
+   * times - and under-reporting is the one direction this number must not be wrong in
+   * when a parent is reading it to decide whether their child is on the phone too long.
+   */
+  playedMs: number;
 };
 
 /** Summary of the attempt a player just finished, used by the results screen. */
@@ -125,8 +144,41 @@ export const initialProgressState: ProgressState = {
   apprenticeAvatarId: null,
   bestResultsByLevelId: {},
   streak: initialStreak,
-  guardian: null
+  guardian: null,
+  adultEmail: null,
+  playedMs: 0
 };
+
+/**
+ * Starts the game over for the child already holding the phone.
+ *
+ * The distinction that makes this correct is that there are two different onboardings in
+ * here, and only one of them is progress:
+ *
+ *   `onboarded`          they created a profile   - kept, or the game asks their name again
+ *   `mapOnboardingStage` the one-time map tour    - replayed, since the map is new again
+ *
+ * Wiping the whole state was the old behaviour, and it took the nickname with it, which is
+ * why erasing progress could end up looking like losing your account. Everything that is
+ * genuinely progress goes; who you are, and how you like to be spoken to, stays.
+ *
+ * The Rush rewards go too. They are stored rather than derived precisely so a reward
+ * already earned survives new content, and that same durability would otherwise let them
+ * survive a reset the child deliberately asked for.
+ */
+export function resetProgressKeepingProfile(state: ProgressState): ProgressState {
+  return {
+    ...initialProgressState,
+    // Who they are, kept exactly as it was.
+    localNickname: state.localNickname,
+    apprenticeAvatarId: state.apprenticeAvatarId,
+    onboarded: state.onboarded,
+    // Consent belongs to the adult who gave it, not to a run of the game.
+    guardian: state.guardian,
+    // Whose game this is survives too, or a grown-up's reset would turn them into a child.
+    adultEmail: state.adultEmail
+  };
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -177,6 +229,12 @@ function normalizeLevelAttempt(value: unknown): LevelAttempt | undefined {
 /** Only Initial Training had an unambiguous successor in the legacy mission map. */
 function legacyMissionToLevelId(value: unknown): LevelId | undefined {
   return value === "training" ? "basics-1" : undefined;
+}
+
+/** A negative or nonsensical total is read as no time at all, never as a guess. */
+function parsePlayedMs(value: unknown): number {
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) return 0;
+  return Math.trunc(value);
 }
 
 function parseCompletedLevelIds(value: unknown): LevelId[] {
@@ -247,6 +305,10 @@ export function parseProgressState(value: unknown): ProgressState {
     bestResultsByLevelId: parseBestResults(value.bestResultsByLevelId),
     streak: parseStreak(value.streak),
     guardian: parseGuardianConsent(value.guardian),
+    // Missing means a child's profile, which is what every profile was before this existed.
+    adultEmail: normalizeAdultEmail(value.adultEmail),
+    // Absent for everybody who played before it was counted; nothing is invented for them.
+    playedMs: parsePlayedMs(value.playedMs),
     ...(lastResult ? { lastResult } : {})
   };
 }
@@ -274,6 +336,24 @@ export function markOnboarded(
     ...(nickname ? { localNickname: nickname } : {}),
     apprenticeAvatarId: avatarId
   };
+}
+
+/**
+ * Turns a grown-up's sign-in into a player, without asking them anything.
+ *
+ * They already answered the only question this game asks - who are you - when they typed
+ * their address, so a nickname form afterwards would be the same question a second time.
+ * The name they play under comes from that address, and the address itself is recorded so
+ * their game is never mistaken for one of the children they look after.
+ */
+export function playAsAdult(state: ProgressState, email: unknown, nickname: string): ProgressState {
+  const adultEmail = normalizeAdultEmail(email);
+  const localNickname = normalizeLocalNickname(nickname);
+  if (!adultEmail || !localNickname) return state;
+  if (state.adultEmail === adultEmail && state.onboarded === true && state.localNickname === localNickname) {
+    return state;
+  }
+  return { ...markOnboarded(state, localNickname), adultEmail };
 }
 
 /** Returning players with saved progress need only finish their local profile, not replay Roqui's tutorial. */
@@ -320,6 +400,9 @@ export function completeLevel(
     completedLevelIds,
     rushUnlockedIslands: [...new Set([...state.rushUnlockedIslands, ...newlyCompletedIslands])],
     rankMissionCeiling: Math.max(state.rankMissionCeiling, completedLevelIds.length),
+    // Every run counts, including the replays a record ignores: this is time spent, not
+    // a score, and a child who played the same mission five times did spend that time.
+    playedMs: state.playedMs + Math.max(attempt.elapsedMs, 0),
     onboarded: true,
     bestResultsByLevelId,
     // Replaying on the same day is welcome but adds nothing: a streak counts days, not runs.

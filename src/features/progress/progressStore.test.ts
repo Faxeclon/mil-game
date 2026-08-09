@@ -6,8 +6,11 @@ import {
   completeLevelInStore,
   getProgressSnapshot,
   getServerProgressSnapshot,
+  leaveLocalProfileInStore,
+  markOnboardedInStore,
   resetProgressInStore,
   resetProgressStoreForTests,
+  startAdultPlayInStore,
   subscribeToProgress
 } from "./progressStore";
 
@@ -117,16 +120,100 @@ describe("progress store", () => {
     unsubscribe();
   });
 
-  it("leaves the device empty enough to start over after a reset", () => {
+  /*
+   * A reset restarts the game, it does not unmake the child. Wiping the nickname too was
+   * the old behaviour, and it landed them back on the form asking who they are - which is
+   * exactly what "erase my progress" should never do.
+   */
+  it("clears the game but keeps the player after a reset", () => {
     stubStorage();
     const unsubscribe = subscribeToProgress(() => {});
+    markOnboardedInStore("Roqui 47", "fox");
     completeLevelInStore("basics-1", attemptedLevel);
 
     resetProgressInStore();
+    const state = getProgressSnapshot().state;
 
-    // Nothing to unlock, nothing recorded, no nickname: the same as a new device.
-    expect(getProgressSnapshot().state).toEqual(initialProgressState);
+    expect(state.completedLevelIds).toEqual([]);
+    expect(state.bestResultsByLevelId).toEqual({});
+    expect(state.rushUnlockedIslands).toEqual([]);
+    // The map is new again, so its one-time tour plays again.
+    expect(state.mapOnboardingStage).toBe("map-island");
+
+    expect(state.localNickname).toBe("Roqui 47");
+    expect(state.apprenticeAvatarId).toBe("fox");
+    expect(state.onboarded).toBe(true);
     unsubscribe();
   });
 
+});
+
+/**
+ * A grown-up who signed in already answered the only question this game asks - who are
+ * you - so the game has to open, not a second sign-up form.
+ */
+describe("a grown-up playing as themselves", () => {
+  it("becomes a player with no form and no questions", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+
+    startAdultPlayInStore("marta@example.com", "marta");
+    const { state } = getProgressSnapshot();
+
+    expect(state.onboarded).toBe(true);
+    expect(state.localNickname).toBe("marta");
+    expect(state.adultEmail).toBe("marta@example.com");
+    unsubscribe();
+  });
+
+  /*
+   * Their game is a profile like any other, so leaving to run a lesson and coming back
+   * has to return them to their own medals rather than a blank start.
+   */
+  it("returns to the same game rather than starting another one", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    startAdultPlayInStore("marta@example.com", "marta");
+    completeLevelInStore("basics-1", attemptedLevel);
+    leaveLocalProfileInStore();
+
+    startAdultPlayInStore("marta@example.com", "marta");
+    const { state, profiles } = getProgressSnapshot();
+
+    expect(profiles.profiles).toHaveLength(1);
+    expect(state.completedLevelIds).toEqual(["basics-1"]);
+    unsubscribe();
+  });
+
+  /*
+   * The child keeps everything. A grown-up picking up the phone to try a round must not
+   * cost the player whose medals were on it.
+   */
+  it("steps away from the child playing instead of writing over them", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    markOnboardedInStore("Lu", "fox");
+    completeLevelInStore("basics-1", attemptedLevel);
+
+    startAdultPlayInStore("marta@example.com", "marta");
+    const { state, profiles } = getProgressSnapshot();
+
+    expect(profiles.profiles).toHaveLength(2);
+    expect(profiles.profiles[0].progress.localNickname).toBe("Lu");
+    expect(profiles.profiles[0].progress.completedLevelIds).toEqual(["basics-1"]);
+    // The grown-up starts their own game, not inside the child's.
+    expect(state.completedLevelIds).toEqual([]);
+    expect(state.localNickname).toBe("marta");
+    unsubscribe();
+  });
+
+  it("refuses to make a nameless profile out of nothing", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+
+    startAdultPlayInStore("   ", "   ");
+
+    expect(getProgressSnapshot().profiles.profiles).toHaveLength(0);
+    unsubscribe();
+  });
 });

@@ -132,9 +132,10 @@
   background: #f1f8f3;
 }
 
+/* The shape of a phone photo: a class judging from four rows back needs the picture, not the frame. */
 .optionMedia {
   position: relative;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 9 / 16;
   overflow: hidden;
   border-radius: 0.6rem;
   background: var(--c-hairline);

@@ -118,13 +118,28 @@ export type ContinueDestination =
 export function getContinueDestination(state: ProgressState, completedLevelId: string): ContinueDestination {
   const completedIndex = missionBlueprint.findIndex((mission) => mission.id === completedLevelId);
   if (completedIndex === -1) return { kind: "worlds" };
+
+  const islandKey = getIslandOfMission(completedLevelId);
+
+  /*
+   * Finishing an island is a moment, not a corridor.
+   *
+   * Carrying straight on would sweep the child into the next island the instant they
+   * earned the last one, so the hundred per cent, the finished path and whatever Rush
+   * just opened would all happen behind them, unseen. Sending them back to the island
+   * they just closed is what turns the unlock into a reward rather than an accident.
+   *
+   * Which island counts as finished comes from the level model, so this is true of every
+   * island there is and of any island added later.
+   */
+  if (islandKey && isIslandCompleted(state, islandKey)) return { kind: "island", islandKey };
+
   const laterMission = missionBlueprint
     .slice(completedIndex + 1)
     .find((mission) => Boolean(mission.packId) && !isLevelCompleted(state, mission.id) && isMissionUnlocked(state, mission.id));
 
   if (laterMission) return { kind: "level", levelId: laterMission.id as LevelId };
 
-  const islandKey = getIslandOfMission(completedLevelId);
   return islandKey ? { kind: "island", islandKey } : { kind: "worlds" };
 }
 

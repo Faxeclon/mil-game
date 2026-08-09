@@ -3,8 +3,8 @@
 import { createContext, useCallback, useContext, useEffect, useRef } from "react";
 import {
   configureBackgroundMusic,
-  pauseBackgroundMusicForSpeech,
-  resumeBackgroundMusicAfterSpeech,
+  duckBackgroundMusicForSpeech,
+  restoreBackgroundMusicAfterSpeech,
   playBackgroundMusic
 } from "@/features/audio/backgroundMusicController";
 import { setSoundEnabled, useSoundEnabled } from "@/features/audio/soundPreference";
@@ -13,8 +13,9 @@ type BackgroundMusicContextValue = {
   enabled: boolean;
   toggleMusic: () => void;
   enableForNewProfile: () => void;
-  pauseForSpeech: () => boolean;
-  resumeAfterSpeech: (wasPlaying: boolean) => void;
+  /** Turns the music down while the narrator speaks, and back up afterwards. */
+  duckForSpeech: () => void;
+  restoreAfterSpeech: () => void;
 };
 
 const BackgroundMusicContext = createContext<BackgroundMusicContextValue | null>(null);
@@ -54,17 +55,9 @@ export function BackgroundMusicProvider({ children }: { children: React.ReactNod
     void resume();
   }, [resume]);
 
-  const pauseForSpeech = useCallback(
-    () => pauseBackgroundMusicForSpeech(audioRef.current, enabled),
-    [enabled]
-  );
+  const duckForSpeech = useCallback(() => duckBackgroundMusicForSpeech(audioRef.current), []);
 
-  const resumeAfterSpeech = useCallback(
-    (wasPlaying: boolean) => {
-      void resumeBackgroundMusicAfterSpeech(audioRef.current, enabled, wasPlaying);
-    },
-    [enabled]
-  );
+  const restoreAfterSpeech = useCallback(() => restoreBackgroundMusicAfterSpeech(audioRef.current), []);
 
   useEffect(() => {
     if (!enabled || playbackAllowed.current) return;
@@ -105,7 +98,7 @@ export function BackgroundMusicProvider({ children }: { children: React.ReactNod
   }, []);
 
   return (
-    <BackgroundMusicContext.Provider value={{ enabled, toggleMusic, enableForNewProfile, pauseForSpeech, resumeAfterSpeech }}>
+    <BackgroundMusicContext.Provider value={{ enabled, toggleMusic, enableForNewProfile, duckForSpeech, restoreAfterSpeech }}>
       {children}
     </BackgroundMusicContext.Provider>
   );

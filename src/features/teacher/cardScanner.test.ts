@@ -1,36 +1,60 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
-import {
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+const decode = vi.fn();
+vi.mock("jsqr", () => ({ default: (...args: unknown[]) => decode(...args) }));
+
+const {
   canDetectCodes,
   canOpenCamera,
   closeCamera,
   createCardDetector,
+  getScanScale,
   openCamera
-} from "./cardScanner";
+} = await import("./cardScanner");
+
+/** A canvas that records what it was asked to draw, without needing a real one. */
+function stubCanvas(options: { context?: boolean } = {}) {
+  const drawn: Array<{ width: number; height: number }> = [];
+  const canvas = {
+    width: 0,
+    height: 0,
+    getContext: () =>
+      options.context === false
+        ? null
+        : {
+            drawImage: (_source: unknown, _x: number, _y: number, width: number, height: number) => {
+              drawn.push({ width, height });
+            },
+            getImageData: (_x: number, _y: number, width: number, height: number) => ({
+              data: new Uint8ClampedArray(width * height * 4),
+              width,
+              height
+            })
+          }
+  };
+  vi.stubGlobal("document", { createElement: () => canvas });
+  return { canvas, drawn };
+}
+
+/** A video element as the sweep hands it in. */
+const frame = { videoWidth: 1920, videoHeight: 1080 } as unknown as CanvasImageSource;
+
+beforeEach(() => {
+  decode.mockReset();
+});
 
 afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-function withDetector(detect: (source: unknown) => Promise<unknown>) {
-  class FakeDetector {
-    detect = detect;
-  }
-  vi.stubGlobal("window", { BarcodeDetector: FakeDetector });
-}
-
 describe("knowing what this browser can do before promising it", () => {
-  it("reports no code reading when the browser has none", () => {
-    vi.stubGlobal("window", {});
+  it("reports no code reading where there is no canvas to decode through", () => {
+    vi.stubGlobal("document", undefined);
     expect(canDetectCodes()).toBe(false);
   });
 
-  it("reports no code reading when the name exists but is not usable", () => {
-    vi.stubGlobal("window", { BarcodeDetector: "yes" });
-    expect(canDetectCodes()).toBe(false);
-  });
-
-  it("reports code reading when the browser provides it", () => {
-    withDetector(async () => []);
+  it("reports code reading wherever a canvas can be made", () => {
+    stubCanvas();
     expect(canDetectCodes()).toBe(true);
   });
 
@@ -48,42 +72,78 @@ describe("knowing what this browser can do before promising it", () => {
   });
 });
 
+describe("keeping the work down to what a cheap phone can do", () => {
+  it("shrinks a large frame and leaves a small one alone", () => {
+    expect(getScanScale(1920, 1080)).toBeCloseTo(640 / 1920);
+    expect(getScanScale(1080, 1920)).toBeCloseTo(640 / 1920);
+    expect(getScanScale(320, 240)).toBe(1);
+  });
+
+  it("refuses to divide by a frame that has no size", () => {
+    expect(getScanScale(0, 0)).toBe(1);
+    expect(getScanScale(Number.NaN, 10)).toBe(1);
+  });
+
+  it("decodes the shrunk frame rather than the full one", async () => {
+    const { drawn } = stubCanvas();
+    decode.mockReturnValue(null);
+
+    await createCardDetector()!.detect(frame);
+
+    expect(drawn).toEqual([{ width: 640, height: 360 }]);
+  });
+});
+
 describe("turning what the decoder saw into something the session understands", () => {
-  it("builds no detector when the browser cannot read codes", () => {
-    vi.stubGlobal("window", {});
+  it("builds no detector without a canvas context", () => {
+    stubCanvas({ context: false });
     expect(createCardDetector()).toBeNull();
   });
 
-  it("builds no detector when construction itself fails", () => {
-    class Hostile {
-      constructor() {
-        throw new Error("qr_code unsupported");
+  /*
+   * The reason this file stopped using the browser's own BarcodeDetector. Its corner
+   * points arrive ordered by the image, so the first edge pointed rightwards however the
+   * card was turned and every child was recorded as answering A. The finder patterns are
+   * the code's own, so the line between them turns with the paper.
+   */
+  it("hands on the finder patterns, which are what carry the rotation", async () => {
+    stubCanvas();
+    const topLeftFinderPattern = { x: 10, y: 10 };
+    const topRightFinderPattern = { x: 90, y: 10 };
+    decode.mockReturnValue({
+      data: "KIKIRIA:1:AAAAAA:BBBBBB",
+      location: {
+        topLeftFinderPattern,
+        topRightFinderPattern,
+        bottomLeftFinderPattern: { x: 10, y: 90 },
+        topLeftCorner: { x: 0, y: 0 },
+        topRightCorner: { x: 100, y: 0 }
       }
-    }
-    vi.stubGlobal("window", { BarcodeDetector: Hostile });
-    expect(createCardDetector()).toBeNull();
+    });
+
+    const detected = await createCardDetector()!.detect(frame);
+
+    expect(detected).toEqual([
+      {
+        payload: "KIKIRIA:1:AAAAAA:BBBBBB",
+        corners: [topLeftFinderPattern, topRightFinderPattern]
+      }
+    ]);
   });
 
-  it("passes through the decoded text and the corners that carry the orientation", async () => {
-    const corners = [
-      { x: 0, y: 0 },
-      { x: 8, y: 0 },
-      { x: 8, y: 8 },
-      { x: 0, y: 8 }
-    ];
-    withDetector(async () => [{ rawValue: "KIKIRIA:1:AAAAAA:BBBBBB", cornerPoints: corners }]);
+  it("reports nothing when the frame holds no code", async () => {
+    stubCanvas();
+    decode.mockReturnValue(null);
 
-    const detected = await createCardDetector()!.detect({} as CanvasImageSource);
-
-    expect(detected).toEqual([{ payload: "KIKIRIA:1:AAAAAA:BBBBBB", corners }]);
+    await expect(createCardDetector()!.detect(frame)).resolves.toEqual([]);
   });
 
-  it("survives a decoder that reports no corners, leaving the answer undecidable", async () => {
-    withDetector(async () => [{ rawValue: "KIKIRIA:1:AAAAAA:BBBBBB", cornerPoints: undefined }]);
+  it("reports nothing when the source has no readable size yet", async () => {
+    stubCanvas();
+    decode.mockReturnValue(null);
 
-    const detected = await createCardDetector()!.detect({} as CanvasImageSource);
-
-    expect(detected).toEqual([{ payload: "KIKIRIA:1:AAAAAA:BBBBBB", corners: [] }]);
+    await expect(createCardDetector()!.detect({} as CanvasImageSource)).resolves.toEqual([]);
+    expect(decode).not.toHaveBeenCalled();
   });
 
   /*
@@ -91,11 +151,12 @@ describe("turning what the decoder saw into something the session understands", 
    * would end the sweep; an empty frame just means the teacher keeps walking.
    */
   it("treats an unreadable frame as an empty one rather than an error", async () => {
-    withDetector(async () => {
+    stubCanvas();
+    decode.mockImplementation(() => {
       throw new Error("frame not ready");
     });
 
-    await expect(createCardDetector()!.detect({} as CanvasImageSource)).resolves.toEqual([]);
+    await expect(createCardDetector()!.detect(frame)).resolves.toEqual([]);
   });
 });
 

@@ -1,0 +1,208 @@
+/*
+ * One door for both kinds of grown-up. The role is chosen first because it decides what
+ * the whole app looks like afterwards, and it is offered as two cards rather than a
+ * dropdown so the difference can be read rather than guessed.
+ */
+
+.join::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background: #fff9f6;
+  content: "";
+  pointer-events: none;
+}
+
+.join > * {
+  position: relative;
+  z-index: 1;
+}
+
+.join {
+  --j-ink: #1f2a44;
+  --j-ink-soft: #5b6780;
+  --j-hairline: #ece7e6;
+  --j-hairline-strong: #d5cfcd;
+  --j-accent-strong: #c93c0b;
+  --j-accent-ink: #b8380a;
+  --j-accent-soft: #ffece4;
+
+  width: min(100%, 34rem);
+  margin: 0 auto;
+  padding-bottom: 3rem;
+  color: var(--j-ink);
+}
+
+.back {
+  min-height: 2.75rem;
+  margin-top: clamp(0.5rem, 3vw, 1.25rem);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--j-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.title {
+  margin: 0.6rem 0 0;
+  font-size: clamp(1.5rem, 6vw, 2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.lead {
+  max-width: 44ch;
+  margin: 0.45rem 0 0;
+  color: var(--j-ink-soft);
+  font-size: 0.96rem;
+  line-height: 1.5;
+}
+
+.form {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.roles {
+  margin: 0 0 1.1rem;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+  border: 0;
+}
+
+.role,
+.roleOn {
+  padding: 0.85rem 1rem;
+  display: grid;
+  gap: 0.15rem;
+  border: 2px solid var(--j-hairline-strong);
+  border-radius: 1rem;
+  background: #fff;
+  color: var(--j-ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+/* Never colour alone: the chosen one also carries the heavier border and the tint. */
+.roleOn {
+  border-color: var(--j-accent-strong);
+  background: var(--j-accent-soft);
+  color: var(--j-accent-ink);
+}
+
+.roleName {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.roleDetail {
+  color: var(--j-ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.roleOn .roleDetail {
+  color: var(--j-accent-ink);
+}
+
+.fieldLabel {
+  padding: 0;
+  color: var(--j-ink-soft);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.input {
+  min-height: 3rem;
+  padding: 0 0.8rem;
+  border: 2px solid var(--j-hairline-strong);
+  border-radius: 0.8rem;
+  background: #fff;
+  color: var(--j-ink);
+  font: inherit;
+  font-size: 1rem;
+}
+
+.hint,
+.notSent {
+  margin: 0.2rem 0 0;
+  color: var(--j-ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.notSent {
+  margin-top: 1.5rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.8rem;
+  background: var(--j-accent-soft);
+  color: var(--j-accent-ink);
+  font-weight: 700;
+}
+
+/* Not a telling-off: somebody who has not registered yet is simply new here. */
+.notice {
+  margin: 0.2rem 0 0;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.7rem;
+  background: var(--j-accent-soft);
+  color: var(--j-accent-ink);
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.error {
+  margin: 0.2rem 0 0;
+  color: #a3341b;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+/* The other door. Guessing wrong should cost one tap, not a trip back to the start. */
+.switchMode {
+  min-height: 2.75rem;
+  margin: 1rem auto 0;
+  padding: 0 0.9rem;
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--j-accent-ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-decoration: underline;
+}
+
+.primary {
+  min-height: 3.1rem;
+  margin-top: 1.1rem;
+  padding: 0 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0.9rem;
+  background: var(--j-accent-strong);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+@media (min-width: 30rem) {
+  .roles {
+    grid-template-columns: 1fr 1fr;
+  }
+}

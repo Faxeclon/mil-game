@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useReducer, useRef, useState } from "react";
 import { Accessibility, Check, ChevronLeft, Sparkles, Target, Timer as TimerIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ListenButton } from "@/components/ListenButton";
+import { Narrator } from "@/components/Narrator";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { ActiveResponseTimer } from "@/features/game/activeResponseTimer";
@@ -33,6 +33,7 @@ import {
   getLearningStepStates,
   type ChoiceVisualState
 } from "@/features/game/tutorialPresentation";
+import { ImageZoom } from "./ImageZoom";
 import styles from "./TutorialClient.module.css";
 
 type TutorialClientProps = {
@@ -275,6 +276,8 @@ export function TutorialClient({
         <span aria-live="polite" className={styles.srOnly}>
           {briefingLines[briefingIndex]}
         </span>
+        {/* Renders nothing, so it can live inside the tap target the whole screen is. */}
+        <Narrator lines={[briefingLines[briefingIndex]]} />
       </button>
     );
   }
@@ -356,12 +359,20 @@ export function TutorialClient({
             {t(round.promptKey)}
           </h1>
           {/*
-           * Reading the question aloud is the one support with measured benefit for both
-           * of the difficulties this game is most likely to meet, so it sits with the
-           * question rather than buried in a menu. It renders nothing unless the child
-           * asked for it and this phone can actually speak their language.
+           * Reading aloud is the one support with measured benefit for both of the
+           * difficulties this game is most likely to meet, so it sits with the question
+           * rather than buried in a menu. It renders nothing unless the child asked for it
+           * and this phone can actually speak their language.
+           *
+           * It reads the two options as well as the question: a child who cannot read the
+           * choices cannot answer, however clearly the question was put.
            */}
-          <ListenButton lines={[t(round.promptKey)]} />
+          {/*
+           * The question only. The alt text of each image describes what is in it, and
+           * describing the pictures to a child whose whole task is to look at them would
+           * be answering the question for them.
+           */}
+          <Narrator lines={[t(round.promptKey)]} />
 
           <div aria-labelledby="tutorial-question" className={styles.choices} role="group">
             {round.choices.map((choice) => {
@@ -389,12 +400,18 @@ export function TutorialClient({
                   : "";
 
               return (
+                /*
+                  The magnifier is a sibling of the card, not a child of it: the card is a
+                  button, one button cannot live inside another, and looking closer must
+                  never be mistaken for choosing.
+                */
+                <div className={styles.cardWrap} key={choice.id}>
+                <ImageZoom alt={description} src={choice.media.src} />
                 <button
                   aria-label={[t("choiceAria", { position, description }), cardStatus].filter(Boolean).join(". ")}
                   aria-pressed={selected}
                   className={className}
                   disabled={state.answerSubmitted}
-                  key={choice.id}
                   type="button"
                   onClick={() => dispatch({ type: "select", choiceId: choice.id })}
                 >
@@ -443,6 +460,7 @@ export function TutorialClient({
                     </span>
                   )}
                 </button>
+                </div>
               );
             })}
           </div>
@@ -508,6 +526,28 @@ export function TutorialClient({
                   </span>
                   </p>
                 ))}
+                {/*
+                 * The one idea this game cannot afford to leave out: where something came
+                 * from is not the same question as whether it is true. Without it a child
+                 * learns to distrust anything a computer touched, which is the documented
+                 * way this kind of game goes wrong.
+                 *
+                 * It sits after the answer rather than before it. As an opening line it was
+                 * four sentences of adult prose in front of a seven-year-old who had not
+                 * yet seen a picture; here it lands on something they just decided.
+                 */}
+                {showBriefing && <p className={styles.originNote}>{tEducation("originVsTruth")}</p>}
+                {/*
+                 * The explanation is the part that teaches; leaving it unread would mean
+                 * the child can play the game without ever reaching the lesson in it.
+                 */}
+                <Narrator
+                  lines={[
+                    selectedIsCorrect ? t("correct") : t("tryAgain"),
+                    ...feedbackBlocks.map((block) => `${t(block.labelKey)}: ${t(block.textKey)}`),
+                    showBriefing ? tEducation("originVsTruth") : null
+                  ]}
+                />
               </div>
 
               <footer className={styles.panelFooter}>

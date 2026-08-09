@@ -22,6 +22,7 @@ import {
 import Image from "next/image";
 import type { CSSProperties } from "react";
 import { useTranslations } from "next-intl";
+import { Narrator } from "@/components/Narrator";
 import { Link } from "@/i18n/navigation";
 import { islands } from "@/features/levels/levelModel";
 import { getIslandState, islandHasContent, type PlayState } from "@/features/levels/levelProgress";
@@ -117,6 +118,19 @@ export function MissionMap() {
 
   return (
     <div className={styles.map}>
+      {/*
+       * The map is where a child decides where to go, and every island is named in text.
+       * Without this the whole screen is guesswork for anyone who cannot read it, so each
+       * island is announced with the state that decides whether it can be entered.
+       */}
+      <Narrator
+        lines={[
+          t("title"),
+          ...missions.map(
+            (mission) => `${mission.title}: ${statusLabel(mission.state, mission.isUpcoming)}`
+          )
+        ]}
+      />
       <p className={styles.greeting}>{t("title")}</p>
       {/* Said on the map too, where a child looks at everything they have earned. */}
       <p className={styles.guestNotice}>

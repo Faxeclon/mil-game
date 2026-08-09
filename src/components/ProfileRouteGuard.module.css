@@ -72,6 +72,8 @@
   line-height: 1.4;
 }
 
+/* Worn by a link and by a button, so it carries what a button needs to stop looking
+   like one the browser drew. */
 .action {
   min-height: 3.1rem;
   margin-top: 0.5rem;
@@ -79,9 +81,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border: 0;
   border-radius: 999px;
   background: var(--p-accent-strong);
   color: #fff;
+  cursor: pointer;
+  font: inherit;
   font-size: 0.96rem;
   font-weight: 800;
   text-decoration: none;

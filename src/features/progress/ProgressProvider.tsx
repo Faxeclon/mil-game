@@ -9,7 +9,7 @@ import {
   type ProgressState
 } from "./progressState";
 import type { GuardianConsent } from "@/features/guardian/guardianConsent";
-import type { ProfilesDocument } from "@/features/profiles/localProfiles";
+import { listProfiles, type LocalProfile, type ProfilesDocument } from "@/features/profiles/localProfiles";
 import {
   authorizeGuardianInStore,
   withdrawGuardianInStore,
@@ -18,7 +18,11 @@ import {
   markOnboardedInStore,
   advanceMapOnboardingInStore,
   getServerProgressSnapshot,
+  leaveLocalProfileInStore,
+  removeProfileInStore,
   resetProgressInStore,
+  selectProfileInStore,
+  startAdultPlayInStore,
   subscribeToProgress
 } from "./progressStore";
 
@@ -40,8 +44,16 @@ export type ProgressApi = {
   localNickname: string | null;
   apprenticeAvatarId: ApprenticeAvatarId | null;
   markOnboarded: (localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId) => void;
+  /** Puts a signed-in grown-up into the game as themselves, asking them nothing. */
+  startAdultPlay: (email: string, nickname: string) => void;
   advanceMapOnboarding: () => void;
   resetProgress: () => void;
+  /** Steps away from the profile, keeping it saved under its nickname. */
+  leaveProfile: () => void;
+  /** Every saved player on this phone, for the "who is playing?" list. */
+  savedProfiles: readonly LocalProfile[];
+  selectProfile: (id: string) => void;
+  removeProfile: (id: string) => void;
 };
 
 const ProgressContext = createContext<ProgressApi | null>(null);
@@ -69,8 +81,13 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       completedLevelIds: state.completedLevelIds,
       completeLevel: completeLevelInStore,
       markOnboarded: markOnboardedInStore,
+      startAdultPlay: startAdultPlayInStore,
       advanceMapOnboarding: advanceMapOnboardingInStore,
-      resetProgress: resetProgressInStore
+      resetProgress: resetProgressInStore,
+      leaveProfile: leaveLocalProfileInStore,
+      savedProfiles: listProfiles(profiles),
+      selectProfile: selectProfileInStore,
+      removeProfile: removeProfileInStore
     }),
     [hydrated, profiles, state]
   );

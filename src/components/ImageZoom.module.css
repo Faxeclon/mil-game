@@ -1,0 +1,100 @@
+/*
+ * Looking closer.
+ *
+ * The trigger sits on the corner of the picture, small enough not to cover it and big
+ * enough to hit with a thumb. The viewer takes the whole screen, because the point is to
+ * see the picture at the largest size the phone can manage.
+ */
+
+.trigger {
+  width: 2.4rem;
+  height: 2.4rem;
+  position: absolute;
+  z-index: 2;
+  top: 0.55rem;
+  right: 0.55rem;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  /* Dark on purpose: it has to stay visible over a photo of anything. */
+  background: rgba(23, 33, 60, 0.72);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  backdrop-filter: blur(2px);
+}
+
+.trigger:hover {
+  background: rgba(23, 33, 60, 0.88);
+}
+
+.overlay {
+  position: fixed;
+  z-index: 60;
+  inset: 0;
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  gap: 0.75rem;
+  padding: clamp(0.75rem, 3vw, 1.5rem);
+  background: #0d1220;
+}
+
+.stage,
+.stageMagnified {
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border-radius: 0.9rem;
+}
+
+/* Twice the size, and the box scrolls so the whole picture stays reachable. */
+.stageMagnified {
+  place-items: start;
+}
+
+.stageMagnified .picture {
+  width: 200%;
+  max-width: none;
+  height: auto;
+  max-height: none;
+}
+
+.picture {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.control {
+  min-height: 3rem;
+  padding: 0 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 0;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #17213c;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.hint {
+  margin: 0;
+  color: #b8c0d4;
+  font-size: 0.85rem;
+  text-align: center;
+}

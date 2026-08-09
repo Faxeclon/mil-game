@@ -77,6 +77,35 @@ export function updateActiveProgress(document: ProfilesDocument, progress: Progr
   };
 }
 
+/**
+ * Steps away without erasing anything.
+ *
+ * A child has no email, so their nickname is who they are on this phone. Leaving has to
+ * keep that: the profile stays in the list and simply stops being the one playing, which
+ * is what lets two siblings share a device without either losing a medal.
+ */
+export function leaveActiveProfile(document: ProfilesDocument): ProfilesDocument {
+  return document.activeId === null ? document : { ...document, activeId: null };
+}
+
+/** Picks up a saved profile again. An id nobody has is ignored rather than guessed at. */
+export function selectProfile(document: ProfilesDocument, id: string): ProfilesDocument {
+  if (!document.profiles.some((profile) => profile.id === id)) return document;
+  return { ...document, activeId: id };
+}
+
+/** The saved players, in the order they were created, for a "who is playing?" list. */
+export function listProfiles(document: ProfilesDocument): LocalProfile[] {
+  return document.profiles.filter((profile) => profile.progress.localNickname !== null);
+}
+
+/** Forgets a player entirely, medals included. Only ever asked for on purpose. */
+export function removeProfile(document: ProfilesDocument, id: string): ProfilesDocument {
+  const profiles = document.profiles.filter((profile) => profile.id !== id);
+  if (profiles.length === document.profiles.length) return document;
+  return { ...document, activeId: document.activeId === id ? null : document.activeId, profiles };
+}
+
 function parseProfile(value: unknown): LocalProfile | undefined {
   if (!isRecord(value) || !isProfileId(value.id)) return undefined;
   return { id: value.id, progress: parseProgressState(value.progress) };
@@ -99,7 +128,19 @@ export function parseProfilesDocument(value: unknown, legacyProgress?: unknown):
       profiles.push(profile);
     }
     if (profiles.length > 0) {
-      const activeId = isProfileId(value.activeId) && seen.has(value.activeId) ? value.activeId : profiles[0].id;
+      /*
+       * Nobody playing is a real state, not a fault to be repaired.
+       *
+       * A child who hands the phone over leaves their profile behind and expects to find
+       * it again; snapping the first one back into play would put the next person inside
+       * somebody else's game. An explicit null is honoured, and only an unreadable value
+       * falls back to the first profile.
+       */
+      const activeId = value.activeId === null
+        ? null
+        : isProfileId(value.activeId) && seen.has(value.activeId)
+          ? value.activeId
+          : profiles[0].id;
       return { version: PROFILES_VERSION, activeId, profiles };
     }
   }

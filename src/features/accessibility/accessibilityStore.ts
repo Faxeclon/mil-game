@@ -4,7 +4,10 @@ import { useSyncExternalStore } from "react";
 import {
   DEFAULT_ACCESSIBILITY,
   parseAccessibility,
+  resetPresentation,
+  togglePreset,
   togglePresentation,
+  type AccessibilityPresetKey,
   type AccessibilitySettings,
   type PresentationSettings
 } from "./accessibilitySettings";
@@ -80,6 +83,15 @@ export function setAccessibility(settings: AccessibilitySettings): void {
 
 export function togglePresentationSetting(key: keyof PresentationSettings): void {
   commit(togglePresentation(snapshot.settings, key));
+}
+
+export function toggleAccessibilityPreset(preset: AccessibilityPresetKey): void {
+  commit(togglePreset(snapshot.settings, preset));
+}
+
+/** Only ever puts things back. Progress, profile and language are none of its business. */
+export function resetAccessibility(): void {
+  commit(resetPresentation());
 }
 
 /** Test helper: drops every subscriber and returns the store to its initial snapshot. */

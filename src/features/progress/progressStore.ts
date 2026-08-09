@@ -1,8 +1,12 @@
 import type { LevelId } from "@/features/levels/levelModel";
 import type { ApprenticeAvatarId } from "@/features/profile/apprenticeAvatar";
 import {
+  createProfileId,
   emptyProfilesDocument,
   getActiveProgress,
+  leaveActiveProfile,
+  removeProfile,
+  selectProfile,
   updateActiveProgress,
   type ProfilesDocument
 } from "@/features/profiles/localProfiles";
@@ -12,6 +16,8 @@ import {
   initialProgressState,
   markOnboarded,
   advanceMapOnboarding,
+  playAsAdult,
+  resetProgressKeepingProfile,
   withdrawGuardian,
   type LevelAttempt,
   type ProgressState
@@ -97,14 +103,78 @@ export function markOnboardedInStore(localNickname?: string, apprenticeAvatarId?
   applyToActiveProgress((state) => markOnboarded(state, localNickname, apprenticeAvatarId));
 }
 
+/**
+ * Puts a grown-up into the game as themselves.
+ *
+ * Their own game is a profile like any other, so it is found by the address they signed in
+ * with rather than made again: a teacher who plays, leaves to run a lesson and comes back
+ * returns to their own medals instead of a blank start.
+ *
+ * Whoever was playing is stepped away from, never overwritten. A child's profile stays in
+ * the list exactly as they left it.
+ */
+export function startAdultPlayInStore(email: string, nickname: string): void {
+  const mine = snapshot.profiles.profiles.find((profile) => profile.progress.adultEmail === email);
+  if (mine) {
+    commit(selectProfile(snapshot.profiles, mine.id));
+    return;
+  }
+
+  const state = playAsAdult(initialProgressState, email, nickname);
+  // An address or a name the model refuses is not turned into a nameless profile.
+  if (state === initialProgressState) return;
+  commit(updateActiveProgress(leaveActiveProfile(snapshot.profiles), state));
+}
+
 export function advanceMapOnboardingInStore(): void {
   applyToActiveProgress(advanceMapOnboarding);
 }
 
-/** Clears only the player holding the phone; the others keep everything they earned. */
+/**
+ * Starts the game over for the player holding the phone, without unmaking them.
+ *
+ * Their missions, records, streak and Rush rewards go, and the map tour plays again. Their
+ * name, avatar and the adult who authorised them stay - so this is a new game, not a new
+ * child, and nobody is asked what they are called for a second time.
+ */
 export function resetProgressInStore(): void {
-  applyToActiveProgress(() => initialProgressState);
+  applyToActiveProgress(resetProgressKeepingProfile);
   if (snapshot.profiles.profiles.length === 0) publish(fromDocument(emptyProfilesDocument));
+}
+
+/**
+ * Steps away from the profile without erasing it.
+ *
+ * The child keeps their medals under their nickname, which is the only name this game
+ * ever asks a child for, and the next person to pick up the phone is offered the list
+ * rather than dropped into somebody else's game.
+ *
+ * Sound, language and the accessibility choices stay: they belong to the device and to
+ * whoever is holding it, not to the player who just handed it over.
+ */
+export function leaveLocalProfileInStore(): void {
+  // `commit`, not `publish`: leaving has to survive closing the app.
+  commit(leaveActiveProfile(snapshot.profiles));
+}
+
+/** Picks a saved player back up, medals and all. */
+export function selectProfileInStore(id: string): void {
+  commit(selectProfile(snapshot.profiles, id));
+}
+
+/** Adds ready-made players to this device, each with an id of their own. */
+export function addProfilesInStore(states: readonly ProgressState[]): void {
+  let document = snapshot.profiles;
+  for (const progress of states) {
+    const id = createProfileId(document.profiles.map((profile) => profile.id));
+    document = { ...document, profiles: [...document.profiles, { id, progress }] };
+  }
+  commit(document);
+}
+
+/** Forgets a saved player for good. Asked for explicitly, never as a side effect. */
+export function removeProfileInStore(id: string): void {
+  commit(removeProfile(snapshot.profiles, id));
 }
 
 export function authorizeGuardianInStore(email: string, authorizedOn: string): void {

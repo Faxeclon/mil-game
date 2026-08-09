@@ -70,8 +70,15 @@ export function TeacherJoinClient() {
         {t("navLabel")}
       </Link>
 
-      <h1 className={styles.title}>{t("title")}</h1>
-      <p className={styles.lead}>{t("lead")}</p>
+      {/*
+        One door for both cases. With no server there is nothing to check an address
+        against, so entering and registering are the same act: the copy says that plainly
+        instead of implying a password was verified somewhere.
+      */}
+      <h1 className={styles.title}>{t("signIn")}</h1>
+      <p className={styles.lead}>{t("signInLead")}</p>
+      {/* Said before the field, because it is the fear that stops an adult tapping this. */}
+      <p className={styles.notSent}>{t("keepsChildProgress")}</p>
 
       <form
         className={styles.form}

@@ -248,6 +248,18 @@
  * Roqui explains the mission in the middle of the screen. It sits above the app chrome
  * on purpose: while he is talking there is nothing else to press.
  */
+/* The idea that keeps this game from teaching suspicion. Set apart from the clues so it
+   reads as a rule about all of them rather than as one more hint about this picture. */
+.originNote {
+  max-width: 44ch;
+  margin: 0.75rem 0 0;
+  padding-top: 0.7rem;
+  border-top: 1px dashed var(--t-hairline-strong);
+  color: var(--t-ink-soft);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
 .intro {
   --t-ink: #1f2a44;
   --t-ink-soft: #5b6780;
@@ -646,8 +658,27 @@
   text-transform: uppercase;
 }
 
+/*
+ * The shape of a photo taken on a phone.
+ *
+ * The two pictures are the whole exercise, so they get the height. A square crop was
+ * throwing away the top and bottom of every image, which is often exactly where the thing
+ * worth noticing is - a hand, a sign, the edge of a roof. It is also the shape a child
+ * meets everywhere else, so the exercise looks like the thing it is teaching about.
+ *
+ * The submit button ends up below the fold on a small phone. That is the trade taken on
+ * purpose: looking closely is the skill, and a picture too small to look at closely would
+ * defeat the point of the button.
+ */
+/* Holds the card and its magnifier, which cannot live inside a button. */
+.cardWrap {
+  min-width: 0;
+  position: relative;
+  display: grid;
+}
+
 .cardMedia {
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1 / 2;
   position: relative;
   display: block;
   overflow: hidden;
