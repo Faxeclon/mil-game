@@ -3,6 +3,7 @@ import { contentPacks, singlePacks } from "@/content/packs/packRegistry";
 import {
   buildRushPool,
   buildCategoryRushPool,
+  buildIslandRushPool,
   dealRush,
   getRushAccuracy,
   getBonusRushDuration,
@@ -23,7 +24,7 @@ function answer(state: RushState, saidAi: boolean, item: RushItem, total = 10, r
 }
 
 describe("the pool of images", () => {
-  it("builds a Bonus pool from its category only", () => {
+  it("keeps the category helper scoped for authored content tooling", () => {
     const animals = buildCategoryRushPool("animals", contentPacks, singlePacks);
     const sports = buildCategoryRushPool("sports", contentPacks, singlePacks);
 
@@ -31,6 +32,21 @@ describe("the pool of images", () => {
     expect(sports.length).toBeGreaterThan(0);
     expect(animals.every((item) => item.src.includes("/animals/"))).toBe(true);
     expect(sports.every((item) => item.src.includes("/sports/"))).toBe(true);
+  });
+
+  it("builds every Bonus hunt from its whole island, regardless of the section ticket", () => {
+    const difference = buildIslandRushPool("difference", contentPacks, singlePacks);
+    const fromAnimals = difference;
+    const fromSports = difference;
+
+    expect(fromAnimals.some((item) => item.src.includes("/animals/"))).toBe(true);
+    expect(fromAnimals.some((item) => item.src.includes("/sports/"))).toBe(true);
+    expect(fromAnimals.some((item) => item.src.includes("/memes/"))).toBe(true);
+    expect(fromSports).toEqual(fromAnimals);
+    expect(difference.every((item) => /\/(animals|sports|memes)\//.test(item.src))).toBe(true);
+
+    const source = buildIslandRushPool("source", contentPacks, singlePacks);
+    expect(source.every((item) => item.src.includes("/creators/"))).toBe(true);
   });
   it("takes only authored images with a definite binary answer, from both kinds of pack", () => {
     expect(pool.length).toBeGreaterThan(20);

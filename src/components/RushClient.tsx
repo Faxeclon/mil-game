@@ -14,7 +14,7 @@ import {
   rushReducer,
   type RushItem
 } from "@/features/rush/rushState";
-import type { CategoryKey, IslandKey } from "@/features/levels/levelModel";
+import type { IslandKey } from "@/features/levels/levelModel";
 import { getActiveBonusForIsland, getBonusDestinationPath, getBonusRushSecondsLeft, type BonusOpportunity, type BonusRushRun, type BonusWheelReward } from "@/features/bonus/bonusOpportunity";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { useRouter } from "@/i18n/navigation";
@@ -72,10 +72,10 @@ function BonusRewardChip({ reward, shieldUsed }: { reward: BonusWheelReward; shi
  */
 export function RushClient({
   island,
-  poolsByCategory
+  pool
 }: {
   island: IslandKey;
-  poolsByCategory: Partial<Record<CategoryKey, readonly RushItem[]>>;
+  pool: readonly RushItem[];
 }) {
   const t = useTranslations("rush");
   const tTutorial = useTranslations("tutorial");
@@ -91,7 +91,6 @@ export function RushClient({
   const bonus = activeBonus ?? runBonus;
   const run = bonus?.rushRun;
   const reward: BonusWheelReward = run?.reward ?? (bonus?.wheel?.status === "resolved" ? bonus.wheel.reward : "none");
-  const pool = bonus ? poolsByCategory[bonus.categoryKey] ?? [] : [];
   const durationSeconds = run?.durationSeconds ?? getBonusRushDuration(reward);
   const [state, dispatch] = useReducer(rushReducer, run, getRushStateFromRun);
   const [deck, setDeck] = useState<RushItem[]>(() => restoreDeck(pool, run?.deckItemIds));
