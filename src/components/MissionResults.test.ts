@@ -23,7 +23,7 @@ describe("section-completion Bonus offer", () => {
       notPassedTitle: "¡Casi lo tienes!", nextLevel: "Siguiente nivel", tryAgain: "Intentar otra vez", backToMap: "Volver al mapa"
     });
     expect(englishMessages.results).toMatchObject({
-      notPassedTitle: "You almost had it!", nextLevel: "Next level", tryAgain: "Try again", backToMap: "Back to map"
+      notPassedTitle: "Almost there!", nextLevel: "Next level", tryAgain: "Try again", backToMap: "Back to map"
     });
   });
 
