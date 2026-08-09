@@ -23,6 +23,8 @@ import { useRushCompletionRetention } from "./RushRouteGuard";
 import { BonusRewardWheel } from "./BonusRewardWheel";
 import { BonusAchievementCelebration } from "./BonusAchievementCelebration";
 import { getBonusRunAchievementIds, type AchievementId } from "@/features/achievements/achievementModel";
+import { isShieldActivation, SHIELD_FEEDBACK_MS } from "@/features/rush/shieldFeedback";
+import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import styles from "./RushClient.module.css";
 
 function restoreDeck(pool: readonly RushItem[], itemIds: readonly string[] | undefined): RushItem[] {
@@ -80,6 +82,7 @@ export function RushClient({
   const t = useTranslations("rush");
   const tTutorial = useTranslations("tutorial");
   const tEducation = useTranslations("education");
+  const { reducedMotion } = useAccessibility();
   const router = useRouter();
   const retainCompletedBonus = useRushCompletionRetention();
   const { progressState, consumeBonusOpportunity, startBonusRushRun, updateBonusRushRun, unlockAchievements } = useProgress();
@@ -87,6 +90,9 @@ export function RushClient({
   const [runBonus] = useState<BonusOpportunity | null>(() => activeBonus ?? null);
   const consumedRunRef = useRef(false);
   const startedRunRef = useRef(Boolean(activeBonus?.rushRun));
+  const shieldFeedbackLockRef = useRef(false);
+  const shieldFeedbackTimerRef = useRef<number | null>(null);
+  const answersRef = useRef<HTMLDivElement>(null);
 
   const bonus = activeBonus ?? runBonus;
   const run = bonus?.rushRun;
@@ -97,8 +103,13 @@ export function RushClient({
   const [secondsLeft, setSecondsLeft] = useState(() => run ? getBonusRushSecondsLeft(run.startedAt, durationSeconds) : durationSeconds);
   const [wheelContinued, setWheelContinued] = useState(Boolean(run));
   const [newAchievementIds, setNewAchievementIds] = useState<AchievementId[]>([]);
+  const [shieldFeedbackVisible, setShieldFeedbackVisible] = useState(false);
 
   const isPlaying = state.status === "playing";
+
+  useEffect(() => () => {
+    if (shieldFeedbackTimerRef.current) clearTimeout(shieldFeedbackTimerRef.current);
+  }, []);
 
   // One interval for the whole run: the clock belongs to the run, not to each image.
   useEffect(() => {
@@ -168,10 +179,19 @@ export function RushClient({
   };
 
   const answer = (saidAi: boolean, item: RushItem) => {
-    if (!bonus?.rushRun) return;
+    if (!bonus?.rushRun || shieldFeedbackLockRef.current) return;
     const action = { type: "answer" as const, saidAi, item, total: deck.length, reward };
     const next = rushReducer(state, action);
     if (next === state) return;
+    if (isShieldActivation(state, next)) {
+      shieldFeedbackLockRef.current = true;
+      setShieldFeedbackVisible(true);
+      shieldFeedbackTimerRef.current = window.setTimeout(() => {
+        shieldFeedbackLockRef.current = false;
+        setShieldFeedbackVisible(false);
+        answersRef.current?.querySelector<HTMLButtonElement>("button:not(:disabled)")?.focus();
+      }, reducedMotion ? 240 : SHIELD_FEEDBACK_MS);
+    }
     dispatch(action);
     updateBonusRushRun(bonus.id, saveRunProgress(bonus.rushRun, next, reward));
   };
@@ -262,9 +282,10 @@ export function RushClient({
         />
       </figure>
 
-      <div aria-labelledby="rush-question" className={styles.answers} role="group">
+      <div aria-labelledby="rush-question" className={styles.answers} ref={answersRef} role="group">
         <button
           className={styles.answerAi}
+          disabled={shieldFeedbackVisible}
           type="button"
           onClick={() => answer(true, item)}
         >
@@ -273,6 +294,7 @@ export function RushClient({
         </button>
         <button
           className={styles.answerCamera}
+          disabled={shieldFeedbackVisible}
           type="button"
           onClick={() => answer(false, item)}
         >
@@ -280,6 +302,14 @@ export function RushClient({
           {tTutorial("answerCamera")}
         </button>
       </div>
+
+      {shieldFeedbackVisible && (
+        <div aria-atomic="true" aria-live="assertive" className={`${styles.shieldFeedback} ${reducedMotion ? styles.shieldFeedbackStill : ""}`} role="status">
+          <Shield aria-hidden="true" size={58} strokeWidth={2.5} />
+          <strong>{t("shieldActivated")}</strong>
+          <span>{t("shieldRetry")}</span>
+        </div>
+      )}
 
       <p className={styles.hint}>
         <Zap aria-hidden="true" size={13} />
