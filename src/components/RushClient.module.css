@@ -217,6 +217,12 @@
   transform: translateY(-1px);
 }
 
+.answerAi:disabled,
+.answerCamera:disabled {
+  cursor: wait;
+  opacity: 0.58;
+}
+
 .answerAi:focus-visible,
 .answerCamera:focus-visible {
   outline: 3px solid var(--u-accent-strong);
@@ -232,6 +238,40 @@
   font-size: 0.78rem;
   font-weight: 700;
 }
+
+/* A short, non-persistent celebration explains why the same image is still here. */
+.shieldFeedback {
+  width: min(86vw, 20rem);
+  position: fixed;
+  z-index: 4;
+  top: 50%;
+  left: 50%;
+  padding: 1.15rem 1.25rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  border: 0.2rem solid #fff;
+  border-radius: 1.3rem;
+  background: #fff8d8;
+  box-shadow: 0 0 0 0.25rem #f7bd2d, 0 0.8rem 1.8rem rgb(31 42 68 / 25%);
+  color: #714d00;
+  transform: translate(-50%, -50%);
+  animation: shield-pop 900ms var(--u-ease) both;
+  pointer-events: none;
+}
+
+.shieldFeedback svg { filter: drop-shadow(0 0.2rem 0.15rem rgb(113 77 0 / 18%)); }
+.shieldFeedback strong { font-size: clamp(1.2rem, 5.5vw, 1.55rem); }
+.shieldFeedback span { font-size: 0.95rem; font-weight: 800; }
+.shieldFeedbackStill { animation: shield-fade 240ms ease both; }
+
+@keyframes shield-pop {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.72); }
+  42% { opacity: 1; transform: translate(-50%, -50%) scale(1.07); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes shield-fade { from { opacity: 0; } to { opacity: 1; } }
 
 /* --------------------------------------------------------------- Actions */
 
