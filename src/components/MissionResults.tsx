@@ -5,7 +5,6 @@ import { useSearchParams } from "next/navigation";
 import { Bird, Cat, Feather, Star, Trophy, Turtle, Wind, Rabbit, Zap, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Narrator } from "@/components/Narrator";
-import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { getIslandOfMission, getMissionById, type LevelId } from "@/features/levels/levelModel";
 import { getNextLevelInSection, getSectionCompletionEvent, type SectionCompletionEvent } from "@/features/levels/levelProgress";
@@ -256,8 +255,6 @@ export function MissionResults() {
 
       <p className={styles.correctRounds}>{t("correctRounds", { correct: result.correctRounds, total: result.totalRounds })}</p>
       <p className={styles.elapsedTime}>{t("elapsed", { time: elapsedTime })}</p>
-
-      {islandKey === "training" && <LookAskCheck sequential states={{ look: "completed", ask: "completed", check: "completed" }} />}
 
       {/*
         Offered once, after the very first mission: at that moment the player has something

@@ -32,11 +32,15 @@ describe("section-completion Bonus offer", () => {
     expect(css).toContain("gap: clamp(1.25rem, 4vw, 1.75rem)");
     expect(css).toContain("color: var(--r-ink-soft)");
     expect(css).toContain("text-align: center");
+    expect(css).toContain("margin-top: clamp(.75rem, 3vw, 1rem)");
   });
 
-  it("keeps the learning-method recap exclusive to Training results", async () => {
+  it("does not render the learning-method recap on any mission result", async () => {
     const screen = await source("MissionResults.tsx");
-    expect(screen).toContain('islandKey === "training" && <LookAskCheck');
+    expect(screen).not.toContain("LookAskCheck");
+    expect(screen).not.toContain("Mira");
+    expect(screen).not.toContain("Pregunta");
+    expect(screen).not.toContain("Comprueba");
   });
 
   it("keeps pass and retry actions fully localized", () => {
