@@ -25,6 +25,7 @@ import { BonusAchievementCelebration } from "./BonusAchievementCelebration";
 import { getBonusRunAchievementIds, type AchievementId } from "@/features/achievements/achievementModel";
 import { isShieldActivation, SHIELD_FEEDBACK_MS } from "@/features/rush/shieldFeedback";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
+import { getBonusFlowStage } from "@/features/bonus/bonusFlow";
 import styles from "./RushClient.module.css";
 
 function restoreDeck(pool: readonly RushItem[], itemIds: readonly string[] | undefined): RushItem[] {
@@ -89,6 +90,7 @@ export function RushClient({
   const activeBonus = getActiveBonusForIsland(progressState, island);
   const [runBonus] = useState<BonusOpportunity | null>(() => activeBonus ?? null);
   const consumedRunRef = useRef(false);
+  const finalizedRunRef = useRef(false);
   const startedRunRef = useRef(Boolean(activeBonus?.rushRun));
   const shieldFeedbackLockRef = useRef(false);
   const shieldFeedbackTimerRef = useRef<number | null>(null);
@@ -101,9 +103,12 @@ export function RushClient({
   const [state, dispatch] = useReducer(rushReducer, run, getRushStateFromRun);
   const [deck, setDeck] = useState<RushItem[]>(() => restoreDeck(pool, run?.deckItemIds));
   const [secondsLeft, setSecondsLeft] = useState(() => run ? getBonusRushSecondsLeft(run.startedAt, durationSeconds) : durationSeconds);
-  const [wheelContinued, setWheelContinued] = useState(Boolean(run));
+  // A resolved prize is already acknowledged after a refresh, while a fresh spin still
+  // waits for its visible Continue action in this mounted visit.
+  const [wheelAcknowledged, setWheelAcknowledged] = useState(Boolean(run || activeBonus?.wheel?.status === "resolved"));
   const [newAchievementIds, setNewAchievementIds] = useState<AchievementId[]>([]);
   const [shieldFeedbackVisible, setShieldFeedbackVisible] = useState(false);
+  const flowStage = getBonusFlowStage(bonus, wheelAcknowledged);
 
   const isPlaying = state.status === "playing";
 
@@ -124,10 +129,11 @@ export function RushClient({
     return () => clearInterval(timer);
   }, [isPlaying, run]);
 
-  // The guard keeps this mounted just long enough to show the score after consumption.
+  // The finished run remains active through its result and any achievement celebration.
+  // It is consumed only when the player leaves through the final CTA.
   useEffect(() => {
-    if (state.status !== "finished" || !bonus || consumedRunRef.current) return;
-    consumedRunRef.current = true;
+    if (state.status !== "finished" || !bonus || finalizedRunRef.current) return;
+    finalizedRunRef.current = true;
     if (bonus.rushRun) {
       const completedRun = saveRunProgress(bonus.rushRun, state, reward);
       updateBonusRushRun(bonus.id, completedRun);
@@ -136,15 +142,13 @@ export function RushClient({
         actualMistakeCount: completedRun.actualMistakeCount,
         reward: completedRun.reward
       }));
-      // Persist before showing the one-visit celebration; reloads therefore stay quiet.
+      // Persist before showing the one-visit celebration; a refresh finds no new IDs.
       if (unlocked.length > 0) window.setTimeout(() => setNewAchievementIds(unlocked), 0);
     }
-    retainCompletedBonus(bonus.id);
-    consumeBonusOpportunity(bonus.id);
-  }, [bonus, consumeBonusOpportunity, retainCompletedBonus, reward, state, unlockAchievements, updateBonusRushRun]);
+  }, [bonus, reward, state, unlockAchievements, updateBonusRushRun]);
 
   const beginRun = () => {
-    if (!bonus || bonus.wheel?.status !== "resolved" || !wheelContinued || bonus.rushRun || startedRunRef.current) return;
+    if (!bonus || bonus.wheel?.status !== "resolved" || !wheelAcknowledged || bonus.rushRun || startedRunRef.current) return;
     const nextDeck = dealRush(pool);
     if (nextDeck.length === 0) return;
     startedRunRef.current = true;
@@ -169,10 +173,11 @@ export function RushClient({
     dispatch({ type: "start" });
   };
 
-  const abandonBonus = () => {
+  const leaveBonus = () => {
     if (!bonus) return;
     if (!consumedRunRef.current) {
       consumedRunRef.current = true;
+      retainCompletedBonus(bonus.id);
       consumeBonusOpportunity(bonus.id);
     }
     router.push(getBonusDestinationPath(bonus.destination));
@@ -196,15 +201,13 @@ export function RushClient({
     updateBonusRushRun(bonus.id, saveRunProgress(bonus.rushRun, next, reward));
   };
 
-  if (!bonus) return null;
+  if (!bonus || flowStage === "closed") return null;
 
-  // Existing in-progress runs predate the wheel and continue uninterrupted. Every new
-  // run must have a persisted final reward before its lobby (and timer) are available.
-  if (!run && (bonus.wheel?.status !== "resolved" || !wheelContinued)) {
-    return <BonusRewardWheel bonus={bonus} onContinue={() => setWheelContinued(true)} />;
+  if (flowStage === "wheel") {
+    return <BonusRewardWheel bonus={bonus} onContinue={() => setWheelAcknowledged(true)} />;
   }
 
-  if (state.status === "lobby") {
+  if (flowStage === "lobby") {
     return (
       <section aria-labelledby="rush-title" className={styles.rush}>
         <MascotSlot alt={t("mascotAlt")} className={styles.mascot} mood="welcoming" priority />
@@ -217,14 +220,14 @@ export function RushClient({
         <button className={styles.primary} type="button" onClick={beginRun}>
           {t("start")}
         </button>
-        <button className={styles.secondary} type="button" onClick={abandonBonus}>
+        <button className={styles.secondary} type="button" onClick={leaveBonus}>
           {t("exit")}
         </button>
       </section>
     );
   }
 
-  if (state.status === "finished") {
+  if (flowStage === "result" && state.status === "finished") {
     const accuracy = getRushAccuracy(state.rawCorrectCount, state.actualMistakeCount);
     const score = getBonusRushScore(state.rawCorrectCount, reward);
 
@@ -239,13 +242,15 @@ export function RushClient({
         <p className={styles.lead}>{t("accuracy", { percent: accuracy })}</p>
         {!state.ranOut && <p className={styles.warning}>{t("ranOutOfImages")}</p>}
         <p className={styles.warning}>{tEducation("remember")}</p>
-        <button className={styles.primary} type="button" onClick={abandonBonus}>
+        <button className={styles.primary} type="button" onClick={leaveBonus}>
           {t("bonusFinish")}
         </button>
-        {newAchievementIds.length > 0 && <BonusAchievementCelebration ids={newAchievementIds} onContinue={abandonBonus} />}
+        {newAchievementIds.length > 0 && <BonusAchievementCelebration ids={newAchievementIds} onContinue={leaveBonus} />}
       </section>
     );
   }
+
+  if (state.status !== "playing") return null;
 
   const item = deck[state.index];
   if (!item) return null;
@@ -315,7 +320,7 @@ export function RushClient({
         <Zap aria-hidden="true" size={13} />
         {t("hint")}
       </p>
-      <button className={styles.secondary} type="button" onClick={abandonBonus}>
+      <button className={styles.secondary} type="button" onClick={leaveBonus}>
         {t("exit")}
       </button>
     </section>

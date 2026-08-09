@@ -20,7 +20,8 @@ describe("Bonus achievement celebration", () => {
     expect(client).toContain("getBonusRunAchievementIds");
     expect(client).toContain("unlockAchievements(");
     expect(client).toContain("<BonusAchievementCelebration ids={newAchievementIds}");
-    expect(client).toContain("onContinue={abandonBonus}");
+    expect(client).toContain("onContinue={leaveBonus}");
+    expect(client).toContain("setNewAchievementIds(unlocked)");
   });
 
   it("has complete localized names for every stable achievement ID", () => {

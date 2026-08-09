@@ -21,8 +21,9 @@ describe("consumable Bonus Rush flow", () => {
     expect(client).toContain("const activeBonus = getActiveBonusForIsland(progressState, island)");
     expect(client).toContain("consumeBonusOpportunity(bonus.id)");
     expect(client).toContain("retainCompletedBonus(bonus.id)");
-    expect(client).toContain("const abandonBonus");
+    expect(client).toContain("const leaveBonus");
     expect(client).toContain("router.push(getBonusDestinationPath(bonus.destination))");
+    expect(client).toContain('flowStage === "result"');
     expect(client).not.toContain("beforeunload");
   });
 });

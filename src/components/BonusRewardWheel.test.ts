@@ -44,8 +44,8 @@ describe("Bonus reward wheel", () => {
 
   it("keeps Rush in its lobby and its timer stopped until a final reward is continued", async () => {
     const client = await source("RushClient.tsx");
-    expect(client).toContain('bonus.wheel?.status !== "resolved" || !wheelContinued');
+    expect(client).toContain("getBonusFlowStage(bonus, wheelAcknowledged)");
     expect(client).toContain("<BonusRewardWheel bonus={bonus}");
-    expect(client).toContain('bonus.wheel?.status !== "resolved" || !wheelContinued || bonus.rushRun');
+    expect(client).toContain('flowStage === "wheel"');
   });
 });
