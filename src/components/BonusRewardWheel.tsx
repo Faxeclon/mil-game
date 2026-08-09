@@ -9,7 +9,7 @@ import {
   type BonusWheelSegment,
   type BonusWheelState
 } from "@/features/bonus/bonusOpportunity";
-import { getWheelRotation } from "@/features/bonus/bonusWheelPresentation";
+import { getWheelLabelPlacement, getWheelRotation } from "@/features/bonus/bonusWheelPresentation";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import styles from "./BonusRewardWheel.module.css";
@@ -78,17 +78,21 @@ export function BonusRewardWheel({ bonus, onContinue }: { bonus: BonusOpportunit
           role="img"
           style={wheelStyle}
         >
-          {bonusWheelSegments.map((segment, index) => (
-            <span
-              aria-hidden="true"
-              className={`${styles.segmentLabel} ${selected === segment && !spinning ? styles.segmentWinner : ""}`}
-              key={segment}
-              style={{ "--segment-angle": `${index * 60 + 30}deg` } as CSSProperties}
-            >
-              {t(`wheelSegments.${rewardKeys[segment]}`)}
-            </span>
-          ))}
           <span aria-hidden="true" className={styles.hub}><Gift size={25} strokeWidth={2.5} /></span>
+        </div>
+        <div aria-hidden="true" className={`${styles.labels} ${spinning ? styles.labelsSpinning : ""}`}>
+          {bonusWheelSegments.map((segment) => {
+            const placement = getWheelLabelPlacement(segment, rotation);
+            return (
+              <span
+                className={`${styles.segmentLabel} ${selected === segment && !spinning ? styles.segmentWinner : ""}`}
+                key={segment}
+                style={{ left: `${placement.x * 100}%`, top: `${placement.y * 100}%` } as CSSProperties}
+              >
+                {t(`wheelSegments.${rewardKeys[segment]}`)}
+              </span>
+            );
+          })}
         </div>
       </div>
       {selected && !spinning && (

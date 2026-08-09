@@ -17,7 +17,7 @@ describe("Bonus reward wheel", () => {
     expect(wheel).toContain("The store commits first");
     expect(wheel).toContain('bonus.wheel?.status === "reroll"');
     expect(wheel).toContain("t(`wheelSegments.${rewardKeys[segment]}`)");
-    expect(wheel).toContain('"--segment-angle"');
+    expect(wheel).toContain("getWheelLabelPlacement(segment, rotation)");
   });
 
   it("honours reduced motion while keeping the wheel usable", async () => {
@@ -28,6 +28,8 @@ describe("Bonus reward wheel", () => {
     expect(css).toContain("prefers-reduced-motion: reduce");
     expect(css).toContain("segmentWinner");
     expect(css).toContain("pointer::after");
+    expect(css).toContain("labelsSpinning");
+    expect(css).toContain("transform: translate(-50%, -50%)");
   });
 
   it("keeps readable localized labels in the wheel and full results after spinning", async () => {
