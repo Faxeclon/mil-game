@@ -1,4 +1,4 @@
-import { Accessibility } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { IslandsNavLink } from "@/components/IslandsNavLink";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -27,7 +27,7 @@ export async function AppHeader({ locale }: { locale: AppLocale }) {
           {/* Appears once a profile exists; without one the map only asks for it. */}
           <IslandsNavLink className={styles.navLink} />
           <Link aria-label={t("settings")} className={styles.navLink} href="/settings">
-            <Accessibility aria-hidden="true" size={19} />
+            <SlidersHorizontal aria-hidden="true" size={19} />
             <span>{t("settings")}</span>
           </Link>
           {/* Appears only where a grown-up signed in; a child never meets it. */}

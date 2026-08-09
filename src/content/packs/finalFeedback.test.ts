@@ -56,12 +56,13 @@ describe("final level feedback", () => {
     }
   });
 
-  it("uses the localized Settings label in the desktop header", async () => {
-    expect(spanishMessages.header.settings).toBe("⚙️ Configuración");
-    expect(englishMessages.header.settings).toBe("⚙️ Settings");
+  it("uses the localized Settings label and icon in the desktop header", async () => {
+    expect(spanishMessages.header.settings).toBe("Configuración");
+    expect(englishMessages.header.settings).toBe("Settings");
     expect(spanishMessages.header.accessibility).toBe("Opciones de accesibilidad");
     const header = readFileSync(new URL("../../components/AppHeader.tsx", import.meta.url), "utf8");
     expect(header).toContain('t("settings")');
+    expect(header).toContain("SlidersHorizontal");
     expect(header).not.toContain('<span>{t("accessibility")}</span>');
   });
 });
