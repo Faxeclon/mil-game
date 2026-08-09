@@ -65,7 +65,7 @@ export type ProgressState = {
   /** The one attempt that just closed a section, so a replay cannot farm another event. */
   sectionCompletionEvent?: { categoryKey: CategoryKey; attemptId: string };
   /** Bonus records belong to this profile because the whole state belongs to it. */
-  bonusOpportunities?: BonusOpportunity[];
+  bonusOpportunities: BonusOpportunity[];
   /** A Rush reward already earned. It survives later catalog additions without inventing completions. */
   rushUnlockedIslands: IslandKey[];
   /** The number of missions that formed this player's rank scale when it was last earned. */
@@ -144,6 +144,7 @@ export type LevelAttempt = {
 export const initialProgressState: ProgressState = {
   version: PROGRESS_VERSION,
   completedLevelIds: [],
+  bonusOpportunities: [],
   rushUnlockedIslands: [],
   rankMissionCeiling: playableMissionCount,
   mapOnboardingStage: "map-island",
@@ -342,9 +343,7 @@ export function parseProgressState(value: unknown): ProgressState {
     ...(parseSectionCompletionEvent(value.sectionCompletionEvent)
       ? { sectionCompletionEvent: parseSectionCompletionEvent(value.sectionCompletionEvent) }
       : {}),
-    ...(parseBonusOpportunities(value.bonusOpportunities).length > 0
-      ? { bonusOpportunities: parseBonusOpportunities(value.bonusOpportunities) }
-      : {}),
+    bonusOpportunities: parseBonusOpportunities(value.bonusOpportunities),
     rushUnlockedIslands: storedRushUnlocks,
     rankMissionCeiling: Math.max(completedLevelIds.length, storedCeiling),
     // Missing means a profile predates this optional onboarding and must not be interrupted.

@@ -1,11 +1,27 @@
 import { describe, expect, it } from "vitest";
-import { initialProgressState, parseProgressState } from "@/features/progress/progressState";
-import { activateBonusOpportunity, consumeBonusOpportunity, createBonusOpportunity, getActiveBonus, getPendingBonus } from "./bonusOpportunity";
+import { initialProgressState, parseProgressState, resetProgressKeepingProfile } from "@/features/progress/progressState";
+import { activateBonusOpportunity, consumeBonusOpportunity, createBonusOpportunity, getActiveBonus, getBonusOpportunityId, getPendingBonus } from "./bonusOpportunity";
 
 const first = { id: "animals:attempt-1", categoryKey: "animals" as const, islandKey: "difference" as const, destination: { kind: "island" as const, islandKey: "difference" as const } };
 const second = { id: "animals:attempt-2", categoryKey: "animals" as const, islandKey: "difference" as const, destination: { kind: "worlds" as const } };
 
 describe("per-profile bonus opportunities", () => {
+  it("normalizes older saved progress without bonus data to an empty list", () => {
+    const restored = parseProgressState({ ...initialProgressState, bonusOpportunities: undefined, completedLevelIds: ["basics-1"] });
+    expect(restored.completedLevelIds).toEqual(["basics-1"]);
+    expect(restored.bonusOpportunities).toEqual([]);
+  });
+  it("clears opportunities during reset while preserving identity and guardian", () => {
+    const state = createBonusOpportunity({ ...initialProgressState, localNickname: "Roqui", guardian: { email: "adult@example.com", authorizedOn: "2026-08-09", syncPending: true } }, first);
+    const reset = resetProgressKeepingProfile(state);
+    expect(reset.bonusOpportunities).toEqual([]);
+    expect(reset.localNickname).toBe("Roqui");
+    expect(reset.guardian).toEqual(state.guardian);
+  });
+  it("uses a stable completion-event id and a new id for a later replay", () => {
+    expect(getBonusOpportunityId("animals", "attempt-1")).toBe(getBonusOpportunityId("animals", "attempt-1"));
+    expect(getBonusOpportunityId("animals", "attempt-1")).not.toBe(getBonusOpportunityId("animals", "attempt-2"));
+  });
   it("creates one pending opportunity per completion event and survives a refresh", () => {
     const pending = createBonusOpportunity(initialProgressState, first);
     expect(createBonusOpportunity(pending, first)).toBe(pending);

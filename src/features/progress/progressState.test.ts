@@ -25,6 +25,7 @@ describe("canonical level progress", () => {
     expect(initialProgressState).toEqual({
       version: PROGRESS_VERSION,
       completedLevelIds: [],
+      bonusOpportunities: [],
       rushUnlockedIslands: [],
       rankMissionCeiling: 13,
       mapOnboardingStage: "map-island",
@@ -112,6 +113,7 @@ describe("legacy migration", () => {
     expect(state).toEqual({
       version: PROGRESS_VERSION,
       completedLevelIds: ["animals-1"],
+      bonusOpportunities: [],
       rushUnlockedIslands: [],
       rankMissionCeiling: 8,
       mapOnboardingStage: "complete",
