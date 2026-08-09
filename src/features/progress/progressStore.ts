@@ -179,6 +179,33 @@ export function removeProfileInStore(id: string): void {
   commit(removeProfile(snapshot.profiles, id));
 }
 
+/**
+ * Removes one adult-to-child link without touching the child's player record.
+ *
+ * The adult panel can read a child who is not the active player, so this cannot use the
+ * active-profile helper. Keeping the update here also makes unlinking deliberately
+ * different from `removeProfileInStore`, which is the explicit local deletion action.
+ */
+export function unlinkChildFromAdultInStore(id: string, adultEmail: string): boolean {
+  const child = snapshot.profiles.profiles.find((profile) => profile.id === id);
+  if (
+    !child ||
+    child.progress.adultEmail !== null ||
+    child.progress.guardian?.email !== adultEmail
+  ) {
+    return false;
+  }
+
+  const progress = withdrawGuardian(child.progress);
+  commit({
+    ...snapshot.profiles,
+    profiles: snapshot.profiles.profiles.map((profile) =>
+      profile.id === id ? { ...profile, progress } : profile
+    )
+  });
+  return true;
+}
+
 export function authorizeGuardianInStore(email: string, authorizedOn: string): void {
   applyToActiveProgress((state) => authorizeGuardian(state, email, authorizedOn));
 }

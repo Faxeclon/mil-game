@@ -9,14 +9,17 @@ import { initialProgressState } from "./progressState";
 import { PROFILES_STORAGE_KEY, PROGRESS_STORAGE_KEY } from "./progressStorage";
 import {
   completeLevelInStore,
+  authorizeGuardianInStore,
   getProgressSnapshot,
   getServerProgressSnapshot,
   leaveLocalProfileInStore,
   markOnboardedInStore,
+  removeProfileInStore,
   resetProgressInStore,
   resetProgressStoreForTests,
   startAdultPlayInStore,
-  subscribeToProgress
+  subscribeToProgress,
+  unlinkChildFromAdultInStore
 } from "./progressStore";
 
 const attemptedLevel = {
@@ -301,6 +304,113 @@ describe("a grown-up playing as themselves", () => {
     expect(getProgressSnapshot().profiles.activeId).toBe(childId);
     expect(getProgressSnapshot().state).toEqual(childProgress);
     expect(getProgressSnapshot().profiles.profiles).toHaveLength(1);
+    unsubscribe();
+  });
+});
+
+describe("unlinking a child from an adult account", () => {
+  const linkedAttempt = {
+    attemptId: "attempt_123e4567-e89b-12d3-a456-426614174000",
+    correctRounds: 3,
+    totalRounds: 3,
+    elapsedMs: 9_000,
+    completedAt: "2026-08-08T10:00:00.000Z",
+    score: 900,
+    playedOn: "2026-08-08"
+  };
+
+  it("removes only the adult link and keeps every part of the linked child's profile", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    markOnboardedInStore("Lu", "fox");
+    completeLevelInStore("basics-1", linkedAttempt);
+    authorizeGuardianInStore("marta@example.com", "2026-08-08");
+    const before = getProgressSnapshot();
+    const childId = before.profiles.activeId;
+
+    expect(unlinkChildFromAdultInStore(childId ?? "", "marta@example.com")).toBe(true);
+
+    const after = getProgressSnapshot();
+    expect(after.profiles.profiles).toHaveLength(1);
+    expect(after.profiles.activeId).toBe(childId);
+    expect(after.state.guardian).toBeNull();
+    expect({ ...after.state, guardian: before.state.guardian }).toEqual(before.state);
+    unsubscribe();
+  });
+
+  it("keeps an unlinked child active and ready to play without onboarding again", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    markOnboardedInStore("Lu", "fox");
+    authorizeGuardianInStore("marta@example.com", "2026-08-08");
+    const childId = getProgressSnapshot().profiles.activeId;
+
+    unlinkChildFromAdultInStore(childId ?? "", "marta@example.com");
+
+    expect(getProgressSnapshot().profiles.activeId).toBe(childId);
+    expect(getProgressSnapshot().state.onboarded).toBe(true);
+    expect(getProgressSnapshot().state.localNickname).toBe("Lu");
+    unsubscribe();
+  });
+
+  it("relinks the existing child profile without making a duplicate or losing progress", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    markOnboardedInStore("Lu", "fox");
+    completeLevelInStore("basics-1", linkedAttempt);
+    authorizeGuardianInStore("marta@example.com", "2026-08-08");
+    const childId = getProgressSnapshot().profiles.activeId;
+    const childProgress = getProgressSnapshot().state;
+
+    unlinkChildFromAdultInStore(childId ?? "", "marta@example.com");
+    authorizeGuardianInStore("marta@example.com", "2026-08-09");
+
+    const after = getProgressSnapshot();
+    expect(after.profiles.profiles).toHaveLength(1);
+    expect(after.profiles.activeId).toBe(childId);
+    expect(after.state.guardian?.email).toBe("marta@example.com");
+    expect({ ...after.state, guardian: childProgress.guardian }).toEqual(childProgress);
+    unsubscribe();
+  });
+
+  it("does not affect another profile when unlinking a child who is not active", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    markOnboardedInStore("Lu", "fox");
+    completeLevelInStore("basics-1", linkedAttempt);
+    authorizeGuardianInStore("marta@example.com", "2026-08-08");
+    const firstChildId = getProgressSnapshot().profiles.activeId;
+
+    leaveLocalProfileInStore();
+    markOnboardedInStore("Noa", "owl");
+    completeLevelInStore("animals-1", {
+      ...linkedAttempt,
+      attemptId: "attempt_abcdefab-cdef-abcd-efab-cdefabcdefab"
+    });
+    const secondChildId = getProgressSnapshot().profiles.activeId;
+    const secondChildProgress = getProgressSnapshot().state;
+
+    expect(unlinkChildFromAdultInStore(firstChildId ?? "", "marta@example.com")).toBe(true);
+
+    const after = getProgressSnapshot();
+    expect(after.profiles.activeId).toBe(secondChildId);
+    expect(after.state).toEqual(secondChildProgress);
+    expect(after.profiles.profiles.find((profile) => profile.id === firstChildId)?.progress.guardian).toBeNull();
+    unsubscribe();
+  });
+
+  it("keeps unlinking separate from explicit local profile deletion", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    markOnboardedInStore("Lu", "fox");
+    authorizeGuardianInStore("marta@example.com", "2026-08-08");
+    const childId = getProgressSnapshot().profiles.activeId;
+
+    unlinkChildFromAdultInStore(childId ?? "", "marta@example.com");
+    expect(getProgressSnapshot().profiles.profiles).toHaveLength(1);
+
+    removeProfileInStore(childId ?? "");
+    expect(getProgressSnapshot().profiles.profiles).toHaveLength(0);
     unsubscribe();
   });
 });

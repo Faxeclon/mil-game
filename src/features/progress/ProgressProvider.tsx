@@ -20,6 +20,7 @@ import {
   getServerProgressSnapshot,
   leaveLocalProfileInStore,
   removeProfileInStore,
+  unlinkChildFromAdultInStore,
   resetProgressInStore,
   selectProfileInStore,
   startAdultPlayInStore,
@@ -54,6 +55,8 @@ export type ProgressApi = {
   savedProfiles: readonly LocalProfile[];
   selectProfile: (id: string) => void;
   removeProfile: (id: string) => void;
+  /** Removes an adult-to-child link while keeping the child's local profile and progress. */
+  unlinkChildFromAdult: (id: string, adultEmail: string) => boolean;
 };
 
 const ProgressContext = createContext<ProgressApi | null>(null);
@@ -87,7 +90,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       leaveProfile: leaveLocalProfileInStore,
       savedProfiles: listProfiles(profiles),
       selectProfile: selectProfileInStore,
-      removeProfile: removeProfileInStore
+      removeProfile: removeProfileInStore,
+      unlinkChildFromAdult: unlinkChildFromAdultInStore
     }),
     [hydrated, profiles, state]
   );
