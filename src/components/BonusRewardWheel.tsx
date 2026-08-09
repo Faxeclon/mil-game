@@ -9,6 +9,7 @@ import {
   type BonusWheelSegment,
   type BonusWheelState
 } from "@/features/bonus/bonusOpportunity";
+import { bonusWheelTokens, getWheelRotation } from "@/features/bonus/bonusWheelPresentation";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import styles from "./BonusRewardWheel.module.css";
@@ -43,7 +44,6 @@ export function BonusRewardWheel({ bonus, onContinue }: { bonus: BonusOpportunit
   const [spinning, setSpinning] = useState(false);
   const spinLock = useRef(false);
   const selected = segmentFromWheel(bonus.wheel);
-  const selectedIndex = selected ? bonusWheelSegments.indexOf(selected) : 0;
   const pending = !bonus.wheel || bonus.wheel.status === "pending";
   const canSpin = pending || bonus.wheel?.status === "reroll";
 
@@ -63,7 +63,7 @@ export function BonusRewardWheel({ bonus, onContinue }: { bonus: BonusOpportunit
     }, reducedMotion ? 0 : 900);
   };
 
-  const rotation = selected ? 1_080 + (360 - selectedIndex * 60 - 30) : 0;
+  const rotation = selected ? getWheelRotation(selected) : 0;
   const wheelStyle = { "--wheel-rotation": `${rotation}deg` } as CSSProperties;
 
   return (
@@ -79,13 +79,19 @@ export function BonusRewardWheel({ bonus, onContinue }: { bonus: BonusOpportunit
           style={wheelStyle}
         >
           {bonusWheelSegments.map((segment, index) => (
-            <span className={styles.segmentLabel} key={segment} style={{ "--segment-index": index } as CSSProperties}>
-              {t(`wheelRewards.${rewardKeys[segment]}`)}
+            <span
+              aria-hidden="true"
+              className={`${styles.segmentLabel} ${selected === segment && !spinning ? styles.segmentWinner : ""}`}
+              key={segment}
+              style={{ "--segment-index": index } as CSSProperties}
+            >
+              {bonusWheelTokens[segment]}
             </span>
           ))}
+          <span aria-hidden="true" className={styles.hub}><Gift size={25} strokeWidth={2.5} /></span>
         </div>
       </div>
-      {selected && (
+      {selected && !spinning && (
         <div aria-live="polite" className={styles.result}>
           <span>{t("wheelYourBonus")}</span>
           <strong><RewardIcon segment={selected} />{t(`wheelRewards.${rewardKeys[selected]}`)}</strong>
