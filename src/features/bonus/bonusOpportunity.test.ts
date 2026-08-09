@@ -1,16 +1,21 @@
 import { describe, expect, it } from "vitest";
 import { initialProgressState, parseProgressState, resetProgressKeepingProfile } from "@/features/progress/progressState";
-import { activateBonusOpportunity, consumeBonusOpportunity, createBonusOpportunity, getActiveBonus, getActiveBonusForIsland, getBonusDestinationPath, getBonusOpportunityId, getPendingBonus, startBonusRushRun, updateBonusRushRun } from "./bonusOpportunity";
+import { activateBonusOpportunity, bonusWheelSegments, chooseBonusWheelSegment, consumeBonusOpportunity, createBonusOpportunity, getActiveBonus, getActiveBonusForIsland, getBonusDestinationPath, getBonusOpportunityId, getPendingBonus, spinBonusWheel, startBonusRushRun, updateBonusRushRun } from "./bonusOpportunity";
 
 const first = { id: "animals:attempt-1", categoryKey: "animals" as const, islandKey: "difference" as const, destination: { kind: "island" as const, islandKey: "difference" as const } };
 const second = { id: "animals:attempt-2", categoryKey: "animals" as const, islandKey: "difference" as const, destination: { kind: "worlds" as const } };
 const rushRun = {
   runId: "animals:attempt-1:run",
   startedAt: 1_000,
+  reward: "none" as const,
+  durationSeconds: 30,
   deckItemIds: ["animals-1-r1-ai", "animals-1-r1-real"],
   index: 1,
-  correct: 1,
-  wrong: 0,
+  rawCorrectCount: 1,
+  actualMistakeCount: 0,
+  visibleMistakeCount: 0,
+  shieldUsed: false,
+  score: 1,
   finished: false,
   ranOut: false
 };
@@ -70,9 +75,9 @@ describe("per-profile bonus opportunities", () => {
   it("updates only the active run, without touching normal progress", () => {
     const active = activateBonusOpportunity(createBonusOpportunity({ ...initialProgressState, completedLevelIds: ["animals-1"] }, first), first.id);
     const started = startBonusRushRun(active, first.id, rushRun);
-    const updated = updateBonusRushRun(started, first.id, { ...rushRun, index: 2, correct: 1, wrong: 1 });
+    const updated = updateBonusRushRun(started, first.id, { ...rushRun, index: 2, actualMistakeCount: 1, visibleMistakeCount: 1 });
 
-    expect(updated.bonusOpportunities[0]?.rushRun).toMatchObject({ index: 2, correct: 1, wrong: 1 });
+    expect(updated.bonusOpportunities[0]?.rushRun).toMatchObject({ index: 2, rawCorrectCount: 1, actualMistakeCount: 1, visibleMistakeCount: 1 });
     expect(updated.completedLevelIds).toEqual(["animals-1"]);
     expect(updated.bestResultsByLevelId).toEqual(initialProgressState.bestResultsByLevelId);
   });
@@ -83,5 +88,46 @@ describe("per-profile bonus opportunities", () => {
     expect(next.completedLevelIds).toEqual(initialProgressState.completedLevelIds);
     expect(next.bestResultsByLevelId).toEqual(initialProgressState.bestResultsByLevelId);
     expect(next.rushUnlockedIslands).toEqual(initialProgressState.rushUnlockedIslands);
+  });
+  it("persists shield use and raw Bonus result data without changing mission progress", () => {
+    const active = activateBonusOpportunity(createBonusOpportunity({ ...initialProgressState, completedLevelIds: ["animals-1"] }, first), first.id);
+    const withReward = spinBonusWheel(active, first.id, () => 0);
+    const started = startBonusRushRun(withReward, first.id, { ...rushRun, reward: "extra-life", durationSeconds: 30, actualMistakeCount: 1, shieldUsed: true, score: 1 });
+    const restored = parseProgressState(JSON.parse(JSON.stringify(started)));
+
+    expect(restored.bonusOpportunities[0]?.wheel).toMatchObject({ reward: "extra-life" });
+    expect(restored.bonusOpportunities[0]?.rushRun).toMatchObject({ reward: "extra-life", rawCorrectCount: 1, actualMistakeCount: 1, visibleMistakeCount: 0, shieldUsed: true, score: 1 });
+    expect(restored.completedLevelIds).toEqual(["animals-1"]);
+  });
+
+  it("persists a first spin before animation, so refresh cannot reroll it", () => {
+    const active = activateBonusOpportunity(createBonusOpportunity(initialProgressState, first), first.id);
+    const spun = spinBonusWheel(active, first.id, () => 0.2);
+    const restored = parseProgressState(JSON.parse(JSON.stringify(spun)));
+
+    expect(restored.bonusOpportunities[0]?.wheel).toEqual({ status: "resolved", rerollUsed: false, reward: "double-points" });
+    expect(spinBonusWheel(restored, first.id, () => 0.8)).toBe(restored);
+  });
+
+  it("allows exactly one persisted reroll and excludes reroll from its second spin", () => {
+    const active = activateBonusOpportunity(createBonusOpportunity(initialProgressState, first), first.id);
+    const firstSpin = spinBonusWheel(active, first.id, () => 0.999);
+    expect(firstSpin.bonusOpportunities[0]?.wheel).toEqual({ status: "reroll", rerollUsed: true });
+
+    const secondSpin = spinBonusWheel(parseProgressState(JSON.parse(JSON.stringify(firstSpin))), first.id, () => 0.999);
+    expect(secondSpin.bonusOpportunities[0]?.wheel).toEqual({ status: "resolved", rerollUsed: true, reward: "none" });
+    expect(spinBonusWheel(secondSpin, first.id, () => 0)).toBe(secondSpin);
+    expect(chooseBonusWheelSegment(true, () => 0.999)).not.toBe("reroll");
+  });
+
+  it("keeps wheel state isolated to each opportunity and leaves normal progress alone", () => {
+    const active = activateBonusOpportunity(createBonusOpportunity({ ...initialProgressState, completedLevelIds: ["animals-1"] }, first), first.id);
+    const spun = spinBonusWheel(active, first.id, () => 0);
+    const later = createBonusOpportunity(consumeBonusOpportunity(spun, first.id), second);
+
+    expect(later.bonusOpportunities[0]?.wheel).toEqual({ status: "resolved", rerollUsed: false, reward: "extra-life" });
+    expect(later.bonusOpportunities[1]?.wheel).toBeUndefined();
+    expect(later.completedLevelIds).toEqual(["animals-1"]);
+    expect(bonusWheelSegments).toHaveLength(6);
   });
 });

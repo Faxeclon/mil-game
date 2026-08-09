@@ -121,6 +121,26 @@
   font-size: 0.8rem;
 }
 
+.rewardChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  background: #fff1bf;
+  color: #714d00;
+  font-size: 0.76rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.rewardScore {
+  margin: 0;
+  color: var(--u-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
 .question {
   max-width: 18ch;
   margin: 0.1rem 0 0;

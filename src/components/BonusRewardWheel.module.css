@@ -1,0 +1,35 @@
+.panel {
+  width: min(100%, 31rem);
+  margin: clamp(0.75rem, 4vw, 2rem) auto;
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  color: #1f2a44;
+  text-align: center;
+}
+
+.panel h1 { margin: 0; font-size: clamp(1.65rem, 6vw, 2.3rem); line-height: 1.05; }
+.lead { max-width: 29ch; margin: 0; color: #5b6780; }
+.wheelWrap { width: min(78vw, 20rem); aspect-ratio: 1; position: relative; }
+.pointer {
+  width: 0; height: 0; position: absolute; z-index: 2; top: -0.2rem; left: calc(50% - 1rem);
+  border-right: 1rem solid transparent; border-left: 1rem solid transparent; border-top: 2.2rem solid #c93c0b;
+}
+.wheel {
+  width: 100%; height: 100%; position: relative; overflow: hidden; border: 0.45rem solid #fff;
+  border-radius: 50%; background: conic-gradient(#f7bd2d 0deg 60deg, #8b5cf6 60deg 120deg, #32a4dd 120deg 180deg, #35a36b 180deg 240deg, #ea4b16 240deg 300deg, #ef7798 300deg 360deg);
+  box-shadow: 0 0 0 0.2rem #d5cfcd, 0 0.5rem 1.3rem rgb(31 42 68 / 20%); transform: rotate(var(--wheel-rotation));
+}
+.spinning { animation: wheel-spin 900ms cubic-bezier(.15,.8,.24,1) both; }
+.reducedMotion { transition: opacity 120ms ease; }
+.segmentLabel {
+  width: 38%; position: absolute; top: 50%; left: 50%; color: #162036; font-size: clamp(0.64rem, 2.7vw, 0.8rem); font-weight: 900; line-height: 1.05;
+  transform: rotate(calc(var(--segment-index) * 60deg + 30deg)) translateY(-8.1rem) rotate(calc(var(--segment-index) * -60deg - 30deg)) translate(-50%, -50%);
+}
+.result { min-height: 4.8rem; display: grid; gap: .25rem; color: #5b6780; }
+.result strong { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; color: #1f2a44; font-size: 1.25rem; }
+.result svg, .primary svg { width: 1.25rem; height: 1.25rem; }
+.primary { min-height: 3.1rem; padding: .6rem 1.5rem; display: inline-flex; align-items: center; justify-content: center; gap: .4rem; border: 0; border-radius: 999px; background: #c93c0b; color: #fff; font-size: 1rem; font-weight: 800; cursor: pointer; }
+.primary:focus-visible { outline: 3px solid #1f2a44; outline-offset: 3px; }
+@keyframes wheel-spin { from { transform: rotate(0deg); } to { transform: rotate(var(--wheel-rotation)); } }
+@media (prefers-reduced-motion: reduce) { .spinning { animation: none; } }

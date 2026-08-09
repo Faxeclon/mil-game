@@ -1,11 +1,12 @@
 import { categories, islands, missionBlueprint, isLevelId, type CategoryKey, type IslandKey, type LevelId } from "@/features/levels/levelModel";
-import type { BonusOpportunity, BonusRushRun } from "@/features/bonus/bonusOpportunity";
+import { bonusWheelRewards, type BonusOpportunity, type BonusRushRun, type BonusWheelState } from "@/features/bonus/bonusOpportunity";
 import { normalizeAdultEmail } from "@/features/adults/adultAccount";
 import { isApprenticeAvatarId, type ApprenticeAvatarId } from "@/features/profile/apprenticeAvatar";
 import { normalizeLocalNickname } from "@/features/profile/localNickname";
 import { isAttemptId, parseCompletedAt, parseElapsedMs } from "./attemptMetadata";
 import { parseBestResults, updateBestResults, type BestResultsByLevelId } from "./bestResults";
 import { parseLevelScore } from "@/features/scoring/levelScore";
+import { RUSH_SECONDS } from "@/features/rush/rushState";
 import { initialStreak, isPlayedOn, parseStreak, recordPlayedDay, type Streak } from "./streak";
 import {
   grantGuardianConsent,
@@ -280,25 +281,54 @@ function parseBonusRushRun(value: unknown): BonusRushRun | undefined {
   if (!value.deckItemIds.every((item) => typeof item === "string" && item.length > 0)) return undefined;
   if (new Set(value.deckItemIds).size !== value.deckItemIds.length) return undefined;
   const index = value.index;
-  const correct = value.correct;
-  const wrong = value.wrong;
+  const rawCorrectCount = value.rawCorrectCount ?? value.correct;
+  const actualMistakeCount = value.actualMistakeCount ?? value.wrong;
+  const visibleMistakeCount = value.visibleMistakeCount ?? value.wrong;
+  const durationSeconds = value.durationSeconds ?? RUSH_SECONDS;
+  const score = value.score ?? rawCorrectCount;
+  const reward = typeof value.reward === "string" && bonusWheelRewards.includes(value.reward as (typeof bonusWheelRewards)[number])
+    ? value.reward as (typeof bonusWheelRewards)[number]
+    : "none";
   if (
     typeof index !== "number" || !Number.isInteger(index) || index < 0 ||
-    typeof correct !== "number" || !Number.isInteger(correct) || correct < 0 ||
-    typeof wrong !== "number" || !Number.isInteger(wrong) || wrong < 0
+    typeof rawCorrectCount !== "number" || !Number.isInteger(rawCorrectCount) || rawCorrectCount < 0 ||
+    typeof actualMistakeCount !== "number" || !Number.isInteger(actualMistakeCount) || actualMistakeCount < 0 ||
+    typeof visibleMistakeCount !== "number" || !Number.isInteger(visibleMistakeCount) || visibleMistakeCount < 0 ||
+    typeof durationSeconds !== "number" || !Number.isInteger(durationSeconds) || durationSeconds < RUSH_SECONDS ||
+    typeof score !== "number" || !Number.isInteger(score) || score < 0
   ) return undefined;
   if (index > value.deckItemIds.length) return undefined;
   if (typeof value.finished !== "boolean" || typeof value.ranOut !== "boolean") return undefined;
   return {
     runId: value.runId,
     startedAt: value.startedAt,
+    reward,
     deckItemIds: [...value.deckItemIds],
     index,
-    correct,
-    wrong,
+    durationSeconds,
+    rawCorrectCount,
+    actualMistakeCount,
+    visibleMistakeCount,
+    shieldUsed: value.shieldUsed === true,
+    score,
     finished: value.finished,
     ranOut: value.ranOut
   };
+}
+
+function parseBonusWheel(value: unknown): BonusWheelState | undefined {
+  if (!isRecord(value)) return undefined;
+  if (value.status === "pending" && value.rerollUsed === false) return { status: "pending", rerollUsed: false };
+  if (value.status === "reroll" && value.rerollUsed === true) return { status: "reroll", rerollUsed: true };
+  if (
+    value.status === "resolved" &&
+    typeof value.rerollUsed === "boolean" &&
+    typeof value.reward === "string" &&
+    bonusWheelRewards.includes(value.reward as (typeof bonusWheelRewards)[number])
+  ) {
+    return { status: "resolved", rerollUsed: value.rerollUsed, reward: value.reward as (typeof bonusWheelRewards)[number] };
+  }
+  return undefined;
 }
 
 function parseBonusOpportunities(value: unknown): BonusOpportunity[] {
@@ -311,6 +341,7 @@ function parseBonusOpportunities(value: unknown): BonusOpportunity[] {
     if (!isRecord(entry.destination) || (entry.destination.kind !== "worlds" && entry.destination.kind !== "island")) return [];
     if (entry.destination.kind === "island" && !isIslandKey(entry.destination.islandKey)) return [];
     const rushRun = entry.status === "active" ? parseBonusRushRun(entry.rushRun) : undefined;
+    const wheel = entry.status === "active" ? parseBonusWheel(entry.wheel) : undefined;
     seen.add(entry.id);
     return [{
       id: entry.id,
@@ -318,6 +349,7 @@ function parseBonusOpportunities(value: unknown): BonusOpportunity[] {
       islandKey: entry.islandKey,
       destination: entry.destination.kind === "worlds" ? { kind: "worlds" } : { kind: "island", islandKey: entry.destination.islandKey as IslandKey },
       status: entry.status,
+      ...(wheel ? { wheel } : {}),
       ...(rushRun ? { rushRun } : {})
     }];
   });
