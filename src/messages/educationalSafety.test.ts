@@ -54,4 +54,12 @@ describe("active educational feedback", () => {
       expect(active).not.toContain(phrase);
     }
   });
+
+  it("keeps the zoom hint as a clue rather than a visual verdict", () => {
+    expect(spanish.zoom.hint).toContain("pista");
+    expect(spanish.zoom.hint).toContain("no una prueba");
+    expect(english.zoom.hint).toContain("clue");
+    expect(english.zoom.hint).toContain("not proof");
+    expect(`${spanish.zoom.hint} ${english.zoom.hint}`.toLowerCase()).not.toMatch(/delatan|give it away/);
+  });
 });

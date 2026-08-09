@@ -324,6 +324,11 @@ export function TutorialClient({
   const countdownForRound = countdown?.roundId === round.id ? countdown : null;
   const announcementForRound = timerAnnouncement?.roundId === round.id ? timerAnnouncement.kind : null;
   const visibleTimer = timedDurationMs !== null && (isRoundTimed || announcementForRound === "expired");
+  const timerLabel = announcementForRound === "expired"
+    ? t("timeExpired")
+    : getDisplayedRemainingSeconds(countdownForRound?.remainingMs ?? timedDurationMs ?? 0) === 1
+      ? t("timeRemainingOne")
+      : t("timeRemaining", { seconds: getDisplayedRemainingSeconds(countdownForRound?.remainingMs ?? timedDurationMs ?? 0) });
 
   return (
     // "tutorial-round" is only a hook for the existing global rule that hides the
@@ -351,11 +356,7 @@ export function TutorialClient({
             <TimerIcon aria-hidden="true" size={15} />
           </span>
           <span className={styles.timerValue}>
-            {announcementForRound === "expired"
-              ? t("timeExpired")
-              : getDisplayedRemainingSeconds(countdownForRound?.remainingMs ?? timedDurationMs) === 1
-                ? t("timeRemainingOne")
-                : t("timeRemaining", { seconds: getDisplayedRemainingSeconds(countdownForRound?.remainingMs ?? timedDurationMs) })}
+            {timerLabel}
           </span>
           <span aria-hidden="true" className={styles.timerTrack}>
             <span
@@ -437,7 +438,16 @@ export function TutorialClient({
                   never be mistaken for choosing.
                 */
                 <div className={styles.cardWrap} key={choice.id}>
-                <ImageZoom alt={description} src={choice.media.src} />
+                <ImageZoom
+                  alt={description}
+                  closeSignal={announcementForRound === "expired" ? round.order : 0}
+                  src={choice.media.src}
+                  timer={
+                    countdownForRound && isRoundTimed
+                      ? { label: timerLabel, warning: announcementForRound === "warning" }
+                      : undefined
+                  }
+                />
                 <button
                   aria-label={[t("choiceAria", { position, description }), cardStatus].filter(Boolean).join(". ")}
                   aria-pressed={selected}

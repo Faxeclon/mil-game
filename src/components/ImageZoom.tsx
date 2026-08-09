@@ -21,16 +21,40 @@ import styles from "./ImageZoom.module.css";
  * card is a button, one button cannot live inside another, and looking closer must never
  * be mistaken for choosing.
  */
-export function ImageZoom({ src, alt }: { src: string; alt: string }) {
+type ZoomTimer = { label: string; warning: boolean };
+
+export function ImageZoom({
+  src,
+  alt,
+  timer,
+  closeSignal = 0
+}: {
+  src: string;
+  alt: string;
+  /** Derived from the game's existing deadline; ImageZoom never owns a clock. */
+  timer?: ZoomTimer;
+  /** Timeout or a finished run can dismiss the overlay without restoring stale focus. */
+  closeSignal?: number;
+}) {
   const t = useTranslations("zoom");
   const [open, setOpen] = useState(false);
   const [magnified, setMagnified] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
+  const restoreFocusRef = useRef(false);
 
-  const close = useCallback(() => {
+  const close = useCallback((restoreFocus = true) => {
+    restoreFocusRef.current = restoreFocus;
     setOpen(false);
     setMagnified(false);
   }, []);
+
+  useEffect(() => {
+    if (closeSignal === 0) return;
+    const dismiss = window.setTimeout(() => close(false), 0);
+    return () => window.clearTimeout(dismiss);
+  }, [close, closeSignal]);
 
   // Escape closes it, and the page underneath must not scroll away while it is open.
   useEffect(() => {
@@ -38,6 +62,18 @@ export function ImageZoom({ src, alt }: { src: string; alt: string }) {
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") close();
+      if (event.key !== "Tab") return;
+      const controls = dialogRef.current?.querySelectorAll<HTMLElement>("button:not([disabled])") ?? [];
+      if (controls.length === 0) return;
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -50,11 +86,18 @@ export function ImageZoom({ src, alt }: { src: string; alt: string }) {
     };
   }, [open, close]);
 
+  useEffect(() => {
+    if (open || !restoreFocusRef.current) return;
+    restoreFocusRef.current = false;
+    if (triggerRef.current?.isConnected) triggerRef.current.focus();
+  }, [open]);
+
   return (
     <>
       <button
         aria-label={t("open")}
         className={styles.trigger}
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen(true)}
       >
@@ -66,10 +109,12 @@ export function ImageZoom({ src, alt }: { src: string; alt: string }) {
           aria-label={t("title")}
           aria-modal="true"
           className={styles.overlay}
+          ref={dialogRef}
           role="dialog"
-          onClick={close}
+          onClick={() => close()}
         >
           {/* The picture is the point, so a tap on it must not close the thing showing it. */}
+          {timer && <p className={timer.warning ? styles.timerWarning : styles.timer}>{timer.label}</p>}
           <div
             className={magnified ? styles.stageMagnified : styles.stage}
             onClick={(event) => event.stopPropagation()}
@@ -95,7 +140,7 @@ export function ImageZoom({ src, alt }: { src: string; alt: string }) {
               {magnified ? t("out") : t("in")}
             </button>
 
-            <button aria-label={t("close")} className={styles.control} ref={closeRef} type="button" onClick={close}>
+            <button aria-label={t("close")} className={styles.control} ref={closeRef} type="button" onClick={() => close()}>
               <X aria-hidden="true" size={18} />
               {t("close")}
             </button>

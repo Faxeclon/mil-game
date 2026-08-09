@@ -125,7 +125,12 @@ export function RushClient({ island, pool }: { island: IslandKey; pool: readonly
         <Image alt={tTutorial(item.altKey)} fill priority sizes="(max-width: 700px) 82vw, 380px" src={item.src} />
         {/* The clock keeps running while it is open, and that is the honest trade: looking
             closer costs seconds, and deciding whether it is worth it is part of the game. */}
-        <ImageZoom alt={tTutorial(item.altKey)} src={item.src} />
+        <ImageZoom
+          alt={tTutorial(item.altKey)}
+          closeSignal={secondsLeft === 0 ? 1 : 0}
+          src={item.src}
+          timer={{ label: t("secondsLeft", { seconds: secondsLeft }), warning: secondsLeft <= 5 }}
+        />
       </figure>
 
       <div aria-labelledby="rush-question" className={styles.answers} role="group">
