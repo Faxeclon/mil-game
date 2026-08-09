@@ -36,6 +36,12 @@ export function getActiveBonus(state: ProgressState): BonusOpportunity | undefin
   return state.bonusOpportunities.find((bonus) => bonus.status === "active");
 }
 
+/** The Rush route is tied to both the active ticket and its authored island. */
+export function getActiveBonusForIsland(state: ProgressState, islandKey: string): BonusOpportunity | undefined {
+  const bonus = getActiveBonus(state);
+  return bonus?.islandKey === islandKey ? bonus : undefined;
+}
+
 export function createBonusOpportunity(state: ProgressState, input: BonusOpportunityInput): ProgressState {
   const opportunities = state.bonusOpportunities;
   if (opportunities.some((bonus) => bonus.id === input.id)) return state;

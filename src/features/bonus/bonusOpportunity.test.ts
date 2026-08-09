@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { initialProgressState, parseProgressState, resetProgressKeepingProfile } from "@/features/progress/progressState";
-import { activateBonusOpportunity, consumeBonusOpportunity, createBonusOpportunity, getActiveBonus, getBonusDestinationPath, getBonusOpportunityId, getPendingBonus } from "./bonusOpportunity";
+import { activateBonusOpportunity, consumeBonusOpportunity, createBonusOpportunity, getActiveBonus, getActiveBonusForIsland, getBonusDestinationPath, getBonusOpportunityId, getPendingBonus } from "./bonusOpportunity";
 
 const first = { id: "animals:attempt-1", categoryKey: "animals" as const, islandKey: "difference" as const, destination: { kind: "island" as const, islandKey: "difference" as const } };
 const second = { id: "animals:attempt-2", categoryKey: "animals" as const, islandKey: "difference" as const, destination: { kind: "worlds" as const } };
@@ -40,10 +40,18 @@ describe("per-profile bonus opportunities", () => {
     expect(getPendingBonus(consumed)).toBeUndefined();
     expect(consumeBonusOpportunity(consumed, first.id)).toBe(consumed);
   });
+  it("admits Rush only for the active opportunity's island", () => {
+    const active = activateBonusOpportunity(createBonusOpportunity(initialProgressState, first), first.id);
+    expect(getActiveBonusForIsland(active, "difference")).toMatchObject(first);
+    expect(getActiveBonusForIsland(active, "training")).toBeUndefined();
+    expect(getActiveBonusForIsland(consumeBonusOpportunity(active, first.id), "difference")).toBeUndefined();
+  });
   it("allows a later replay event without changing persistent mission progress", () => {
     const firstConsumed = consumeBonusOpportunity(createBonusOpportunity(initialProgressState, first), first.id);
     const next = createBonusOpportunity(firstConsumed, second);
     expect(getPendingBonus(next)).toMatchObject(second);
     expect(next.completedLevelIds).toEqual(initialProgressState.completedLevelIds);
+    expect(next.bestResultsByLevelId).toEqual(initialProgressState.bestResultsByLevelId);
+    expect(next.rushUnlockedIslands).toEqual(initialProgressState.rushUnlockedIslands);
   });
 });

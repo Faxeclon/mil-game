@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { Camera, Sparkles, Timer, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
@@ -13,9 +13,12 @@ import {
   RUSH_SECONDS,
   type RushItem
 } from "@/features/rush/rushState";
-import type { IslandKey } from "@/features/levels/levelModel";
-import { Link } from "@/i18n/navigation";
+import type { CategoryKey, IslandKey } from "@/features/levels/levelModel";
+import { getActiveBonusForIsland, getBonusDestinationPath, type BonusOpportunity } from "@/features/bonus/bonusOpportunity";
+import { useProgress } from "@/features/progress/ProgressProvider";
+import { useRouter } from "@/i18n/navigation";
 import { ImageZoom } from "./ImageZoom";
+import { useRushCompletionRetention } from "./RushRouteGuard";
 import styles from "./RushClient.module.css";
 
 /**
@@ -26,13 +29,28 @@ import styles from "./RushClient.module.css";
  * lesson, and the missions, where a child is asked to slow down and look, remain the
  * thing that counts.
  */
-export function RushClient({ island, pool }: { island: IslandKey; pool: readonly RushItem[] }) {
+export function RushClient({
+  island,
+  poolsByCategory
+}: {
+  island: IslandKey;
+  poolsByCategory: Partial<Record<CategoryKey, readonly RushItem[]>>;
+}) {
   const t = useTranslations("rush");
   const tTutorial = useTranslations("tutorial");
   const tEducation = useTranslations("education");
   const [state, dispatch] = useReducer(rushReducer, initialRushState);
   const [deck, setDeck] = useState<RushItem[]>([]);
   const [secondsLeft, setSecondsLeft] = useState(RUSH_SECONDS);
+  const router = useRouter();
+  const retainCompletedBonus = useRushCompletionRetention();
+  const { progressState, consumeBonusOpportunity } = useProgress();
+  const activeBonus = getActiveBonusForIsland(progressState, island);
+  const [runBonus] = useState<BonusOpportunity | null>(() => activeBonus ?? null);
+  const consumedRunRef = useRef(false);
+
+  const bonus = activeBonus ?? runBonus;
+  const pool = bonus ? poolsByCategory[bonus.categoryKey] ?? [] : [];
 
   const isPlaying = state.status === "playing";
 
@@ -50,12 +68,31 @@ export function RushClient({ island, pool }: { island: IslandKey; pool: readonly
     return () => clearInterval(timer);
   }, [isPlaying]);
 
+  // The guard keeps this mounted just long enough to show the score after consumption.
+  useEffect(() => {
+    if (state.status !== "finished" || !bonus || consumedRunRef.current) return;
+    consumedRunRef.current = true;
+    retainCompletedBonus(bonus.id);
+    consumeBonusOpportunity(bonus.id);
+  }, [bonus, consumeBonusOpportunity, retainCompletedBonus, state.status]);
+
   const beginRun = () => {
     setDeck(dealRush(pool));
     setSecondsLeft(RUSH_SECONDS);
     dispatch({ type: "restart" });
     dispatch({ type: "start" });
   };
+
+  const abandonBonus = () => {
+    if (!bonus) return;
+    if (!consumedRunRef.current) {
+      consumedRunRef.current = true;
+      consumeBonusOpportunity(bonus.id);
+    }
+    router.push(getBonusDestinationPath(bonus.destination));
+  };
+
+  if (!bonus) return null;
 
   if (state.status === "lobby") {
     return (
@@ -65,13 +102,13 @@ export function RushClient({ island, pool }: { island: IslandKey; pool: readonly
           {t("title")}
         </h1>
         <p className={styles.lead}>{t("lead", { seconds: RUSH_SECONDS })}</p>
-        <p className={styles.warning}>{t("notAMission")}</p>
+        <p className={styles.warning}>{t("bonusChallenge")}</p>
         <button className={styles.primary} type="button" onClick={beginRun}>
           {t("start")}
         </button>
-        <Link className={styles.secondary} href={`/island/${island}`}>
+        <button className={styles.secondary} type="button" onClick={abandonBonus}>
           {t("exit")}
-        </Link>
+        </button>
       </section>
     );
   }
@@ -89,12 +126,9 @@ export function RushClient({ island, pool }: { island: IslandKey; pool: readonly
         <p className={styles.lead}>{t("accuracy", { percent: accuracy })}</p>
         {!state.ranOut && <p className={styles.warning}>{t("ranOutOfImages")}</p>}
         <p className={styles.warning}>{tEducation("remember")}</p>
-        <button className={styles.primary} type="button" onClick={beginRun}>
-          {t("again")}
+        <button className={styles.primary} type="button" onClick={abandonBonus}>
+          {t("bonusFinish")}
         </button>
-        <Link className={styles.secondary} href={`/island/${island}`}>
-          {t("exit")}
-        </Link>
       </section>
     );
   }
@@ -156,6 +190,9 @@ export function RushClient({ island, pool }: { island: IslandKey; pool: readonly
         <Zap aria-hidden="true" size={13} />
         {t("hint")}
       </p>
+      <button className={styles.secondary} type="button" onClick={abandonBonus}>
+        {t("exit")}
+      </button>
     </section>
   );
 }

@@ -1,5 +1,5 @@
 import type { SinglePack, TutorialPack } from "@/content/schemas/tutorial";
-import type { IslandKey } from "@/features/levels/levelModel";
+import type { CategoryKey, IslandKey } from "@/features/levels/levelModel";
 import { getPlayableCategories, getPlayableMissions } from "@/features/levels/levelProgress";
 
 /**
@@ -114,6 +114,25 @@ export function buildIslandRushPool(
 ): RushItem[] {
   const packIds = getPlayableCategories(island)
     .flatMap((category) => getPlayableMissions(category.key))
+    .map((mission) => mission.packId)
+    .filter((packId): packId is string => Boolean(packId));
+
+  return buildRushPool(
+    packIds.map((packId) => comparePacks[packId]).filter(Boolean),
+    packIds.map((packId) => singlePacks[packId]).filter(Boolean)
+  );
+}
+
+/**
+ * A Bonus is earned by one section, so it reuses only that section's authored media.
+ * Keeping this beside the island pool means future categories need no route-specific code.
+ */
+export function buildCategoryRushPool(
+  category: CategoryKey,
+  comparePacks: Readonly<Record<string, TutorialPack>>,
+  singlePacks: Readonly<Record<string, SinglePack>>
+): RushItem[] {
+  const packIds = getPlayableMissions(category)
     .map((mission) => mission.packId)
     .filter((packId): packId is string => Boolean(packId));
 
