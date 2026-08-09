@@ -26,6 +26,9 @@ import {
   activateBonusOpportunity,
   consumeBonusOpportunity,
   createBonusOpportunity,
+  startBonusRushRun,
+  updateBonusRushRun,
+  type BonusRushRun,
   type BonusOpportunityInput
 } from "@/features/bonus/bonusOpportunity";
 import { requestPersistentStorage } from "@/features/offline/registerServiceWorker";
@@ -116,6 +119,14 @@ export function activateBonusOpportunityInStore(id: string): void {
 
 export function consumeBonusOpportunityInStore(id: string): void {
   applyToActiveProgress((state) => consumeBonusOpportunity(state, id));
+}
+
+export function startBonusRushRunInStore(id: string, run: BonusRushRun): void {
+  applyToActiveProgress((state) => startBonusRushRun(state, id, run));
+}
+
+export function updateBonusRushRunInStore(id: string, run: BonusRushRun): void {
+  applyToActiveProgress((state) => updateBonusRushRun(state, id, run));
 }
 
 export function markOnboardedInStore(localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId): void {
