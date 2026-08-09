@@ -12,7 +12,16 @@ describe("Bonus achievement celebration", () => {
     expect(component).toContain('role="dialog"');
     expect(component).toContain("useAccessibility");
     expect(component).toContain("event.key === \"Escape\"");
+    expect(component).toContain("createPortal");
+    expect(component).toContain("document.body.append(root)");
+    expect(component).toContain("element.inert = true");
+    expect(component).toContain('document.body.style.overflow = "hidden"');
+    expect(component).toContain("continueLockRef.current");
     expect(css).toContain("prefers-reduced-motion: reduce");
+    expect(css).toContain("position: fixed");
+    expect(css).toContain("z-index: 1000");
+    expect(css).toContain("max-height: 100%");
+    expect(css).toContain("overflow: auto");
   });
 
   it("evaluates achievements on normal Rush completion before navigation", async () => {

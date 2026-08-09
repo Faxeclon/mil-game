@@ -1,7 +1,8 @@
 "use client";
 
 import { Egg, Film, Search, ShieldCheck, Star, type LucideIcon } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 import { getAchievementDefinition, type AchievementIcon, type AchievementId } from "@/features/achievements/achievementModel";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
@@ -20,10 +21,40 @@ export function BonusAchievementCelebration({ ids, onContinue }: { ids: readonly
   const t = useTranslations("achievements");
   const { reducedMotion } = useAccessibility();
   const continueRef = useRef<HTMLButtonElement>(null);
+  const continueLockRef = useRef(false);
+  const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
 
-  useEffect(() => continueRef.current?.focus(), []);
+  useEffect(() => {
+    const root = document.createElement("div");
+    root.dataset.achievementCelebrationPortal = "";
+    document.body.append(root);
 
-  return (
+    const previousOverflow = document.body.style.overflow;
+    const background = [...document.body.children].filter((child) => child !== root) as HTMLElement[];
+    const previousInert = background.map((element) => ({ element, inert: element.inert }));
+    document.body.style.overflow = "hidden";
+    background.forEach((element) => { element.inert = true; });
+    const portalTimer = window.setTimeout(() => setPortalRoot(root), 0);
+
+    return () => {
+      clearTimeout(portalTimer);
+      document.body.style.overflow = previousOverflow;
+      previousInert.forEach(({ element, inert }) => { element.inert = inert; });
+      root.remove();
+    };
+  }, []);
+
+  useEffect(() => continueRef.current?.focus(), [portalRoot]);
+
+  const continueOnce = () => {
+    if (continueLockRef.current) return;
+    continueLockRef.current = true;
+    onContinue();
+  };
+
+  if (!portalRoot) return null;
+
+  return createPortal(
     <div className={styles.overlay}>
       <section
         aria-describedby="achievement-description"
@@ -33,7 +64,7 @@ export function BonusAchievementCelebration({ ids, onContinue }: { ids: readonly
         onKeyDown={(event) => {
           if (event.key === "Escape") {
             event.preventDefault();
-            onContinue();
+            continueOnce();
           }
           if (event.key === "Tab") event.preventDefault();
         }}
@@ -54,10 +85,11 @@ export function BonusAchievementCelebration({ ids, onContinue }: { ids: readonly
             );
           })}
         </div>
-        <button className={styles.continue} onClick={onContinue} ref={continueRef} type="button">
+        <button className={styles.continue} onClick={continueOnce} ref={continueRef} type="button">
           {t("continue")}
         </button>
       </section>
-    </div>
+    </div>,
+    portalRoot
   );
 }
