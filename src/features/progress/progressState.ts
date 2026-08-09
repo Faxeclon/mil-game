@@ -132,6 +132,8 @@ export type LevelResult = {
   completedAt: string | null;
   /** Null for results stored before scoring existed; shown honestly, never invented. */
   score: number | null;
+  /** Completion and unlocking require a strict majority of correct answers. */
+  passed: boolean;
 };
 
 /** Attempt data supplied when a level is completed; the level id comes from the action. */
@@ -146,6 +148,11 @@ export type LevelAttempt = {
   /** The player's local calendar day, supplied by the device that finished the mission. */
   playedOn?: string;
 };
+
+/** A tie is not enough: every mission needs a strict majority, regardless of its length. */
+export function didPassLevelAttempt(correctRounds: number, totalRounds: number): boolean {
+  return Number.isFinite(correctRounds) && Number.isFinite(totalRounds) && totalRounds > 0 && correctRounds > totalRounds / 2;
+}
 
 export const initialProgressState: ProgressState = {
   version: PROGRESS_VERSION,
@@ -216,7 +223,10 @@ function parseResult(value: unknown): LevelResult | undefined {
     totalRounds: Math.trunc(totalRounds),
     elapsedMs: parseElapsedMs(value.elapsedMs),
     completedAt: parseCompletedAt(value.completedAt),
-    score: parseLevelScore(value.score)
+    score: parseLevelScore(value.score),
+    // This remains derived even after persistence, so a stale boolean can never bypass
+    // the strict-majority rule.
+    passed: didPassLevelAttempt(Math.min(Math.max(Math.trunc(correctRounds), 0), Math.trunc(totalRounds)), Math.trunc(totalRounds))
   };
 }
 
@@ -507,6 +517,7 @@ export function completeLevel(
   const attempt = normalizeLevelAttempt(result);
   if (!isLevelId(levelId) || !attempt) return state;
   const alreadyCompleted = state.completedLevelIds.includes(levelId);
+  const passed = didPassLevelAttempt(attempt.correctRounds, attempt.totalRounds);
   const mission = missionBlueprint.find((entry) => entry.id === levelId);
   const score = attempt.score ?? null;
 
@@ -526,10 +537,10 @@ export function completeLevel(
           completedAt: attempt.completedAt
         });
 
-  const completedLevelIds = alreadyCompleted ? state.completedLevelIds : [...state.completedLevelIds, levelId];
+  const completedLevelIds = alreadyCompleted || !passed ? state.completedLevelIds : [...state.completedLevelIds, levelId];
   const replayIdsByCategory = { ...(state.sectionReplayIdsByCategory ?? {}) };
   let sectionCompletionEvent: ProgressState["sectionCompletionEvent"];
-  if (mission) {
+  if (mission && passed) {
     const categoryMissions = missionBlueprint.filter((entry) => entry.category === mission.category && entry.packId);
     const categoryWasCompleted = categoryMissions.every((entry) => state.completedLevelIds.includes(entry.id as LevelId));
     const categoryIsCompleted = categoryMissions.every((entry) => completedLevelIds.includes(entry.id as LevelId));
@@ -580,7 +591,8 @@ export function completeLevel(
       totalRounds: attempt.totalRounds,
       elapsedMs: attempt.elapsedMs,
       completedAt: attempt.completedAt,
-      score
+      score,
+      passed
     }
   };
 }

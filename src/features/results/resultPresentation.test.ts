@@ -18,7 +18,8 @@ const result: LevelResult = {
   totalRounds: 3,
   elapsedMs: 72_000,
   completedAt: "2025-01-02T03:04:05.000Z",
-  score: 840
+  score: 840,
+  passed: true
 };
 
 describe("fresh result matching", () => {

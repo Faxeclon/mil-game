@@ -31,7 +31,7 @@ import {
 
 const attemptedLevel = {
   attemptId: "attempt_123e4567-e89b-12d3-a456-426614174000",
-  correctRounds: 0,
+  correctRounds: 1,
   totalRounds: 1,
   elapsedMs: 0,
   completedAt: "2025-01-02T03:04:05.000Z"
@@ -105,7 +105,8 @@ describe("progress store", () => {
       attemptId: "attempt_123e4567-e89b-12d3-a456-426614174000",
       elapsedMs: 1_234,
       completedAt: "2025-01-02T03:04:05.000Z",
-      score: null
+      score: null,
+      passed: true
     });
     expect(entries.has(PROFILES_STORAGE_KEY)).toBe(true);
     unsubscribe();

@@ -50,6 +50,19 @@ describe("section completion events", () => {
     expect(replayed.completedLevelIds).toEqual(finished.completedLevelIds);
   });
 
+  it("does not advance a completed section replay when one of its replay attempts fails", () => {
+    const finished = play(["basics-1", "basics-2"]);
+    const replayFirst = completeLevel(finished, "basics-1", attempt(20));
+    const failedFinal = completeLevel(replayFirst, "basics-2", {
+      ...attempt(21),
+      correctRounds: 0
+    });
+
+    expect(failedFinal.sectionReplayIdsByCategory?.basics).toEqual(["basics-1"]);
+    expect(getSectionCompletionEvent(failedFinal, "basics-2")).toBeNull();
+    expect(failedFinal.completedLevelIds).toEqual(finished.completedLevelIds);
+  });
+
   it("creates one new event after replaying every mission in normal order", () => {
     const finished = play(["basics-1", "basics-2"]);
     const replayFirst = completeLevel(finished, "basics-1", attempt(10));
