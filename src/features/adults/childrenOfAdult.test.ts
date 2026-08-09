@@ -88,11 +88,7 @@ describe("what a grown-up reads about one child", () => {
     expect(summary.daysSincePlayed).toBeNull();
   });
 
-  /*
-   * The two questions a grown-up actually has. Both are answered from what was recorded
-   * while playing, so neither is an estimate.
-   */
-  it("says how long they played, rounded so that any play at all shows", () => {
+  it("reports only recorded time in completed missions, rounded so that any time shows", () => {
     const playing = child("player-1", "Lu", "marta@example.com");
     playing.progress = { ...playing.progress, playedMs: 90_000 };
 
@@ -114,6 +110,15 @@ describe("what a grown-up reads about one child", () => {
 
     expect(summary.playedMinutes).toBe(0);
     expect(summary.daysSincePlayed).toBeNull();
+  });
+
+  it("does not invent mission time or a completion date for profile and map actions", () => {
+    const untouched = child("player-1", "Lu", "marta@example.com");
+
+    expect(summariseChild(untouched, "2026-08-08")).toMatchObject({
+      playedMinutes: 0,
+      daysSincePlayed: null
+    });
   });
 });
 

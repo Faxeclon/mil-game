@@ -171,6 +171,29 @@ describe("results", () => {
     expect(state.playedMs).toBe(completedAttempt.elapsedMs * 2);
   });
 
+  it("counts a completed mission's elapsed time even when its rounds were incorrect or timed out", () => {
+    const timedOutCompletion = {
+      ...completedAttempt,
+      attemptId: "attempt_abcdefab-cdef-abcd-efab-cdefabcdefab",
+      correctRounds: 0,
+      elapsedMs: 6_000,
+      playedOn: "2025-01-02"
+    };
+
+    const state = completeLevel(initialProgressState, "animals-1", timedOutCompletion);
+
+    expect(state.playedMs).toBe(6_000);
+    expect(state.completedLevelIds).toEqual(["animals-1"]);
+    expect(state.streak.lastPlayedOn).toBe("2025-01-02");
+  });
+
+  it("does not create mission time or a completion date before a mission is completed", () => {
+    const state = markOnboarded(initialProgressState, "Luz");
+
+    expect(state.playedMs).toBe(0);
+    expect(state.streak.lastPlayedOn).toBeNull();
+  });
+
   it("starts the clock again when the child asks to start over", () => {
     const played = completeLevel(initialProgressState, "animals-1", completedAttempt);
 

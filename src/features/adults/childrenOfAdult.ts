@@ -23,13 +23,13 @@ export type ChildSummary = {
   streakDays: number;
   rankTitleKey: string;
   stars: number;
-  /** Whole minutes spent inside missions. Rounded up, so any play at all reads as some. */
+  /** Whole minutes from completed mission attempts. Rounded up, so any recorded time reads as some. */
   playedMinutes: number;
   /**
-   * Days since they last finished a mission, or null if they never have.
+   * Days since they last completed a mission, or null if they never have.
    *
-   * Days rather than a date, because that is the question actually being asked - is this
-   * child still playing - and a date makes the reader do the subtraction themselves.
+   * Days rather than a date, because this is a completed-mission record rather than a
+   * measure of the child's general app activity.
    */
   daysSincePlayed: number | null;
 };

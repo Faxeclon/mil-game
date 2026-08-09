@@ -121,9 +121,8 @@ export function AdultClient() {
               </p>
 
               {/*
-                How long, and how recently. The two questions a grown-up actually opens
-                this screen with, and the two the game can answer from what it already
-                records - so neither of them is an estimate.
+                The recorded mission time and the most recent completed mission. These
+                are local progress events, not a measure of general app activity.
               */}
               <p className={styles.stats}>
                 <span className={styles.stat}>
@@ -131,17 +130,17 @@ export function AdultClient() {
                   {/* Hours once there are hours: "214 minutes" makes a parent do the
                       division before they can tell whether it is a lot. */}
                   {child.playedMinutes >= 60
-                    ? t("timePlayedHours", {
+                    ? t("timeInMissionsHours", {
                         hours: Math.floor(child.playedMinutes / 60),
                         minutes: child.playedMinutes % 60
                       })
-                    : t("timePlayed", { minutes: child.playedMinutes })}
+                    : t("timeInMissions", { minutes: child.playedMinutes })}
                 </span>
                 <span className={styles.stat}>
                   <CalendarDays aria-hidden="true" size={14} />
                   {child.daysSincePlayed === null
-                    ? t("lastPlayedNever")
-                    : t("lastPlayed", { days: child.daysSincePlayed })}
+                    ? t("noActivityRecorded")
+                    : t("lastMissionCompleted", { days: child.daysSincePlayed })}
                 </span>
               </p>
 
