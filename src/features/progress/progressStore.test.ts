@@ -1,5 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { emptyProfilesDocument } from "@/features/profiles/localProfiles";
+import {
+  registerAdult,
+  resetAdultAccountStoreForTests,
+  signOutAdult
+} from "@/features/adults/adultAccountStore";
 import { initialProgressState } from "./progressState";
 import { PROFILES_STORAGE_KEY, PROGRESS_STORAGE_KEY } from "./progressStorage";
 import {
@@ -36,11 +41,13 @@ function stubStorage(initialEntries: Record<string, string> = {}) {
 
 beforeEach(() => {
   resetProgressStoreForTests();
+  resetAdultAccountStoreForTests();
 });
 
 afterEach(() => {
   vi.unstubAllGlobals();
   resetProgressStoreForTests();
+  resetAdultAccountStoreForTests();
 });
 
 describe("progress store", () => {
@@ -214,6 +221,86 @@ describe("a grown-up playing as themselves", () => {
     startAdultPlayInStore("   ", "   ");
 
     expect(getProgressSnapshot().profiles.profiles).toHaveLength(0);
+    unsubscribe();
+  });
+
+  it("keeps the active child's complete progress unchanged until the grown-up explicitly starts playing", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    markOnboardedInStore("Lu", "fox");
+    completeLevelInStore("basics-1", { ...attemptedLevel, score: 900, playedOn: "2026-08-08" });
+    const beforeAdultPanel = getProgressSnapshot();
+    const childId = beforeAdultPanel.profiles.activeId;
+    const childProgress = beforeAdultPanel.state;
+
+    // Signing in and reading the adult panel are viewing actions, not profile selection.
+    expect(registerAdult("marta@example.com", "family", "2026-08-08")).toBe(true);
+    expect(getProgressSnapshot().profiles.activeId).toBe(childId);
+    expect(getProgressSnapshot().state).toEqual(childProgress);
+
+    expect(startAdultPlayInStore("marta@example.com", "marta")).toBe(true);
+    const afterAdultStarts = getProgressSnapshot();
+    const child = afterAdultStarts.profiles.profiles.find((profile) => profile.id === childId);
+
+    expect(afterAdultStarts.profiles.activeId).not.toBe(childId);
+    expect(afterAdultStarts.state.adultEmail).toBe("marta@example.com");
+    expect(child?.progress).toEqual(childProgress);
+    expect(afterAdultStarts.profiles.profiles).toHaveLength(2);
+    unsubscribe();
+  });
+
+  it("reuses the grown-up's player profile instead of creating a duplicate", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+
+    expect(startAdultPlayInStore("marta@example.com", "marta")).toBe(true);
+    const firstAdultId = getProgressSnapshot().profiles.activeId;
+    leaveLocalProfileInStore();
+
+    expect(startAdultPlayInStore("marta@example.com", "marta")).toBe(true);
+
+    expect(getProgressSnapshot().profiles.activeId).toBe(firstAdultId);
+    expect(getProgressSnapshot().profiles.profiles).toHaveLength(1);
+    expect(getProgressSnapshot().profiles.profiles[0].progress.adultEmail).toBe("marta@example.com");
+    unsubscribe();
+  });
+
+  it("writes a grown-up's mission result only to the grown-up's profile", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    markOnboardedInStore("Lu", "fox");
+    completeLevelInStore("basics-1", { ...attemptedLevel, score: 900, playedOn: "2026-08-08" });
+    const childId = getProgressSnapshot().profiles.activeId;
+    const childProgress = getProgressSnapshot().state;
+
+    startAdultPlayInStore("marta@example.com", "marta");
+    completeLevelInStore("animals-1", {
+      ...attemptedLevel,
+      attemptId: "attempt_abcdefab-cdef-abcd-efab-cdefabcdefab",
+      score: 750,
+      playedOn: "2026-08-08"
+    });
+
+    const { state, profiles } = getProgressSnapshot();
+    expect(state.completedLevelIds).toEqual(["animals-1"]);
+    expect(profiles.profiles.find((profile) => profile.id === childId)?.progress).toEqual(childProgress);
+    unsubscribe();
+  });
+
+  it("does not touch the active child when a grown-up enters and leaves their panel without playing", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    markOnboardedInStore("Lu", "fox");
+    completeLevelInStore("basics-1", attemptedLevel);
+    const childId = getProgressSnapshot().profiles.activeId;
+    const childProgress = getProgressSnapshot().state;
+
+    expect(registerAdult("marta@example.com", "family", "2026-08-08")).toBe(true);
+    signOutAdult();
+
+    expect(getProgressSnapshot().profiles.activeId).toBe(childId);
+    expect(getProgressSnapshot().state).toEqual(childProgress);
+    expect(getProgressSnapshot().profiles.profiles).toHaveLength(1);
     unsubscribe();
   });
 });

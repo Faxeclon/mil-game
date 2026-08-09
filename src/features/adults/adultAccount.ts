@@ -170,9 +170,10 @@ export function getAdultHome(account: AdultAccount | null): "/teacher" | "/adult
 /**
  * The name a grown-up plays under, taken from the address they already gave.
  *
- * Signing in is picking a profile: they said who they are, so the game has no business
- * asking again with a nickname form. The part before the @ is what people write when they
- * are naming themselves, which makes it the closest thing to a chosen name we hold.
+ * Choosing to play creates or selects their profile: they already said who they are, so
+ * the game has no business asking again with a nickname form. The part before the @ is
+ * what people write when they are naming themselves, which makes it the closest thing to
+ * a chosen name we hold.
  */
 export function getAdultPlayName(account: AdultAccount | null): string | null {
   if (!account) return null;

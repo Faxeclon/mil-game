@@ -11,6 +11,7 @@ import { useProgress } from "@/features/progress/ProgressProvider";
 import { getLocalPlayedOn } from "@/features/progress/streak";
 import { Link } from "@/i18n/navigation";
 import { LoadingRoqui } from "./LoadingRoqui";
+import { AdultPlayLink } from "./AdultPlayLink";
 import styles from "./AdultClient.module.css";
 
 /**
@@ -175,6 +176,10 @@ export function AdultClient() {
         a second road to the same place, and the one that skips the child.
       */}
       <p className={styles.privacy}>{t("privacy")}</p>
+
+      <section aria-label={t("homePlayLabel")}>
+        <AdultPlayLink className={styles.primary}>{t("homePlayAction")}</AdultPlayLink>
+      </section>
 
       {/* Erasing a child's medals is the one thing here that cannot be undone. */}
       {removing && (

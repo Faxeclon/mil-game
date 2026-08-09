@@ -113,17 +113,19 @@ export function markOnboardedInStore(localNickname?: string, apprenticeAvatarId?
  * Whoever was playing is stepped away from, never overwritten. A child's profile stays in
  * the list exactly as they left it.
  */
-export function startAdultPlayInStore(email: string, nickname: string): void {
-  const mine = snapshot.profiles.profiles.find((profile) => profile.progress.adultEmail === email);
-  if (mine) {
-    commit(selectProfile(snapshot.profiles, mine.id));
-    return;
-  }
-
+export function startAdultPlayInStore(email: string, nickname: string): boolean {
   const state = playAsAdult(initialProgressState, email, nickname);
   // An address or a name the model refuses is not turned into a nameless profile.
-  if (state === initialProgressState) return;
+  if (state === initialProgressState || state.adultEmail === null) return false;
+
+  const mine = snapshot.profiles.profiles.find((profile) => profile.progress.adultEmail === state.adultEmail);
+  if (mine) {
+    commit(selectProfile(snapshot.profiles, mine.id));
+    return true;
+  }
+
   commit(updateActiveProgress(leaveActiveProfile(snapshot.profiles), state));
+  return true;
 }
 
 export function advanceMapOnboardingInStore(): void {

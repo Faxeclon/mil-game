@@ -45,7 +45,7 @@ export type ProgressApi = {
   apprenticeAvatarId: ApprenticeAvatarId | null;
   markOnboarded: (localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId) => void;
   /** Puts a signed-in grown-up into the game as themselves, asking them nothing. */
-  startAdultPlay: (email: string, nickname: string) => void;
+  startAdultPlay: (email: string, nickname: string) => boolean;
   advanceMapOnboarding: () => void;
   resetProgress: () => void;
   /** Steps away from the profile, keeping it saved under its nickname. */
