@@ -1,6 +1,6 @@
 import englishMessages from "@/messages/en.json";
 import spanishMessages from "@/messages/es.json";
-import type { SinglePack, TutorialPack } from "@/content/schemas/tutorial";
+import type { ProvenanceMetadata, SinglePack, TutorialPack } from "@/content/schemas/tutorial";
 import { validateSinglePack } from "@/content/validators/validateSinglePack";
 import { validateTutorialPack } from "@/content/validators/validateTutorialPack";
 import animalsCompareJson from "./animals-compare.json";
@@ -16,6 +16,27 @@ import clipsCompareJson from "./clips-compare.json";
 import clipsSingleJson from "./clips-single.json";
 import sportsCompareJson from "./sports-compare.json";
 import tutorialPackJson from "./introductory-tutorial.json";
+
+/**
+ * Final media deliberately held in reserve, rather than assigned to a playable round.
+ * Keeping its provenance beside the pack registry makes the record available to future
+ * content selection without changing the active level data.
+ */
+export const reserveMediaProvenance = {
+  "/media/tutorial/animals/animals-2/reserve/raccoon-ai.jpg": {
+    sourceType: "project-generated",
+    sourceName: "Kikiria project team",
+    licenseStatus: "Rights status not documented",
+    generationMethod: "AI-generated for Kikiria",
+    temporary: false
+  },
+  "/media/tutorial/animals/animals-2/reserve/raccoon-real.jpg": {
+    sourceType: "external-unverified",
+    sourceName: "External source not yet documented",
+    licenseStatus: "Rights status unresolved",
+    temporary: false
+  }
+} as const satisfies Readonly<Record<string, ProvenanceMetadata>>;
 
 function hasNestedKey(messages: object, key: string): boolean {
   let current: unknown = messages;

@@ -8,20 +8,19 @@
       "learningGoal": "visible-clue",
       "promptKey": "singleQuestion",
       "media": {
-        "id": "animals-single-deer-forest",
-        "src": "/media/tutorial/placeholders/animals/deer-forest.svg",
-        "altKey": "media.animals.deerForest",
-        "origin": "ai-generated",
+        "id": "animals-3-r1-shoebill-real",
+        "src": "/media/tutorial/animals/animals-3/r1-real.jpg",
+        "altKey": "media.animals.shoebill.real",
+        "origin": "camera-captured",
         "reliability": "unverified",
         "provenance": {
-          "sourceType": "project-placeholder",
-          "sourceName": "UNESCO Youth Hackathon temporary media team",
-          "licenseStatus": "Project placeholder; not for final use",
-          "temporary": true,
-          "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+          "sourceType": "external-unverified",
+          "sourceName": "External source not yet documented",
+          "licenseStatus": "Rights status unresolved",
+          "temporary": false
         }
       },
-      "answer": "ai-generated",
+      "answer": "camera-captured",
       "feedback": {
         "observationKey": "packs.animalsSingle.r1.observation",
         "uncertaintyKey": "packs.animalsSingle.r1.remember"
@@ -33,19 +32,20 @@
       "learningGoal": "source-and-purpose",
       "promptKey": "singleQuestion",
       "media": {
-        "id": "animals-single-rooster-yard",
-        "src": "/media/tutorial/placeholders/animals/rooster-yard.svg",
-        "altKey": "media.animals.roosterYard",
-        "origin": "camera-captured",
+        "id": "animals-3-r2-golden-pheasant-ai",
+        "src": "/media/tutorial/animals/animals-3/r2-ai.png",
+        "altKey": "media.animals.goldenPheasant.ai",
+        "origin": "ai-generated",
         "reliability": "unverified",
         "provenance": {
-          "sourceType": "project-placeholder",
-          "sourceName": "UNESCO Youth Hackathon temporary media team",
-          "licenseStatus": "Project placeholder; not for final use",
-          "temporary": true
+          "sourceType": "project-generated",
+          "sourceName": "Kikiria project team",
+          "licenseStatus": "Rights status not documented",
+          "generationMethod": "AI-generated for Kikiria",
+          "temporary": false
         }
       },
-      "answer": "camera-captured",
+      "answer": "ai-generated",
       "feedback": {
         "questionKey": "packs.animalsSingle.r2.question",
         "uncertaintyKey": "packs.animalsSingle.r2.remember"
@@ -57,16 +57,16 @@
       "learningGoal": "uncertainty",
       "promptKey": "singleQuestion",
       "media": {
-        "id": "animals-single-cow-field",
-        "src": "/media/tutorial/placeholders/animals/cow-field.svg",
-        "altKey": "media.animals.cowField",
+        "id": "animals-3-r3-goats-real",
+        "src": "/media/tutorial/animals/animals-3/r3-real.jpg",
+        "altKey": "media.animals.goats.real",
         "origin": "camera-captured",
         "reliability": "unverified",
         "provenance": {
-          "sourceType": "project-placeholder",
-          "sourceName": "UNESCO Youth Hackathon temporary media team",
-          "licenseStatus": "Project placeholder; not for final use",
-          "temporary": true
+          "sourceType": "external-unverified",
+          "sourceName": "External source not yet documented",
+          "licenseStatus": "Rights status unresolved",
+          "temporary": false
         }
       },
       "answer": "camera-captured",

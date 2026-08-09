@@ -11,16 +11,16 @@
           "id": "sports-compare-1-left",
           "position": "left",
           "media": {
-            "id": "sports-compare-soccer-field",
-            "src": "/media/tutorial/placeholders/sports/soccer-field.svg",
-            "altKey": "media.sports.soccerField",
+            "id": "sports-1-r1-messi-real",
+            "src": "/media/tutorial/sports/sports-1/r1-real.png",
+            "altKey": "media.sports.messi.real",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
             }
           }
         },
@@ -28,17 +28,17 @@
           "id": "sports-compare-1-right",
           "position": "right",
           "media": {
-            "id": "sports-compare-hoop-lights",
-            "src": "/media/tutorial/placeholders/sports/hoop-lights.svg",
-            "altKey": "media.sports.hoopLights",
+            "id": "sports-1-r1-messi-ai",
+            "src": "/media/tutorial/sports/sports-1/r1-ai.png",
+            "altKey": "media.sports.messi.ai",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true,
-              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "generationMethod": "AI-generated media from an external source; generator not documented",
+              "temporary": false
             }
           }
         }
@@ -59,17 +59,17 @@
           "id": "sports-compare-2-left",
           "position": "left",
           "media": {
-            "id": "sports-compare-pool-lanes",
-            "src": "/media/tutorial/placeholders/sports/pool-lanes.svg",
-            "altKey": "media.sports.poolLanes",
+            "id": "sports-1-r2-mrbeast-ai",
+            "src": "/media/tutorial/sports/sports-1/r2-ai.png",
+            "altKey": "media.sports.mrbeast.ai",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true,
-              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "Rights status not documented",
+              "generationMethod": "AI-generated for Kikiria",
+              "temporary": false
             }
           }
         },
@@ -77,16 +77,16 @@
           "id": "sports-compare-2-right",
           "position": "right",
           "media": {
-            "id": "sports-compare-running-track",
-            "src": "/media/tutorial/placeholders/sports/running-track.svg",
-            "altKey": "media.sports.runningTrack",
+            "id": "sports-1-r2-lebron-real",
+            "src": "/media/tutorial/sports/sports-1/r2-real.jpg",
+            "altKey": "media.sports.lebron.real",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
             }
           }
         }
@@ -107,16 +107,16 @@
           "id": "sports-compare-3-left",
           "position": "left",
           "media": {
-            "id": "sports-compare-bicycle-road",
-            "src": "/media/tutorial/placeholders/sports/bicycle-road.svg",
-            "altKey": "media.sports.bicycleRoad",
+            "id": "sports-1-r3-football-real",
+            "src": "/media/tutorial/sports/sports-1/r3-real.jpg",
+            "altKey": "media.sports.football.real",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
             }
           }
         },
@@ -124,17 +124,17 @@
           "id": "sports-compare-3-right",
           "position": "right",
           "media": {
-            "id": "sports-compare-volleyball-sand",
-            "src": "/media/tutorial/placeholders/sports/volleyball-sand.svg",
-            "altKey": "media.sports.volleyballSand",
+            "id": "sports-1-r3-football-ai",
+            "src": "/media/tutorial/sports/sports-1/r3-ai.png",
+            "altKey": "media.sports.football.ai",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true,
-              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "Rights status not documented",
+              "generationMethod": "AI-generated for Kikiria",
+              "temporary": false
             }
           }
         }

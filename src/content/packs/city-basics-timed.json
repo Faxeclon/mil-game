@@ -11,16 +11,16 @@
           "id": "city-timed-1-left",
           "position": "left",
           "media": {
-            "id": "city-timed-park-bench",
-            "src": "/media/tutorial/placeholders/city/park-bench.svg",
-            "altKey": "media.city.parkBench",
+            "id": "basics-2-r1-pope-real",
+            "src": "/media/tutorial/basics/basics-2/r1-real.png",
+            "altKey": "media.basics.pope.real",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
             }
           }
         },
@@ -28,17 +28,17 @@
           "id": "city-timed-1-right",
           "position": "right",
           "media": {
-            "id": "city-timed-odd-house",
-            "src": "/media/tutorial/placeholders/city/odd-house.svg",
-            "altKey": "media.city.oddHouse",
+            "id": "basics-2-r1-pope-ai",
+            "src": "/media/tutorial/basics/basics-2/r1-ai.jpg",
+            "altKey": "media.basics.pope.ai",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true,
-              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "generationMethod": "AI-generated media from an external source; generator not documented",
+              "temporary": false
             }
           }
         }
@@ -59,17 +59,17 @@
           "id": "city-timed-2-left",
           "position": "left",
           "media": {
-            "id": "city-timed-big-tree",
-            "src": "/media/tutorial/placeholders/city/big-tree.svg",
-            "altKey": "media.city.bigTree",
+            "id": "basics-2-r2-kangaroo-ai",
+            "src": "/media/tutorial/basics/basics-2/r2-ai.jpg",
+            "altKey": "media.basics.kangaroo.ai",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true,
-              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "generationMethod": "AI-generated media from an external source; generator not documented",
+              "temporary": false
             }
           }
         },
@@ -77,16 +77,16 @@
           "id": "city-timed-2-right",
           "position": "right",
           "media": {
-            "id": "city-timed-river-bridge",
-            "src": "/media/tutorial/placeholders/city/river-bridge.svg",
-            "altKey": "media.city.riverBridge",
+            "id": "basics-2-r2-kangaroo-real",
+            "src": "/media/tutorial/basics/basics-2/r2-real.jpg",
+            "altKey": "media.basics.kangaroo.real",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
             }
           }
         }
@@ -107,16 +107,16 @@
           "id": "city-timed-3-left",
           "position": "left",
           "media": {
-            "id": "city-timed-street-bus",
-            "src": "/media/tutorial/placeholders/city/street-bus.svg",
-            "altKey": "media.city.streetBus",
+            "id": "basics-2-r3-ronaldo-real",
+            "src": "/media/tutorial/basics/basics-2/r3-real.png",
+            "altKey": "media.basics.ronaldo.real",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
             }
           }
         },
@@ -124,17 +124,17 @@
           "id": "city-timed-3-right",
           "position": "right",
           "media": {
-            "id": "city-timed-plaza-fountain",
-            "src": "/media/tutorial/placeholders/city/plaza-fountain.svg",
-            "altKey": "media.city.plazaFountain",
+            "id": "basics-2-r3-ronaldo-ai",
+            "src": "/media/tutorial/basics/basics-2/r3-ai.png",
+            "altKey": "media.basics.ronaldo.ai",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true,
-              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "generationMethod": "AI-generated media from an external source; generator not documented",
+              "temporary": false
             }
           }
         }

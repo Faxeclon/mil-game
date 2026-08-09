@@ -11,16 +11,16 @@
           "id": "animals-timed-1-left",
           "position": "left",
           "media": {
-            "id": "animals-timed-turtle-sand",
-            "src": "/media/tutorial/placeholders/animals/turtle-sand.svg",
-            "altKey": "media.animals.turtleSand",
+            "id": "animals-2-r1-dog-real",
+            "src": "/media/tutorial/animals/animals-2/r1-real.jpg",
+            "altKey": "media.animals.dog.real",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
             }
           }
         },
@@ -28,17 +28,17 @@
           "id": "animals-timed-1-right",
           "position": "right",
           "media": {
-            "id": "animals-timed-owl-night",
-            "src": "/media/tutorial/placeholders/animals/owl-night.svg",
-            "altKey": "media.animals.owlNight",
+            "id": "animals-2-r1-dog-ai",
+            "src": "/media/tutorial/animals/animals-2/r1-ai.png",
+            "altKey": "media.animals.dog.ai",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true,
-              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "Rights status not documented",
+              "generationMethod": "AI-generated for Kikiria",
+              "temporary": false
             }
           }
         }
@@ -59,17 +59,17 @@
           "id": "animals-timed-2-left",
           "position": "left",
           "media": {
-            "id": "animals-timed-butterfly-flower",
-            "src": "/media/tutorial/placeholders/animals/butterfly-flower.svg",
-            "altKey": "media.animals.butterflyFlower",
+            "id": "animals-2-r2-horse-ai",
+            "src": "/media/tutorial/animals/animals-2/r2-ai.png",
+            "altKey": "media.animals.horse.ai",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true,
-              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "Rights status not documented",
+              "generationMethod": "AI-generated for Kikiria",
+              "temporary": false
             }
           }
         },
@@ -77,16 +77,16 @@
           "id": "animals-timed-2-right",
           "position": "right",
           "media": {
-            "id": "animals-timed-sheep-field",
-            "src": "/media/tutorial/placeholders/animals/sheep-field.svg",
-            "altKey": "media.animals.sheepField",
+            "id": "animals-2-r2-horse-real",
+            "src": "/media/tutorial/animals/animals-2/r2-real.jpg",
+            "altKey": "media.animals.horse.real",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
             }
           }
         }
@@ -107,16 +107,16 @@
           "id": "animals-timed-3-left",
           "position": "left",
           "media": {
-            "id": "animals-timed-fox-snow",
-            "src": "/media/tutorial/placeholders/animals/fox-snow.svg",
-            "altKey": "media.animals.foxSnow",
+            "id": "animals-2-r3-cat-real",
+            "src": "/media/tutorial/animals/animals-2/r3-real.jpg",
+            "altKey": "media.animals.cat.real",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
             }
           }
         },
@@ -124,17 +124,17 @@
           "id": "animals-timed-3-right",
           "position": "right",
           "media": {
-            "id": "animals-timed-frog-leaf",
-            "src": "/media/tutorial/placeholders/animals/frog-leaf.svg",
-            "altKey": "media.animals.frogLeaf",
+            "id": "animals-2-r3-cat-ai",
+            "src": "/media/tutorial/animals/animals-2/r3-ai.png",
+            "altKey": "media.animals.cat.ai",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-placeholder",
-              "sourceName": "UNESCO Youth Hackathon temporary media team",
-              "licenseStatus": "Project placeholder; not for final use",
-              "temporary": true,
-              "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "Rights status not documented",
+              "generationMethod": "AI-generated for Kikiria",
+              "temporary": false
             }
           }
         }
