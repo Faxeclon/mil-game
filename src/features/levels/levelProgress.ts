@@ -110,6 +110,15 @@ export type ContinueDestination =
   | { kind: "island"; islandKey: IslandKey }
   | { kind: "worlds" };
 
+/** The authored successor within one section, never a later category or island. */
+export function getNextLevelInSection(levelId: LevelId): MissionBlueprint | null {
+  const mission = getMissionById(levelId);
+  if (!mission) return null;
+  const missions = getPlayableMissions(mission.category);
+  const index = missions.findIndex((entry) => entry.id === levelId);
+  return index === -1 ? null : missions[index + 1] ?? null;
+}
+
 /**
  * An ephemeral result of this run, derived after a mission is saved. It is deliberately
  * separate from persistent completion: replaying a category's final mission can close
@@ -152,13 +161,13 @@ export function getSectionCompletionEvent(
 }
 
 /**
- * Gives the results screen one safe continuation route without duplicating the map's
- * canonical unlock rules. Replays skip already-finished levels and continue to the
- * first later playable level that the authored progression has unlocked.
+ * Gives a passed intermediate mission its authored successor in the same section.
+ * This deliberately ignores recent play and other categories: completing animals-1
+ * can only point to animals-2, never to a later unlocked sports mission.
  */
 export function getContinueDestination(state: ProgressState, completedLevelId: string): ContinueDestination {
-  const completedIndex = missionBlueprint.findIndex((mission) => mission.id === completedLevelId);
-  if (completedIndex === -1) return { kind: "worlds" };
+  const mission = getMissionById(completedLevelId);
+  if (!mission) return { kind: "worlds" };
 
   const islandKey = getIslandOfMission(completedLevelId);
   const sectionEvent = getSectionCompletionEvent(state, completedLevelId);
@@ -177,11 +186,8 @@ export function getContinueDestination(state: ProgressState, completedLevelId: s
    */
   if (islandKey && isIslandCompleted(state, islandKey)) return { kind: "island", islandKey };
 
-  const laterMission = missionBlueprint
-    .slice(completedIndex + 1)
-    .find((mission) => Boolean(mission.packId) && !isLevelCompleted(state, mission.id) && isMissionUnlocked(state, mission.id));
-
-  if (laterMission) return { kind: "level", levelId: laterMission.id as LevelId };
+  const nextMission = getNextLevelInSection(mission.id as LevelId);
+  if (nextMission && isMissionUnlocked(state, nextMission.id)) return { kind: "level", levelId: nextMission.id as LevelId };
 
   return islandKey ? { kind: "island", islandKey } : { kind: "worlds" };
 }

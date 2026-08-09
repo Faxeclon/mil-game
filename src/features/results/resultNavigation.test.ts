@@ -4,7 +4,7 @@ import { getContinuePath, getReplayPath, getResultsAttemptPath } from "./resultN
 
 const attempt = {
   attemptId: "attempt_123e4567-e89b-12d3-a456-426614174000",
-  correctRounds: 1,
+  correctRounds: 2,
   totalRounds: 3,
   elapsedMs: 8_000,
   completedAt: "2025-01-02T03:04:05.000Z"

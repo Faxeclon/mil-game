@@ -463,6 +463,14 @@
   background: var(--r-accent-ink);
 }
 
+.nextLevelPreview {
+  margin-top: .18rem;
+  display: block;
+  font-size: .82rem;
+  font-weight: 700;
+  opacity: .88;
+}
+
 .secondaryLink {
   border: 1px solid var(--r-hairline-strong);
   color: var(--r-ink);

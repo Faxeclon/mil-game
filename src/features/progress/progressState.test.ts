@@ -3,6 +3,7 @@ import type { LevelId } from "@/features/levels/levelModel";
 import * as progressState from "./progressState";
 import {
   completeLevel,
+  didPassLevelAttempt,
   initialProgressState,
   markOnboarded,
   needsLocalNicknameCompletion,
@@ -157,7 +158,8 @@ describe("legacy migration", () => {
         attemptId: null,
         elapsedMs: null,
         completedAt: null,
-        score: null
+        score: null,
+        passed: true
       }
     });
     expect("playerName" in state).toBe(false);
@@ -178,11 +180,44 @@ describe("legacy migration", () => {
 });
 
 describe("results", () => {
+  it("requires a strict majority for both odd and even mission lengths", () => {
+    expect(didPassLevelAttempt(3, 3)).toBe(true);
+    expect(didPassLevelAttempt(2, 3)).toBe(true);
+    expect(didPassLevelAttempt(1, 3)).toBe(false);
+    expect(didPassLevelAttempt(0, 3)).toBe(false);
+    expect(didPassLevelAttempt(3, 4)).toBe(true);
+    expect(didPassLevelAttempt(2, 4)).toBe(false);
+  });
+
+  it("keeps a failed new attempt out of progress while retaining its result", () => {
+    const failed = completeLevel(initialProgressState, "animals-1", {
+      ...completedAttempt,
+      correctRounds: 1,
+      attemptId: "attempt_failed-123e4567-e89b-12d3-a456-426614174000"
+    });
+
+    expect(failed.completedLevelIds).toEqual([]);
+    expect(failed.lastResult).toMatchObject({ levelId: "animals-1", passed: false });
+  });
+
+  it("does not revoke an earlier completion when a replay fails", () => {
+    const passed = completeLevel(initialProgressState, "animals-1", completedAttempt);
+    const failedReplay = completeLevel(passed, "animals-1", {
+      ...completedAttempt,
+      correctRounds: 1,
+      attemptId: "attempt_failed-223e4567-e89b-12d3-a456-426614174000"
+    });
+
+    expect(failedReplay.completedLevelIds).toEqual(["animals-1"]);
+    expect(failedReplay.bestResultsByLevelId).toEqual(passed.bestResultsByLevelId);
+    expect(failedReplay.lastResult).toMatchObject({ passed: false });
+  });
+
   it("stores the actual completed level id in the result", () => {
     const state = completeLevel(initialProgressState, "animals-1", completedAttempt);
 
     expect(state.completedLevelIds).toEqual(["animals-1"]);
-    expect(state.lastResult).toEqual({ levelId: "animals-1", ...completedAttempt, score: null });
+    expect(state.lastResult).toEqual({ levelId: "animals-1", ...completedAttempt, score: null, passed: true });
   });
 
   /*
@@ -210,7 +245,7 @@ describe("results", () => {
     const state = completeLevel(initialProgressState, "animals-1", timedOutCompletion);
 
     expect(state.playedMs).toBe(6_000);
-    expect(state.completedLevelIds).toEqual(["animals-1"]);
+    expect(state.completedLevelIds).toEqual([]);
     expect(state.streak.lastPlayedOn).toBe("2025-01-02");
   });
 
@@ -265,7 +300,7 @@ describe("results", () => {
       expect(completeLevel(existing, "animals-1", malformed)).toBe(existing);
     }
     expect(existing.completedLevelIds).toEqual(["basics-1"]);
-    expect(existing.lastResult).toEqual({ levelId: "basics-1", ...completedAttempt, score: null });
+    expect(existing.lastResult).toEqual({ levelId: "basics-1", ...completedAttempt, score: null, passed: true });
   });
 
   it("normalizes current results and migrates the unambiguous legacy result identity", () => {
@@ -287,7 +322,8 @@ describe("results", () => {
       attemptId: null,
       elapsedMs: null,
       completedAt: null,
-      score: null
+      score: null,
+      passed: true
     });
     expect(legacy.lastResult).toEqual({
       levelId: "basics-1",
@@ -296,7 +332,8 @@ describe("results", () => {
       attemptId: null,
       elapsedMs: null,
       completedAt: null,
-      score: null
+      score: null,
+      passed: true
     });
   });
 
@@ -335,7 +372,8 @@ describe("results", () => {
       attemptId: completedAttempt.attemptId,
       elapsedMs: 123,
       completedAt: "2025-01-02T03:04:05.000Z",
-      score: null
+      score: null,
+      passed: false
     });
     expect(malformed).toMatchObject({ localNickname: "Luz", apprenticeAvatarId: "owl" });
     expect(malformed.lastResult).toEqual({
@@ -345,7 +383,8 @@ describe("results", () => {
       attemptId: null,
       elapsedMs: null,
       completedAt: null,
-      score: null
+      score: null,
+      passed: false
     });
   });
 

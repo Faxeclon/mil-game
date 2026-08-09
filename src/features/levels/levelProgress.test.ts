@@ -10,6 +10,7 @@ import {
   getAvailableMission,
   getCategoryState,
   getContinueDestination,
+  getNextLevelInSection,
   getIslandState,
   getMissionState,
   getPlayableMissions,
@@ -29,7 +30,7 @@ function play(...missionIds: LevelId[]): ProgressState {
 function attempt(index: number): LevelAttempt {
   return {
     attemptId: `attempt_progress-${index.toString().padStart(8, "0")}`,
-    correctRounds: 0,
+    correctRounds: 1,
     totalRounds: 1,
     elapsedMs: 0,
     completedAt: "2025-01-02T03:04:05.000Z"
@@ -118,6 +119,16 @@ describe("results continuation", () => {
   it("uses the existing unlock rules to point at the next playable mission", () => {
     const afterAnimalsTwo = play("basics-1", "basics-2", "animals-1", "animals-2");
     expect(getContinueDestination(afterAnimalsTwo, "animals-2")).toEqual({ kind: "level", levelId: "animals-3" });
+  });
+
+  it("uses the authored section order rather than any later level in play history", () => {
+    const state = {
+      ...initialProgressState,
+      completedLevelIds: ["basics-1", "basics-2", "animals-1", "sports-1"] as LevelId[]
+    };
+
+    expect(getNextLevelInSection("animals-1")?.id).toBe("animals-2");
+    expect(getContinueDestination(state, "animals-1")).toEqual({ kind: "level", levelId: "animals-2" });
   });
 
   it("returns to the general map when the final playable island closes", () => {

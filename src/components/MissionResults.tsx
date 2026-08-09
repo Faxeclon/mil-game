@@ -7,8 +7,8 @@ import { useTranslations } from "next-intl";
 import { Narrator } from "@/components/Narrator";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
-import { getMissionById } from "@/features/levels/levelModel";
-import { getSectionCompletionEvent, type SectionCompletionEvent } from "@/features/levels/levelProgress";
+import { getIslandOfMission, getMissionById } from "@/features/levels/levelModel";
+import { getNextLevelInSection, getSectionCompletionEvent, type SectionCompletionEvent } from "@/features/levels/levelProgress";
 import { getBonusDestinationPath, getBonusOpportunityId, type BonusDestination } from "@/features/bonus/bonusOpportunity";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import {
@@ -120,6 +120,9 @@ export function MissionResults() {
   }
 
   const mission = getMissionById(result.levelId);
+  const nextLevel = result.passed ? getNextLevelInSection(result.levelId) : null;
+  const islandKey = getIslandOfMission(result.levelId);
+  const mapPath = islandKey ? `/island/${islandKey}` : "/worlds";
   const avatarId = apprenticeAvatarId ?? defaultApprenticeAvatarId;
   const AvatarIcon = apprenticeAvatarIcons[avatarId];
   const apprenticeNames = tHome.raw("profileAvatars") as string[];
@@ -132,7 +135,7 @@ export function MissionResults() {
     : result.levelId;
   const summary = getScoreSummary(result, progressState.bestResultsByLevelId);
   // Derived from the one canonical list, so it cannot be shown twice or get out of step.
-  const isFirstEverCompletion = progressState.completedLevelIds.length === 1;
+  const isFirstEverCompletion = result.passed && progressState.completedLevelIds.length === 1;
   const elapsedTime = formatElapsedTime(result.elapsedMs, {
     second: t("second"),
     seconds: t("seconds"),
@@ -180,10 +183,10 @@ export function MissionResults() {
       </span>
 
       <h1 className={styles.title} id="results-title" ref={headingRef} tabIndex={-1}>
-        {t("title")}
+        {result.passed ? t("title") : t("notPassedTitle")}
       </h1>
       <p className={styles.levelIdentity}>{levelIdentity}</p>
-      <p className={styles.text}>{t("description")}</p>
+      <p className={styles.text}>{result.passed ? t("description") : t("notPassedDescription")}</p>
 
       {/*
        * How it went, and whether a record fell. Reading only the question and never the
@@ -191,7 +194,7 @@ export function MissionResults() {
        */}
       <Narrator
         lines={[
-          t("title"),
+          result.passed ? t("title") : t("notPassedTitle"),
           levelIdentity,
           t("description"),
           summary.isNewRecord ? t("newRecord") : null,
@@ -276,14 +279,19 @@ export function MissionResults() {
       )}
 
       <div className={styles.actions}>
-        <Link className={styles.primaryLink} href={getContinuePath(progressState, result.levelId)}>
-          {t("continue")}
-        </Link>
-        <Link className={styles.secondaryLink} href={getReplayPath(result.levelId)}>
-          {t("replay")}
-        </Link>
-        <Link className={styles.secondaryLink} href="/worlds">
-          {t("returnToIslands")}
+        {result.passed && nextLevel && (
+          <Link className={styles.primaryLink} href={getContinuePath(progressState, result.levelId)}>
+            {t("nextLevel")}
+            <span className={styles.nextLevelPreview}>{t("nextLevelPreview", { level: t("levelIdentity", { category: tIslands(`categories.${nextLevel.category}.title`), number: nextLevel.order }) })}</span>
+          </Link>
+        )}
+        {!result.passed && (
+          <Link className={styles.primaryLink} href={getReplayPath(result.levelId)}>
+            {t("tryAgain")}
+          </Link>
+        )}
+        <Link className={styles.secondaryLink} href={mapPath}>
+          {t("backToMap")}
         </Link>
       </div>
 
