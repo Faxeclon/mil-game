@@ -34,6 +34,7 @@ import {
   type BonusWheelState
 } from "@/features/bonus/bonusOpportunity";
 import { requestPersistentStorage } from "@/features/offline/registerServiceWorker";
+import { addAchievements, getNewAchievementIds, type AchievementId } from "@/features/achievements/achievementModel";
 import { readProfilesDocument, writeProfilesDocument } from "./progressStorage";
 
 export type ProgressSnapshot = {
@@ -137,6 +138,16 @@ export function startBonusRushRunInStore(id: string, run: BonusRushRun): void {
 
 export function updateBonusRushRunInStore(id: string, run: BonusRushRun): void {
   applyToActiveProgress((state) => updateBonusRushRun(state, id, run));
+}
+
+/** Writes only genuinely new IDs, so a refresh or replay cannot replay a celebration. */
+export function unlockAchievementsInStore(candidates: readonly AchievementId[]): AchievementId[] {
+  let unlocked: AchievementId[] = [];
+  applyToActiveProgress((state) => {
+    unlocked = getNewAchievementIds(state.achievementIds, candidates);
+    return unlocked.length === 0 ? state : { ...state, achievementIds: addAchievements(state.achievementIds, unlocked) };
+  });
+  return unlocked;
 }
 
 export function markOnboardedInStore(localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId): void {

@@ -14,13 +14,15 @@ import {
   rushReducer,
   type RushItem
 } from "@/features/rush/rushState";
-import type { CategoryKey, IslandKey } from "@/features/levels/levelModel";
+import type { IslandKey } from "@/features/levels/levelModel";
 import { getActiveBonusForIsland, getBonusDestinationPath, getBonusRushSecondsLeft, type BonusOpportunity, type BonusRushRun, type BonusWheelReward } from "@/features/bonus/bonusOpportunity";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { useRouter } from "@/i18n/navigation";
 import { ImageZoom } from "./ImageZoom";
 import { useRushCompletionRetention } from "./RushRouteGuard";
 import { BonusRewardWheel } from "./BonusRewardWheel";
+import { BonusAchievementCelebration } from "./BonusAchievementCelebration";
+import { getBonusRunAchievementIds, type AchievementId } from "@/features/achievements/achievementModel";
 import styles from "./RushClient.module.css";
 
 function restoreDeck(pool: readonly RushItem[], itemIds: readonly string[] | undefined): RushItem[] {
@@ -70,17 +72,17 @@ function BonusRewardChip({ reward, shieldUsed }: { reward: BonusWheelReward; shi
  */
 export function RushClient({
   island,
-  poolsByCategory
+  pool
 }: {
   island: IslandKey;
-  poolsByCategory: Partial<Record<CategoryKey, readonly RushItem[]>>;
+  pool: readonly RushItem[];
 }) {
   const t = useTranslations("rush");
   const tTutorial = useTranslations("tutorial");
   const tEducation = useTranslations("education");
   const router = useRouter();
   const retainCompletedBonus = useRushCompletionRetention();
-  const { progressState, consumeBonusOpportunity, startBonusRushRun, updateBonusRushRun } = useProgress();
+  const { progressState, consumeBonusOpportunity, startBonusRushRun, updateBonusRushRun, unlockAchievements } = useProgress();
   const activeBonus = getActiveBonusForIsland(progressState, island);
   const [runBonus] = useState<BonusOpportunity | null>(() => activeBonus ?? null);
   const consumedRunRef = useRef(false);
@@ -89,12 +91,12 @@ export function RushClient({
   const bonus = activeBonus ?? runBonus;
   const run = bonus?.rushRun;
   const reward: BonusWheelReward = run?.reward ?? (bonus?.wheel?.status === "resolved" ? bonus.wheel.reward : "none");
-  const pool = bonus ? poolsByCategory[bonus.categoryKey] ?? [] : [];
   const durationSeconds = run?.durationSeconds ?? getBonusRushDuration(reward);
   const [state, dispatch] = useReducer(rushReducer, run, getRushStateFromRun);
   const [deck, setDeck] = useState<RushItem[]>(() => restoreDeck(pool, run?.deckItemIds));
   const [secondsLeft, setSecondsLeft] = useState(() => run ? getBonusRushSecondsLeft(run.startedAt, durationSeconds) : durationSeconds);
   const [wheelContinued, setWheelContinued] = useState(Boolean(run));
+  const [newAchievementIds, setNewAchievementIds] = useState<AchievementId[]>([]);
 
   const isPlaying = state.status === "playing";
 
@@ -115,10 +117,20 @@ export function RushClient({
   useEffect(() => {
     if (state.status !== "finished" || !bonus || consumedRunRef.current) return;
     consumedRunRef.current = true;
-    if (bonus.rushRun) updateBonusRushRun(bonus.id, saveRunProgress(bonus.rushRun, state, reward));
+    if (bonus.rushRun) {
+      const completedRun = saveRunProgress(bonus.rushRun, state, reward);
+      updateBonusRushRun(bonus.id, completedRun);
+      const unlocked = unlockAchievements(getBonusRunAchievementIds({
+        islandKey: bonus.islandKey,
+        actualMistakeCount: completedRun.actualMistakeCount,
+        reward: completedRun.reward
+      }));
+      // Persist before showing the one-visit celebration; reloads therefore stay quiet.
+      if (unlocked.length > 0) window.setTimeout(() => setNewAchievementIds(unlocked), 0);
+    }
     retainCompletedBonus(bonus.id);
     consumeBonusOpportunity(bonus.id);
-  }, [bonus, consumeBonusOpportunity, retainCompletedBonus, reward, state, updateBonusRushRun]);
+  }, [bonus, consumeBonusOpportunity, retainCompletedBonus, reward, state, unlockAchievements, updateBonusRushRun]);
 
   const beginRun = () => {
     if (!bonus || bonus.wheel?.status !== "resolved" || !wheelContinued || bonus.rushRun || startedRunRef.current) return;
@@ -210,6 +222,7 @@ export function RushClient({
         <button className={styles.primary} type="button" onClick={abandonBonus}>
           {t("bonusFinish")}
         </button>
+        {newAchievementIds.length > 0 && <BonusAchievementCelebration ids={newAchievementIds} onContinue={abandonBonus} />}
       </section>
     );
   }

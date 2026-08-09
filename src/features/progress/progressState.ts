@@ -7,6 +7,7 @@ import { isAttemptId, parseCompletedAt, parseElapsedMs } from "./attemptMetadata
 import { parseBestResults, updateBestResults, type BestResultsByLevelId } from "./bestResults";
 import { parseLevelScore } from "@/features/scoring/levelScore";
 import { RUSH_SECONDS } from "@/features/rush/rushState";
+import { isAchievementId, type AchievementId } from "@/features/achievements/achievementModel";
 import { initialStreak, isPlayedOn, parseStreak, recordPlayedDay, type Streak } from "./streak";
 import {
   grantGuardianConsent,
@@ -67,6 +68,8 @@ export type ProgressState = {
   sectionCompletionEvent?: { categoryKey: CategoryKey; attemptId: string };
   /** Bonus records belong to this profile because the whole state belongs to it. */
   bonusOpportunities: BonusOpportunity[];
+  /** Earned Bonus achievement IDs; labels and icons are always localized separately. */
+  achievementIds: AchievementId[];
   /** Legacy v1 data retained on load; it has no effect on Bonus Rush access. */
   rushUnlockedIslands: IslandKey[];
   /** The number of missions that formed this player's rank scale when it was last earned. */
@@ -146,6 +149,7 @@ export const initialProgressState: ProgressState = {
   version: PROGRESS_VERSION,
   completedLevelIds: [],
   bonusOpportunities: [],
+  achievementIds: [],
   rushUnlockedIslands: [],
   rankMissionCeiling: playableMissionCount,
   mapOnboardingStage: "map-island",
@@ -253,6 +257,11 @@ function parseCompletedLevelIds(value: unknown): LevelId[] {
     if (isLevelId(levelId)) completed.add(levelId);
   }
   return [...completed];
+}
+
+function parseAchievementIds(value: unknown): AchievementId[] {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.filter(isAchievementId))];
 }
 
 function isCategoryKey(value: unknown): value is CategoryKey {
@@ -406,6 +415,7 @@ export function parseProgressState(value: unknown): ProgressState {
       ? { sectionCompletionEvent: parseSectionCompletionEvent(value.sectionCompletionEvent) }
       : {}),
     bonusOpportunities: parseBonusOpportunities(value.bonusOpportunities),
+    achievementIds: parseAchievementIds(value.achievementIds),
     rushUnlockedIslands: storedRushUnlocks,
     rankMissionCeiling: Math.max(completedLevelIds.length, storedCeiling),
     // Missing means a profile predates this optional onboarding and must not be interrupted.

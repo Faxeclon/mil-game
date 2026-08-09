@@ -5,8 +5,8 @@ import { ProfileRouteGuard } from "@/components/ProfileRouteGuard";
 import { RushRouteGuard } from "@/components/RushRouteGuard";
 import { RushClient } from "@/components/RushClient";
 import { contentPacks, singlePacks } from "@/content/packs/packRegistry";
-import { categories, islands, type CategoryKey, type IslandKey } from "@/features/levels/levelModel";
-import { buildCategoryRushPool } from "@/features/rush/rushState";
+import { islands, type IslandKey } from "@/features/levels/levelModel";
+import { buildIslandRushPool } from "@/features/rush/rushState";
 
 type IslandRushPageProps = { params: Promise<{ locale: string; islandKey: string }> };
 
@@ -25,16 +25,14 @@ export default async function IslandRushPage({ params }: IslandRushPageProps) {
   setRequestLocale(locale);
 
   if (!islands.some((island) => island.key === islandKey)) notFound();
-  const poolsByCategory = Object.fromEntries(
-    categories.map((category) => [category.key, buildCategoryRushPool(category.key, contentPacks, singlePacks)])
-  ) as Partial<Record<CategoryKey, ReturnType<typeof buildCategoryRushPool>>>;
+  const pool = buildIslandRushPool(islandKey as IslandKey, contentPacks, singlePacks);
 
   return (
     <main id="main-content">
       <PageContainer className="tutorial-shell tutorial-game-shell">
         <ProfileRouteGuard>
           <RushRouteGuard island={islandKey}>
-            <RushClient island={islandKey as IslandKey} poolsByCategory={poolsByCategory} />
+            <RushClient island={islandKey as IslandKey} pool={pool} />
           </RushRouteGuard>
         </ProfileRouteGuard>
       </PageContainer>

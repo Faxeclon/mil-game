@@ -22,6 +22,7 @@ import {
   selectProfileInStore,
   resetProgressStoreForTests,
   spinBonusWheelInStore,
+  unlockAchievementsInStore,
   startAdultPlayInStore,
   subscribeToProgress,
   unlinkChildFromAdultInStore
@@ -152,6 +153,7 @@ describe("progress store", () => {
     expect(state.completedLevelIds).toEqual([]);
     expect(state.bestResultsByLevelId).toEqual({});
     expect(state.rushUnlockedIslands).toEqual([]);
+    expect(state.achievementIds).toEqual([]);
     // The map is new again, so its one-time tour plays again.
     expect(state.mapOnboardingStage).toBe("map-island");
 
@@ -184,6 +186,21 @@ describe("progress store", () => {
     expect(getProgressSnapshot().state.bonusOpportunities[0]?.wheel).toMatchObject({ status: "resolved", reward: "extra-life" });
     consumeBonusOpportunityInStore("section-bonus:animals:attempt-1");
     expect(getProgressSnapshot().state.bonusOpportunities[0]?.status).toBe("consumed");
+    unsubscribe();
+  });
+
+  it("keeps achievements isolated to their active profile and writes them only once", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    markOnboardedInStore("Lu", "fox");
+    const firstId = getProgressSnapshot().profiles.activeId;
+    expect(unlockAchievementsInStore(["bonus-perfect-training"])).toEqual(["bonus-perfect-training"]);
+    expect(unlockAchievementsInStore(["bonus-perfect-training"])).toEqual([]);
+    leaveLocalProfileInStore();
+    markOnboardedInStore("Noa", "owl");
+    expect(getProgressSnapshot().state.achievementIds).toEqual([]);
+    selectProfileInStore(firstId ?? "");
+    expect(getProgressSnapshot().state.achievementIds).toEqual(["bonus-perfect-training"]);
     unsubscribe();
   });
 

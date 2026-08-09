@@ -1,0 +1,15 @@
+.overlay { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; padding: 1rem; background: rgb(21 29 52 / 70%); }
+.dialog { width: min(100%, 30rem); padding: clamp(1.5rem, 5vw, 2.5rem); display: grid; justify-items: center; gap: 1rem; overflow: hidden; border: 3px solid #f6bf35; border-radius: 1.5rem; background: #fffdf5; color: #1f2a44; text-align: center; box-shadow: 0 1.2rem 3rem rgb(0 0 0 / 30%); animation: pop 450ms cubic-bezier(.18,.88,.35,1.2) both; }
+.dialog h2 { margin: 0; font-size: clamp(1.65rem, 7vw, 2.35rem); line-height: 1.05; }
+.dialog p { max-width: 28ch; margin: 0; color: #5b6780; }
+.confetti { color: #e9672c; font-size: 1.6rem; letter-spacing: .4rem; animation: glow 900ms ease-in-out infinite alternate; }
+.achievements { width: 100%; display: grid; gap: .65rem; }
+.achievement { min-height: 4.5rem; padding: .7rem 1rem; display: flex; align-items: center; justify-content: center; gap: .65rem; border: 2px solid #f6bf35; border-radius: 1rem; background: #fff4c9; font-size: 1.06rem; }
+.achievement.egg { border-color: #ed8a35; background: #fff0dc; }
+.icon { width: 2rem; height: 2rem; color: #c84f16; }
+.continue { min-height: 3rem; padding: .6rem 1.5rem; border: 0; border-radius: 999px; background: #c93c0b; color: #fff; font-size: 1rem; font-weight: 800; cursor: pointer; }
+.continue:focus-visible { outline: 3px solid #1f2a44; outline-offset: 3px; }
+@keyframes pop { from { opacity: 0; transform: scale(.82); } to { opacity: 1; transform: scale(1); } }
+@keyframes glow { from { transform: scale(.94); } to { transform: scale(1.08); } }
+@media (prefers-reduced-motion: reduce) { .dialog, .confetti { animation: none; } }
+.still { animation: none; }
