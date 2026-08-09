@@ -1,4 +1,5 @@
 import { categories, islands, missionBlueprint, isLevelId, type CategoryKey, type IslandKey, type LevelId } from "@/features/levels/levelModel";
+import type { BonusOpportunity } from "@/features/bonus/bonusOpportunity";
 import { normalizeAdultEmail } from "@/features/adults/adultAccount";
 import { isApprenticeAvatarId, type ApprenticeAvatarId } from "@/features/profile/apprenticeAvatar";
 import { normalizeLocalNickname } from "@/features/profile/localNickname";
@@ -63,6 +64,8 @@ export type ProgressState = {
   sectionReplayIdsByCategory?: Partial<Record<CategoryKey, LevelId[]>>;
   /** The one attempt that just closed a section, so a replay cannot farm another event. */
   sectionCompletionEvent?: { categoryKey: CategoryKey; attemptId: string };
+  /** Bonus records belong to this profile because the whole state belongs to it. */
+  bonusOpportunities?: BonusOpportunity[];
   /** A Rush reward already earned. It survives later catalog additions without inventing completions. */
   rushUnlockedIslands: IslandKey[];
   /** The number of missions that formed this player's rank scale when it was last earned. */
@@ -269,6 +272,26 @@ function parseSectionCompletionEvent(value: unknown): ProgressState["sectionComp
   return { categoryKey: value.categoryKey, attemptId: value.attemptId };
 }
 
+function parseBonusOpportunities(value: unknown): BonusOpportunity[] {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set<string>();
+  return value.flatMap((entry): BonusOpportunity[] => {
+    if (!isRecord(entry) || typeof entry.id !== "string" || seen.has(entry.id)) return [];
+    if (!isCategoryKey(entry.categoryKey) || !isIslandKey(entry.islandKey)) return [];
+    if (entry.status !== "pending" && entry.status !== "active" && entry.status !== "consumed") return [];
+    if (!isRecord(entry.destination) || (entry.destination.kind !== "worlds" && entry.destination.kind !== "island")) return [];
+    if (entry.destination.kind === "island" && !isIslandKey(entry.destination.islandKey)) return [];
+    seen.add(entry.id);
+    return [{
+      id: entry.id,
+      categoryKey: entry.categoryKey,
+      islandKey: entry.islandKey,
+      destination: entry.destination.kind === "worlds" ? { kind: "worlds" } : { kind: "island", islandKey: entry.destination.islandKey as IslandKey },
+      status: entry.status
+    }];
+  });
+}
+
 function migrateLegacyCompletionIds(value: unknown): LevelId[] {
   if (!Array.isArray(value)) return [];
   const completed = new Set<LevelId>();
@@ -318,6 +341,9 @@ export function parseProgressState(value: unknown): ProgressState {
       : {}),
     ...(parseSectionCompletionEvent(value.sectionCompletionEvent)
       ? { sectionCompletionEvent: parseSectionCompletionEvent(value.sectionCompletionEvent) }
+      : {}),
+    ...(parseBonusOpportunities(value.bonusOpportunities).length > 0
+      ? { bonusOpportunities: parseBonusOpportunities(value.bonusOpportunities) }
       : {}),
     rushUnlockedIslands: storedRushUnlocks,
     rankMissionCeiling: Math.max(completedLevelIds.length, storedCeiling),
