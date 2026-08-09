@@ -26,9 +26,9 @@ export async function AppHeader({ locale }: { locale: AppLocale }) {
         <nav aria-label={t("primaryNavigation")} className={styles.nav}>
           {/* Appears once a profile exists; without one the map only asks for it. */}
           <IslandsNavLink className={styles.navLink} />
-          <Link aria-label={t("accessibility")} className={styles.navLink} href="/settings">
+          <Link aria-label={t("settings")} className={styles.navLink} href="/settings">
             <Accessibility aria-hidden="true" size={19} />
-            <span>{t("accessibility")}</span>
+            <span>{t("settings")}</span>
           </Link>
           {/* Appears only where a grown-up signed in; a child never meets it. */}
           <AdultNavLink className={styles.navLink} />
