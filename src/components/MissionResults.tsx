@@ -8,6 +8,8 @@ import { Narrator } from "@/components/Narrator";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { getMissionById } from "@/features/levels/levelModel";
+import { getSectionCompletionEvent, type SectionCompletionEvent } from "@/features/levels/levelProgress";
+import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import {
   apprenticeAvatarIds,
   defaultApprenticeAvatarId,
@@ -17,7 +19,7 @@ import { useProgress } from "@/features/progress/ProgressProvider";
 import { getContinuePath, getReplayPath } from "@/features/results/resultNavigation";
 import { formatElapsedTime, getFreshResult, getRequestedAttempt } from "@/features/results/resultPresentation";
 import { getScoreSummary } from "@/features/results/scoreSummary";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import styles from "./MissionResults.module.css";
 
 const apprenticeAvatarIcons: Record<ApprenticeAvatarId, LucideIcon> = {
@@ -36,12 +38,19 @@ export function MissionResults() {
   const tHome = useTranslations("home");
   const tStorage = useTranslations("storage");
   const tGuardian = useTranslations("guardian");
+  const accessibility = useAccessibility();
+  const router = useRouter();
   const { hydrated, lastResult, progressState, apprenticeAvatarId } = useProgress();
   const searchParams = useSearchParams();
   const attempt = getRequestedAttempt(searchParams);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const focusedResultRef = useRef<string | null>(null);
+  const navigateOnceRef = useRef(false);
+  const continueRef = useRef<HTMLButtonElement>(null);
   const result = getFreshResult(lastResult, attempt);
+  const celebration: SectionCompletionEvent | null = result
+    ? getSectionCompletionEvent(progressState, result.levelId)
+    : null;
   const focusKey = result ? `result:${result.attemptId}` : `empty:${attempt ?? ""}`;
 
   useEffect(() => {
@@ -49,6 +58,10 @@ export function MissionResults() {
     headingRef.current?.focus();
     focusedResultRef.current = focusKey;
   }, [focusKey, hydrated]);
+
+  useEffect(() => {
+    if (celebration) continueRef.current?.focus();
+  }, [celebration]);
 
   if (!hydrated) {
     return (
@@ -94,6 +107,11 @@ export function MissionResults() {
     join: t("timeJoin"),
     notRecorded: t("timeNotRecorded")
   });
+  const completeCelebration = () => {
+    if (!celebration || navigateOnceRef.current) return;
+    navigateOnceRef.current = true;
+    router.push(getContinuePath(progressState, result.levelId));
+  };
 
   return (
     <section aria-labelledby="results-title" className={`${styles.results} app-chrome-hidden`}>
@@ -219,6 +237,36 @@ export function MissionResults() {
           {t("returnToIslands")}
         </Link>
       </div>
+
+      {celebration && (
+        <div className={styles.completionOverlay}>
+          <section
+            aria-describedby="completion-description"
+            aria-labelledby="completion-title"
+            aria-modal="true"
+            className={`${styles.completionDialog} ${accessibility.reducedMotion ? styles.completionStill : ""}`}
+            onKeyDown={(event) => {
+              if (event.key === "Escape" || event.key === "Tab") {
+                event.preventDefault();
+                if (event.key === "Escape") completeCelebration();
+              }
+            }}
+            role="dialog"
+          >
+            <span aria-hidden="true" className={styles.completionMedal}>★</span>
+            <h2 id="completion-title">{t("sectionComplete")}</h2>
+            <p id="completion-description">
+              {t("sectionCompleteDescription", { sectionName: tIslands(`categories.${celebration.categoryKey}.title`) })}
+            </p>
+            {celebration.islandCompleted && (
+              <p className={styles.islandComplete}>{t("islandComplete")} {t("islandCompleteDescription")}</p>
+            )}
+            <button className={styles.completionAction} onClick={completeCelebration} ref={continueRef} type="button">
+              {t("continue")}
+            </button>
+          </section>
+        </div>
+      )}
     </section>
   );
 }

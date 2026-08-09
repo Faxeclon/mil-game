@@ -1,4 +1,4 @@
-import { categories, islands, missionBlueprint, isLevelId, type IslandKey, type LevelId } from "@/features/levels/levelModel";
+import { categories, islands, missionBlueprint, isLevelId, type CategoryKey, type IslandKey, type LevelId } from "@/features/levels/levelModel";
 import { normalizeAdultEmail } from "@/features/adults/adultAccount";
 import { isApprenticeAvatarId, type ApprenticeAvatarId } from "@/features/profile/apprenticeAvatar";
 import { normalizeLocalNickname } from "@/features/profile/localNickname";
@@ -59,6 +59,10 @@ export type ProgressState = {
   version: typeof PROGRESS_VERSION;
   /** Levels finished, in the order they were finished. */
   completedLevelIds: LevelId[];
+  /** Replay-only progress for already completed sections; it never unlocks anything. */
+  sectionReplayIdsByCategory?: Partial<Record<CategoryKey, LevelId[]>>;
+  /** The one attempt that just closed a section, so a replay cannot farm another event. */
+  sectionCompletionEvent?: { categoryKey: CategoryKey; attemptId: string };
   /** A Rush reward already earned. It survives later catalog additions without inventing completions. */
   rushUnlockedIslands: IslandKey[];
   /** The number of missions that formed this player's rank scale when it was last earned. */
@@ -246,6 +250,25 @@ function parseCompletedLevelIds(value: unknown): LevelId[] {
   return [...completed];
 }
 
+function isCategoryKey(value: unknown): value is CategoryKey {
+  return typeof value === "string" && categories.some((category) => category.key === value);
+}
+
+function parseSectionReplayIds(value: unknown): Partial<Record<CategoryKey, LevelId[]>> {
+  if (!isRecord(value)) return {};
+  const parsed: Partial<Record<CategoryKey, LevelId[]>> = {};
+  for (const [categoryKey, ids] of Object.entries(value)) {
+    if (!isCategoryKey(categoryKey) || !Array.isArray(ids)) continue;
+    parsed[categoryKey] = ids.filter(isLevelId);
+  }
+  return parsed;
+}
+
+function parseSectionCompletionEvent(value: unknown): ProgressState["sectionCompletionEvent"] {
+  if (!isRecord(value) || !isCategoryKey(value.categoryKey) || !isAttemptId(value.attemptId)) return undefined;
+  return { categoryKey: value.categoryKey, attemptId: value.attemptId };
+}
+
 function migrateLegacyCompletionIds(value: unknown): LevelId[] {
   if (!Array.isArray(value)) return [];
   const completed = new Set<LevelId>();
@@ -290,6 +313,12 @@ export function parseProgressState(value: unknown): ProgressState {
   return {
     version: PROGRESS_VERSION,
     completedLevelIds,
+    ...(Object.keys(parseSectionReplayIds(value.sectionReplayIdsByCategory)).length > 0
+      ? { sectionReplayIdsByCategory: parseSectionReplayIds(value.sectionReplayIdsByCategory) }
+      : {}),
+    ...(parseSectionCompletionEvent(value.sectionCompletionEvent)
+      ? { sectionCompletionEvent: parseSectionCompletionEvent(value.sectionCompletionEvent) }
+      : {}),
     rushUnlockedIslands: storedRushUnlocks,
     rankMissionCeiling: Math.max(completedLevelIds.length, storedCeiling),
     // Missing means a profile predates this optional onboarding and must not be interrupted.
@@ -374,6 +403,7 @@ export function completeLevel(
   const attempt = normalizeLevelAttempt(result);
   if (!isLevelId(levelId) || !attempt) return state;
   const alreadyCompleted = state.completedLevelIds.includes(levelId);
+  const mission = missionBlueprint.find((entry) => entry.id === levelId);
   const score = attempt.score ?? null;
 
   /*
@@ -393,11 +423,37 @@ export function completeLevel(
         });
 
   const completedLevelIds = alreadyCompleted ? state.completedLevelIds : [...state.completedLevelIds, levelId];
+  const replayIdsByCategory = { ...(state.sectionReplayIdsByCategory ?? {}) };
+  let sectionCompletionEvent: ProgressState["sectionCompletionEvent"];
+  if (mission) {
+    const categoryMissions = missionBlueprint.filter((entry) => entry.category === mission.category && entry.packId);
+    const categoryWasCompleted = categoryMissions.every((entry) => state.completedLevelIds.includes(entry.id as LevelId));
+    const categoryIsCompleted = categoryMissions.every((entry) => completedLevelIds.includes(entry.id as LevelId));
+    if (!categoryWasCompleted && categoryIsCompleted && categoryMissions.at(-1)?.id === levelId) {
+      sectionCompletionEvent = { categoryKey: mission.category, attemptId: attempt.attemptId };
+    } else if (categoryWasCompleted) {
+      const replayed = replayIdsByCategory[mission.category] ?? [];
+      const expected = categoryMissions[replayed.length]?.id;
+      const next = expected === levelId
+        ? [...replayed, levelId]
+        : categoryMissions[0]?.id === levelId ? [levelId] : [];
+      if (next.length === categoryMissions.length) {
+        sectionCompletionEvent = { categoryKey: mission.category, attemptId: attempt.attemptId };
+        replayIdsByCategory[mission.category] = [];
+      } else {
+        replayIdsByCategory[mission.category] = next;
+      }
+    }
+  }
   const newlyCompletedIslands = completedIslands(completedLevelIds);
 
   return {
     ...state,
     completedLevelIds,
+    ...(state.sectionReplayIdsByCategory !== undefined || Object.keys(replayIdsByCategory).length > 0
+      ? { sectionReplayIdsByCategory: replayIdsByCategory }
+      : {}),
+    ...(sectionCompletionEvent ? { sectionCompletionEvent } : {}),
     rushUnlockedIslands: [...new Set([...state.rushUnlockedIslands, ...newlyCompletedIslands])],
     rankMissionCeiling: Math.max(state.rankMissionCeiling, completedLevelIds.length),
     // Every run counts, including the replays a record ignores: this is time spent, not

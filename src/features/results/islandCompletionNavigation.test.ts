@@ -34,30 +34,24 @@ describe("finishing the last mission of an island", () => {
    * The behaviour this replaces swept the child straight into the next island, so the
    * hundred per cent and any Rush they had just earned happened behind them.
    */
-  it("sends the player back to that island, not onward", () => {
+  it("keeps a manually restored completed island on its own view", () => {
     for (const island of playableIslands) {
       const missions = missionsOf(island);
       const everythingUpToHere = playableIslands
         .slice(0, playableIslands.indexOf(island) + 1)
         .flatMap(missionsOf);
 
-      expect(getContinueDestination(withCompleted(...everythingUpToHere), missions.at(-1)!), island).toEqual({
-        kind: "island",
-        islandKey: island
-      });
+      expect(getContinueDestination(withCompleted(...everythingUpToHere), missions.at(-1)!), island).toEqual({ kind: "island", islandKey: island });
     }
   });
 
   it("does the same for the very first island, which is where most players see it", () => {
     const training = missionsOf("training");
 
-    expect(getContinueDestination(withCompleted(...training), training.at(-1)!)).toEqual({
-      kind: "island",
-      islandKey: "training"
-    });
+    expect(getContinueDestination(withCompleted(...training), training.at(-1)!)).toEqual({ kind: "island", islandKey: "training" });
   });
 
-  it("leads to the island page, so the player lands on the progress they just finished", () => {
+  it("keeps the island path safe without a fresh completion event", () => {
     const training = missionsOf("training");
 
     expect(getContinuePath(withCompleted(...training), training.at(-1)!)).toBe("/island/training");
@@ -89,10 +83,7 @@ describe("finishing a mission with more left in the island", () => {
 
     // Replaying the first mission of training must not read as finishing training again:
     // the island is complete, so the island page is still the honest destination.
-    expect(getContinueDestination(state, training[0])).toEqual({
-      kind: "island",
-      islandKey: "training"
-    });
+    expect(getContinueDestination(state, training[0])).toEqual({ kind: "island", islandKey: "training" });
   });
 });
 
@@ -106,6 +97,6 @@ describe("destinations that have to stay safe", () => {
     const training = missionsOf("training");
     const destination = getContinueDestination(withCompleted(...training), training.at(-1)!);
 
-    expect(destination.kind === "island" && destination.islandKey).toBe("training");
+    expect(destination).toEqual({ kind: "island", islandKey: "training" });
   });
 });
