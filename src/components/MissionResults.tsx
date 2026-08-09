@@ -280,10 +280,17 @@ export function MissionResults() {
 
       <div className={styles.actions}>
         {result.passed && nextLevel && (
-          <Link className={styles.primaryLink} href={getReplayPath(nextLevel.id as LevelId)}>
-            {t("nextLevel")}
-            <span className={styles.nextLevelPreview}>{t("nextLevelPreview", { level: t("levelIdentity", { category: tIslands(`categories.${nextLevel.category}.title`), number: nextLevel.order }) })}</span>
-          </Link>
+          <div className={styles.nextLevelAction}>
+            <Link className={styles.primaryLink} href={getReplayPath(nextLevel.id as LevelId)}>
+              {t("nextLevel")}
+            </Link>
+            <p className={styles.nextLevelPreview}>
+              {t("levelIdentity", {
+                category: tIslands(`categories.${nextLevel.category}.title`),
+                number: nextLevel.order
+              })}
+            </p>
+          </div>
         )}
         {!result.passed && (
           <Link className={styles.primaryLink} href={getReplayPath(result.levelId)}>

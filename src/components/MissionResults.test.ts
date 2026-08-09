@@ -14,10 +14,24 @@ describe("section-completion Bonus offer", () => {
     expect(screen).toContain("result.passed ? getNextLevelInSection(result.levelId) : null");
     expect(screen).toContain("getReplayPath(nextLevel.id as LevelId)");
     expect(screen).not.toContain("getContinuePath");
+    expect(screen).toContain('className={styles.nextLevelAction}');
+    expect(screen).toContain('<p className={styles.nextLevelPreview}>');
+    expect(screen).toContain('t("levelIdentity", {');
+    expect(screen).not.toContain('t("nextLevelPreview"');
     expect(screen).toContain('t("nextLevel")');
     expect(screen).toContain('t("tryAgain")');
     expect(screen).toContain('t("backToMap")');
     expect(screen).not.toContain('t("replay")');
+  });
+
+  it("keeps the next-level destination as muted microcopy below the CTA with room before the map link", async () => {
+    const css = await source("MissionResults.module.css");
+
+    expect(css).toContain(".nextLevelAction");
+    expect(css).toContain("gap: clamp(.375rem, 2vw, .6rem)");
+    expect(css).toContain("gap: clamp(1.25rem, 4vw, 1.75rem)");
+    expect(css).toContain("color: var(--r-ink-soft)");
+    expect(css).toContain("text-align: center");
   });
 
   it("keeps the learning-method recap exclusive to Training results", async () => {
