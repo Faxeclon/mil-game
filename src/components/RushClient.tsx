@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { Camera, Sparkles, Timer, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
@@ -13,10 +13,35 @@ import {
   RUSH_SECONDS,
   type RushItem
 } from "@/features/rush/rushState";
-import type { IslandKey } from "@/features/levels/levelModel";
-import { Link } from "@/i18n/navigation";
+import type { CategoryKey, IslandKey } from "@/features/levels/levelModel";
+import { getActiveBonusForIsland, getBonusDestinationPath, getBonusRushSecondsLeft, type BonusOpportunity, type BonusRushRun } from "@/features/bonus/bonusOpportunity";
+import { useProgress } from "@/features/progress/ProgressProvider";
+import { useRouter } from "@/i18n/navigation";
 import { ImageZoom } from "./ImageZoom";
+import { useRushCompletionRetention } from "./RushRouteGuard";
 import styles from "./RushClient.module.css";
+
+function restoreDeck(pool: readonly RushItem[], itemIds: readonly string[] | undefined): RushItem[] {
+  if (!itemIds) return [];
+  const byId = new Map(pool.map((item) => [item.id, item]));
+  return itemIds.flatMap((id) => byId.get(id) ?? []);
+}
+
+function getRushStateFromRun(run: BonusRushRun | undefined) {
+  if (!run) return initialRushState;
+  if (run.finished) return { status: "finished" as const, correct: run.correct, wrong: run.wrong, ranOut: run.ranOut };
+  return { status: "playing" as const, index: run.index, correct: run.correct, wrong: run.wrong, lastAnswer: null };
+}
+
+function saveRunProgress(run: BonusRushRun, state: ReturnType<typeof getRushStateFromRun>): BonusRushRun {
+  if (state.status === "finished") {
+    return { ...run, index: run.deckItemIds.length, correct: state.correct, wrong: state.wrong, finished: true, ranOut: state.ranOut };
+  }
+  if (state.status === "playing") {
+    return { ...run, index: state.index, correct: state.correct, wrong: state.wrong };
+  }
+  return run;
+}
 
 /**
  * The island's thirty-second challenge.
@@ -26,36 +51,95 @@ import styles from "./RushClient.module.css";
  * lesson, and the missions, where a child is asked to slow down and look, remain the
  * thing that counts.
  */
-export function RushClient({ island, pool }: { island: IslandKey; pool: readonly RushItem[] }) {
+export function RushClient({
+  island,
+  poolsByCategory
+}: {
+  island: IslandKey;
+  poolsByCategory: Partial<Record<CategoryKey, readonly RushItem[]>>;
+}) {
   const t = useTranslations("rush");
   const tTutorial = useTranslations("tutorial");
   const tEducation = useTranslations("education");
-  const [state, dispatch] = useReducer(rushReducer, initialRushState);
-  const [deck, setDeck] = useState<RushItem[]>([]);
-  const [secondsLeft, setSecondsLeft] = useState(RUSH_SECONDS);
+  const router = useRouter();
+  const retainCompletedBonus = useRushCompletionRetention();
+  const { progressState, consumeBonusOpportunity, startBonusRushRun, updateBonusRushRun } = useProgress();
+  const activeBonus = getActiveBonusForIsland(progressState, island);
+  const [runBonus] = useState<BonusOpportunity | null>(() => activeBonus ?? null);
+  const consumedRunRef = useRef(false);
+  const startedRunRef = useRef(Boolean(activeBonus?.rushRun));
+
+  const bonus = activeBonus ?? runBonus;
+  const pool = bonus ? poolsByCategory[bonus.categoryKey] ?? [] : [];
+  const run = bonus?.rushRun;
+  const [state, dispatch] = useReducer(rushReducer, run, getRushStateFromRun);
+  const [deck, setDeck] = useState<RushItem[]>(() => restoreDeck(pool, run?.deckItemIds));
+  const [secondsLeft, setSecondsLeft] = useState(() => run ? getBonusRushSecondsLeft(run.startedAt, RUSH_SECONDS) : RUSH_SECONDS);
 
   const isPlaying = state.status === "playing";
 
   // One interval for the whole run: the clock belongs to the run, not to each image.
   useEffect(() => {
-    if (!isPlaying) return;
-    const startedAt = Date.now();
+    if (!isPlaying || !run) return;
     const tick = () => {
-      const remaining = Math.max(0, RUSH_SECONDS - Math.floor((Date.now() - startedAt) / 1_000));
+      const remaining = getBonusRushSecondsLeft(run.startedAt, RUSH_SECONDS);
       setSecondsLeft(remaining);
       if (remaining === 0) dispatch({ type: "timeUp" });
     };
     tick();
     const timer = setInterval(tick, 200);
     return () => clearInterval(timer);
-  }, [isPlaying]);
+  }, [isPlaying, run]);
+
+  // The guard keeps this mounted just long enough to show the score after consumption.
+  useEffect(() => {
+    if (state.status !== "finished" || !bonus || consumedRunRef.current) return;
+    consumedRunRef.current = true;
+    if (bonus.rushRun) updateBonusRushRun(bonus.id, saveRunProgress(bonus.rushRun, state));
+    retainCompletedBonus(bonus.id);
+    consumeBonusOpportunity(bonus.id);
+  }, [bonus, consumeBonusOpportunity, retainCompletedBonus, state, updateBonusRushRun]);
 
   const beginRun = () => {
-    setDeck(dealRush(pool));
+    if (!bonus || bonus.rushRun || startedRunRef.current) return;
+    const nextDeck = dealRush(pool);
+    if (nextDeck.length === 0) return;
+    startedRunRef.current = true;
+    startBonusRushRun(bonus.id, {
+      runId: `${bonus.id}:run`,
+      startedAt: Date.now(),
+      deckItemIds: nextDeck.map((item) => item.id),
+      index: 0,
+      correct: 0,
+      wrong: 0,
+      finished: false,
+      ranOut: false
+    });
+    setDeck(nextDeck);
     setSecondsLeft(RUSH_SECONDS);
     dispatch({ type: "restart" });
     dispatch({ type: "start" });
   };
+
+  const abandonBonus = () => {
+    if (!bonus) return;
+    if (!consumedRunRef.current) {
+      consumedRunRef.current = true;
+      consumeBonusOpportunity(bonus.id);
+    }
+    router.push(getBonusDestinationPath(bonus.destination));
+  };
+
+  const answer = (saidAi: boolean, item: RushItem) => {
+    if (!bonus?.rushRun) return;
+    const action = { type: "answer" as const, saidAi, item, total: deck.length };
+    const next = rushReducer(state, action);
+    if (next === state) return;
+    dispatch(action);
+    updateBonusRushRun(bonus.id, saveRunProgress(bonus.rushRun, next));
+  };
+
+  if (!bonus) return null;
 
   if (state.status === "lobby") {
     return (
@@ -65,13 +149,13 @@ export function RushClient({ island, pool }: { island: IslandKey; pool: readonly
           {t("title")}
         </h1>
         <p className={styles.lead}>{t("lead", { seconds: RUSH_SECONDS })}</p>
-        <p className={styles.warning}>{t("notAMission")}</p>
+        <p className={styles.warning}>{t("bonusChallenge")}</p>
         <button className={styles.primary} type="button" onClick={beginRun}>
           {t("start")}
         </button>
-        <Link className={styles.secondary} href={`/island/${island}`}>
+        <button className={styles.secondary} type="button" onClick={abandonBonus}>
           {t("exit")}
-        </Link>
+        </button>
       </section>
     );
   }
@@ -89,12 +173,9 @@ export function RushClient({ island, pool }: { island: IslandKey; pool: readonly
         <p className={styles.lead}>{t("accuracy", { percent: accuracy })}</p>
         {!state.ranOut && <p className={styles.warning}>{t("ranOutOfImages")}</p>}
         <p className={styles.warning}>{tEducation("remember")}</p>
-        <button className={styles.primary} type="button" onClick={beginRun}>
-          {t("again")}
+        <button className={styles.primary} type="button" onClick={abandonBonus}>
+          {t("bonusFinish")}
         </button>
-        <Link className={styles.secondary} href={`/island/${island}`}>
-          {t("exit")}
-        </Link>
       </section>
     );
   }
@@ -137,7 +218,7 @@ export function RushClient({ island, pool }: { island: IslandKey; pool: readonly
         <button
           className={styles.answerAi}
           type="button"
-          onClick={() => dispatch({ type: "answer", saidAi: true, item, total: deck.length })}
+          onClick={() => answer(true, item)}
         >
           <Sparkles aria-hidden="true" size={18} />
           {tTutorial("answerAi")}
@@ -145,7 +226,7 @@ export function RushClient({ island, pool }: { island: IslandKey; pool: readonly
         <button
           className={styles.answerCamera}
           type="button"
-          onClick={() => dispatch({ type: "answer", saidAi: false, item, total: deck.length })}
+          onClick={() => answer(false, item)}
         >
           <Camera aria-hidden="true" size={18} />
           {tTutorial("answerCamera")}
@@ -156,6 +237,9 @@ export function RushClient({ island, pool }: { island: IslandKey; pool: readonly
         <Zap aria-hidden="true" size={13} />
         {t("hint")}
       </p>
+      <button className={styles.secondary} type="button" onClick={abandonBonus}>
+        {t("exit")}
+      </button>
     </section>
   );
 }

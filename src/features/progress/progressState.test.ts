@@ -25,6 +25,7 @@ describe("canonical level progress", () => {
     expect(initialProgressState).toEqual({
       version: PROGRESS_VERSION,
       completedLevelIds: [],
+      bonusOpportunities: [],
       rushUnlockedIslands: [],
       rankMissionCeiling: 13,
       mapOnboardingStage: "map-island",
@@ -98,6 +99,18 @@ describe("legacy migration", () => {
     expect(state.rankMissionCeiling).toBe(8);
   });
 
+  it("retains legacy Rush unlock data without turning it into a Bonus ticket", () => {
+    const state = parseProgressState({
+      version: PROGRESS_VERSION,
+      completedLevelIds: ["animals-1"],
+      rushUnlockedIslands: ["difference"]
+    });
+
+    expect(state.completedLevelIds).toEqual(["animals-1"]);
+    expect(state.rushUnlockedIslands).toEqual(["difference"]);
+    expect(state.bonusOpportunities).toEqual([]);
+  });
+
   it("migrates playerName to the canonical device-only local nickname without losing progress", () => {
     const state = parseProgressState({
       version: PROGRESS_VERSION,
@@ -112,6 +125,7 @@ describe("legacy migration", () => {
     expect(state).toEqual({
       version: PROGRESS_VERSION,
       completedLevelIds: ["animals-1"],
+      bonusOpportunities: [],
       rushUnlockedIslands: [],
       rankMissionCeiling: 8,
       mapOnboardingStage: "complete",

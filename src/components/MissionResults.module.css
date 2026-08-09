@@ -336,6 +336,53 @@
   animation: medalPop 380ms var(--r-ease) both;
 }
 
+.bonusDialog {
+  border-color: #a9700d;
+}
+
+.bonusMedal {
+  width: 3rem;
+  height: 3rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff4d6;
+  color: #a9700d;
+}
+
+.bonusChance {
+  color: var(--r-ink) !important;
+  font-size: 0.92rem;
+}
+
+.bonusActions {
+  width: 100%;
+  margin-top: 0.25rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.bonusDecline {
+  min-height: 2.8rem;
+  border: 1px solid var(--r-hairline-strong);
+  border-radius: 999px;
+  background: var(--r-paper);
+  color: var(--r-ink);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.bonusDecline:focus-visible {
+  outline: 3px solid var(--r-ink);
+  outline-offset: 3px;
+}
+
+.completionStill,
+.completionStill .completionMedal {
+  animation: none;
+}
+
 .islandComplete {
   color: var(--r-mint) !important;
 }

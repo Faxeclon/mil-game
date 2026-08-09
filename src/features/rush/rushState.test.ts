@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { contentPacks, singlePacks } from "@/content/packs/packRegistry";
 import {
   buildRushPool,
+  buildCategoryRushPool,
   dealRush,
   getRushAccuracy,
   initialRushState,
@@ -20,6 +21,15 @@ function answer(state: RushState, saidAi: boolean, item: RushItem, total = 10): 
 }
 
 describe("the pool of images", () => {
+  it("builds a Bonus pool from its category only", () => {
+    const animals = buildCategoryRushPool("animals", contentPacks, singlePacks);
+    const sports = buildCategoryRushPool("sports", contentPacks, singlePacks);
+
+    expect(animals.length).toBeGreaterThan(0);
+    expect(sports.length).toBeGreaterThan(0);
+    expect(animals.every((item) => item.src.includes("/animals/"))).toBe(true);
+    expect(sports.every((item) => item.src.includes("/sports/"))).toBe(true);
+  });
   it("takes only authored images with a definite binary answer, from both kinds of pack", () => {
     expect(pool.length).toBeGreaterThan(20);
     expect(pool.some((item) => item.isAi)).toBe(true);

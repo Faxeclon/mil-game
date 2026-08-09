@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Bird, Cat, Feather, Star, Trophy, Turtle, Wind, Rabbit, type LucideIcon } from "lucide-react";
+import { Bird, Cat, Feather, Star, Trophy, Turtle, Wind, Rabbit, Zap, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Narrator } from "@/components/Narrator";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { getMissionById } from "@/features/levels/levelModel";
 import { getSectionCompletionEvent, type SectionCompletionEvent } from "@/features/levels/levelProgress";
+import { getBonusDestinationPath, getBonusOpportunityId, type BonusDestination } from "@/features/bonus/bonusOpportunity";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import {
   apprenticeAvatarIds,
@@ -40,18 +41,33 @@ export function MissionResults() {
   const tGuardian = useTranslations("guardian");
   const accessibility = useAccessibility();
   const router = useRouter();
-  const { hydrated, lastResult, progressState, apprenticeAvatarId } = useProgress();
+  const {
+    hydrated,
+    lastResult,
+    progressState,
+    apprenticeAvatarId,
+    createBonusOpportunity,
+    activateBonusOpportunity,
+    consumeBonusOpportunity
+  } = useProgress();
   const searchParams = useSearchParams();
   const attempt = getRequestedAttempt(searchParams);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const focusedResultRef = useRef<string | null>(null);
   const navigateOnceRef = useRef(false);
   const continueRef = useRef<HTMLButtonElement>(null);
+  const bonusPlayRef = useRef<HTMLButtonElement>(null);
+  const bonusDialogRef = useRef<HTMLElement>(null);
+  const [bonusOfferOpen, setBonusOfferOpen] = useState(false);
   const result = getFreshResult(lastResult, attempt);
   const celebration: SectionCompletionEvent | null = result
     ? getSectionCompletionEvent(progressState, result.levelId)
     : null;
   const focusKey = result ? `result:${result.attemptId}` : `empty:${attempt ?? ""}`;
+  const bonusId = celebration
+    ? getBonusOpportunityId(celebration.categoryKey, celebration.completionAttemptId)
+    : null;
+  const bonus = bonusId ? progressState.bonusOpportunities.find((entry) => entry.id === bonusId) : undefined;
 
   useEffect(() => {
     if (!hydrated || focusedResultRef.current === focusKey) return;
@@ -62,6 +78,24 @@ export function MissionResults() {
   useEffect(() => {
     if (celebration) continueRef.current?.focus();
   }, [celebration]);
+
+  /* The event carries the persisted attempt id, so this remains safe across renders and reloads. */
+  useEffect(() => {
+    if (!celebration || !bonusId) return;
+    const destination: BonusDestination = celebration.destination.kind === "island"
+      ? { kind: "island", islandKey: celebration.destination.islandKey }
+      : { kind: "worlds" };
+    createBonusOpportunity({
+      id: bonusId,
+      categoryKey: celebration.categoryKey,
+      islandKey: celebration.islandKey,
+      destination
+    });
+  }, [bonusId, celebration, createBonusOpportunity]);
+
+  useEffect(() => {
+    if (bonusOfferOpen && bonus?.status === "pending") bonusPlayRef.current?.focus();
+  }, [bonus?.status, bonusOfferOpen]);
 
   if (!hydrated) {
     return (
@@ -109,8 +143,23 @@ export function MissionResults() {
   });
   const completeCelebration = () => {
     if (!celebration || navigateOnceRef.current) return;
+    if (bonus?.status === "consumed" || bonus?.status === "active") return;
+    setBonusOfferOpen(true);
+  };
+
+  const declineBonus = () => {
+    if (!bonus || bonus.status !== "pending" || navigateOnceRef.current) return;
     navigateOnceRef.current = true;
-    router.push(getContinuePath(progressState, result.levelId));
+    consumeBonusOpportunity(bonus.id);
+    router.push(getBonusDestinationPath(bonus.destination));
+  };
+
+  const playBonus = () => {
+    if (!bonus || bonus.status !== "pending" || navigateOnceRef.current) return;
+    navigateOnceRef.current = true;
+    activateBonusOpportunity(bonus.id);
+    // 3C will make the route admit only this active opportunity.
+    router.push(`/island/${bonus.islandKey}/rush`);
   };
 
   return (
@@ -238,7 +287,7 @@ export function MissionResults() {
         </Link>
       </div>
 
-      {celebration && (
+      {celebration && !bonusOfferOpen && bonus?.status !== "consumed" && bonus?.status !== "active" && (
         <div className={styles.completionOverlay}>
           <section
             aria-describedby="completion-description"
@@ -264,6 +313,51 @@ export function MissionResults() {
             <button className={styles.completionAction} onClick={completeCelebration} ref={continueRef} type="button">
               {t("continue")}
             </button>
+          </section>
+        </div>
+      )}
+
+      {bonusOfferOpen && bonus?.status === "pending" && (
+        <div className={styles.completionOverlay}>
+          <section
+            aria-describedby="bonus-description"
+            aria-labelledby="bonus-title"
+            aria-modal="true"
+            className={`${styles.completionDialog} ${styles.bonusDialog} ${accessibility.reducedMotion ? styles.completionStill : ""}`}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                event.preventDefault();
+                declineBonus();
+                return;
+              }
+              if (event.key !== "Tab") return;
+              const controls = bonusDialogRef.current?.querySelectorAll<HTMLButtonElement>("button:not([disabled])") ?? [];
+              const first = controls[0];
+              const last = controls[controls.length - 1];
+              if (!first || !last) return;
+              if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+              } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+              }
+            }}
+            ref={bonusDialogRef}
+            role="dialog"
+          >
+            <span aria-hidden="true" className={styles.bonusMedal}><Zap size={25} strokeWidth={2.5} /></span>
+            <h2 id="bonus-title">{t("bonusUnlocked")}</h2>
+            <p id="bonus-description">{t("bonusChallenge")}</p>
+            <p className={styles.bonusChance}>{t("bonusOneChance")}</p>
+            <div className={styles.bonusActions}>
+              <button className={styles.completionAction} onClick={playBonus} ref={bonusPlayRef} type="button">
+                {t("bonusPlayNow")}
+              </button>
+              <button className={styles.bonusDecline} onClick={declineBonus} type="button">
+                {t("bonusNotNow")}
+              </button>
+            </div>
           </section>
         </div>
       )}
