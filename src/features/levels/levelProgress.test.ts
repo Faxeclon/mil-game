@@ -120,15 +120,12 @@ describe("results continuation", () => {
     expect(getContinueDestination(afterAnimalsTwo, "animals-2")).toEqual({ kind: "level", levelId: "animals-3" });
   });
 
-  it("falls back to the completed level's island when no later playable level is unlocked", () => {
+  it("returns to the general map when the final playable island closes", () => {
     // Every playable mission, so there is genuinely nothing further to point at.
     const playable = missionBlueprint.filter((mission) => mission.packId).map((mission) => mission.id as LevelId);
     const allPlayable = play(...playable);
 
-    expect(getContinueDestination(allPlayable, playable.at(-1)!)).toEqual({
-      kind: "island",
-      islandKey: getIslandOfMission(playable.at(-1)!)
-    });
+    expect(getContinueDestination(allPlayable, playable.at(-1)!)).toEqual({ kind: "worlds" });
   });
 });
 
