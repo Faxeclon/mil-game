@@ -248,18 +248,6 @@
  * Roqui explains the mission in the middle of the screen. It sits above the app chrome
  * on purpose: while he is talking there is nothing else to press.
  */
-/* The idea that keeps this game from teaching suspicion. Set apart from the clues so it
-   reads as a rule about all of them rather than as one more hint about this picture. */
-.originNote {
-  max-width: 44ch;
-  margin: 0.75rem 0 0;
-  padding-top: 0.7rem;
-  border-top: 1px dashed var(--t-hairline-strong);
-  color: var(--t-ink-soft);
-  font-size: 0.85rem;
-  line-height: 1.45;
-}
-
 .intro {
   --t-ink: #1f2a44;
   --t-ink-soft: #5b6780;
@@ -804,6 +792,7 @@
   box-shadow: var(--t-shadow);
   color: var(--t-ink);
   animation: panelIn 260ms var(--t-ease) 1;
+  scroll-margin-block: 1rem;
 }
 
 .panelHeader {

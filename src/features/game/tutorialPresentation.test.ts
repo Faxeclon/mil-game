@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import englishMessages from "@/messages/en.json";
 import spanishMessages from "@/messages/es.json";
-import { introductoryTutorialPack } from "@/content/packs/packRegistry";
+import { contentPacks, introductoryTutorialPack, singlePacks } from "@/content/packs/packRegistry";
 import {
   getChoicePresentation,
   getFeedbackBlocks,
@@ -26,11 +26,14 @@ describe("getLearningStepStates", () => {
 });
 
 describe("getFeedbackBlocks", () => {
-  it("shows exactly two short blocks per round, ending with the reminder", () => {
-    for (const round of introductoryTutorialPack.rounds) {
+  it("shows only the round prompt and reminder across every active mission variant", () => {
+    const activePacks = [...Object.values(contentPacks), ...Object.values(singlePacks)];
+    for (const pack of activePacks) {
+      for (const round of pack.rounds) {
       const blocks = getFeedbackBlocks(round);
       expect(blocks).toHaveLength(2);
       expect(blocks.at(-1)?.labelKey).toBe("remember");
+      }
     }
   });
 
@@ -42,12 +45,14 @@ describe("getFeedbackBlocks", () => {
   });
 
   it("resolves every feedback key in Spanish and English", () => {
-    for (const round of introductoryTutorialPack.rounds) {
-      for (const block of getFeedbackBlocks(round)) {
-        expect(hasNestedKey(spanishMessages.tutorial, block.textKey)).toBe(true);
-        expect(hasNestedKey(englishMessages.tutorial, block.textKey)).toBe(true);
-        expect(hasNestedKey(spanishMessages.tutorial, block.labelKey)).toBe(true);
-        expect(hasNestedKey(englishMessages.tutorial, block.labelKey)).toBe(true);
+    for (const pack of [...Object.values(contentPacks), ...Object.values(singlePacks)]) {
+      for (const round of pack.rounds) {
+        for (const block of getFeedbackBlocks(round)) {
+          expect(hasNestedKey(spanishMessages.tutorial, block.textKey)).toBe(true);
+          expect(hasNestedKey(englishMessages.tutorial, block.textKey)).toBe(true);
+          expect(hasNestedKey(spanishMessages.tutorial, block.labelKey)).toBe(true);
+          expect(hasNestedKey(englishMessages.tutorial, block.labelKey)).toBe(true);
+        }
       }
     }
   });

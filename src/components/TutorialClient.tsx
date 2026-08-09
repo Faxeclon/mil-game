@@ -29,6 +29,7 @@ import type { LevelAttempt } from "@/features/progress/progressState";
 import { getResultsAttemptPath } from "@/features/results/resultNavigation";
 import { calculateLevelScore } from "@/features/scoring/levelScore";
 import { createInitialTutorialState, tutorialReducer } from "@/features/game/tutorialState";
+import { revealRoundFeedback } from "@/features/game/feedbackNavigation";
 import {
   getChoicePresentation,
   getFeedbackBlocks,
@@ -80,7 +81,7 @@ export function TutorialClient({
 }: TutorialClientProps) {
   const t = useTranslations("tutorial");
   const tEducation = useTranslations("education");
-  const { readAloud } = useAccessibility();
+  const { readAloud, reducedMotion } = useAccessibility();
   const router = useRouter();
   const { completeLevel } = useProgress();
   const [state, dispatch] = useReducer(tutorialReducer, createInitialTutorialState(showBriefing));
@@ -96,6 +97,7 @@ export function TutorialClient({
   const warningRoundRef = useRef<string | null>(null);
   const roundDeadlineRef = useRef<RoundDeadline | null>(null);
   const narrationGateRef = useRef(new InitialNarrationCountdownGate());
+  const feedbackRef = useRef<HTMLElement>(null);
 
   const briefingLines = showBriefing ? (tEducation.raw("briefing") as string[]) : (t.raw("briefing") as string[]);
   const isFinished = state.status === "completed";
@@ -112,6 +114,11 @@ export function TutorialClient({
     ? Math.trunc(secondsPerRound * 1_000)
     : null;
   const isRoundTimed = timedDurationMs !== null && isPlaying && !answerSubmitted;
+
+  useEffect(() => {
+    if (!answerSubmitted || !feedbackRef.current) return;
+    revealRoundFeedback(feedbackRef.current, reducedMotion);
+  }, [activeRoundId, answerSubmitted, reducedMotion]);
 
   const startTimedCountdown = useCallback((roundId: string) => {
     if (!narrationGateRef.current.start(roundId)) return;
@@ -549,7 +556,7 @@ export function TutorialClient({
 
         {state.answerSubmitted && (
           <div className={styles.panelDock}>
-            <section aria-labelledby="feedback-title" aria-live="polite" className={styles.panel}>
+            <section aria-labelledby="feedback-title" aria-live="polite" className={styles.panel} ref={feedbackRef} tabIndex={-1}>
               <header className={styles.panelHeader}>
                 <MascotSlot
                   alt=""
@@ -574,25 +581,13 @@ export function TutorialClient({
                   </p>
                 ))}
                 {/*
-                 * The one idea this game cannot afford to leave out: where something came
-                 * from is not the same question as whether it is true. Without it a child
-                 * learns to distrust anything a computer touched, which is the documented
-                 * way this kind of game goes wrong.
-                 *
-                 * It sits after the answer rather than before it. As an opening line it was
-                 * four sentences of adult prose in front of a seven-year-old who had not
-                 * yet seen a picture; here it lands on something they just decided.
-                 */}
-                {showBriefing && <p className={styles.originNote}>{tEducation("originVsTruth")}</p>}
-                {/*
                  * The explanation is the part that teaches; leaving it unread would mean
                  * the child can play the game without ever reaching the lesson in it.
                  */}
                 <Narrator
                   lines={[
                     selectedIsCorrect ? t("correct") : t("tryAgain"),
-                    ...feedbackBlocks.map((block) => `${t(block.labelKey)}: ${t(block.textKey)}`),
-                    showBriefing ? tEducation("originVsTruth") : null
+                    ...feedbackBlocks.map((block) => `${t(block.labelKey)}: ${t(block.textKey)}`)
                   ]}
                 />
               </div>

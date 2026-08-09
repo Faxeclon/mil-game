@@ -41,15 +41,14 @@ describe("active educational feedback", () => {
     expect(spanish.education.originVsTruth).toContain("no es automáticamente confiable");
   });
 
-  /* Said where a child reaches it, not merely present in the message files. */
-  it("shows that idea somewhere a child actually gets to", async () => {
+  it("keeps the longer origin reminder out of active round feedback", async () => {
     const { readFile } = await import("node:fs/promises");
     const source = await readFile(
       new URL("../components/TutorialClient.tsx", import.meta.url),
       "utf8"
     );
 
-    expect(source).toContain('tEducation("originVsTruth")');
+    expect(source).not.toContain('tEducation("originVsTruth")');
   });
 
   /* The briefing's job is to get a child playing, not to teach before they have seen anything. */

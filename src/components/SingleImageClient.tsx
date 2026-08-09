@@ -11,6 +11,8 @@ import type { SinglePack } from "@/content/schemas/tutorial";
 import { ActiveResponseTimer } from "@/features/game/activeResponseTimer";
 import { createInitialTutorialState, tutorialReducer } from "@/features/game/tutorialState";
 import { getFeedbackBlocks, getLearningStepStates } from "@/features/game/tutorialPresentation";
+import { revealRoundFeedback } from "@/features/game/feedbackNavigation";
+import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import type { LevelId } from "@/features/levels/levelModel";
 import { createAttemptMetadata } from "@/features/progress/attemptMetadata";
 import type { LevelAttempt } from "@/features/progress/progressState";
@@ -45,12 +47,14 @@ function monotonicNow(): number {
  */
 export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryMeta }: SingleImageClientProps) {
   const t = useTranslations("tutorial");
+  const { reducedMotion } = useAccessibility();
   const router = useRouter();
   const { completeLevel } = useProgress();
   const [state, dispatch] = useReducer(tutorialReducer, createInitialTutorialState(false));
   const [responseTimer] = useState(() => new ActiveResponseTimer());
   const completionAttemptRef = useRef<LevelAttempt | null>(null);
   const hasRecordedCompletionRef = useRef(false);
+  const feedbackRef = useRef<HTMLElement>(null);
 
   const totalRounds = pack.rounds.length;
   const isFinished = state.status === "completed";
@@ -59,6 +63,11 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
   const isPlaying = state.status === "playing";
   const activeRoundId = isPlaying ? pack.rounds[state.roundIndex].id : null;
   const answerSubmitted = isPlaying ? state.answerSubmitted : false;
+
+  useEffect(() => {
+    if (!answerSubmitted || !feedbackRef.current) return;
+    revealRoundFeedback(feedbackRef.current, reducedMotion);
+  }, [activeRoundId, answerSubmitted, reducedMotion]);
 
   useEffect(() => {
     if (!activeRoundId || answerSubmitted) return;
@@ -224,7 +233,7 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
         </div>
 
         {state.answerSubmitted ? (
-          <section aria-labelledby="single-feedback" aria-live="polite" className={styles.panel}>
+          <section aria-labelledby="single-feedback" aria-live="polite" className={styles.panel} ref={feedbackRef} tabIndex={-1}>
             <p className={styles.panelTitle} id="single-feedback">
               {isCorrect ? t("correct") : t("tryAgain")}
             </p>
