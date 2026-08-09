@@ -218,6 +218,7 @@
   border: 1px solid var(--g-hairline);
   border-radius: 1.3rem;
   background: var(--g-paper);
+  scroll-margin-block: 1rem;
 }
 
 .panelTitle {
