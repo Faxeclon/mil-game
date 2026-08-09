@@ -1,7 +1,9 @@
 import {
   primaryFeedbackKeyByGoal,
+  provenanceSourceTypes,
   singleAnswers,
   tutorialLearningGoals,
+  type ProvenanceSourceType,
   type SingleAnswer,
   type SinglePack,
   type SingleRound
@@ -47,6 +49,13 @@ function validateRound(
   assert(typeof media.src === "string" && media.src.length > 0, `${path}.media.src is required.`);
   validateKey(media.altKey, `${path}.media.altKey`, hasLocalizationKey);
   assert(isRecord(media.provenance), `${path}.media.provenance is required.`);
+  assert(
+    typeof media.provenance.sourceType === "string" &&
+      provenanceSourceTypes.includes(media.provenance.sourceType as ProvenanceSourceType),
+    `${path}.media.provenance.sourceType is invalid.`
+  );
+  assert(typeof media.provenance.sourceName === "string" && media.provenance.sourceName.length > 0, `${path}.media.provenance.sourceName is required.`);
+  assert(typeof media.provenance.licenseStatus === "string" && media.provenance.licenseStatus.length > 0, `${path}.media.provenance.licenseStatus is required.`);
   assert(typeof media.provenance.temporary === "boolean", `${path}.media.provenance.temporary is required.`);
   if (media.src.includes("/placeholders/")) {
     assert(media.provenance.temporary, `${path}.media.provenance.temporary must be true for placeholder media.`);

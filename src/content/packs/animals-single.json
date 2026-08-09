@@ -3,19 +3,77 @@
   "allowsUncertain": false,
   "rounds": [
     {
-      "id": "animals-single-round-1", "order": 1, "learningGoal": "visible-clue", "promptKey": "singleQuestion",
-      "media": { "id": "animals-3-r1-shoebill-real", "src": "/media/tutorial/animals/animals-3/r1-real.jpg", "altKey": "media.animals.shoebill.real", "origin": "camera-captured", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "temporary": false } },
-      "answer": "camera-captured", "feedback": { "observationKey": "packs.animalsSingle.r1.observation", "uncertaintyKey": "packs.animalsSingle.r1.remember" }
+      "id": "animals-single-round-1",
+      "order": 1,
+      "learningGoal": "visible-clue",
+      "promptKey": "singleQuestion",
+      "media": {
+        "id": "animals-3-r1-shoebill-real",
+        "src": "/media/tutorial/animals/animals-3/r1-real.jpg",
+        "altKey": "media.animals.shoebill.real",
+        "origin": "camera-captured",
+        "reliability": "unverified",
+        "provenance": {
+          "sourceType": "external-unverified",
+          "sourceName": "External source not yet documented",
+          "licenseStatus": "Rights status unresolved",
+          "temporary": false
+        }
+      },
+      "answer": "camera-captured",
+      "feedback": {
+        "observationKey": "packs.animalsSingle.r1.observation",
+        "uncertaintyKey": "packs.animalsSingle.r1.remember"
+      }
     },
     {
-      "id": "animals-single-round-2", "order": 2, "learningGoal": "source-and-purpose", "promptKey": "singleQuestion",
-      "media": { "id": "animals-3-r2-golden-pheasant-ai", "src": "/media/tutorial/animals/animals-3/r2-ai.png", "altKey": "media.animals.goldenPheasant.ai", "origin": "ai-generated", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "generationMethod": "Project-supplied AI-generated media", "temporary": false } },
-      "answer": "ai-generated", "feedback": { "questionKey": "packs.animalsSingle.r2.question", "uncertaintyKey": "packs.animalsSingle.r2.remember" }
+      "id": "animals-single-round-2",
+      "order": 2,
+      "learningGoal": "source-and-purpose",
+      "promptKey": "singleQuestion",
+      "media": {
+        "id": "animals-3-r2-golden-pheasant-ai",
+        "src": "/media/tutorial/animals/animals-3/r2-ai.png",
+        "altKey": "media.animals.goldenPheasant.ai",
+        "origin": "ai-generated",
+        "reliability": "unverified",
+        "provenance": {
+          "sourceType": "project-generated",
+          "sourceName": "Kikiria project team",
+          "licenseStatus": "Rights status not documented",
+          "generationMethod": "AI-generated for Kikiria",
+          "temporary": false
+        }
+      },
+      "answer": "ai-generated",
+      "feedback": {
+        "questionKey": "packs.animalsSingle.r2.question",
+        "uncertaintyKey": "packs.animalsSingle.r2.remember"
+      }
     },
     {
-      "id": "animals-single-round-3", "order": 3, "learningGoal": "uncertainty", "promptKey": "singleQuestion",
-      "media": { "id": "animals-3-r3-goats-real", "src": "/media/tutorial/animals/animals-3/r3-real.jpg", "altKey": "media.animals.goats.real", "origin": "camera-captured", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "temporary": false } },
-      "answer": "camera-captured", "feedback": { "verificationKey": "packs.animalsSingle.r3.verification", "uncertaintyKey": "packs.animalsSingle.r3.remember" }
+      "id": "animals-single-round-3",
+      "order": 3,
+      "learningGoal": "uncertainty",
+      "promptKey": "singleQuestion",
+      "media": {
+        "id": "animals-3-r3-goats-real",
+        "src": "/media/tutorial/animals/animals-3/r3-real.jpg",
+        "altKey": "media.animals.goats.real",
+        "origin": "camera-captured",
+        "reliability": "unverified",
+        "provenance": {
+          "sourceType": "external-unverified",
+          "sourceName": "External source not yet documented",
+          "licenseStatus": "Rights status unresolved",
+          "temporary": false
+        }
+      },
+      "answer": "camera-captured",
+      "feedback": {
+        "verificationKey": "packs.animalsSingle.r3.verification",
+        "uncertaintyKey": "packs.animalsSingle.r3.remember"
+      }
     }
   ]
 }

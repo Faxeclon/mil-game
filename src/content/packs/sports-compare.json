@@ -2,25 +2,148 @@
   "id": "sports-compare-v1",
   "rounds": [
     {
-      "id": "sports-compare-round-1", "order": 1, "learningGoal": "visible-clue", "promptKey": "question",
+      "id": "sports-compare-round-1",
+      "order": 1,
+      "learningGoal": "visible-clue",
+      "promptKey": "question",
       "choices": [
-        { "id": "sports-compare-1-left", "position": "left", "media": { "id": "sports-1-r1-messi-real", "src": "/media/tutorial/sports/sports-1/r1-real.png", "altKey": "media.sports.messi.real", "origin": "camera-captured", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "temporary": false } } },
-        { "id": "sports-compare-1-right", "position": "right", "media": { "id": "sports-1-r1-messi-ai", "src": "/media/tutorial/sports/sports-1/r1-ai.png", "altKey": "media.sports.messi.ai", "origin": "ai-generated", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "generationMethod": "Project-supplied AI-generated media", "temporary": false } } }
-      ], "correctChoiceId": "sports-compare-1-right", "feedback": { "observationKey": "packs.sportsCompare.r1.observation", "uncertaintyKey": "packs.sportsCompare.r1.remember" }
+        {
+          "id": "sports-compare-1-left",
+          "position": "left",
+          "media": {
+            "id": "sports-1-r1-messi-real",
+            "src": "/media/tutorial/sports/sports-1/r1-real.png",
+            "altKey": "media.sports.messi.real",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
+            }
+          }
+        },
+        {
+          "id": "sports-compare-1-right",
+          "position": "right",
+          "media": {
+            "id": "sports-1-r1-messi-ai",
+            "src": "/media/tutorial/sports/sports-1/r1-ai.png",
+            "altKey": "media.sports.messi.ai",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "generationMethod": "AI-generated media from an external source; generator not documented",
+              "temporary": false
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "sports-compare-1-right",
+      "feedback": {
+        "observationKey": "packs.sportsCompare.r1.observation",
+        "uncertaintyKey": "packs.sportsCompare.r1.remember"
+      }
     },
     {
-      "id": "sports-compare-round-2", "order": 2, "learningGoal": "source-and-purpose", "promptKey": "question",
+      "id": "sports-compare-round-2",
+      "order": 2,
+      "learningGoal": "source-and-purpose",
+      "promptKey": "question",
       "choices": [
-        { "id": "sports-compare-2-left", "position": "left", "media": { "id": "sports-1-r2-mrbeast-ai", "src": "/media/tutorial/sports/sports-1/r2-ai.png", "altKey": "media.sports.mrbeast.ai", "origin": "ai-generated", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "generationMethod": "Project-supplied AI-generated media", "temporary": false } } },
-        { "id": "sports-compare-2-right", "position": "right", "media": { "id": "sports-1-r2-lebron-real", "src": "/media/tutorial/sports/sports-1/r2-real.jpg", "altKey": "media.sports.lebron.real", "origin": "camera-captured", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "temporary": false } } }
-      ], "correctChoiceId": "sports-compare-2-left", "feedback": { "questionKey": "packs.sportsCompare.r2.question", "uncertaintyKey": "packs.sportsCompare.r2.remember" }
+        {
+          "id": "sports-compare-2-left",
+          "position": "left",
+          "media": {
+            "id": "sports-1-r2-mrbeast-ai",
+            "src": "/media/tutorial/sports/sports-1/r2-ai.png",
+            "altKey": "media.sports.mrbeast.ai",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "Rights status not documented",
+              "generationMethod": "AI-generated for Kikiria",
+              "temporary": false
+            }
+          }
+        },
+        {
+          "id": "sports-compare-2-right",
+          "position": "right",
+          "media": {
+            "id": "sports-1-r2-lebron-real",
+            "src": "/media/tutorial/sports/sports-1/r2-real.jpg",
+            "altKey": "media.sports.lebron.real",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "sports-compare-2-left",
+      "feedback": {
+        "questionKey": "packs.sportsCompare.r2.question",
+        "uncertaintyKey": "packs.sportsCompare.r2.remember"
+      }
     },
     {
-      "id": "sports-compare-round-3", "order": 3, "learningGoal": "uncertainty", "promptKey": "question",
+      "id": "sports-compare-round-3",
+      "order": 3,
+      "learningGoal": "uncertainty",
+      "promptKey": "question",
       "choices": [
-        { "id": "sports-compare-3-left", "position": "left", "media": { "id": "sports-1-r3-football-real", "src": "/media/tutorial/sports/sports-1/r3-real.jpg", "altKey": "media.sports.football.real", "origin": "camera-captured", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "temporary": false } } },
-        { "id": "sports-compare-3-right", "position": "right", "media": { "id": "sports-1-r3-football-ai", "src": "/media/tutorial/sports/sports-1/r3-ai.png", "altKey": "media.sports.football.ai", "origin": "ai-generated", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "generationMethod": "Project-supplied AI-generated media", "temporary": false } } }
-      ], "correctChoiceId": "sports-compare-3-right", "feedback": { "verificationKey": "packs.sportsCompare.r3.verification", "uncertaintyKey": "packs.sportsCompare.r3.remember" }
+        {
+          "id": "sports-compare-3-left",
+          "position": "left",
+          "media": {
+            "id": "sports-1-r3-football-real",
+            "src": "/media/tutorial/sports/sports-1/r3-real.jpg",
+            "altKey": "media.sports.football.real",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
+            }
+          }
+        },
+        {
+          "id": "sports-compare-3-right",
+          "position": "right",
+          "media": {
+            "id": "sports-1-r3-football-ai",
+            "src": "/media/tutorial/sports/sports-1/r3-ai.png",
+            "altKey": "media.sports.football.ai",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "Rights status not documented",
+              "generationMethod": "AI-generated for Kikiria",
+              "temporary": false
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "sports-compare-3-right",
+      "feedback": {
+        "verificationKey": "packs.sportsCompare.r3.verification",
+        "uncertaintyKey": "packs.sportsCompare.r3.remember"
+      }
     }
   ]
 }

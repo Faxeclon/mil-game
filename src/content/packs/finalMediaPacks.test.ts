@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import englishMessages from "@/messages/en.json";
 import spanishMessages from "@/messages/es.json";
-import { getContentPack, getSinglePack } from "./packRegistry";
+import { getContentPack, getSinglePack, reserveMediaProvenance } from "./packRegistry";
 
 type MessageTree = Record<string, unknown>;
 
@@ -37,6 +37,41 @@ describe("final media packs", () => {
         expect(round.choices.find((choice) => choice.id === round.correctChoiceId)?.media.origin).toBe("ai-generated");
       }
     }
+  });
+
+  it("records transparent provenance for every active and reserve final asset", () => {
+    const projectGenerated = new Set([
+      "/media/tutorial/animals/animals-2/r1-ai.png",
+      "/media/tutorial/animals/animals-2/r2-ai.png",
+      "/media/tutorial/animals/animals-2/r3-ai.png",
+      "/media/tutorial/animals/animals-3/r2-ai.png",
+      "/media/tutorial/sports/sports-1/r2-ai.png",
+      "/media/tutorial/sports/sports-1/r3-ai.png"
+    ]);
+    const comparisonPacks = comparisons.map(([packId]) => getContentPack(packId)!);
+    const singlePack = getSinglePack("animals-single-v1")!;
+    const activeMedia = [
+      ...comparisonPacks.flatMap((pack) => pack.rounds.flatMap((round) => round.choices.map((choice) => choice.media))),
+      ...singlePack.rounds.map((round) => round.media)
+    ];
+
+    expect(activeMedia).toHaveLength(27);
+    for (const media of activeMedia) {
+      expect(media.provenance.sourceType).toBe(
+        projectGenerated.has(media.src) ? "project-generated" : "external-unverified"
+      );
+      expect(media.provenance.temporary).toBe(false);
+    }
+    expect(reserveMediaProvenance).toEqual({
+      "/media/tutorial/animals/animals-2/reserve/raccoon-ai.jpg": expect.objectContaining({
+        sourceType: "project-generated",
+        temporary: false
+      }),
+      "/media/tutorial/animals/animals-2/reserve/raccoon-real.jpg": expect.objectContaining({
+        sourceType: "external-unverified",
+        temporary: false
+      })
+    });
   });
 
   it("uses the approved subjects in their established order", () => {

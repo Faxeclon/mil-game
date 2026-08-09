@@ -2,25 +2,148 @@
   "id": "city-basics-timed-v1",
   "rounds": [
     {
-      "id": "city-timed-round-1", "order": 1, "learningGoal": "visible-clue", "promptKey": "question",
+      "id": "city-timed-round-1",
+      "order": 1,
+      "learningGoal": "visible-clue",
+      "promptKey": "question",
       "choices": [
-        { "id": "city-timed-1-left", "position": "left", "media": { "id": "basics-2-r1-pope-real", "src": "/media/tutorial/basics/basics-2/r1-real.png", "altKey": "media.basics.pope.real", "origin": "camera-captured", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "temporary": false } } },
-        { "id": "city-timed-1-right", "position": "right", "media": { "id": "basics-2-r1-pope-ai", "src": "/media/tutorial/basics/basics-2/r1-ai.jpg", "altKey": "media.basics.pope.ai", "origin": "ai-generated", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "generationMethod": "Project-supplied AI-generated media", "temporary": false } } }
-      ], "correctChoiceId": "city-timed-1-right", "feedback": { "observationKey": "packs.cityTimed.r1.observation", "uncertaintyKey": "packs.cityTimed.r1.remember" }
+        {
+          "id": "city-timed-1-left",
+          "position": "left",
+          "media": {
+            "id": "basics-2-r1-pope-real",
+            "src": "/media/tutorial/basics/basics-2/r1-real.png",
+            "altKey": "media.basics.pope.real",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
+            }
+          }
+        },
+        {
+          "id": "city-timed-1-right",
+          "position": "right",
+          "media": {
+            "id": "basics-2-r1-pope-ai",
+            "src": "/media/tutorial/basics/basics-2/r1-ai.jpg",
+            "altKey": "media.basics.pope.ai",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "generationMethod": "AI-generated media from an external source; generator not documented",
+              "temporary": false
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "city-timed-1-right",
+      "feedback": {
+        "observationKey": "packs.cityTimed.r1.observation",
+        "uncertaintyKey": "packs.cityTimed.r1.remember"
+      }
     },
     {
-      "id": "city-timed-round-2", "order": 2, "learningGoal": "source-and-purpose", "promptKey": "question",
+      "id": "city-timed-round-2",
+      "order": 2,
+      "learningGoal": "source-and-purpose",
+      "promptKey": "question",
       "choices": [
-        { "id": "city-timed-2-left", "position": "left", "media": { "id": "basics-2-r2-kangaroo-ai", "src": "/media/tutorial/basics/basics-2/r2-ai.jpg", "altKey": "media.basics.kangaroo.ai", "origin": "ai-generated", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "generationMethod": "Project-supplied AI-generated media", "temporary": false } } },
-        { "id": "city-timed-2-right", "position": "right", "media": { "id": "basics-2-r2-kangaroo-real", "src": "/media/tutorial/basics/basics-2/r2-real.jpg", "altKey": "media.basics.kangaroo.real", "origin": "camera-captured", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "temporary": false } } }
-      ], "correctChoiceId": "city-timed-2-left", "feedback": { "questionKey": "packs.cityTimed.r2.question", "uncertaintyKey": "packs.cityTimed.r2.remember" }
+        {
+          "id": "city-timed-2-left",
+          "position": "left",
+          "media": {
+            "id": "basics-2-r2-kangaroo-ai",
+            "src": "/media/tutorial/basics/basics-2/r2-ai.jpg",
+            "altKey": "media.basics.kangaroo.ai",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "generationMethod": "AI-generated media from an external source; generator not documented",
+              "temporary": false
+            }
+          }
+        },
+        {
+          "id": "city-timed-2-right",
+          "position": "right",
+          "media": {
+            "id": "basics-2-r2-kangaroo-real",
+            "src": "/media/tutorial/basics/basics-2/r2-real.jpg",
+            "altKey": "media.basics.kangaroo.real",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "city-timed-2-left",
+      "feedback": {
+        "questionKey": "packs.cityTimed.r2.question",
+        "uncertaintyKey": "packs.cityTimed.r2.remember"
+      }
     },
     {
-      "id": "city-timed-round-3", "order": 3, "learningGoal": "uncertainty", "promptKey": "question",
+      "id": "city-timed-round-3",
+      "order": 3,
+      "learningGoal": "uncertainty",
+      "promptKey": "question",
       "choices": [
-        { "id": "city-timed-3-left", "position": "left", "media": { "id": "basics-2-r3-ronaldo-real", "src": "/media/tutorial/basics/basics-2/r3-real.png", "altKey": "media.basics.ronaldo.real", "origin": "camera-captured", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "temporary": false } } },
-        { "id": "city-timed-3-right", "position": "right", "media": { "id": "basics-2-r3-ronaldo-ai", "src": "/media/tutorial/basics/basics-2/r3-ai.png", "altKey": "media.basics.ronaldo.ai", "origin": "ai-generated", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "generationMethod": "Project-supplied AI-generated media", "temporary": false } } }
-      ], "correctChoiceId": "city-timed-3-right", "feedback": { "verificationKey": "packs.cityTimed.r3.verification", "uncertaintyKey": "packs.cityTimed.r3.remember" }
+        {
+          "id": "city-timed-3-left",
+          "position": "left",
+          "media": {
+            "id": "basics-2-r3-ronaldo-real",
+            "src": "/media/tutorial/basics/basics-2/r3-real.png",
+            "altKey": "media.basics.ronaldo.real",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
+            }
+          }
+        },
+        {
+          "id": "city-timed-3-right",
+          "position": "right",
+          "media": {
+            "id": "basics-2-r3-ronaldo-ai",
+            "src": "/media/tutorial/basics/basics-2/r3-ai.png",
+            "altKey": "media.basics.ronaldo.ai",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "generationMethod": "AI-generated media from an external source; generator not documented",
+              "temporary": false
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "city-timed-3-right",
+      "feedback": {
+        "verificationKey": "packs.cityTimed.r3.verification",
+        "uncertaintyKey": "packs.cityTimed.r3.remember"
+      }
     }
   ]
 }

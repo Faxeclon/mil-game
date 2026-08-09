@@ -1,8 +1,10 @@
 import type { MediaOrigin } from "@/types";
 import {
   primaryFeedbackKeyByGoal,
+  provenanceSourceTypes,
   tutorialLearningGoals,
   type MediaChoice,
+  type ProvenanceSourceType,
   type TutorialPack,
   type TutorialRound
 } from "@/content/schemas/tutorial";
@@ -51,7 +53,11 @@ function validateChoice(choice: unknown, path: string, hasLocalizationKey: Local
   validateKey(media.altKey, `${path}.media.altKey`, hasLocalizationKey);
   assert(mediaOrigins.includes(media.origin as MediaOrigin), `${path}.media.origin is invalid.`);
   assert(isRecord(media.provenance), `${path}.media.provenance is required.`);
-  assert(typeof media.provenance.sourceType === "string" && media.provenance.sourceType.length > 0, `${path}.media.provenance.sourceType is required.`);
+  assert(
+    typeof media.provenance.sourceType === "string" &&
+      provenanceSourceTypes.includes(media.provenance.sourceType as ProvenanceSourceType),
+    `${path}.media.provenance.sourceType is invalid.`
+  );
   assert(typeof media.provenance.sourceName === "string" && media.provenance.sourceName.length > 0, `${path}.media.provenance.sourceName is required.`);
   assert(typeof media.provenance.licenseStatus === "string" && media.provenance.licenseStatus.length > 0, `${path}.media.provenance.licenseStatus is required.`);
   assert(typeof media.provenance.temporary === "boolean", `${path}.media.provenance.temporary must be specified.`);

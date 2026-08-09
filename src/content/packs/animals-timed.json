@@ -2,25 +2,148 @@
   "id": "animals-timed-v1",
   "rounds": [
     {
-      "id": "animals-timed-round-1", "order": 1, "learningGoal": "visible-clue", "promptKey": "question",
+      "id": "animals-timed-round-1",
+      "order": 1,
+      "learningGoal": "visible-clue",
+      "promptKey": "question",
       "choices": [
-        { "id": "animals-timed-1-left", "position": "left", "media": { "id": "animals-2-r1-dog-real", "src": "/media/tutorial/animals/animals-2/r1-real.jpg", "altKey": "media.animals.dog.real", "origin": "camera-captured", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "temporary": false } } },
-        { "id": "animals-timed-1-right", "position": "right", "media": { "id": "animals-2-r1-dog-ai", "src": "/media/tutorial/animals/animals-2/r1-ai.png", "altKey": "media.animals.dog.ai", "origin": "ai-generated", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "generationMethod": "Project-supplied AI-generated media", "temporary": false } } }
-      ], "correctChoiceId": "animals-timed-1-right", "feedback": { "observationKey": "packs.animalsTimed.r1.observation", "uncertaintyKey": "packs.animalsTimed.r1.remember" }
+        {
+          "id": "animals-timed-1-left",
+          "position": "left",
+          "media": {
+            "id": "animals-2-r1-dog-real",
+            "src": "/media/tutorial/animals/animals-2/r1-real.jpg",
+            "altKey": "media.animals.dog.real",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
+            }
+          }
+        },
+        {
+          "id": "animals-timed-1-right",
+          "position": "right",
+          "media": {
+            "id": "animals-2-r1-dog-ai",
+            "src": "/media/tutorial/animals/animals-2/r1-ai.png",
+            "altKey": "media.animals.dog.ai",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "Rights status not documented",
+              "generationMethod": "AI-generated for Kikiria",
+              "temporary": false
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "animals-timed-1-right",
+      "feedback": {
+        "observationKey": "packs.animalsTimed.r1.observation",
+        "uncertaintyKey": "packs.animalsTimed.r1.remember"
+      }
     },
     {
-      "id": "animals-timed-round-2", "order": 2, "learningGoal": "source-and-purpose", "promptKey": "question",
+      "id": "animals-timed-round-2",
+      "order": 2,
+      "learningGoal": "source-and-purpose",
+      "promptKey": "question",
       "choices": [
-        { "id": "animals-timed-2-left", "position": "left", "media": { "id": "animals-2-r2-horse-ai", "src": "/media/tutorial/animals/animals-2/r2-ai.png", "altKey": "media.animals.horse.ai", "origin": "ai-generated", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "generationMethod": "Project-supplied AI-generated media", "temporary": false } } },
-        { "id": "animals-timed-2-right", "position": "right", "media": { "id": "animals-2-r2-horse-real", "src": "/media/tutorial/animals/animals-2/r2-real.jpg", "altKey": "media.animals.horse.real", "origin": "camera-captured", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "temporary": false } } }
-      ], "correctChoiceId": "animals-timed-2-left", "feedback": { "questionKey": "packs.animalsTimed.r2.question", "uncertaintyKey": "packs.animalsTimed.r2.remember" }
+        {
+          "id": "animals-timed-2-left",
+          "position": "left",
+          "media": {
+            "id": "animals-2-r2-horse-ai",
+            "src": "/media/tutorial/animals/animals-2/r2-ai.png",
+            "altKey": "media.animals.horse.ai",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "Rights status not documented",
+              "generationMethod": "AI-generated for Kikiria",
+              "temporary": false
+            }
+          }
+        },
+        {
+          "id": "animals-timed-2-right",
+          "position": "right",
+          "media": {
+            "id": "animals-2-r2-horse-real",
+            "src": "/media/tutorial/animals/animals-2/r2-real.jpg",
+            "altKey": "media.animals.horse.real",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "animals-timed-2-left",
+      "feedback": {
+        "questionKey": "packs.animalsTimed.r2.question",
+        "uncertaintyKey": "packs.animalsTimed.r2.remember"
+      }
     },
     {
-      "id": "animals-timed-round-3", "order": 3, "learningGoal": "uncertainty", "promptKey": "question",
+      "id": "animals-timed-round-3",
+      "order": 3,
+      "learningGoal": "uncertainty",
+      "promptKey": "question",
       "choices": [
-        { "id": "animals-timed-3-left", "position": "left", "media": { "id": "animals-2-r3-cat-real", "src": "/media/tutorial/animals/animals-2/r3-real.jpg", "altKey": "media.animals.cat.real", "origin": "camera-captured", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "temporary": false } } },
-        { "id": "animals-timed-3-right", "position": "right", "media": { "id": "animals-2-r3-cat-ai", "src": "/media/tutorial/animals/animals-2/r3-ai.png", "altKey": "media.animals.cat.ai", "origin": "ai-generated", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "generationMethod": "Project-supplied AI-generated media", "temporary": false } } }
-      ], "correctChoiceId": "animals-timed-3-right", "feedback": { "verificationKey": "packs.animalsTimed.r3.verification", "uncertaintyKey": "packs.animalsTimed.r3.remember" }
+        {
+          "id": "animals-timed-3-left",
+          "position": "left",
+          "media": {
+            "id": "animals-2-r3-cat-real",
+            "src": "/media/tutorial/animals/animals-2/r3-real.jpg",
+            "altKey": "media.animals.cat.real",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
+            }
+          }
+        },
+        {
+          "id": "animals-timed-3-right",
+          "position": "right",
+          "media": {
+            "id": "animals-2-r3-cat-ai",
+            "src": "/media/tutorial/animals/animals-2/r3-ai.png",
+            "altKey": "media.animals.cat.ai",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "Rights status not documented",
+              "generationMethod": "AI-generated for Kikiria",
+              "temporary": false
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "animals-timed-3-right",
+      "feedback": {
+        "verificationKey": "packs.animalsTimed.r3.verification",
+        "uncertaintyKey": "packs.animalsTimed.r3.remember"
+      }
     }
   ]
 }

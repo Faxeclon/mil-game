@@ -2,25 +2,148 @@
   "id": "animals-compare-v1",
   "rounds": [
     {
-      "id": "animals-compare-round-1", "order": 1, "learningGoal": "visible-clue", "promptKey": "question",
+      "id": "animals-compare-round-1",
+      "order": 1,
+      "learningGoal": "visible-clue",
+      "promptKey": "question",
       "choices": [
-        { "id": "animals-compare-1-left", "position": "left", "media": { "id": "animals-1-r1-sheep-real", "src": "/media/tutorial/animals/animals-1/r1-real.jpg", "altKey": "media.animals.sheep.real", "origin": "camera-captured", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "temporary": false } } },
-        { "id": "animals-compare-1-right", "position": "right", "media": { "id": "animals-1-r1-sheep-ai", "src": "/media/tutorial/animals/animals-1/r1-ai.jpg", "altKey": "media.animals.sheep.ai", "origin": "ai-generated", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "generationMethod": "Project-supplied AI-generated media", "temporary": false } } }
-      ], "correctChoiceId": "animals-compare-1-right", "feedback": { "observationKey": "packs.animalsCompare.r1.observation", "uncertaintyKey": "packs.animalsCompare.r1.remember" }
+        {
+          "id": "animals-compare-1-left",
+          "position": "left",
+          "media": {
+            "id": "animals-1-r1-sheep-real",
+            "src": "/media/tutorial/animals/animals-1/r1-real.jpg",
+            "altKey": "media.animals.sheep.real",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
+            }
+          }
+        },
+        {
+          "id": "animals-compare-1-right",
+          "position": "right",
+          "media": {
+            "id": "animals-1-r1-sheep-ai",
+            "src": "/media/tutorial/animals/animals-1/r1-ai.jpg",
+            "altKey": "media.animals.sheep.ai",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "generationMethod": "AI-generated media from an external source; generator not documented",
+              "temporary": false
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "animals-compare-1-right",
+      "feedback": {
+        "observationKey": "packs.animalsCompare.r1.observation",
+        "uncertaintyKey": "packs.animalsCompare.r1.remember"
+      }
     },
     {
-      "id": "animals-compare-round-2", "order": 2, "learningGoal": "source-and-purpose", "promptKey": "question",
+      "id": "animals-compare-round-2",
+      "order": 2,
+      "learningGoal": "source-and-purpose",
+      "promptKey": "question",
       "choices": [
-        { "id": "animals-compare-2-left", "position": "left", "media": { "id": "animals-1-r2-squirrel-ai", "src": "/media/tutorial/animals/animals-1/r2-ai.jpg", "altKey": "media.animals.squirrel.ai", "origin": "ai-generated", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "generationMethod": "Project-supplied AI-generated media", "temporary": false } } },
-        { "id": "animals-compare-2-right", "position": "right", "media": { "id": "animals-1-r2-squirrel-real", "src": "/media/tutorial/animals/animals-1/r2-real.jpg", "altKey": "media.animals.squirrel.real", "origin": "camera-captured", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "temporary": false } } }
-      ], "correctChoiceId": "animals-compare-2-left", "feedback": { "questionKey": "packs.animalsCompare.r2.question", "uncertaintyKey": "packs.animalsCompare.r2.remember" }
+        {
+          "id": "animals-compare-2-left",
+          "position": "left",
+          "media": {
+            "id": "animals-1-r2-squirrel-ai",
+            "src": "/media/tutorial/animals/animals-1/r2-ai.jpg",
+            "altKey": "media.animals.squirrel.ai",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "generationMethod": "AI-generated media from an external source; generator not documented",
+              "temporary": false
+            }
+          }
+        },
+        {
+          "id": "animals-compare-2-right",
+          "position": "right",
+          "media": {
+            "id": "animals-1-r2-squirrel-real",
+            "src": "/media/tutorial/animals/animals-1/r2-real.jpg",
+            "altKey": "media.animals.squirrel.real",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "animals-compare-2-left",
+      "feedback": {
+        "questionKey": "packs.animalsCompare.r2.question",
+        "uncertaintyKey": "packs.animalsCompare.r2.remember"
+      }
     },
     {
-      "id": "animals-compare-round-3", "order": 3, "learningGoal": "uncertainty", "promptKey": "question",
+      "id": "animals-compare-round-3",
+      "order": 3,
+      "learningGoal": "uncertainty",
+      "promptKey": "question",
       "choices": [
-        { "id": "animals-compare-3-left", "position": "left", "media": { "id": "animals-1-r3-capybara-real", "src": "/media/tutorial/animals/animals-1/r3-real.jpg", "altKey": "media.animals.capybara.real", "origin": "camera-captured", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "temporary": false } } },
-        { "id": "animals-compare-3-right", "position": "right", "media": { "id": "animals-1-r3-capybara-ai", "src": "/media/tutorial/animals/animals-1/r3-ai.jpg", "altKey": "media.animals.capybara.ai", "origin": "ai-generated", "reliability": "unverified", "provenance": { "sourceType": "project-created", "sourceName": "Project-supplied final media", "licenseStatus": "Provided to the project for use", "generationMethod": "Project-supplied AI-generated media", "temporary": false } } }
-      ], "correctChoiceId": "animals-compare-3-right", "feedback": { "verificationKey": "packs.animalsCompare.r3.verification", "uncertaintyKey": "packs.animalsCompare.r3.remember" }
+        {
+          "id": "animals-compare-3-left",
+          "position": "left",
+          "media": {
+            "id": "animals-1-r3-capybara-real",
+            "src": "/media/tutorial/animals/animals-1/r3-real.jpg",
+            "altKey": "media.animals.capybara.real",
+            "origin": "camera-captured",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "temporary": false
+            }
+          }
+        },
+        {
+          "id": "animals-compare-3-right",
+          "position": "right",
+          "media": {
+            "id": "animals-1-r3-capybara-ai",
+            "src": "/media/tutorial/animals/animals-1/r3-ai.jpg",
+            "altKey": "media.animals.capybara.ai",
+            "origin": "ai-generated",
+            "reliability": "unverified",
+            "provenance": {
+              "sourceType": "external-unverified",
+              "sourceName": "External source not yet documented",
+              "licenseStatus": "Rights status unresolved",
+              "generationMethod": "AI-generated media from an external source; generator not documented",
+              "temporary": false
+            }
+          }
+        }
+      ],
+      "correctChoiceId": "animals-compare-3-right",
+      "feedback": {
+        "verificationKey": "packs.animalsCompare.r3.verification",
+        "uncertaintyKey": "packs.animalsCompare.r3.remember"
+      }
     }
   ]
 }

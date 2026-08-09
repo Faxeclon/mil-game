@@ -8,8 +8,18 @@ export const tutorialLearningGoals = [
 
 export type TutorialLearningGoal = (typeof tutorialLearningGoals)[number];
 
+export const provenanceSourceTypes = [
+  "project-placeholder",
+  "project-created",
+  "project-generated",
+  "licensed",
+  "external-unverified"
+] as const;
+
+export type ProvenanceSourceType = (typeof provenanceSourceTypes)[number];
+
 export type ProvenanceMetadata = {
-  sourceType: "project-placeholder" | "project-created" | "licensed";
+  sourceType: ProvenanceSourceType;
   sourceName: string;
   licenseStatus: string;
   generationMethod?: string;
