@@ -1,17 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { bonusWheelSegments } from "./bonusOpportunity";
-import { bonusWheelTokens, getSegmentAtPointer, getWheelRotation, getWheelSegmentCenterAngle } from "./bonusWheelPresentation";
+import { getSegmentAtPointer, getWheelRotation, getWheelSegmentCenterAngle } from "./bonusWheelPresentation";
 
 describe("bonus wheel presentation", () => {
-  it("maps all six segments to compact, stable wheel tokens", () => {
-    expect(bonusWheelTokens).toEqual({
-      "extra-life": "🛡",
-      "double-points": "×2",
-      "extra-15": "+15s",
-      "extra-10": "+10s",
-      none: "—",
-      reroll: "↻"
-    });
+  it("keeps exactly six stable segments", () => {
+    expect(bonusWheelSegments).toHaveLength(6);
   });
 
   it("centres every persisted segment beneath the fixed pointer", () => {

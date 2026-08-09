@@ -16,8 +16,8 @@ describe("Bonus reward wheel", () => {
     expect(wheel).toContain("spinLock.current");
     expect(wheel).toContain("The store commits first");
     expect(wheel).toContain('bonus.wheel?.status === "reroll"');
-    expect(wheel).toContain("bonusWheelTokens[segment]");
-    expect(wheel).not.toContain("t(`wheelRewards.${rewardKeys[segment]}`)");
+    expect(wheel).toContain("t(`wheelSegments.${rewardKeys[segment]}`)");
+    expect(wheel).toContain('"--segment-angle"');
   });
 
   it("honours reduced motion while keeping the wheel usable", async () => {
@@ -30,15 +30,28 @@ describe("Bonus reward wheel", () => {
     expect(css).toContain("pointer::after");
   });
 
-  it("keeps full localized reward labels outside the wheel", async () => {
+  it("keeps readable localized labels in the wheel and full results after spinning", async () => {
     const wheel = await source("BonusRewardWheel.tsx");
     expect(wheel).toContain('t("wheelYourBonus")');
     expect(wheel).toContain("t(`wheelRewards.${rewardKeys[selected]}`)");
+    expect(wheel).toContain("t(`wheelRewardDetails.${rewardKeys[selected]}`)");
+    expect(spanishMessages.rush.wheelSegments).toMatchObject({
+      extraLife: "Vida", doublePoints: "x2", extra15: "+15 s", extra10: "+10 s", none: "Nada", reroll: "Otra vez"
+    });
+    expect(englishMessages.rush.wheelSegments).toMatchObject({
+      extraLife: "Life", doublePoints: "x2", extra15: "+15 s", extra10: "+10 s", none: "Nothing", reroll: "Again"
+    });
     expect(spanishMessages.rush.wheelRewards).toMatchObject({
       extraLife: "Vida extra", doublePoints: "x2 puntos", extra15: "+15 segundos", extra10: "+10 segundos", none: "Sin bonus", reroll: "Otra vuelta"
     });
     expect(englishMessages.rush.wheelRewards).toMatchObject({
       extraLife: "Extra Life", doublePoints: "Double points", extra15: "+15 seconds", extra10: "+10 seconds", none: "No bonus", reroll: "Spin again"
+    });
+    expect(spanishMessages.rush.wheelRewardDetails).toMatchObject({
+      extraLife: "Tu primer error no te penaliza.", doublePoints: "Tus puntos valen el doble.", extra15: "Tienes 15 segundos extra.", extra10: "Tienes 10 segundos extra.", none: "Esta vez juegas sin ventaja.", reroll: "¡Puedes girar una vez más!"
+    });
+    expect(englishMessages.rush.wheelRewardDetails).toMatchObject({
+      extraLife: "Your first mistake is not penalized.", doublePoints: "Your points are worth double.", extra15: "You have 15 extra seconds.", extra10: "You have 10 extra seconds.", none: "This time you play without an advantage.", reroll: "You can spin once more!"
     });
   });
 

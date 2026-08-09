@@ -1,14 +1,5 @@
 import { bonusWheelSegments, type BonusWheelSegment } from "./bonusOpportunity";
 
-export const bonusWheelTokens: Record<BonusWheelSegment, string> = {
-  "extra-life": "🛡",
-  "double-points": "×2",
-  "extra-15": "+15s",
-  "extra-10": "+10s",
-  none: "—",
-  reroll: "↻"
-};
-
 const segmentAngle = 360 / bonusWheelSegments.length;
 
 /** The angle, clockwise from the pointer at 12 o'clock, of a segment's centre. */

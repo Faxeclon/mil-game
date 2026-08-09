@@ -9,7 +9,7 @@ import {
   type BonusWheelSegment,
   type BonusWheelState
 } from "@/features/bonus/bonusOpportunity";
-import { bonusWheelTokens, getWheelRotation } from "@/features/bonus/bonusWheelPresentation";
+import { getWheelRotation } from "@/features/bonus/bonusWheelPresentation";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import styles from "./BonusRewardWheel.module.css";
@@ -83,9 +83,9 @@ export function BonusRewardWheel({ bonus, onContinue }: { bonus: BonusOpportunit
               aria-hidden="true"
               className={`${styles.segmentLabel} ${selected === segment && !spinning ? styles.segmentWinner : ""}`}
               key={segment}
-              style={{ "--segment-index": index } as CSSProperties}
+              style={{ "--segment-angle": `${index * 60 + 30}deg` } as CSSProperties}
             >
-              {bonusWheelTokens[segment]}
+              {t(`wheelSegments.${rewardKeys[segment]}`)}
             </span>
           ))}
           <span aria-hidden="true" className={styles.hub}><Gift size={25} strokeWidth={2.5} /></span>
@@ -95,6 +95,7 @@ export function BonusRewardWheel({ bonus, onContinue }: { bonus: BonusOpportunit
         <div aria-live="polite" className={styles.result}>
           <span>{t("wheelYourBonus")}</span>
           <strong><RewardIcon segment={selected} />{t(`wheelRewards.${rewardKeys[selected]}`)}</strong>
+          <p>{t(`wheelRewardDetails.${rewardKeys[selected]}`)}</p>
         </div>
       )}
       {canSpin && !spinning && (
