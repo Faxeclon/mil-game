@@ -22,6 +22,7 @@ import {
   selectProfileInStore,
   resetProgressStoreForTests,
   spinBonusWheelInStore,
+  acknowledgeAchievementCelebrationInStore,
   unlockAchievementsInStore,
   startAdultPlayInStore,
   subscribeToProgress,
@@ -196,11 +197,36 @@ describe("progress store", () => {
     const firstId = getProgressSnapshot().profiles.activeId;
     expect(unlockAchievementsInStore(["bonus-perfect-training"])).toEqual(["bonus-perfect-training"]);
     expect(unlockAchievementsInStore(["bonus-perfect-training"])).toEqual([]);
+    expect(getProgressSnapshot().state.pendingAchievementCelebrationIds).toEqual(["bonus-perfect-training"]);
     leaveLocalProfileInStore();
     markOnboardedInStore("Noa", "owl");
     expect(getProgressSnapshot().state.achievementIds).toEqual([]);
+    expect(getProgressSnapshot().state.pendingAchievementCelebrationIds).toEqual([]);
     selectProfileInStore(firstId ?? "");
     expect(getProgressSnapshot().state.achievementIds).toEqual(["bonus-perfect-training"]);
+    unsubscribe();
+  });
+
+  it("keeps a grouped celebration pending through refresh until it is acknowledged", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    markOnboardedInStore("Lu", "fox");
+
+    expect(unlockAchievementsInStore(["bonus-perfect-difference", "bonus-eggspert"]))
+      .toEqual(["bonus-perfect-difference", "bonus-eggspert"]);
+    expect(getProgressSnapshot().state.pendingAchievementCelebrationIds)
+      .toEqual(["bonus-perfect-difference", "bonus-eggspert"]);
+
+    resetProgressStoreForTests();
+    const reloaded = subscribeToProgress(() => {});
+    expect(getProgressSnapshot().state.achievementIds)
+      .toEqual(["bonus-perfect-difference", "bonus-eggspert"]);
+    expect(getProgressSnapshot().state.pendingAchievementCelebrationIds)
+      .toEqual(["bonus-perfect-difference", "bonus-eggspert"]);
+
+    acknowledgeAchievementCelebrationInStore(["bonus-perfect-difference", "bonus-eggspert"]);
+    expect(getProgressSnapshot().state.pendingAchievementCelebrationIds).toEqual([]);
+    reloaded();
     unsubscribe();
   });
 

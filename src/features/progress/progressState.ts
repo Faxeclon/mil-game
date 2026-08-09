@@ -70,6 +70,8 @@ export type ProgressState = {
   bonusOpportunities: BonusOpportunity[];
   /** Earned Bonus achievement IDs; labels and icons are always localized separately. */
   achievementIds: AchievementId[];
+  /** Earned achievements whose single celebration has not yet been acknowledged. */
+  pendingAchievementCelebrationIds: AchievementId[];
   /** Legacy v1 data retained on load; it has no effect on Bonus Rush access. */
   rushUnlockedIslands: IslandKey[];
   /** The number of missions that formed this player's rank scale when it was last earned. */
@@ -150,6 +152,7 @@ export const initialProgressState: ProgressState = {
   completedLevelIds: [],
   bonusOpportunities: [],
   achievementIds: [],
+  pendingAchievementCelebrationIds: [],
   rushUnlockedIslands: [],
   rankMissionCeiling: playableMissionCount,
   mapOnboardingStage: "map-island",
@@ -404,6 +407,9 @@ export function parseProgressState(value: unknown): ProgressState {
     : Array.isArray(value.completedLevelIds) || Array.isArray(value.completedMissionIds)
       ? Math.max(LEGACY_CATALOG_LEVEL_IDS.length, completedLevelIds.length)
       : playableMissionCount;
+  const achievementIds = parseAchievementIds(value.achievementIds);
+  const pendingAchievementCelebrationIds = parseAchievementIds(value.pendingAchievementCelebrationIds)
+    .filter((id) => achievementIds.includes(id));
 
   return {
     version: PROGRESS_VERSION,
@@ -415,7 +421,8 @@ export function parseProgressState(value: unknown): ProgressState {
       ? { sectionCompletionEvent: parseSectionCompletionEvent(value.sectionCompletionEvent) }
       : {}),
     bonusOpportunities: parseBonusOpportunities(value.bonusOpportunities),
-    achievementIds: parseAchievementIds(value.achievementIds),
+    achievementIds,
+    pendingAchievementCelebrationIds,
     rushUnlockedIslands: storedRushUnlocks,
     rankMissionCeiling: Math.max(completedLevelIds.length, storedCeiling),
     // Missing means a profile predates this optional onboarding and must not be interrupted.

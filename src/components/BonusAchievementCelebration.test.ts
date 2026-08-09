@@ -19,9 +19,10 @@ describe("Bonus achievement celebration", () => {
     const client = await readFile(join(process.cwd(), "src", "components", "RushClient.tsx"), "utf8");
     expect(client).toContain("getBonusRunAchievementIds");
     expect(client).toContain("unlockAchievements(");
-    expect(client).toContain("<BonusAchievementCelebration ids={newAchievementIds}");
-    expect(client).toContain("onContinue={leaveBonus}");
-    expect(client).toContain("setNewAchievementIds(unlocked)");
+    expect(client).toContain("<BonusAchievementCelebration ids={pendingAchievementIds}");
+    expect(client).toContain("onContinue={finishBonus}");
+    expect(client).toContain("pendingAchievementCelebrationIds");
+    expect(client).toContain("acknowledgeAchievementCelebration(pendingAchievementIds)");
   });
 
   it("has complete localized names for every stable achievement ID", () => {

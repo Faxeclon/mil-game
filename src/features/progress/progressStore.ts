@@ -145,9 +145,27 @@ export function unlockAchievementsInStore(candidates: readonly AchievementId[]):
   let unlocked: AchievementId[] = [];
   applyToActiveProgress((state) => {
     unlocked = getNewAchievementIds(state.achievementIds, candidates);
-    return unlocked.length === 0 ? state : { ...state, achievementIds: addAchievements(state.achievementIds, unlocked) };
+    return unlocked.length === 0
+      ? state
+      : {
+          ...state,
+          achievementIds: addAchievements(state.achievementIds, unlocked),
+          pendingAchievementCelebrationIds: addAchievements(state.pendingAchievementCelebrationIds, unlocked)
+        };
   });
   return unlocked;
+}
+
+/** Removes only the celebration acknowledgement; earning the achievement is permanent. */
+export function acknowledgeAchievementCelebrationInStore(ids: readonly AchievementId[]): void {
+  if (ids.length === 0) return;
+  const acknowledged = new Set(ids);
+  applyToActiveProgress((state) => {
+    const pendingAchievementCelebrationIds = state.pendingAchievementCelebrationIds.filter((id) => !acknowledged.has(id));
+    return pendingAchievementCelebrationIds.length === state.pendingAchievementCelebrationIds.length
+      ? state
+      : { ...state, pendingAchievementCelebrationIds };
+  });
 }
 
 export function markOnboardedInStore(localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId): void {

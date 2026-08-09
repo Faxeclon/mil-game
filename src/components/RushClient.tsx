@@ -22,7 +22,7 @@ import { ImageZoom } from "./ImageZoom";
 import { useRushCompletionRetention } from "./RushRouteGuard";
 import { BonusRewardWheel } from "./BonusRewardWheel";
 import { BonusAchievementCelebration } from "./BonusAchievementCelebration";
-import { getBonusRunAchievementIds, type AchievementId } from "@/features/achievements/achievementModel";
+import { getBonusRunAchievementIds } from "@/features/achievements/achievementModel";
 import { isShieldActivation, SHIELD_FEEDBACK_MS } from "@/features/rush/shieldFeedback";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import { getBonusFlowStage } from "@/features/bonus/bonusFlow";
@@ -86,7 +86,7 @@ export function RushClient({
   const { reducedMotion } = useAccessibility();
   const router = useRouter();
   const retainCompletedBonus = useRushCompletionRetention();
-  const { progressState, consumeBonusOpportunity, startBonusRushRun, updateBonusRushRun, unlockAchievements } = useProgress();
+  const { progressState, consumeBonusOpportunity, startBonusRushRun, updateBonusRushRun, unlockAchievements, acknowledgeAchievementCelebration } = useProgress();
   const activeBonus = getActiveBonusForIsland(progressState, island);
   const [runBonus] = useState<BonusOpportunity | null>(() => activeBonus ?? null);
   const consumedRunRef = useRef(false);
@@ -106,9 +106,9 @@ export function RushClient({
   // A resolved prize is already acknowledged after a refresh, while a fresh spin still
   // waits for its visible Continue action in this mounted visit.
   const [wheelAcknowledged, setWheelAcknowledged] = useState(Boolean(run || activeBonus?.wheel?.status === "resolved"));
-  const [newAchievementIds, setNewAchievementIds] = useState<AchievementId[]>([]);
   const [shieldFeedbackVisible, setShieldFeedbackVisible] = useState(false);
   const flowStage = getBonusFlowStage(bonus, wheelAcknowledged);
+  const pendingAchievementIds = progressState.pendingAchievementCelebrationIds;
 
   const isPlaying = state.status === "playing";
 
@@ -137,13 +137,11 @@ export function RushClient({
     if (bonus.rushRun) {
       const completedRun = saveRunProgress(bonus.rushRun, state, reward);
       updateBonusRushRun(bonus.id, completedRun);
-      const unlocked = unlockAchievements(getBonusRunAchievementIds({
+      unlockAchievements(getBonusRunAchievementIds({
         islandKey: bonus.islandKey,
         actualMistakeCount: completedRun.actualMistakeCount,
         reward: completedRun.reward
       }));
-      // Persist before showing the one-visit celebration; a refresh finds no new IDs.
-      if (unlocked.length > 0) window.setTimeout(() => setNewAchievementIds(unlocked), 0);
     }
   }, [bonus, reward, state, unlockAchievements, updateBonusRushRun]);
 
@@ -181,6 +179,11 @@ export function RushClient({
       consumeBonusOpportunity(bonus.id);
     }
     router.push(getBonusDestinationPath(bonus.destination));
+  };
+
+  const finishBonus = () => {
+    acknowledgeAchievementCelebration(pendingAchievementIds);
+    leaveBonus();
   };
 
   const answer = (saidAi: boolean, item: RushItem) => {
@@ -242,10 +245,10 @@ export function RushClient({
         <p className={styles.lead}>{t("accuracy", { percent: accuracy })}</p>
         {!state.ranOut && <p className={styles.warning}>{t("ranOutOfImages")}</p>}
         <p className={styles.warning}>{tEducation("remember")}</p>
-        <button className={styles.primary} type="button" onClick={leaveBonus}>
+        <button className={styles.primary} type="button" onClick={finishBonus}>
           {t("bonusFinish")}
         </button>
-        {newAchievementIds.length > 0 && <BonusAchievementCelebration ids={newAchievementIds} onContinue={leaveBonus} />}
+        {pendingAchievementIds.length > 0 && <BonusAchievementCelebration ids={pendingAchievementIds} onContinue={finishBonus} />}
       </section>
     );
   }

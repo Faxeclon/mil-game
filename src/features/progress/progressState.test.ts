@@ -27,6 +27,7 @@ describe("canonical level progress", () => {
       completedLevelIds: [],
       bonusOpportunities: [],
       achievementIds: [],
+      pendingAchievementCelebrationIds: [],
       rushUnlockedIslands: [],
       rankMissionCeiling: 13,
       mapOnboardingStage: "map-island",
@@ -111,12 +112,14 @@ describe("legacy migration", () => {
     expect(state.rushUnlockedIslands).toEqual(["difference"]);
     expect(state.bonusOpportunities).toEqual([]);
     expect(state.achievementIds).toEqual([]);
+    expect(state.pendingAchievementCelebrationIds).toEqual([]);
   });
 
   it("normalizes older progress without achievements without losing other progress", () => {
     const state = parseProgressState({ version: PROGRESS_VERSION, completedLevelIds: ["animals-1"] });
     expect(state.completedLevelIds).toEqual(["animals-1"]);
     expect(state.achievementIds).toEqual([]);
+    expect(state.pendingAchievementCelebrationIds).toEqual([]);
   });
 
   it("migrates playerName to the canonical device-only local nickname without losing progress", () => {
@@ -135,6 +138,7 @@ describe("legacy migration", () => {
       completedLevelIds: ["animals-1"],
       bonusOpportunities: [],
       achievementIds: [],
+      pendingAchievementCelebrationIds: [],
       rushUnlockedIslands: [],
       rankMissionCeiling: 8,
       mapOnboardingStage: "complete",
@@ -232,6 +236,7 @@ describe("results", () => {
     };
     const reset = resetProgressKeepingProfile(state);
     expect(reset.achievementIds).toEqual([]);
+    expect(reset.pendingAchievementCelebrationIds).toEqual([]);
     expect(reset.localNickname).toBe("Luz");
     expect(reset.guardian).toEqual(state.guardian);
   });
