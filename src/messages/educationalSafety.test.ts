@@ -85,9 +85,9 @@ describe("active educational feedback", () => {
     expect(spanish.tutorial.packs.sportsSingle.r1.remember).toContain("puede verse correcta");
   });
 
-  it("points children to source and context where those checks are available", () => {
-    expect(english.tutorial.packs.animalsSingle.r2.remember).toContain("origin and context");
-    expect(spanish.tutorial.packs.animalsSingle.r2.remember).toContain("origen y contexto");
+  it("points children to evidence beyond appearance where those checks are available", () => {
+    expect(english.tutorial.packs.cityTimed.r3.remember).toContain("evidence beyond the image");
+    expect(spanish.tutorial.packs.cityTimed.r3.remember).toContain("evidencia fuera de la imagen");
     expect(english.tutorial.packs.sportsSingle.r1.remember).toContain("Check the source");
     expect(spanish.tutorial.packs.sportsSingle.r1.remember).toContain("Revisa la fuente");
   });
