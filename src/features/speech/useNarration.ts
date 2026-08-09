@@ -179,7 +179,9 @@ export function useNarration({ onStart, onEnd }: NarrationCallbacks = {}): Narra
     [endRun, locale, speakLine, stop]
   );
 
-  useEffect(() => stopClip, [stopClip]);
+  // Every exit path has to use the same finaliser. Cleaning up only the audio clip used
+  // to skip `endRun`, which left the background music ducked after a route change.
+  useEffect(() => () => stop(), [stop]);
 
   const hasAnyClip = Boolean(manifest && manifest[locale]?.length);
   const available = canSynthesise || hasAnyClip;

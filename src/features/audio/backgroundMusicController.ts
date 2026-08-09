@@ -48,3 +48,31 @@ export function restoreBackgroundMusicAfterSpeech(audio: BackgroundMusicAudio | 
   if (!audio) return;
   audio.volume = BACKGROUND_MUSIC_VOLUME;
 }
+
+/**
+ * Owns the one global speech duck on a page. Several narrators may overlap briefly while
+ * a route or round changes; counting their active runs prevents one old cleanup from
+ * restoring the music over a newer reading.
+ */
+export class NarrationDuckingController {
+  private activeRuns = 0;
+
+  constructor(private readonly audioRef: { current: BackgroundMusicAudio | null }) {}
+
+  start(): void {
+    this.activeRuns += 1;
+    if (this.activeRuns === 1) duckBackgroundMusicForSpeech(this.audioRef.current);
+  }
+
+  stop(): void {
+    if (this.activeRuns === 0) return;
+    this.activeRuns -= 1;
+    if (this.activeRuns === 0) restoreBackgroundMusicAfterSpeech(this.audioRef.current);
+  }
+
+  restoreAll(): void {
+    if (this.activeRuns === 0) return;
+    this.activeRuns = 0;
+    restoreBackgroundMusicAfterSpeech(this.audioRef.current);
+  }
+}

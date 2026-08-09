@@ -28,6 +28,33 @@ export class RoundClosureGuard {
   }
 }
 
+/**
+ * Opens a timed round exactly once: when its automatic initial narration ends, or when
+ * the player first interacts. Later narration never reaches this gate.
+ */
+export class InitialNarrationCountdownGate {
+  private roundId: string | null = null;
+  private started = false;
+
+  prepare(roundId: string, waitsForNarration: boolean): boolean {
+    if (this.roundId !== roundId) {
+      this.roundId = roundId;
+      this.started = !waitsForNarration;
+    }
+    return this.started;
+  }
+
+  start(roundId: string): boolean {
+    if (this.roundId !== roundId || this.started) return false;
+    this.started = true;
+    return true;
+  }
+
+  hasStarted(roundId: string): boolean {
+    return this.roundId === roundId && this.started;
+  }
+}
+
 export function createRoundDeadline(
   roundId: string,
   startedAtMs: number,

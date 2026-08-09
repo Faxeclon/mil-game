@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { Accessibility, Check, ChevronLeft, Sparkles, Target, Timer as TimerIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Narrator } from "@/components/Narrator";
@@ -15,9 +15,11 @@ import {
   getDisplayedRemainingSeconds,
   getRemainingMs,
   hasTimedOut,
+  InitialNarrationCountdownGate,
   RoundClosureGuard,
   type RoundDeadline
 } from "@/features/game/roundCountdown";
+import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import { Link, useRouter } from "@/i18n/navigation";
 import type { TutorialPack } from "@/content/schemas/tutorial";
 import type { LevelId } from "@/features/levels/levelModel";
@@ -78,6 +80,7 @@ export function TutorialClient({
 }: TutorialClientProps) {
   const t = useTranslations("tutorial");
   const tEducation = useTranslations("education");
+  const { readAloud } = useAccessibility();
   const router = useRouter();
   const { completeLevel } = useProgress();
   const [state, dispatch] = useReducer(tutorialReducer, createInitialTutorialState(showBriefing));
@@ -86,10 +89,13 @@ export function TutorialClient({
   const [roundClosure] = useState(() => new RoundClosureGuard());
   const [countdown, setCountdown] = useState<CountdownState | null>(null);
   const [timerAnnouncement, setTimerAnnouncement] = useState<TimerAnnouncement | null>(null);
+  const [countdownStart, setCountdownStart] = useState<{ roundId: string; startedAt: number } | null>(null);
+  const [narrationStopSignal, setNarrationStopSignal] = useState(0);
   const completionAttemptRef = useRef<LevelAttempt | null>(null);
   const hasRecordedCompletionRef = useRef(false);
   const warningRoundRef = useRef<string | null>(null);
   const roundDeadlineRef = useRef<RoundDeadline | null>(null);
+  const narrationGateRef = useRef(new InitialNarrationCountdownGate());
 
   const briefingLines = showBriefing ? (tEducation.raw("briefing") as string[]) : (t.raw("briefing") as string[]);
   const isFinished = state.status === "completed";
@@ -107,11 +113,30 @@ export function TutorialClient({
     : null;
   const isRoundTimed = timedDurationMs !== null && isPlaying && !answerSubmitted;
 
+  const startTimedCountdown = useCallback((roundId: string) => {
+    if (!narrationGateRef.current.start(roundId)) return;
+    setCountdownStart({ roundId, startedAt: monotonicNow() });
+  }, []);
+
+  // A timed round waits only for its first automatic narration. No narration setting (or
+  // unavailable speech) opens immediately; every new round receives a fresh gate.
+  useEffect(() => {
+    if (!isPlaying || answerSubmitted || !activeRoundId || timedDurationMs === null) return;
+    if (narrationGateRef.current.prepare(activeRoundId, readAloud)) {
+      setCountdownStart((current) =>
+        current?.roundId === activeRoundId ? current : { roundId: activeRoundId, startedAt: monotonicNow() }
+      );
+      return;
+    }
+    setCountdownStart(null);
+  }, [activeRoundId, answerSubmitted, isPlaying, readAloud, timedDurationMs]);
+
   // A round starts counting only once its answer controls are interactive. Timed
   // rounds use this same moment to create their fixed deadline.
   useEffect(() => {
     if (!isPlaying || answerSubmitted || !activeRoundId) return;
-    const startedAt = monotonicNow();
+    if (timedDurationMs !== null && countdownStart?.roundId !== activeRoundId) return;
+    const startedAt = countdownStart?.roundId === activeRoundId ? countdownStart.startedAt : monotonicNow();
     responseTimer.startRound(activeRoundId, startedAt);
 
     if (timedDurationMs === null) {
@@ -179,7 +204,7 @@ export function TutorialClient({
       clearInterval(refreshTimer);
       if (deadlineTimer) clearTimeout(deadlineTimer);
     };
-  }, [activeRoundId, answerSubmitted, isPlaying, responseTimer, roundClosure, timedDurationMs]);
+  }, [activeRoundId, answerSubmitted, countdownStart, isPlaying, responseTimer, roundClosure, timedDurationMs]);
 
   // Persist the attempt before navigating so the destination can require this exact id.
   useEffect(() => {
@@ -372,7 +397,13 @@ export function TutorialClient({
            * describing the pictures to a child whose whole task is to look at them would
            * be answering the question for them.
            */}
-          <Narrator lines={[t(round.promptKey)]} />
+          <Narrator
+            key={round.id}
+            lines={[t(round.promptKey)]}
+            stopSignal={narrationStopSignal}
+            onNarrationEnd={() => startTimedCountdown(round.id)}
+            onNarrationUnavailable={() => startTimedCountdown(round.id)}
+          />
 
           <div aria-labelledby="tutorial-question" className={styles.choices} role="group">
             {round.choices.map((choice) => {
@@ -413,7 +444,13 @@ export function TutorialClient({
                   className={className}
                   disabled={state.answerSubmitted}
                   type="button"
-                  onClick={() => dispatch({ type: "select", choiceId: choice.id })}
+                  onClick={() => {
+                    if (isRoundTimed && !narrationGateRef.current.hasStarted(round.id)) {
+                      startTimedCountdown(round.id);
+                      setNarrationStopSignal((signal) => signal + 1);
+                    }
+                    dispatch({ type: "select", choiceId: choice.id });
+                  }}
                 >
                   <span className={styles.cardPosition}>{position}</span>
                   <span
