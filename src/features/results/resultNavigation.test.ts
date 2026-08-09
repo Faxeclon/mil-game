@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { completeLevel, initialProgressState } from "@/features/progress/progressState";
+import { getNextLevelInSection } from "@/features/levels/levelProgress";
+import type { LevelId } from "@/features/levels/levelModel";
 import { getContinuePath, getReplayPath, getResultsAttemptPath } from "./resultNavigation";
 
 const attempt = {
@@ -20,6 +22,12 @@ describe("result navigation", () => {
 
   it("replays the exact completed level", () => {
     expect(getReplayPath("animals-1")).toBe("/level/animals-1");
+  });
+
+  it("takes Training's sequential CTA to the general basics-2 level route, not the basics-1 tutorial alias", () => {
+    const nextTrainingLevel = getNextLevelInSection("basics-1");
+    expect(nextTrainingLevel?.id).toBe("basics-2");
+    expect(getReplayPath(nextTrainingLevel!.id as LevelId)).toBe("/level/basics-2");
   });
 
   it("continues with canonical progress and falls back to the completed level's island", () => {

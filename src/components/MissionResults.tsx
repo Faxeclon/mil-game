@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { Narrator } from "@/components/Narrator";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
-import { getIslandOfMission, getMissionById } from "@/features/levels/levelModel";
+import { getIslandOfMission, getMissionById, type LevelId } from "@/features/levels/levelModel";
 import { getNextLevelInSection, getSectionCompletionEvent, type SectionCompletionEvent } from "@/features/levels/levelProgress";
 import { getBonusDestinationPath, getBonusOpportunityId, type BonusDestination } from "@/features/bonus/bonusOpportunity";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
@@ -17,7 +17,7 @@ import {
   type ApprenticeAvatarId
 } from "@/features/profile/apprenticeAvatar";
 import { useProgress } from "@/features/progress/ProgressProvider";
-import { getContinuePath, getReplayPath } from "@/features/results/resultNavigation";
+import { getReplayPath } from "@/features/results/resultNavigation";
 import { formatElapsedTime, getFreshResult, getRequestedAttempt } from "@/features/results/resultPresentation";
 import { getScoreSummary } from "@/features/results/scoreSummary";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -257,7 +257,7 @@ export function MissionResults() {
       <p className={styles.correctRounds}>{t("correctRounds", { correct: result.correctRounds, total: result.totalRounds })}</p>
       <p className={styles.elapsedTime}>{t("elapsed", { time: elapsedTime })}</p>
 
-      <LookAskCheck sequential states={{ look: "completed", ask: "completed", check: "completed" }} />
+      {islandKey === "training" && <LookAskCheck sequential states={{ look: "completed", ask: "completed", check: "completed" }} />}
 
       {/*
         Offered once, after the very first mission: at that moment the player has something
@@ -280,7 +280,7 @@ export function MissionResults() {
 
       <div className={styles.actions}>
         {result.passed && nextLevel && (
-          <Link className={styles.primaryLink} href={getContinuePath(progressState, result.levelId)}>
+          <Link className={styles.primaryLink} href={getReplayPath(nextLevel.id as LevelId)}>
             {t("nextLevel")}
             <span className={styles.nextLevelPreview}>{t("nextLevelPreview", { level: t("levelIdentity", { category: tIslands(`categories.${nextLevel.category}.title`), number: nextLevel.order }) })}</span>
           </Link>

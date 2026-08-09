@@ -12,10 +12,17 @@ describe("section-completion Bonus offer", () => {
   it("uses pass status to offer either the sequential next level or a same-level retry", async () => {
     const screen = await source("MissionResults.tsx");
     expect(screen).toContain("result.passed ? getNextLevelInSection(result.levelId) : null");
+    expect(screen).toContain("getReplayPath(nextLevel.id as LevelId)");
+    expect(screen).not.toContain("getContinuePath");
     expect(screen).toContain('t("nextLevel")');
     expect(screen).toContain('t("tryAgain")');
     expect(screen).toContain('t("backToMap")');
     expect(screen).not.toContain('t("replay")');
+  });
+
+  it("keeps the learning-method recap exclusive to Training results", async () => {
+    const screen = await source("MissionResults.tsx");
+    expect(screen).toContain('islandKey === "training" && <LookAskCheck');
   });
 
   it("keeps pass and retry actions fully localized", () => {
