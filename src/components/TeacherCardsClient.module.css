@@ -270,11 +270,12 @@
 
 /* -------------------------------------------------------------- On paper */
 
-@page {
-  margin: 1cm;
-}
-
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 1cm;
+  }
+
   :global(html),
   :global(body) {
     width: auto;
@@ -308,22 +309,23 @@
 
   /* One student per sheet: the card fills the page, so it reads from the back row. */
   .sheet {
-    min-height: calc(100vh - 2cm);
+    width: 190mm;
+    height: 277mm;
     padding: 0;
     border: 0;
     break-after: page;
     page-break-after: always;
     break-inside: avoid;
-    page-break-after: always;
   }
 
   .sheet:last-child {
+    break-after: auto;
     page-break-after: auto;
   }
 
   .card {
-    min-height: calc(100vh - 2cm);
-    height: auto;
+    min-height: 277mm;
+    height: 277mm;
     padding: 0.5cm;
     break-inside: avoid;
   }
