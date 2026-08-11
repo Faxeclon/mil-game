@@ -6,6 +6,7 @@ import { Bird, Cat, Feather, Star, Trophy, Turtle, Wind, Rabbit, Zap, type Lucid
 import { useTranslations } from "next-intl";
 import { Narrator } from "@/components/Narrator";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
+import { LocalMedalToast } from "./LocalMedalToast";
 import { getIslandOfMission, getMissionById, type LevelId } from "@/features/levels/levelModel";
 import { getNextLevelInSection, getSectionCompletionEvent, type SectionCompletionEvent } from "@/features/levels/levelProgress";
 import { getBonusDestinationPath, getBonusOpportunityId, type BonusDestination } from "@/features/bonus/bonusOpportunity";
@@ -36,18 +37,18 @@ export function MissionResults() {
   const t = useTranslations("results");
   const tIslands = useTranslations("islands");
   const tHome = useTranslations("home");
-  const tStorage = useTranslations("storage");
-  const tGuardian = useTranslations("guardian");
   const accessibility = useAccessibility();
   const router = useRouter();
   const {
     hydrated,
     lastResult,
+    profiles,
     progressState,
     apprenticeAvatarId,
     createBonusOpportunity,
     activateBonusOpportunity,
-    consumeBonusOpportunity
+    consumeBonusOpportunity,
+    markLocalMedalNoticePresented
   } = useProgress();
   const searchParams = useSearchParams();
   const attempt = getRequestedAttempt(searchParams);
@@ -58,7 +59,11 @@ export function MissionResults() {
   const bonusPlayRef = useRef<HTMLButtonElement>(null);
   const bonusDialogRef = useRef<HTMLElement>(null);
   const [bonusOfferOpen, setBonusOfferOpen] = useState(false);
+  const [localMedalToastKey, setLocalMedalToastKey] = useState<string | null>(null);
   const result = getFreshResult(lastResult, attempt);
+  const localMedalToastCandidateKey = result?.passed && progressState.completedLevelIds.length === 1 && !progressState.localMedalNoticePresented
+    ? `${profiles.activeId ?? "none"}:${result.attemptId ?? "legacy"}`
+    : null;
   const celebration: SectionCompletionEvent | null = result
     ? getSectionCompletionEvent(progressState, result.levelId)
     : null;
@@ -95,6 +100,12 @@ export function MissionResults() {
   useEffect(() => {
     if (bonusOfferOpen && bonus?.status === "pending") bonusPlayRef.current?.focus();
   }, [bonus?.status, bonusOfferOpen]);
+
+  useEffect(() => {
+    if (!localMedalToastCandidateKey || localMedalToastKey === localMedalToastCandidateKey) return;
+    const presentationTimer = window.setTimeout(() => setLocalMedalToastKey(localMedalToastCandidateKey), 0);
+    return () => clearTimeout(presentationTimer);
+  }, [localMedalToastCandidateKey, localMedalToastKey]);
 
   if (!hydrated) {
     return (
@@ -133,8 +144,6 @@ export function MissionResults() {
       })
     : result.levelId;
   const summary = getScoreSummary(result, progressState.bestResultsByLevelId);
-  // Derived from the one canonical list, so it cannot be shown twice or get out of step.
-  const isFirstEverCompletion = result.passed && progressState.completedLevelIds.length === 1;
   const elapsedTime = formatElapsedTime(result.elapsedMs, {
     second: t("second"),
     seconds: t("seconds"),
@@ -256,23 +265,8 @@ export function MissionResults() {
       <p className={styles.correctRounds}>{t("correctRounds", { correct: result.correctRounds, total: result.totalRounds })}</p>
       <p className={styles.elapsedTime}>{t("elapsed", { time: elapsedTime })}</p>
 
-      {/*
-        Offered once, after the very first mission: at that moment the player has something
-        they would not want to lose, so the message lands instead of blocking the way in.
-        It says where the medal is kept, and marks the account as not built yet rather
-        than promising a button that does not exist.
-      */}
-      {isFirstEverCompletion && (
-        <aside className={styles.keepsake}>
-          <MascotSlot alt="" className={styles.keepsakeMascot} mood="encouraging" size={72} />
-          <p className={styles.keepsakeText}>
-            <span className={styles.keepsakeTitle}>{tStorage("roquiSaveTitle")}</span>
-            {tStorage("roquiSaveHint")}
-          </p>
-          <Link className={styles.keepsakeAction} href="/guardian">
-            {tGuardian("askAdult")}
-          </Link>
-        </aside>
+      {localMedalToastKey === `${profiles.activeId ?? "none"}:${result.attemptId ?? "legacy"}` && (
+        <LocalMedalToast onPresented={markLocalMedalNoticePresented} />
       )}
 
       <div className={styles.actions}>

@@ -14,6 +14,7 @@ import {
   authorizeGuardian,
   completeLevel,
   initialProgressState,
+  markLocalMedalNoticePresented,
   markOnboarded,
   advanceMapOnboarding,
   playAsAdult,
@@ -166,6 +167,10 @@ export function acknowledgeAchievementCelebrationInStore(ids: readonly Achieveme
       ? state
       : { ...state, pendingAchievementCelebrationIds };
   });
+}
+
+export function markLocalMedalNoticePresentedInStore(): void {
+  applyToActiveProgress(markLocalMedalNoticePresented);
 }
 
 export function markOnboardedInStore(localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId): void {

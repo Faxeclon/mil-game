@@ -43,6 +43,18 @@ describe("section-completion Bonus offer", () => {
     expect(screen).not.toContain("Comprueba");
   });
 
+  it("uses the one-time local medal toast instead of a keepsake card or guardian CTA", async () => {
+    const screen = await source("MissionResults.tsx");
+    const settings = await source("SettingsClient.tsx");
+
+    expect(screen).toContain("<LocalMedalToast onPresented={markLocalMedalNoticePresented}");
+    expect(screen).toContain("localMedalToastCandidateKey");
+    expect(screen).toContain("setLocalMedalToastKey(localMedalToastCandidateKey)");
+    expect(screen).not.toContain("styles.keepsake");
+    expect(screen).not.toContain('href="/guardian"');
+    expect(settings).toContain('href="/guardian"');
+  });
+
   it("keeps pass and retry actions fully localized", () => {
     expect(spanishMessages.results).toMatchObject({
       notPassedTitle: "¡Casi lo tienes!", nextLevel: "Siguiente nivel", tryAgain: "Intentar otra vez", backToMap: "Volver al mapa"
