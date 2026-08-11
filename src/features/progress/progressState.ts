@@ -72,6 +72,8 @@ export type ProgressState = {
   achievementIds: AchievementId[];
   /** Earned achievements whose single celebration has not yet been acknowledged. */
   pendingAchievementCelebrationIds: AchievementId[];
+  /** Whether this profile has already seen that its first medal is saved on this device. */
+  localMedalNoticePresented: boolean;
   /** Legacy v1 data retained on load; it has no effect on Bonus Rush access. */
   rushUnlockedIslands: IslandKey[];
   /** The number of missions that formed this player's rank scale when it was last earned. */
@@ -160,6 +162,7 @@ export const initialProgressState: ProgressState = {
   bonusOpportunities: [],
   achievementIds: [],
   pendingAchievementCelebrationIds: [],
+  localMedalNoticePresented: false,
   rushUnlockedIslands: [],
   rankMissionCeiling: playableMissionCount,
   mapOnboardingStage: "map-island",
@@ -198,6 +201,8 @@ export function resetProgressKeepingProfile(state: ProgressState): ProgressState
     onboarded: state.onboarded,
     // Consent belongs to the adult who gave it, not to a run of the game.
     guardian: state.guardian,
+    // This is an explanation about this profile, not progress that should repeat after a reset.
+    localMedalNoticePresented: state.localMedalNoticePresented,
     // Whose game this is survives too, or a grown-up's reset would turn them into a child.
     adultEmail: state.adultEmail
   };
@@ -420,6 +425,7 @@ export function parseProgressState(value: unknown): ProgressState {
   const achievementIds = parseAchievementIds(value.achievementIds);
   const pendingAchievementCelebrationIds = parseAchievementIds(value.pendingAchievementCelebrationIds)
     .filter((id) => achievementIds.includes(id));
+  const localMedalNoticePresented = value.localMedalNoticePresented === true;
 
   return {
     version: PROGRESS_VERSION,
@@ -433,6 +439,7 @@ export function parseProgressState(value: unknown): ProgressState {
     bonusOpportunities: parseBonusOpportunities(value.bonusOpportunities),
     achievementIds,
     pendingAchievementCelebrationIds,
+    localMedalNoticePresented,
     rushUnlockedIslands: storedRushUnlocks,
     rankMissionCeiling: Math.max(completedLevelIds.length, storedCeiling),
     // Missing means a profile predates this optional onboarding and must not be interrupted.
@@ -622,6 +629,11 @@ export function authorizeGuardian(state: ProgressState, email: string, authorize
   const guardian = grantGuardianConsent(email, authorizedOn);
   if (!guardian) return state;
   return { ...state, guardian };
+}
+
+/** This local-storage explanation is shown once per profile, not once per result. */
+export function markLocalMedalNoticePresented(state: ProgressState): ProgressState {
+  return state.localMedalNoticePresented ? state : { ...state, localMedalNoticePresented: true };
 }
 
 /** Unlinking leaves every medal untouched; only the link goes away. */

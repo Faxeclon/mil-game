@@ -6,6 +6,7 @@ import { Bird, Cat, Feather, Star, Trophy, Turtle, Wind, Rabbit, Zap, type Lucid
 import { useTranslations } from "next-intl";
 import { Narrator } from "@/components/Narrator";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
+import { LocalMedalToast } from "./LocalMedalToast";
 import { getIslandOfMission, getMissionById, type LevelId } from "@/features/levels/levelModel";
 import { getNextLevelInSection, getSectionCompletionEvent, type SectionCompletionEvent } from "@/features/levels/levelProgress";
 import { getBonusDestinationPath, getBonusOpportunityId, type BonusDestination } from "@/features/bonus/bonusOpportunity";
@@ -36,8 +37,6 @@ export function MissionResults() {
   const t = useTranslations("results");
   const tIslands = useTranslations("islands");
   const tHome = useTranslations("home");
-  const tStorage = useTranslations("storage");
-  const tGuardian = useTranslations("guardian");
   const accessibility = useAccessibility();
   const router = useRouter();
   const {
@@ -47,7 +46,8 @@ export function MissionResults() {
     apprenticeAvatarId,
     createBonusOpportunity,
     activateBonusOpportunity,
-    consumeBonusOpportunity
+    consumeBonusOpportunity,
+    markLocalMedalNoticePresented
   } = useProgress();
   const searchParams = useSearchParams();
   const attempt = getRequestedAttempt(searchParams);
@@ -256,23 +256,8 @@ export function MissionResults() {
       <p className={styles.correctRounds}>{t("correctRounds", { correct: result.correctRounds, total: result.totalRounds })}</p>
       <p className={styles.elapsedTime}>{t("elapsed", { time: elapsedTime })}</p>
 
-      {/*
-        Offered once, after the very first mission: at that moment the player has something
-        they would not want to lose, so the message lands instead of blocking the way in.
-        It says where the medal is kept, and marks the account as not built yet rather
-        than promising a button that does not exist.
-      */}
-      {isFirstEverCompletion && (
-        <aside className={styles.keepsake}>
-          <MascotSlot alt="" className={styles.keepsakeMascot} mood="encouraging" size={72} />
-          <p className={styles.keepsakeText}>
-            <span className={styles.keepsakeTitle}>{tStorage("roquiSaveTitle")}</span>
-            {tStorage("roquiSaveHint")}
-          </p>
-          <Link className={styles.keepsakeAction} href="/guardian">
-            {tGuardian("askAdult")}
-          </Link>
-        </aside>
+      {isFirstEverCompletion && !progressState.localMedalNoticePresented && (
+        <LocalMedalToast onPresented={markLocalMedalNoticePresented} />
       )}
 
       <div className={styles.actions}>

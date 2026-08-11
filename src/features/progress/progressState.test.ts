@@ -10,6 +10,7 @@ import {
   parseProgressState,
   PROGRESS_VERSION,
   resetProgressKeepingProfile,
+  markLocalMedalNoticePresented,
   resetProgressState
 } from "./progressState";
 
@@ -29,6 +30,7 @@ describe("canonical level progress", () => {
       bonusOpportunities: [],
       achievementIds: [],
       pendingAchievementCelebrationIds: [],
+      localMedalNoticePresented: false,
       rushUnlockedIslands: [],
       rankMissionCeiling: 13,
       mapOnboardingStage: "map-island",
@@ -114,6 +116,7 @@ describe("legacy migration", () => {
     expect(state.bonusOpportunities).toEqual([]);
     expect(state.achievementIds).toEqual([]);
     expect(state.pendingAchievementCelebrationIds).toEqual([]);
+    expect(state.localMedalNoticePresented).toBe(false);
   });
 
   it("normalizes older progress without achievements without losing other progress", () => {
@@ -140,6 +143,7 @@ describe("legacy migration", () => {
       bonusOpportunities: [],
       achievementIds: [],
       pendingAchievementCelebrationIds: [],
+      localMedalNoticePresented: false,
       rushUnlockedIslands: [],
       rankMissionCeiling: 8,
       mapOnboardingStage: "complete",
@@ -272,8 +276,17 @@ describe("results", () => {
     const reset = resetProgressKeepingProfile(state);
     expect(reset.achievementIds).toEqual([]);
     expect(reset.pendingAchievementCelebrationIds).toEqual([]);
+    expect(reset.localMedalNoticePresented).toBe(false);
     expect(reset.localNickname).toBe("Luz");
     expect(reset.guardian).toEqual(state.guardian);
+  });
+
+  it("keeps the local medal explanation acknowledged across a progress reset", () => {
+    const acknowledged = markLocalMedalNoticePresented(initialProgressState);
+
+    expect(acknowledged.localMedalNoticePresented).toBe(true);
+    expect(markLocalMedalNoticePresented(acknowledged)).toBe(acknowledged);
+    expect(resetProgressKeepingProfile(acknowledged).localMedalNoticePresented).toBe(true);
   });
 
   it("ignores an invalid runtime level id", () => {
