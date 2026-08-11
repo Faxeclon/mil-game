@@ -26,9 +26,11 @@ describe("HomeLanding continuation", () => {
     expect(englishMessages.home.hubNextHint).toBe("Carry on with {category}.");
     expect(styles).not.toContain(".hubContinueDestination");
     expect(styles).toContain(".hub .bubble");
-    expect(styles).toContain("padding: clamp(1.05rem, 4vw, 1.45rem)");
+    expect(styles).toContain("padding: clamp(1.125rem, 4.5vw, 1.25rem)");
     expect(styles).toContain("margin: .7rem auto 0");
+    expect(styles).toContain("bottom: clamp(2.25rem, 30%, 3.4rem)");
     expect(styles).toContain("min-height: 2.75rem");
+    expect(styles).toContain("padding: 0.5rem 1.1rem");
   });
 
   it("groups title, island, percentage, and mission count in one progress unit", async () => {

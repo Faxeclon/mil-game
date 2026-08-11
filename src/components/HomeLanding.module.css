@@ -475,20 +475,25 @@
 
 .hub .bubble {
   margin-bottom: 0;
-  padding: clamp(1.05rem, 4vw, 1.45rem) clamp(1.1rem, 4.5vw, 1.7rem);
+  padding: clamp(1.125rem, 4.5vw, 1.25rem) clamp(1.1rem, 4.5vw, 1.7rem);
+}
+
+/* Keep Roqui's speech tail aimed at the face as the welcome bubble grows or shrinks. */
+.hub .bubble::after {
+  bottom: clamp(2.25rem, 30%, 3.4rem);
 }
 
 .hubContinue {
-  margin-top: .95rem;
+  margin-top: .75rem;
   display: grid;
   justify-items: start;
-  gap: .6rem;
+  gap: .5rem;
 }
 
 /* The welcome action stays the main route forward without competing with Roqui. */
 .hubContinueAction {
   min-height: 2.75rem;
-  padding: 0.58rem 1.45rem;
+  padding: 0.5rem 1.1rem;
 }
 
 .hubHeader {
