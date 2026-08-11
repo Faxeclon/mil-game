@@ -1,9 +1,10 @@
 "use client";
 
-import { Check, ChevronLeft, Medal, Star } from "lucide-react";
+import { Check, ChevronLeft, Egg, Film, LockKeyhole, Medal, Search, ShieldCheck, Star, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Narrator } from "@/components/Narrator";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
+import { achievementDefinitions, type AchievementIcon } from "@/features/achievements/achievementModel";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import {
   getPlayerRank,
@@ -33,6 +34,14 @@ const TITLE_STARS: Readonly<Record<(typeof titleKeys)[number], number>> = {
   master: 13
 };
 
+const ACHIEVEMENT_ICONS: Readonly<Record<AchievementIcon, LucideIcon>> = {
+  star: Star,
+  search: Search,
+  detective: ShieldCheck,
+  film: Film,
+  egg: Egg
+};
+
 /**
  * What there is to earn, and where the player stands in it.
  *
@@ -45,9 +54,12 @@ const TITLE_STARS: Readonly<Record<(typeof titleKeys)[number], number>> = {
  */
 export function RanksClient() {
   const t = useTranslations("rank");
+  const tAchievements = useTranslations("achievements");
   const tHome = useTranslations("home");
+  const tIslands = useTranslations("islands");
   const { hydrated, progressState } = useProgress();
   const rank = getPlayerRank(progressState);
+  const earnedAchievementIds = new Set(progressState.achievementIds);
 
   const starsForPercent = (percent: number) => Math.ceil((percent / 100) * rank.maxStars);
 
@@ -61,9 +73,9 @@ export function RanksClient() {
       <MascotSlot alt={tHome("mascotAlt")} className={styles.mascot} mood="celebrating" priority />
       {/* The title and how it is earned. The ladder itself is a list of names and numbers,
           which a synthesiser reads as a drone, so it is left on the page. */}
-      <Narrator lines={[t("ladderTitle"), t("howItWorks")]} />
+      <Narrator lines={[t("progressTitle"), t("howItWorks")]} />
 
-      <h1 className={styles.title}>{t("ladderTitle")}</h1>
+      <h1 className={styles.title}>{t("progressTitle")}</h1>
       <p className={styles.lead}>{t("howItWorks")}</p>
 
       <p className={styles.standing}>
@@ -73,7 +85,7 @@ export function RanksClient() {
 
       <section aria-labelledby="ranks-tiers" className={styles.group}>
         <h2 className={styles.groupTitle} id="ranks-tiers">
-          {t("tiersTitle")}
+          {t("rankTitle")}
         </h2>
 
         <ul className={styles.list}>
@@ -104,7 +116,7 @@ export function RanksClient() {
         </ul>
       </section>
 
-      <section aria-labelledby="ranks-titles" className={styles.group}>
+      <section aria-labelledby="ranks-titles" className={styles.group} id="titles">
         <h2 className={styles.groupTitle} id="ranks-titles">
           {t("titlesTitle")}
         </h2>
@@ -114,9 +126,13 @@ export function RanksClient() {
           {titleKeys.map((key) => {
             const needed = TITLE_STARS[key];
             const isCurrent = hydrated && rank.titleKey === key;
+            const isReached = hydrated && rank.stars >= needed;
 
             return (
-              <li className={`${styles.row} ${isCurrent ? styles.rowNow : ""}`} key={key}>
+              <li
+                className={`${styles.row} ${isCurrent ? styles.rowNow : isReached ? styles.rowReached : styles.rowLocked}`}
+                key={key}
+              >
                 <span className={styles.starCount}>{needed}</span>
                 <span className={styles.rowText}>
                   <span className={styles.rowName}>{t(`titles.${key}`)}</span>
@@ -124,7 +140,59 @@ export function RanksClient() {
                     {needed === 0 ? t("titleStart") : t("tierNeeds", { stars: needed })}
                   </span>
                 </span>
-                {isCurrent && <span className={styles.now}>{t("titleNow")}</span>}
+                {isCurrent ? (
+                  <span className={styles.now}>{t("titleNow")}</span>
+                ) : isReached ? (
+                  <span className={styles.statusReached}>
+                    <Check aria-hidden="true" size={15} strokeWidth={3} />
+                    {t("titleReached")}
+                  </span>
+                ) : (
+                  <span className={styles.statusLocked}>
+                    <LockKeyhole aria-hidden="true" size={14} />
+                    {t("titleLocked")}
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
+      <section aria-labelledby="ranks-achievements" className={styles.group}>
+        <h2 className={styles.groupTitle} id="ranks-achievements">
+          {tAchievements("collectionTitle")}
+        </h2>
+        <p className={styles.groupLead}>
+          {tAchievements("collectionCount", {
+            count: earnedAchievementIds.size,
+            total: achievementDefinitions.length
+          })}
+        </p>
+
+        <ul className={styles.list}>
+          {achievementDefinitions.map((achievement) => {
+            const earned = earnedAchievementIds.has(achievement.id);
+            const Icon = ACHIEVEMENT_ICONS[achievement.icon];
+            const hint = achievement.collectionHint === "perfect-island" && "islandKey" in achievement
+              ? tAchievements("collectionHints.perfectIsland", {
+                  island: tIslands(`list.${achievement.islandKey}.title`)
+                })
+              : tAchievements("collectionHints.perfectDoublePoints");
+
+            return (
+              <li className={`${styles.row} ${earned ? styles.rowReached : styles.rowLocked}`} key={achievement.id}>
+                <span className={`${styles.achievementIcon} ${earned ? styles.achievementEarned : styles.achievementLocked}`}>
+                  {earned ? <Icon aria-hidden="true" size={20} /> : <LockKeyhole aria-hidden="true" size={19} />}
+                </span>
+                <span className={styles.rowText}>
+                  <span className={styles.rowName}>{tAchievements(`names.${achievement.messageKey}`)}</span>
+                  <span className={styles.rowDetail}>{hint}</span>
+                </span>
+                <span className={earned ? styles.statusReached : styles.statusLocked}>
+                  {earned ? <Check aria-hidden="true" size={15} strokeWidth={3} /> : <LockKeyhole aria-hidden="true" size={14} />}
+                  {earned ? tAchievements("unlocked") : tAchievements("locked")}
+                </span>
               </li>
             );
           })}

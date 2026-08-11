@@ -767,6 +767,23 @@
   color: #b8380a;
 }
 
+.identityLink {
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+.identityLink:hover {
+  border-color: #efb9a8;
+  background: #fff8f5;
+}
+
+.identityLink:focus-visible {
+  outline: 3px solid var(--h-focus, #236bd6);
+  outline-offset: 3px;
+}
+
 /*
  * The label above the title exists so the title means something.
  *

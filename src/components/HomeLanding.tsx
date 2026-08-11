@@ -182,7 +182,11 @@ export function HomeLanding() {
           <div className={styles.progress}>
             <div className={styles.progressHeading}>
               <span className={styles.progressLabel}>{t("progressLabel")}</span>
-              <p className={styles.identity}>
+              <Link
+                aria-label={`${tRank("titleNow")}: ${tRank(`titles.${rank.titleKey}`)}`}
+                className={`${styles.identity} ${styles.identityLink}`}
+                href="/ranks#titles"
+              >
                 <span
                   aria-label={t("profileAvatarAria", {
                     name: apprenticeNames[apprenticeAvatarIds.indexOf(hubApprenticeAvatarId)]
@@ -201,7 +205,7 @@ export function HomeLanding() {
                     <Check aria-hidden="true" size={13} strokeWidth={3.5} />
                   </span>
                 )}
-              </p>
+              </Link>
             </div>
             <div className={styles.progressOverview}>
               {activeIsland && <span className={styles.progressIsland}>{tIslands(`list.${activeIsland}.title`)}</span>}

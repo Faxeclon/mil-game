@@ -2,11 +2,11 @@ import type { IslandKey } from "@/features/levels/levelModel";
 import type { BonusWheelReward } from "@/features/bonus/bonusOpportunity";
 
 export const achievementDefinitions = [
-  { id: "bonus-perfect-training", islandKey: "training", messageKey: "starCadet", icon: "star" },
-  { id: "bonus-perfect-difference", islandKey: "difference", messageKey: "detailHunter", icon: "search" },
-  { id: "bonus-perfect-source", islandKey: "source", messageKey: "sourceSleuth", icon: "detective" },
-  { id: "bonus-perfect-videos", islandKey: "videos", messageKey: "directorsEye", icon: "film" },
-  { id: "bonus-eggspert", messageKey: "eggspert", icon: "egg" }
+  { id: "bonus-perfect-training", islandKey: "training", messageKey: "starCadet", icon: "star", collectionHint: "perfect-island" },
+  { id: "bonus-perfect-difference", islandKey: "difference", messageKey: "detailHunter", icon: "search", collectionHint: "perfect-island" },
+  { id: "bonus-perfect-source", islandKey: "source", messageKey: "sourceSleuth", icon: "detective", collectionHint: "perfect-island" },
+  { id: "bonus-perfect-videos", islandKey: "videos", messageKey: "directorsEye", icon: "film", collectionHint: "perfect-island" },
+  { id: "bonus-eggspert", messageKey: "eggspert", icon: "egg", collectionHint: "perfect-double-points" }
 ] as const;
 
 export type AchievementDefinition = (typeof achievementDefinitions)[number];

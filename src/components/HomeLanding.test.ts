@@ -42,6 +42,16 @@ describe("HomeLanding continuation", () => {
     expect(component).not.toContain('className={styles.hubStatDetail}');
   });
 
+  it("links the compact title chip to the titles collection while the rank card still opens the rank page", async () => {
+    const component = await readFile(componentPath, "utf8");
+    const styles = await readFile(stylesPath, "utf8");
+
+    expect(component).toContain('href="/ranks#titles"');
+    expect(component).toContain('className={`${styles.identity} ${styles.identityLink}`}');
+    expect(component).toContain('href="/ranks"');
+    expect(styles).toContain(".identityLink:focus-visible");
+  });
+
   it("keeps the child hub focused while adult and guardian entry remain available from settings", async () => {
     const component = await readFile(componentPath, "utf8");
     const settings = await readFile(settingsPath, "utf8");
