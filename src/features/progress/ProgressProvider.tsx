@@ -22,6 +22,7 @@ import {
   updateBonusRushRunInStore,
   unlockAchievementsInStore,
   acknowledgeAchievementCelebrationInStore,
+  markLocalMedalNoticePresentedInStore,
   getProgressSnapshot,
   markOnboardedInStore,
   advanceMapOnboardingInStore,
@@ -60,6 +61,7 @@ export type ProgressApi = {
   updateBonusRushRun: (id: string, run: BonusRushRun) => void;
   unlockAchievements: (candidates: readonly AchievementId[]) => AchievementId[];
   acknowledgeAchievementCelebration: (ids: readonly AchievementId[]) => void;
+  markLocalMedalNoticePresented: () => void;
   localNickname: string | null;
   apprenticeAvatarId: ApprenticeAvatarId | null;
   markOnboarded: (localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId) => void;
@@ -109,6 +111,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       updateBonusRushRun: updateBonusRushRunInStore,
       unlockAchievements: unlockAchievementsInStore,
       acknowledgeAchievementCelebration: acknowledgeAchievementCelebrationInStore,
+      markLocalMedalNoticePresented: markLocalMedalNoticePresentedInStore,
       markOnboarded: markOnboardedInStore,
       startAdultPlay: startAdultPlayInStore,
       advanceMapOnboarding: advanceMapOnboardingInStore,

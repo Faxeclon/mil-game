@@ -28,8 +28,9 @@ describe("telling the player where their progress lives", () => {
         "guestBadgeAria",
         "guestNotice",
         "guestDetail",
-        "roquiSaveTitle",
-        "roquiSaveHint",
+        "medalSavedTitle",
+        "medalSavedDescription",
+        "dismiss",
         "accountSoon"
       ] as const) {
         expect(t(key), `${locale}.${key}`).toEqual(expect.any(String));
@@ -54,12 +55,12 @@ describe("telling the player where their progress lives", () => {
 
       expect(t("guestBadge").toLowerCase()).toMatch(/perfil|profile/);
       expect(t("guestNotice").toLowerCase()).toMatch(/activo|active/);
-      expect(t("roquiSaveHint").toLowerCase()).not.toMatch(/account|cuenta/);
+      expect(t("medalSavedDescription").toLowerCase()).not.toMatch(/account|cuenta/);
     }
   });
 });
 
-describe("when Roqui offers to keep the medal", () => {
+describe("when the first local medal is saved", () => {
   it("is the moment the very first mission is finished, never before", () => {
     expect(initialProgressState.completedLevelIds).toHaveLength(0);
 

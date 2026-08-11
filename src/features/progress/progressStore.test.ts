@@ -17,6 +17,7 @@ import {
   getServerProgressSnapshot,
   leaveLocalProfileInStore,
   markOnboardedInStore,
+  markLocalMedalNoticePresentedInStore,
   removeProfileInStore,
   resetProgressInStore,
   selectProfileInStore,
@@ -205,6 +206,23 @@ describe("progress store", () => {
     expect(getProgressSnapshot().state.pendingAchievementCelebrationIds).toEqual([]);
     selectProfileInStore(firstId ?? "");
     expect(getProgressSnapshot().state.achievementIds).toEqual(["bonus-perfect-training"]);
+    unsubscribe();
+  });
+
+  it("keeps the local medal notice acknowledgement isolated to the profile that received it", () => {
+    stubStorage();
+    const unsubscribe = subscribeToProgress(() => {});
+    markOnboardedInStore("Lu", "fox");
+    const firstId = getProgressSnapshot().profiles.activeId;
+    markLocalMedalNoticePresentedInStore();
+    expect(getProgressSnapshot().state.localMedalNoticePresented).toBe(true);
+
+    leaveLocalProfileInStore();
+    markOnboardedInStore("Noa", "owl");
+    expect(getProgressSnapshot().state.localMedalNoticePresented).toBe(false);
+
+    selectProfileInStore(firstId ?? "");
+    expect(getProgressSnapshot().state.localMedalNoticePresented).toBe(true);
     unsubscribe();
   });
 
