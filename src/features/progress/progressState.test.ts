@@ -124,6 +124,7 @@ describe("legacy migration", () => {
     expect(state.completedLevelIds).toEqual(["animals-1"]);
     expect(state.achievementIds).toEqual([]);
     expect(state.pendingAchievementCelebrationIds).toEqual([]);
+    expect(state.localMedalNoticePresented).toBe(false);
   });
 
   it("migrates playerName to the canonical device-only local nickname without losing progress", () => {
