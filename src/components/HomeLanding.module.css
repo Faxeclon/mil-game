@@ -484,6 +484,23 @@
   bottom: clamp(2.25rem, 30%, 3.4rem);
 }
 
+.hubDialogContent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.hubDialogContent .line,
+.hubDialogContent .hubWelcome {
+  align-self: stretch;
+  text-align: left;
+}
+
+.hubDialogContent .line {
+  margin: 0;
+}
+
 .hubContinue {
   margin-top: .75rem;
   display: grid;

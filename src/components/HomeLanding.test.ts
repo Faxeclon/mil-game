@@ -13,6 +13,7 @@ describe("HomeLanding continuation", () => {
     const component = await readFile(componentPath, "utf8");
 
     expect(component).toContain('className={styles.hubContinue}');
+    expect(component).toContain('className={styles.hubDialogContent}');
     expect(component).toContain('className={`${styles.primaryAction} ${styles.hubContinueAction}`}');
     expect(component).toContain('href={`/level/${nextMission.id}`}');
     expect(component).not.toContain("hubNextDestination");
@@ -34,6 +35,8 @@ describe("HomeLanding continuation", () => {
     expect(styles).toContain("min-height: 2.75rem");
     expect(styles).toContain("padding: 0.5rem 1.1rem");
     expect(styles).toContain("align-items: start");
+    expect(styles).toContain("flex-direction: column");
+    expect(styles).toContain("align-items: flex-start");
   });
 
   it("groups title, island, percentage, and mission count in one progress unit", async () => {

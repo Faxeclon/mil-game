@@ -155,25 +155,27 @@ export function HomeLanding() {
           />
           <div className={styles.mascotRow}>
             <div className={styles.bubble}>
-              <h1 className={styles.line} id="hub-title">
-                {savedLocalNickname ? t("hubGreetingNamed", { name: savedLocalNickname }) : t("hubGreeting")}
-              </h1>
-              <p className={styles.hubWelcome}>
-                {nextMission
-                  ? t("hubNextHint", { category: tIslands(`categories.${nextMission.category}.title`) })
-                  : t("hubAllDone")}
-              </p>
-              <div className={styles.hubContinue}>
-                {nextMission ? (
-                  <Link className={`${styles.primaryAction} ${styles.hubContinueAction}`} href={`/level/${nextMission.id}`}>
-                    <Play aria-hidden="true" size={17} fill="currentColor" />
-                    {t("hubContinue")}
-                  </Link>
-                ) : (
-                  <Link className={`${styles.primaryAction} ${styles.hubContinueAction}`} href="/worlds">
-                    {t("hubMap")}
-                  </Link>
-                )}
+              <div className={styles.hubDialogContent}>
+                <h1 className={styles.line} id="hub-title">
+                  {savedLocalNickname ? t("hubGreetingNamed", { name: savedLocalNickname }) : t("hubGreeting")}
+                </h1>
+                <p className={styles.hubWelcome}>
+                  {nextMission
+                    ? t("hubNextHint", { category: tIslands(`categories.${nextMission.category}.title`) })
+                    : t("hubAllDone")}
+                </p>
+                <div className={styles.hubContinue}>
+                  {nextMission ? (
+                    <Link className={`${styles.primaryAction} ${styles.hubContinueAction}`} href={`/level/${nextMission.id}`}>
+                      <Play aria-hidden="true" size={17} fill="currentColor" />
+                      {t("hubContinue")}
+                    </Link>
+                  ) : (
+                    <Link className={`${styles.primaryAction} ${styles.hubContinueAction}`} href="/worlds">
+                      {t("hubMap")}
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
             <MascotSlot alt={t("mascotAlt")} className={styles.mascot} mood="welcoming" priority />
