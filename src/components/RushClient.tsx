@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { Camera, Shield, Sparkles, Timer, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
@@ -22,7 +22,7 @@ import { ImageZoom } from "./ImageZoom";
 import { useRushCompletionRetention } from "./RushRouteGuard";
 import { BonusRewardWheel } from "./BonusRewardWheel";
 import { BonusAchievementCelebration } from "./BonusAchievementCelebration";
-import { getBonusRunAchievementIds } from "@/features/achievements/achievementModel";
+import { getBonusRunAchievementIds, type AchievementId } from "@/features/achievements/achievementModel";
 import { isShieldActivation, SHIELD_FEEDBACK_MS } from "@/features/rush/shieldFeedback";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import { getBonusFlowStage } from "@/features/bonus/bonusFlow";
@@ -107,6 +107,7 @@ export function RushClient({
   // waits for its visible Continue action in this mounted visit.
   const [wheelAcknowledged, setWheelAcknowledged] = useState(Boolean(run || activeBonus?.wheel?.status === "resolved"));
   const [shieldFeedbackVisible, setShieldFeedbackVisible] = useState(false);
+  const [achievementToastIds, setAchievementToastIds] = useState<AchievementId[]>([]);
   const flowStage = getBonusFlowStage(bonus, wheelAcknowledged);
   const pendingAchievementIds = progressState.pendingAchievementCelebrationIds;
 
@@ -115,6 +116,14 @@ export function RushClient({
   useEffect(() => () => {
     if (shieldFeedbackTimerRef.current) clearTimeout(shieldFeedbackTimerRef.current);
   }, []);
+
+  useEffect(() => {
+    if (state.status !== "finished" || pendingAchievementIds.length === 0) return;
+    const presentationTimer = window.setTimeout(() => {
+      setAchievementToastIds((current) => current.length > 0 ? current : [...pendingAchievementIds]);
+    }, 0);
+    return () => clearTimeout(presentationTimer);
+  }, [pendingAchievementIds, state.status]);
 
   // One interval for the whole run: the clock belongs to the run, not to each image.
   useEffect(() => {
@@ -182,9 +191,12 @@ export function RushClient({
   };
 
   const finishBonus = () => {
-    acknowledgeAchievementCelebration(pendingAchievementIds);
     leaveBonus();
   };
+
+  const markAchievementToastPresented = useCallback((ids: readonly AchievementId[]) => {
+    acknowledgeAchievementCelebration(ids);
+  }, [acknowledgeAchievementCelebration]);
 
   const answer = (saidAi: boolean, item: RushItem) => {
     if (!bonus?.rushRun || shieldFeedbackLockRef.current) return;
@@ -248,7 +260,7 @@ export function RushClient({
         <button className={styles.primary} type="button" onClick={finishBonus}>
           {t("bonusFinish")}
         </button>
-        {pendingAchievementIds.length > 0 && <BonusAchievementCelebration ids={pendingAchievementIds} onContinue={finishBonus} />}
+        {achievementToastIds.length > 0 && <BonusAchievementCelebration ids={achievementToastIds} onPresented={markAchievementToastPresented} />}
       </section>
     );
   }

@@ -1,12 +1,14 @@
 "use client";
 
-import { Egg, Film, Search, ShieldCheck, Star, type LucideIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { Egg, Film, Search, ShieldCheck, Sparkles, Star, X, type LucideIcon } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { getAchievementDefinition, type AchievementIcon, type AchievementId } from "@/features/achievements/achievementModel";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import styles from "./BonusAchievementCelebration.module.css";
+
+const AUTO_DISMISS_MS = 4500;
+const EXIT_MS = 220;
 
 const icons: Record<AchievementIcon, LucideIcon> = {
   star: Star,
@@ -16,80 +18,58 @@ const icons: Record<AchievementIcon, LucideIcon> = {
   egg: Egg
 };
 
-/** One overlay groups every achievement from a completed run, including Eggspert. */
-export function BonusAchievementCelebration({ ids, onContinue }: { ids: readonly AchievementId[]; onContinue: () => void }) {
+/** A non-blocking, one-time toast for every achievement earned in the completed Bonus. */
+export function BonusAchievementCelebration({ ids, onPresented }: { ids: readonly AchievementId[]; onPresented: (ids: readonly AchievementId[]) => void }) {
   const t = useTranslations("achievements");
   const { reducedMotion } = useAccessibility();
-  const continueRef = useRef<HTMLButtonElement>(null);
-  const continueLockRef = useRef(false);
-  const [portalRoot, setPortalRoot] = useState<HTMLElement | null>(null);
+  const [visible, setVisible] = useState(true);
+  const [closing, setClosing] = useState(false);
+  const presentedRef = useRef(false);
+  const [visibleIds] = useState(() => [...ids]);
+
+  const dismiss = useCallback(() => {
+    if (closing) return;
+    setClosing(true);
+    window.setTimeout(() => setVisible(false), reducedMotion ? 120 : EXIT_MS);
+  }, [closing, reducedMotion]);
 
   useEffect(() => {
-    const root = document.createElement("div");
-    root.dataset.achievementCelebrationPortal = "";
-    document.body.append(root);
+    if (!presentedRef.current) {
+      presentedRef.current = true;
+      onPresented(visibleIds);
+    }
+    const timer = window.setTimeout(dismiss, AUTO_DISMISS_MS);
+    return () => clearTimeout(timer);
+  }, [dismiss, onPresented, visibleIds]);
 
-    const previousOverflow = document.body.style.overflow;
-    const background = [...document.body.children].filter((child) => child !== root) as HTMLElement[];
-    const previousInert = background.map((element) => ({ element, inert: element.inert }));
-    document.body.style.overflow = "hidden";
-    background.forEach((element) => { element.inert = true; });
-    const portalTimer = window.setTimeout(() => setPortalRoot(root), 0);
+  if (!visible) return null;
 
-    return () => {
-      clearTimeout(portalTimer);
-      document.body.style.overflow = previousOverflow;
-      previousInert.forEach(({ element, inert }) => { element.inert = inert; });
-      root.remove();
-    };
-  }, []);
-
-  useEffect(() => continueRef.current?.focus(), [portalRoot]);
-
-  const continueOnce = () => {
-    if (continueLockRef.current) return;
-    continueLockRef.current = true;
-    onContinue();
-  };
-
-  if (!portalRoot) return null;
-
-  return createPortal(
-    <div className={styles.overlay}>
-      <section
-        aria-describedby="achievement-description"
-        aria-labelledby="achievement-title"
-        aria-modal="true"
-        className={`${styles.dialog} ${reducedMotion ? styles.still : ""}`}
-        onKeyDown={(event) => {
-          if (event.key === "Escape") {
-            event.preventDefault();
-            continueOnce();
-          }
-          if (event.key === "Tab") event.preventDefault();
-        }}
-        role="dialog"
-      >
-        <span aria-hidden="true" className={styles.confetti}>{"✦ ✧ ✦"}</span>
-        <h2 id="achievement-title">{t("newTitle")}</h2>
-        <p id="achievement-description">{t(ids.length > 1 ? "twoUnlocked" : "oneUnlocked")}</p>
+  return (
+    <aside
+      aria-atomic="true"
+      aria-live="polite"
+      className={`${styles.toast} ${closing ? styles.closing : ""} ${reducedMotion ? styles.still : ""}`}
+      role="status"
+    >
+      <Sparkles aria-hidden="true" className={styles.sparkles} strokeWidth={2.4} />
+      <div className={styles.copy}>
+        <h2>{t(ids.length > 1 ? "twoUnlocked" : "newTitle")}</h2>
         <div className={styles.achievements}>
-          {ids.map((id) => {
+          {visibleIds.map((id) => {
             const definition = getAchievementDefinition(id);
             const Icon = icons[definition.icon];
             return (
-              <article className={`${styles.achievement} ${definition.icon === "egg" ? styles.egg : ""}`} key={id}>
+              <p className={`${styles.achievement} ${definition.icon === "egg" ? styles.egg : ""}`} key={id}>
                 <Icon aria-hidden="true" className={styles.icon} strokeWidth={2.3} />
                 <strong>{t(`names.${definition.messageKey}`)}</strong>
-              </article>
+              </p>
             );
           })}
         </div>
-        <button className={styles.continue} onClick={continueOnce} ref={continueRef} type="button">
-          {t("continue")}
-        </button>
-      </section>
-    </div>,
-    portalRoot
+      </div>
+      <button aria-label={t("dismiss")} className={styles.dismiss} onClick={dismiss} type="button">
+        <X aria-hidden="true" size={20} strokeWidth={2.6} />
+      </button>
+    </aside>
   );
 }
