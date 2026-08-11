@@ -183,38 +183,34 @@ export function HomeLanding() {
             <MascotSlot alt={t("mascotAlt")} className={styles.mascot} mood="welcoming" priority />
           </div>
 
-          {/*
-            Who the player is: apprentice, earned title, and a tick once a responsible
-            adult has been linked. It goes nowhere on purpose - it is an identity, not a
-            menu - and where the progress lives is said once, at the foot of the page.
-
-            The title is labelled rather than left on its own. Beside the apprentice icon
-            and with nothing to explain it, "Curious eyes" reads as the name of the bird
-            instead of as something the child earned with stars.
-          */}
-          <p className={styles.identity}>
-            <span
-              aria-label={t("profileAvatarAria", {
-                name: apprenticeNames[apprenticeAvatarIds.indexOf(hubApprenticeAvatarId)]
-              })}
-              className={styles.identityAvatar}
-              role="img"
-            >
-              <HubApprenticeIcon aria-hidden="true" strokeWidth={2} />
-            </span>
-            <span className={styles.identityText}>
-              <span className={styles.identityLabel}>{tRank("titleNow")}</span>
-              <span className={styles.identityTitle}>{tRank(`titles.${rank.titleKey}`)}</span>
-            </span>
-            {guardian && (
-              <span aria-label={tGuardian("badge")} className={styles.identityCheck} role="img">
-                <Check aria-hidden="true" size={13} strokeWidth={3.5} />
-              </span>
-            )}
-          </p>
-
           <div className={styles.progress}>
-            <span className={styles.progressLabel}>{t("progressLabel")}</span>
+            <div className={styles.progressHeading}>
+              <span className={styles.progressLabel}>{t("progressLabel")}</span>
+              <p className={styles.identity}>
+                <span
+                  aria-label={t("profileAvatarAria", {
+                    name: apprenticeNames[apprenticeAvatarIds.indexOf(hubApprenticeAvatarId)]
+                  })}
+                  className={styles.identityAvatar}
+                  role="img"
+                >
+                  <HubApprenticeIcon aria-hidden="true" strokeWidth={2} />
+                </span>
+                <span className={styles.identityText}>
+                  <span className={styles.identityLabel}>{tRank("titleNow")}</span>
+                  <span className={styles.identityTitle}>{tRank(`titles.${rank.titleKey}`)}</span>
+                </span>
+                {guardian && (
+                  <span aria-label={tGuardian("badge")} className={styles.identityCheck} role="img">
+                    <Check aria-hidden="true" size={13} strokeWidth={3.5} />
+                  </span>
+                )}
+              </p>
+            </div>
+            <div className={styles.progressOverview}>
+              {activeIsland && <span className={styles.progressIsland}>{tIslands(`list.${activeIsland}.title`)}</span>}
+              <span className={styles.progressPercent}>{t("progressPercent", { percent: overall.percent })}</span>
+            </div>
             <div
               aria-label={t("progressAria", { done: overall.done, total: overall.total })}
               aria-valuemax={100}
@@ -226,34 +222,25 @@ export function HomeLanding() {
             >
               <span className={styles.progressFill} style={{ width: `${overall.percent}%` }} />
             </div>
-            <span className={styles.progressValue}>
-              {t("progressValue", { done: overall.done, total: overall.total })}
-              {" · "}
-              {t("progressPercent", { percent: overall.percent })}
-            </span>
+            <span className={styles.progressValue}>{t("progressValue", { done: overall.done, total: overall.total })}</span>
           </div>
-
-          {activeIsland && (
-            <p className={styles.hubIsland}>
-              <span className={styles.hubIslandLabel}>{t("hubIslandLabel")}</span>
-              <span className={styles.hubIslandName}>{tIslands(`list.${activeIsland}.title`)}</span>
-            </p>
-          )}
 
           <ul className={styles.hubStats}>
             {/* Worked out from the stars already on the map, so it can never claim more
                 than the player earned, and it is never a position against other children. */}
-            <li className={`${styles.hubStat} ${rank.tier ? styles.hubStatLive : ""}`}>
-              <span className={`${styles.hubStatIcon} ${styles.hubStatRank}`}>
-                <Medal aria-hidden="true" size={20} />
-              </span>
-              <span className={styles.hubStatLabel}>{t("hubRank")}</span>
-              <span className={styles.hubStatValue}>
-                {rank.tier ? tRank(`tiers.${rank.tier}`) : tRank("none")}
-              </span>
-              {/* The ladder explains what the word means and what the next step asks. */}
-              <Link className={styles.hubStatLink} href="/ranks">
-                {tRank("seeLadder")}
+            <li>
+              <Link
+                aria-label={tRank("seeLadder")}
+                className={`${styles.hubStat} ${styles.hubStatCardLink} ${rank.tier ? styles.hubStatLive : ""}`}
+                href="/ranks"
+              >
+                <span className={`${styles.hubStatIcon} ${styles.hubStatRank}`}>
+                  <Medal aria-hidden="true" size={20} />
+                </span>
+                <span className={styles.hubStatLabel}>{t("hubRank")}</span>
+                <span className={styles.hubStatValue}>
+                  {rank.tier ? tRank(`tiers.${rank.tier}`) : tRank("none")}
+                </span>
               </Link>
             </li>
             <li className={`${styles.hubStat} ${streak.currentDays > 0 ? styles.hubStatLive : ""}`}>
@@ -265,9 +252,6 @@ export function HomeLanding() {
               <span className={styles.hubStatValue}>
                 {streak.currentDays > 0 ? t("streakDays", { days: streak.currentDays }) : t("streakNone")}
               </span>
-              {streak.bestDays > 0 && (
-                <span className={styles.hubStatDetail}>{t("streakBest", { days: streak.bestDays })}</span>
-              )}
             </li>
             {/* Friends used to be a dead tile promising a future. It leads somewhere now. */}
             <li className={styles.hubStat}>

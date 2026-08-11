@@ -27,4 +27,17 @@ describe("HomeLanding continuation", () => {
     expect(styles).toContain("padding: clamp(1.05rem, 4vw, 1.45rem)");
     expect(styles).toContain("margin: .7rem auto 0");
   });
+
+  it("groups title, island, percentage, and mission count in one progress unit", async () => {
+    const component = await readFile(componentPath, "utf8");
+    const styles = await readFile(stylesPath, "utf8");
+
+    expect(component).toContain('className={styles.progressHeading}');
+    expect(component).toContain('className={styles.progressOverview}');
+    expect(component).toContain('className={styles.progressIsland}');
+    expect(component).not.toContain('className={styles.hubIsland}');
+    expect(styles).toContain(".hubStatCardLink");
+    expect(component).toContain('aria-label={tRank("seeLadder")}');
+    expect(component).not.toContain('className={styles.hubStatDetail}');
+  });
 });
