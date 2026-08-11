@@ -176,6 +176,8 @@ export function TeacherScanClient() {
   const [rounds, setRounds] = useState<readonly ClassQuestion[]>([]);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [openIsland, setOpenIsland] = useState<IslandKey | null>(null);
+  /** Asked for only when the camera cannot do the reading. */
+  const [markingByHand, setMarkingByHand] = useState(false);
   const [session, setSession] = useState<ScanSession | null>(null);
   const [camera, setCamera] = useState<CameraState>({ kind: "idle" });
   const [announcement, setAnnouncement] = useState("");
@@ -771,6 +773,12 @@ export function TeacherScanClient() {
             <div className={styles.failure} role="status">
               <p className={styles.failureText}>{t(`camera.${camera.reason}`)}</p>
               <p className={styles.failureHint}>{t("manualFallback")}</p>
+              {!markingByHand && (
+                <button className={styles.secondary} type="button" onClick={() => setMarkingByHand(true)}>
+                  <SquareCheckBig aria-hidden="true" size={16} />
+                  {t("markByHand")}
+                </button>
+              )}
               {camera.reason !== "unsupported" && (
                 <button className={styles.secondary} type="button" onClick={() => void start()}>
                   <RotateCcw aria-hidden="true" size={16} />
@@ -783,14 +791,15 @@ export function TeacherScanClient() {
       )}
 
       {/*
-        Twenty-five names down the screen while the camera does the work is a list nobody
-        reads, so it is not shown while the camera is working.
-        It is still here for the two moments it is the only thing that helps: when the
-        answers close and it says who got it right, and when the camera cannot open at all
-        - which on a shared school phone is a real evening, and marking by hand is then the
-        only way the lesson happens.
+        Twenty-five names down the screen while the camera is reading them is a list nobody
+        looks at, so it waits until the answers close and it can say who got it right.
+
+        The one exception is asked for, not assumed: a camera that will not open leaves
+        marking by hand as the only way the lesson happens, so the failure offers a button
+        that brings the list out. Hidden by default, one tap away when it is the only thing
+        that works.
       */}
-      {(closed || camera.kind === "failed") && (
+      {(closed || markingByHand) && (
       <section aria-labelledby="scan-list-title" className={styles.listBox}>
         <div className={styles.listHead}>
           <h2 className={styles.sectionTitle} id="scan-list-title">
