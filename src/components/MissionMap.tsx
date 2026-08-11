@@ -32,7 +32,7 @@ import { useProgress } from "@/features/progress/ProgressProvider";
 import { OnboardingSpotlight } from "./OnboardingSpotlight";
 import styles from "./MissionMap.module.css";
 
-const missionIcons: Record<MissionKind, LucideIcon> = {
+export const missionIcons: Record<MissionKind, LucideIcon> = {
   training: SearchCheck,
   source: FileSearch,
   context: Layers3,
@@ -50,21 +50,21 @@ const missionMarkers: Record<MissionKind, readonly string[]> = {
   share: ["/media/map/share-shield.svg", "/media/map/share-plane.svg"]
 };
 
-type NodeSide = "left" | "right";
+export type NodeSide = "left" | "right";
 
 const guideAssetByNodeSide: Record<NodeSide, string> = {
   left: "/media/mascot/roqui-map-left.png",
   right: "/media/mascot/roqui-map-right.png"
 };
 
-const getNodeSide = (index: number): NodeSide => (index % 2 === 0 ? "left" : "right");
+export const getNodeSide = (index: number): NodeSide => (index % 2 === 0 ? "left" : "right");
 
 /**
  * Where each island sits on the map, in percentages of the journey box. The nodes and
  * the trail both read from this one list, which is what keeps the path attached to the
  * islands at every screen size: there is no second layout to drift out of step.
  */
-function getNodePositions(count: number) {
+export function getNodePositions(count: number) {
   return Array.from({ length: count }, (_, index) => ({
     x: index % 2 === 0 ? 27 : 73,
     y: ((index + 0.5) / count) * 100
@@ -259,7 +259,7 @@ export function MissionMap() {
   );
 }
 
-function MapEnvironment() {
+export function MapEnvironment() {
   return <div aria-hidden="true" className={styles.environment} />;
 }
 
@@ -279,7 +279,7 @@ const skyIcons = [
   { Icon: Star, className: styles.skyTwelve, size: 22 }
 ] as const;
 
-function MapSky() {
+export function MapSky() {
   return (
     <div aria-hidden="true" className={styles.sky}>
       {skyIcons.map(({ Icon, className, size }, index) => (
@@ -296,7 +296,7 @@ function MapSky() {
  * The segment that leads into the open island runs as moving dashes, pointing a child
  * towards where to go next without any words.
  */
-function MissionTrail({
+export function MissionTrail({
   positions,
   completedFlags,
   nextSegmentIndex
@@ -332,7 +332,7 @@ function MissionTrail({
   );
 }
 
-function MissionMarker({ kind }: { kind: MissionKind }) {
+export function MissionMarker({ kind }: { kind: MissionKind }) {
   const [primaryAsset, secondaryAsset] = missionMarkers[kind];
 
   return (

@@ -72,28 +72,194 @@
 }
 
 /* Choosing what the class will be asked. */
+/* The way in for a class that has never played. It looks like the answer, because it is. */
+.startTutorial {
+  width: 100%;
+  min-height: 4rem;
+  margin-top: 1.25rem;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  border: 0;
+  border-radius: 1rem;
+  background: var(--c-accent-strong);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.startTutorialText {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.startTutorialName {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.startTutorialHint {
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.35;
+  opacity: 0.9;
+}
+
+/* A heading for the archipelago below, not a control: everything is already open. */
+.chooseOther {
+  margin: 1.4rem 0 0;
+  color: var(--c-ink-soft);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+/* The way out of a lesson, where every other way back on this screen lives. */
+.leaveLesson {
+  min-height: 2.75rem;
+  margin-top: clamp(0.5rem, 3vw, 1.25rem);
+  padding: 0 0.3rem 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 0;
+  background: transparent;
+  color: var(--c-ink-soft);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.confirmOverlay {
+  position: fixed;
+  z-index: 40;
+  inset: 0;
+  display: grid;
+  padding: 1rem;
+  place-items: center;
+  background: rgba(20, 22, 35, 0.5);
+}
+
+.confirmSheet {
+  width: min(100%, 26rem);
+  padding: 1.15rem 1.2rem 1.2rem;
+  display: grid;
+  gap: 0.45rem;
+  border-radius: 1.1rem;
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(23, 33, 60, 0.28);
+}
+
+.confirmQuestion {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.confirmDetail {
+  margin: 0;
+  color: var(--c-ink-soft);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.confirmActions {
+  margin-top: 0.6rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.confirmYes,
+.confirmNo {
+  min-height: 3rem;
+  padding: 0 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0.85rem;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+/* Leaving loses work, so the easy button is the one that stays. */
+.confirmYes {
+  border: 2px solid var(--c-hairline-strong);
+  background: #fff;
+  color: var(--c-ink);
+}
+
+.confirmNo {
+  background: var(--c-accent-strong);
+  color: #fff;
+}
+
+.islandCard {
+  margin-top: 0.9rem;
+  padding: 0.9rem 0.85rem 0.85rem;
+  border: 2px solid var(--c-accent-strong);
+  border-radius: 1.1rem;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(38, 65, 130, 0.06);
+}
+
+.openTitle {
+  margin: 0;
+  color: var(--c-accent-ink);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .missionList {
-  margin: 1.25rem 0 0;
+  margin: 0.7rem 0 0;
   padding: 0;
   display: grid;
-  gap: 0.6rem;
+  gap: 0.4rem;
   list-style: none;
 }
 
 .missionButton {
+  position: relative;
   width: 100%;
-  min-height: 3.5rem;
-  padding: 0.75rem 1rem;
+  min-height: 3.4rem;
+  padding: 0.6rem 2.4rem 0.6rem 0.85rem;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
-  border: 2px solid var(--c-hairline-strong);
-  border-radius: 0.9rem;
+  gap: 0.1rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: 0.8rem;
   background: #fff;
   color: var(--c-ink);
   font: inherit;
   text-align: left;
   cursor: pointer;
+}
+
+.missionButton:hover {
+  border-color: var(--c-accent-strong);
+  background: var(--c-accent-soft);
+}
+
+/* A quiet arrow on the right: it says "this one starts something", without a second label. */
+.missionGo {
+  position: absolute;
+  top: 50%;
+  right: 0.8rem;
+  display: grid;
+  width: 1.5rem;
+  height: 1.5rem;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--c-accent-soft);
+  color: var(--c-accent-ink);
+  transform: translateY(-50%);
 }
 
 .missionName {
@@ -111,17 +277,29 @@
  * The two images the class is judging. Shown side by side and labelled A and B to match
  * the printed card, so a child looking up from their paper sees the same two letters.
  */
+/*
+ * Above the panels that follow it, so the magnifier can cover the screen.
+ *
+ * `.scan > *` gives every direct child its own stacking context, and the zoom is a fixed
+ * overlay nested inside this one - so it could never rise past the camera box or the class
+ * list further down the page, and its close button ended up buried under them.
+ */
+.options,
+.single {
+  z-index: 5;
+}
+
 .options {
   margin: 1.25rem 0 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.6rem;
+  gap: 0.5rem;
 }
 
 .option,
 .optionRight {
   margin: 0;
-  padding: 0.5rem;
+  padding: 0.3rem;
   border: 2px solid var(--c-hairline-strong);
   border-radius: 0.9rem;
   background: #fff;
@@ -132,10 +310,16 @@
   background: #f1f8f3;
 }
 
-/* The shape of a phone photo: a class judging from four rows back needs the picture, not the frame. */
+/*
+ * The picture, given the room.
+ *
+ * This is judged from four rows back, so the frame around it earns nothing and the image
+ * takes everything that is left. Taller than a phone photo on purpose: a class squinting
+ * at a detail needs the pixels more than the page needs the whitespace.
+ */
 .optionMedia {
   position: relative;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 3 / 5;
   overflow: hidden;
   border-radius: 0.6rem;
   background: var(--c-hairline);
@@ -166,7 +350,7 @@
 
 .singleMedia {
   position: relative;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   border-radius: 0.6rem;
   background: var(--c-hairline);
@@ -231,6 +415,103 @@
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
   gap: 0.5rem;
+}
+
+/* The question and, beside it, how many cards are in. */
+.questionHead {
+  margin-top: 0.6rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 0.75rem;
+}
+
+.questionHead .title {
+  margin: 0;
+}
+
+/* A chip, not a panel: read at a glance and out of the way the rest of the time. */
+.scannedChip {
+  margin: 0;
+  padding: 0.3rem 0.7rem;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  border: 1px solid var(--c-hairline-strong);
+  border-radius: 999px;
+  background: #fff;
+  white-space: nowrap;
+}
+
+.scannedLabel {
+  color: var(--c-ink-soft);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.scannedValue {
+  font-size: 0.95rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The list's heading, with the camera that fills it in sitting on the same line. */
+.listHead {
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.listHead .sectionTitle {
+  margin: 0;
+}
+
+/* One round target. A camera icon on a scanning screen needs no caption beside it. */
+.cameraToggle,
+.cameraToggleOff {
+  width: 3.4rem;
+  height: 3.4rem;
+  flex: none;
+  /* The actions column stretches what it holds; this one stays a circle, centred. */
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.cameraToggle {
+  background: var(--c-accent-strong);
+  color: #fff;
+}
+
+.cameraToggleOff {
+  border: 2px solid var(--c-hairline-strong);
+  background: #fff;
+  color: var(--c-ink);
+}
+
+.cameraToggle:focus-visible,
+.cameraToggleOff:focus-visible {
+  outline: 3px solid var(--c-accent-strong);
+  outline-offset: 3px;
+}
+
+/* The side that was right, marked once the answers close. */
+.tallyRight {
+  padding: 0.7rem 0.6rem;
+  border: 2px solid var(--c-right);
+  border-radius: 0.9rem;
+  background: #f1f8f3;
+  color: var(--c-right);
+  text-align: center;
 }
 
 .tallyItem {

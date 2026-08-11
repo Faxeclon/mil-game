@@ -72,6 +72,87 @@
   height: calc(var(--island-count, 3) * clamp(14rem, 38vw, 17rem));
 }
 
+/*
+ * The same map, drawn small.
+ *
+ * A child arrives at the map to look around and the islands fill the screen on purpose.
+ * A grown-up arrives to pick one and get on with a lesson, with the missions of whichever
+ * they open waiting underneath - so here the whole trail has to fit above the fold rather
+ * than be scrolled through.
+ */
+/* The map's own width and padding are for a child's screen; the teacher's is a section. */
+.map:has(.compact) {
+  width: 100%;
+  padding-bottom: 0;
+}
+
+/*
+ * No full-screen wash when the map is only part of a page.
+ *
+ * `.map::before` paints the whole viewport, which is right when the map is the page. Used
+ * inside another screen it became an opaque sheet over everything above it - the heading,
+ * the lead and the button all still rendered, and all hidden behind it.
+ */
+.map:has(.compact)::before {
+  display: none;
+}
+
+.journey.compact {
+  margin-top: clamp(0.5rem, 2vw, 0.9rem);
+  height: calc(var(--island-count, 3) * clamp(5.4rem, 16vw, 6.8rem));
+}
+
+/*
+ * Written as `.journey.compact` rather than `.compact` on purpose.
+ *
+ * An open island wears `.available`, and `.available .orb` sizes it - same weight as
+ * `.compact .orb` and further down the file, so it won that tie and the islands stayed
+ * full size. Two classes on the journey put this ahead of it without touching either.
+ */
+.journey.compact .available {
+  --guide-orb-size: clamp(3.6rem, 13vw, 4.5rem);
+}
+
+.journey.compact .orb {
+  width: clamp(3.6rem, 13vw, 4.5rem);
+  border-width: 4px;
+}
+
+.journey.compact .orb svg {
+  width: 52%;
+  height: 52%;
+}
+
+/* One island beckoning is an invitation; four pulsing at once is noise. */
+.journey.compact .available .orb {
+  animation: none;
+  box-shadow:
+    0 0 0 1px rgb(55 66 83 / 7%),
+    0 5px 0 rgb(58 67 83 / 10%),
+    0 10px 18px rgb(31 42 68 / 12%);
+}
+
+.journey.compact .available .orb::after {
+  display: none;
+}
+
+.journey.compact .world {
+  gap: 0.3rem;
+}
+
+.journey.compact .title {
+  font-size: 0.82rem;
+}
+
+.journey.compact .caption {
+  max-width: 11ch;
+}
+
+/* The scenery around each island. Charming at full size, clutter at a third of it. */
+.journey.compact .marker {
+  display: none;
+}
+
 .environment {
   position: absolute;
   z-index: 0;
@@ -387,6 +468,7 @@
 
 /* -------------------------------------------------------------------- World */
 
+/* Worn by a link and by a button, so it strips the chrome a browser draws on the latter. */
 .world {
   min-width: 0;
   position: relative;
@@ -394,7 +476,12 @@
   display: grid;
   justify-items: center;
   gap: 0.6rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: inherit;
+  cursor: pointer;
+  font: inherit;
   text-decoration: none;
   transition: transform 180ms var(--m-ease);
 }
