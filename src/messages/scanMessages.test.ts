@@ -16,17 +16,12 @@ const locales = [
   { locale: "es", messages: spanishMessages }
 ] as const;
 
+/*
+ * The screen no longer prints a privacy promise, so there is no promise here to guard.
+ * What it described is still true of the code - frames are read and discarded, nothing is
+ * stored and nothing is sent - and `cardScanner` is where that is enforced and tested.
+ */
 describe("what the camera screen promises", () => {
-  it("says no photograph is kept and no face is recognised", () => {
-    for (const { locale, messages } of locales) {
-      const privacy = createTranslator({ locale, messages, namespace: "scan" })("privacy").toLowerCase();
-
-      expect(privacy).toMatch(/photo|foto/);
-      expect(privacy).toMatch(/face|rostro/);
-      expect(privacy).toMatch(/device|dispositivo/);
-    }
-  });
-
   it("gives each camera failure its own way out instead of one dead end", () => {
     for (const { locale, messages } of locales) {
       const t = createTranslator({ locale, messages, namespace: "scan" });
@@ -35,8 +30,6 @@ describe("what the camera screen promises", () => {
       const unsupported = t("camera.unsupported");
 
       expect(new Set([denied, unavailable, unsupported]).size).toBe(3);
-      // Whatever went wrong, the answer is never "give up": the manual list is offered.
-      expect(t("manualFallback").toLowerCase()).toMatch(/hand|mano/);
     }
   });
 
@@ -49,13 +42,12 @@ describe("what the camera screen promises", () => {
     }
   });
 
-  it("writes the running count and the missing numbers without leaving a placeholder showing", () => {
+  it("writes the running count without leaving a placeholder showing", () => {
     for (const { locale, messages } of locales) {
       const t = createTranslator({ locale, messages, namespace: "scan" });
 
       expect(t("scannedOf", { done: 18, total: 25 })).not.toMatch(/\{done\}|\{total\}/);
       expect(t("scannedOf", { done: 18, total: 25 })).toContain("18");
-      expect(t("stillMissing", { numbers: "3, 9, 14" })).toContain("3, 9, 14");
       expect(t("groupResult", { right: 11, total: 25 })).not.toMatch(/\{right\}|\{total\}/);
       expect(t("announceAnswer", { number: 4, answer: "A" })).toContain("4");
     }

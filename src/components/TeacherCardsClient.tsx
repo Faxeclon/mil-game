@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { ChevronLeft, Printer, RotateCcw, ScanLine } from "lucide-react";
+import { ChevronLeft, Play, Printer, RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   clampStudentCount,
@@ -15,7 +15,7 @@ import {
 import { clearClassSet, readClassSet, writeClassSet } from "@/features/teacher/classSetStorage";
 import { createQrMatrix, getQrViewBox } from "@/features/teacher/qrMatrix";
 import { getLocalPlayedOn } from "@/features/progress/streak";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { LoadingRoqui } from "./LoadingRoqui";
 import styles from "./TeacherCardsClient.module.css";
 
@@ -37,10 +37,12 @@ export function TeacherCardsClient() {
 
   // Both server and first client render are neutral. Saved cards are read only after
   // hydration, preventing storage from producing different initial markup.
+  const router = useRouter();
   const [set, setSet] = useState<TeacherClassSet | null>(null);
   const [storageReady, setStorageReady] = useState(false);
   const [studentCount, setStudentCount] = useState("25");
   const [className, setClassName] = useState("");
+  const [askingPrinted, setAskingPrinted] = useState(false);
 
   useEffect(() => {
     const task = window.setTimeout(() => {
@@ -119,10 +121,30 @@ export function TeacherCardsClient() {
   return (
     <div className={styles.cards}>
       <div className={styles.noPrint}>
-        <Link className={styles.back} href="/teacher">
-          <ChevronLeft aria-hidden="true" size={18} />
-          {t("back")}
-        </Link>
+        {/*
+          Leaving and discarding, on the same line and pulling opposite ways.
+          Starting over lives up here rather than under the buttons that do the work: it
+          belongs with the other way out of this screen, and it is the only one that throws
+          the set away - which is what the red is saying, alongside the word.
+        */}
+        <div className={styles.topRow}>
+          <Link className={styles.back} href="/teacher">
+            <ChevronLeft aria-hidden="true" size={18} />
+            {t("back")}
+          </Link>
+
+          <button
+            className={styles.discard}
+            type="button"
+            onClick={() => {
+              clearClassSet();
+              setSet(null);
+            }}
+          >
+            <RotateCcw aria-hidden="true" size={14} />
+            {t("startOver")}
+          </button>
+        </div>
 
         <h1 className={styles.title}>{set.name ?? t("title")}</h1>
         <p className={styles.lead}>{t("readyLead", { count: set.cards.length })}</p>
@@ -137,30 +159,56 @@ export function TeacherCardsClient() {
         {/* The paper cost is shown before printing, not discovered at the printer. */}
         <p className={styles.sheetCount}>{t("sheetCount", { sheets: countSheets(set.cards.length) })}</p>
 
-        <p className={styles.keep}>{t("keepToken", { token: set.classToken })}</p>
+        {/*
+          Nothing here about the set's code.
 
+          It is never typed and never read: it rides inside each QR so the scanner can tell
+          one game's cards from another's. A teacher who only ever prints one set at a time
+          would be reading about a problem they do not have, and the app already handles it
+          without them - a card from elsewhere simply does not register.
+        */}
+
+        {/*
+          Two shapes, no words.
+
+          Play rather than a scanner, because scanning is not the thing a teacher came to
+          do: it is how the round is answered. What they want is to play with the class,
+          and the camera is simply how the cards are read along the way.
+
+          The label lives in `aria-label` and `title`, so a screen reader still says it and
+          a hesitating teacher still gets it on hover - the word is hidden from the eye,
+          not removed.
+        */}
         <div className={styles.actions}>
-          {/* Printing is only half the job: the sheets exist to be read back. */}
-          <Link className={styles.primary} href="/teacher/scan">
-            <ScanLine aria-hidden="true" size={16} />
-            {tScan("scanLink")}
-          </Link>
-          <button className={styles.secondary} type="button" onClick={() => window.print()}>
-            <Printer aria-hidden="true" size={16} />
-            {t("print")}
+          {/*
+            A question, not a link straight through.
+
+            The lesson is a camera pointed at paper: without the sheets in somebody's hands
+            there is nothing to read, and a teacher who finds that out with thirty children
+            watching finds it out at the worst possible moment. Asked once, here, where the
+            printer is still one tap away.
+          */}
+          <button
+            aria-label={tScan("scanLink")}
+            className={styles.primary}
+            title={tScan("scanLink")}
+            type="button"
+            onClick={() => setAskingPrinted(true)}
+          >
+            <Play aria-hidden="true" fill="currentColor" size={22} />
           </button>
           <button
+            aria-label={t("print")}
             className={styles.secondary}
+            title={t("print")}
             type="button"
-            onClick={() => {
-              clearClassSet();
-              setSet(null);
-            }}
+            onClick={() => window.print()}
           >
-            <RotateCcw aria-hidden="true" size={16} />
-            {t("startOver")}
+            <Printer aria-hidden="true" size={20} />
           </button>
         </div>
+
+        <p className={styles.previewLabel}>{t("previewLabel")}</p>
       </div>
 
       {/* One sheet per student: nothing to cut, and the code stays big enough to read
@@ -180,6 +228,50 @@ export function TeacherCardsClient() {
           </section>
         ))}
       </div>
+
+      {/*
+        A child of the page itself, and the last one, rather than of the block that holds
+        the buttons.
+
+        `.cards > *` gives every direct child its own stacking context, so a dialog nested
+        inside one of them cannot rise above its siblings however high its z-index goes -
+        and the printed sheets, being later in the page, covered it. Out here it is a
+        sibling of the sheets and comes after them, so it sits on top for the same reason
+        they used to.
+
+        "Not yet" closes and leaves them here, which is the only honest answer: this screen
+        is where the printing happens, so there is nowhere better to be sent.
+      */}
+      {askingPrinted && (
+        <div
+          aria-label={t("printedQuestion")}
+          aria-modal="true"
+          className={styles.confirmOverlay}
+          role="dialog"
+          onClick={() => setAskingPrinted(false)}
+        >
+          <div className={styles.confirmSheet} onClick={(event) => event.stopPropagation()}>
+            <p className={styles.confirmQuestion}>{t("printedQuestion")}</p>
+            <p className={styles.confirmDetail}>{t("printedDetail")}</p>
+            <div className={styles.confirmActions}>
+              <button
+                className={styles.confirmYes}
+                type="button"
+                onClick={() => router.push("/teacher/scan")}
+              >
+                {t("printedYes")}
+              </button>
+              <button
+                className={styles.confirmNo}
+                type="button"
+                onClick={() => setAskingPrinted(false)}
+              >
+                {t("printedNo")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

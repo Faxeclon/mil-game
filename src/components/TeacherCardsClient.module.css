@@ -111,15 +111,47 @@
   line-height: 1.4;
 }
 
-.keep {
-  max-width: 46ch;
-  margin: 0.9rem 0 0;
-  padding: 0.6rem 0.85rem;
-  border: 1px dashed var(--c-hairline-strong);
-  border-radius: 0.9rem;
-  color: var(--c-ink-soft);
+/* Leaving on the left, discarding on the right: the same line, opposite ends. */
+.topRow {
+  margin-top: clamp(0.5rem, 3vw, 1.25rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* The row owns the spacing now; the link keeps its own for the setup screen. */
+.topRow .back {
+  margin-top: 0;
+}
+
+/*
+  Red, and worded. Colour alone never carries a state in this project, so the tint says
+  "careful" while the word says what actually happens.
+*/
+.discard {
+  min-height: 2.75rem;
+  padding: 0 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 0;
+  border-radius: 0.7rem;
+  background: transparent;
+  color: #a3341b;
+  cursor: pointer;
+  font: inherit;
   font-size: 0.85rem;
-  line-height: 1.4;
+  font-weight: 800;
+}
+
+.discard:hover {
+  background: #fdecec;
+}
+
+.discard:focus-visible {
+  outline: 3px solid #a3341b;
+  outline-offset: 2px;
 }
 
 .actions {
@@ -129,17 +161,16 @@
   gap: 0.6rem;
 }
 
+/* Round targets with nothing written on them: the shape has to be big enough to read. */
 .primary,
 .secondary {
-  min-height: 3.1rem;
-  padding: 0.55rem 1.3rem;
+  width: 3.4rem;
+  height: 3.4rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  justify-content: center;
   border: 0;
   border-radius: 999px;
-  font-size: 0.94rem;
-  font-weight: 800;
   cursor: pointer;
 }
 
@@ -168,10 +199,103 @@
   font-weight: 800;
 }
 
+/*
+  Asked over the page rather than inside it. It only exists once the button is pressed, so
+  it must not reserve room on the screen beforehand.
+*/
+.confirmOverlay {
+  position: fixed;
+  z-index: 40;
+  inset: 0;
+  display: grid;
+  padding: 1rem;
+  place-items: center;
+  background: rgba(20, 22, 35, 0.5);
+}
+
+.confirmSheet {
+  width: min(100%, 26rem);
+  padding: 1.15rem 1.2rem 1.2rem;
+  display: grid;
+  gap: 0.45rem;
+  border-radius: 1.1rem;
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(23, 33, 60, 0.28);
+}
+
+.confirmQuestion {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.confirmDetail {
+  margin: 0;
+  color: var(--c-ink-soft);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.confirmActions {
+  margin-top: 0.6rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.confirmYes,
+.confirmNo {
+  min-height: 3rem;
+  padding: 0 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0.85rem;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.confirmYes {
+  background: var(--c-accent-strong);
+  color: #fff;
+}
+
+.confirmNo {
+  border: 1px solid var(--c-hairline-strong);
+  background: transparent;
+  color: var(--c-ink);
+}
+
+.previewLabel {
+  max-width: 46ch;
+  margin: 1.4rem 0 0;
+  color: var(--c-ink-soft);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
 .sheets {
-  margin-top: 1.5rem;
+  margin-top: 0.6rem;
   display: grid;
   gap: 1.5rem;
+}
+
+/*
+  On screen this is a preview, not a stack.
+
+  Twenty-five sheets differ only in one number, so scrolling past all of them tells a
+  teacher nothing the count above has not already said - it just buries the buttons. Every
+  sheet is still rendered, because print needs them all; only the screen shows one.
+*/
+.sheet:not(:first-of-type) {
+  display: none;
+}
+
+.sheet:first-of-type {
+  max-width: 22rem;
 }
 
 /* One sheet, one student. On paper each of these is a whole page. */
@@ -305,6 +429,15 @@
   .sheets {
     margin: 0;
     gap: 0;
+  }
+
+  /* Every student gets their page back: the screen showed one, paper shows all. */
+  .sheet:not(:first-of-type) {
+    display: grid;
+  }
+
+  .sheet:first-of-type {
+    max-width: none;
   }
 
   /* One student per sheet: the card fills the page, so it reads from the back row. */

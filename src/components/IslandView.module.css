@@ -29,6 +29,22 @@
   pointer-events: none;
 }
 
+/*
+ * The island's chain of missions, borrowed by a screen that is not this page.
+ *
+ * Only the palette and the shapes travel. The full-bleed backdrop above paints the whole
+ * viewport, which is right when the island is the page and an opaque sheet over everything
+ * else when it is one block inside another screen.
+ */
+.embedded {
+  width: 100%;
+  padding-bottom: 0;
+}
+
+.embedded::before {
+  display: none;
+}
+
 .island > * {
   position: relative;
   z-index: 1;
@@ -212,6 +228,7 @@
   background-image: radial-gradient(circle, var(--i-accent) 34%, transparent 36%);
 }
 
+/* Worn by a link and by a button, so it strips the chrome a browser draws on the latter. */
 .mission {
   position: relative;
   z-index: 1;
@@ -219,7 +236,11 @@
   justify-items: center;
   gap: 0.4rem;
   padding: 0 0.15rem;
+  border: 0;
+  background: transparent;
   color: inherit;
+  cursor: pointer;
+  font: inherit;
   text-align: center;
   text-decoration: none;
   transition: transform 160ms var(--i-ease);
