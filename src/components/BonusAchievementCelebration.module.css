@@ -1,9 +1,15 @@
+.overlay {
+  position: fixed;
+  z-index: 1100;
+  inset: 0;
+  pointer-events: none;
+}
+
 .toast {
   position: fixed;
-  z-index: 1000;
-  top: max(.75rem, calc(env(safe-area-inset-top) + .75rem));
+  top: calc(env(safe-area-inset-top, 0px) + 8px);
   left: 50%;
-  width: min(calc(100% - 2rem), 32rem);
+  width: min(calc(100% - 1.5rem), 32rem);
   max-height: calc(100dvh - 2rem);
   padding: .85rem 3rem .85rem 1rem;
   display: flex;
@@ -17,6 +23,7 @@
   box-shadow: 0 .8rem 2.2rem rgb(31 42 68 / 24%);
   transform: translateX(-50%);
   animation: toastIn 360ms cubic-bezier(.18,.88,.35,1.12) both;
+  pointer-events: auto;
 }
 
 .copy { min-width: 0; display: grid; gap: .45rem; }

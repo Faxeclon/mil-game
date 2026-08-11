@@ -15,14 +15,19 @@ describe("Bonus achievement toast", () => {
     expect(component).toContain("AUTO_DISMISS_MS = 4500");
     expect(component).toContain("onPresented(visibleIds)");
     expect(component).toContain('aria-label={t("dismiss")}');
-    expect(component).not.toContain("createPortal");
+    expect(component).toContain("createPortal");
+    expect(component).toContain("document.body.append(root)");
     expect(component).not.toContain('role="dialog"');
     expect(component).not.toContain("document.body.style.overflow");
     expect(component).not.toContain("element.inert");
     expect(css).toContain("prefers-reduced-motion: reduce");
     expect(css).toContain("position: fixed");
-    expect(css).toContain("z-index: 1000");
-    expect(css).toContain("top: max(.75rem, calc(env(safe-area-inset-top) + .75rem))");
+    expect(css).toContain(".overlay");
+    expect(css).toContain("z-index: 1100");
+    expect(css).toContain("inset: 0");
+    expect(css).toContain("pointer-events: none");
+    expect(css).toContain("top: calc(env(safe-area-inset-top, 0px) + 8px)");
+    expect(css).toContain("pointer-events: auto");
     expect(css).toContain("overflow: auto");
   });
 
