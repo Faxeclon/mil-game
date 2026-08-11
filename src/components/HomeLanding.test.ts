@@ -13,17 +13,18 @@ describe("HomeLanding continuation", () => {
 
     expect(component).toContain('className={styles.hubContinue}');
     expect(component).toContain('href={`/level/${nextMission.id}`}');
-    expect(component).toContain('t("hubNextDestination", {');
+    expect(component).not.toContain("hubNextDestination");
     expect(component).not.toContain('t("hubContinueLabel")');
   });
 
-  it("keeps the compact, localized destination below the primary action", async () => {
+  it("keeps Roqui's CTA spacious without a duplicated destination", async () => {
     const styles = await readFile(stylesPath, "utf8");
 
-    expect(spanishMessages.home.hubNextDestination).toBe("{category} · Misión {number}");
-    expect(englishMessages.home.hubNextDestination).toBe("{category} · Mission {number}");
-    expect(styles).toContain(".hubContinueDestination");
+    expect(spanishMessages.home.hubNextHint).toBe("Sigue por {category}.");
+    expect(englishMessages.home.hubNextHint).toBe("Carry on with {category}.");
+    expect(styles).not.toContain(".hubContinueDestination");
     expect(styles).toContain(".hub .bubble");
-    expect(styles).toContain("gap: .85rem");
+    expect(styles).toContain("padding: clamp(1.05rem, 4vw, 1.45rem)");
+    expect(styles).toContain("margin: .7rem auto 0");
   });
 });

@@ -169,18 +169,10 @@ export function HomeLanding() {
               </p>
               <div className={styles.hubContinue}>
                 {nextMission ? (
-                  <>
-                    <Link className={styles.primaryAction} href={`/level/${nextMission.id}`}>
-                      <Play aria-hidden="true" size={17} fill="currentColor" />
-                      {t("hubContinue")}
-                    </Link>
-                    <p className={styles.hubContinueDestination}>
-                      {t("hubNextDestination", {
-                        category: tIslands(`categories.${nextMission.category}.title`),
-                        number: nextMission.order
-                      })}
-                    </p>
-                  </>
+                  <Link className={styles.primaryAction} href={`/level/${nextMission.id}`}>
+                    <Play aria-hidden="true" size={17} fill="currentColor" />
+                    {t("hubContinue")}
+                  </Link>
                 ) : (
                   <Link className={styles.primaryAction} href="/worlds">
                     {t("hubMap")}

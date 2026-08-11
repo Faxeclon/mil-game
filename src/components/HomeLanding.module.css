@@ -463,9 +463,9 @@
 
 .hub {
   max-width: 30rem;
-  margin: clamp(.75rem, 3vw, 1.4rem) auto;
+  margin: clamp(1rem, 3.5vw, 1.65rem) auto;
   display: grid;
-  gap: .85rem;
+  gap: 1rem;
 }
 
 .hub .mascotRow {
@@ -474,21 +474,14 @@
 
 .hub .bubble {
   margin-bottom: 0;
+  padding: clamp(1.05rem, 4vw, 1.45rem) clamp(1.1rem, 4.5vw, 1.7rem);
 }
 
 .hubContinue {
-  margin-top: .75rem;
+  margin-top: .95rem;
   display: grid;
   justify-items: start;
-  gap: .4rem;
-}
-
-.hubContinueDestination {
-  margin: 0;
-  color: var(--h-ink-soft);
-  font-size: clamp(.76rem, 3.4vw, .86rem);
-  font-weight: 700;
-  line-height: 1.25;
+  gap: .6rem;
 }
 
 .hubHeader {
@@ -566,7 +559,7 @@
 
 .hubStat {
   min-width: 0;
-  padding: 0.65rem 0.4rem;
+  padding: 0.85rem 0.5rem;
   display: grid;
   justify-items: center;
   gap: 0.2rem;
@@ -577,8 +570,8 @@
 }
 
 .hubStatIcon {
-  width: 2.15rem;
-  height: 2.15rem;
+  width: 2.4rem;
+  height: 2.4rem;
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -620,7 +613,7 @@
  */
 .adultDoor {
   min-height: 2.75rem;
-  margin: 0.85rem auto 0;
+  margin: 1.25rem auto 0;
   padding: 0 0.9rem;
   display: flex;
   width: fit-content;
@@ -669,7 +662,7 @@
 
 .progress {
   width: min(100%, 24rem);
-  margin: .2rem auto 0;
+  margin: .7rem auto 0;
   display: grid;
   justify-items: center;
   gap: 0.4rem;
@@ -727,8 +720,8 @@
  * Compact on purpose: it is who you are, not an announcement.
  */
 .identity {
-  margin: 0.55rem auto 0;
-  padding: 0.25rem 0.7rem 0.25rem 0.3rem;
+  margin: .9rem auto 0;
+  padding: 0.3rem 0.8rem 0.3rem 0.35rem;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -960,7 +953,7 @@
 /* The one mode that needs neither an account nor a connection. */
 .versusCard {
   width: min(100%, 24rem);
-  margin: 0.9rem auto 0;
+  margin: 1.35rem auto 0;
   padding: 0.75rem 0.9rem;
   display: flex;
   align-items: center;
@@ -1171,7 +1164,7 @@
 }
 
 .hubIsland {
-  margin: .35rem 0 0;
+  margin: .65rem 0 0;
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
