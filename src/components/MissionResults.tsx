@@ -42,6 +42,7 @@ export function MissionResults() {
   const {
     hydrated,
     lastResult,
+    profiles,
     progressState,
     apprenticeAvatarId,
     createBonusOpportunity,
@@ -58,7 +59,11 @@ export function MissionResults() {
   const bonusPlayRef = useRef<HTMLButtonElement>(null);
   const bonusDialogRef = useRef<HTMLElement>(null);
   const [bonusOfferOpen, setBonusOfferOpen] = useState(false);
+  const [localMedalToastKey, setLocalMedalToastKey] = useState<string | null>(null);
   const result = getFreshResult(lastResult, attempt);
+  const localMedalToastCandidateKey = result?.passed && progressState.completedLevelIds.length === 1 && !progressState.localMedalNoticePresented
+    ? `${profiles.activeId ?? "none"}:${result.attemptId ?? "legacy"}`
+    : null;
   const celebration: SectionCompletionEvent | null = result
     ? getSectionCompletionEvent(progressState, result.levelId)
     : null;
@@ -95,6 +100,12 @@ export function MissionResults() {
   useEffect(() => {
     if (bonusOfferOpen && bonus?.status === "pending") bonusPlayRef.current?.focus();
   }, [bonus?.status, bonusOfferOpen]);
+
+  useEffect(() => {
+    if (!localMedalToastCandidateKey || localMedalToastKey === localMedalToastCandidateKey) return;
+    const presentationTimer = window.setTimeout(() => setLocalMedalToastKey(localMedalToastCandidateKey), 0);
+    return () => clearTimeout(presentationTimer);
+  }, [localMedalToastCandidateKey, localMedalToastKey]);
 
   if (!hydrated) {
     return (
@@ -133,8 +144,6 @@ export function MissionResults() {
       })
     : result.levelId;
   const summary = getScoreSummary(result, progressState.bestResultsByLevelId);
-  // Derived from the one canonical list, so it cannot be shown twice or get out of step.
-  const isFirstEverCompletion = result.passed && progressState.completedLevelIds.length === 1;
   const elapsedTime = formatElapsedTime(result.elapsedMs, {
     second: t("second"),
     seconds: t("seconds"),
@@ -256,7 +265,7 @@ export function MissionResults() {
       <p className={styles.correctRounds}>{t("correctRounds", { correct: result.correctRounds, total: result.totalRounds })}</p>
       <p className={styles.elapsedTime}>{t("elapsed", { time: elapsedTime })}</p>
 
-      {isFirstEverCompletion && !progressState.localMedalNoticePresented && (
+      {localMedalToastKey === `${profiles.activeId ?? "none"}:${result.attemptId ?? "legacy"}` && (
         <LocalMedalToast onPresented={markLocalMedalNoticePresented} />
       )}
 

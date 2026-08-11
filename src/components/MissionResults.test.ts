@@ -48,7 +48,8 @@ describe("section-completion Bonus offer", () => {
     const settings = await source("SettingsClient.tsx");
 
     expect(screen).toContain("<LocalMedalToast onPresented={markLocalMedalNoticePresented}");
-    expect(screen).toContain("!progressState.localMedalNoticePresented");
+    expect(screen).toContain("localMedalToastCandidateKey");
+    expect(screen).toContain("setLocalMedalToastKey(localMedalToastCandidateKey)");
     expect(screen).not.toContain("styles.keepsake");
     expect(screen).not.toContain('href="/guardian"');
     expect(settings).toContain('href="/guardian"');
