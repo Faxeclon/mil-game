@@ -485,6 +485,12 @@
   gap: .6rem;
 }
 
+/* The welcome action stays the main route forward without competing with Roqui. */
+.hubContinueAction {
+  min-height: 2.75rem;
+  padding: 0.58rem 1.45rem;
+}
+
 .hubHeader {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
