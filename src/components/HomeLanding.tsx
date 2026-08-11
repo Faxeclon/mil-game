@@ -167,6 +167,26 @@ export function HomeLanding() {
                   ? t("hubNextHint", { category: tIslands(`categories.${nextMission.category}.title`) })
                   : t("hubAllDone")}
               </p>
+              <div className={styles.hubContinue}>
+                {nextMission ? (
+                  <>
+                    <Link className={styles.primaryAction} href={`/level/${nextMission.id}`}>
+                      <Play aria-hidden="true" size={17} fill="currentColor" />
+                      {t("hubContinue")}
+                    </Link>
+                    <p className={styles.hubContinueDestination}>
+                      {t("hubNextDestination", {
+                        category: tIslands(`categories.${nextMission.category}.title`),
+                        number: nextMission.order
+                      })}
+                    </p>
+                  </>
+                ) : (
+                  <Link className={styles.primaryAction} href="/worlds">
+                    {t("hubMap")}
+                  </Link>
+                )}
+              </div>
             </div>
             <MascotSlot alt={t("mascotAlt")} className={styles.mascot} mood="welcoming" priority />
           </div>
@@ -200,26 +220,6 @@ export function HomeLanding() {
               </span>
             )}
           </p>
-
-          <div className={styles.hubNext}>
-            {nextMission ? (
-              <>
-                <p className={styles.hubNextLabel}>{t("hubContinueLabel")}</p>
-                <p className={styles.hubNextTitle}>{tIslands(`categories.${nextMission.category}.title`)}</p>
-                <Link className={styles.primaryAction} href={`/level/${nextMission.id}`}>
-                  <Play aria-hidden="true" size={17} fill="currentColor" />
-                  {t("hubContinue")}
-                </Link>
-              </>
-            ) : (
-              <>
-                <p className={styles.hubNextTitle}>{t("hubAllDone")}</p>
-                <Link className={styles.primaryAction} href="/worlds">
-                  {t("hubMap")}
-                </Link>
-              </>
-            )}
-          </div>
 
           <div className={styles.progress}>
             <span className={styles.progressLabel}>{t("progressLabel")}</span>
