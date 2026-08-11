@@ -30,8 +30,6 @@ describe("what the camera screen promises", () => {
       const unsupported = t("camera.unsupported");
 
       expect(new Set([denied, unavailable, unsupported]).size).toBe(3);
-      // Whatever went wrong, the answer is never "give up": the manual list is offered.
-      expect(t("manualFallback").toLowerCase()).toMatch(/hand|mano/);
     }
   });
 
