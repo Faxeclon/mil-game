@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { createTranslator } from "next-intl";
 import { achievementDefinitions } from "@/features/achievements/achievementModel";
 import { initialProgressState } from "@/features/progress/progressState";
 import { getActiveProgress, selectProfile, type ProfilesDocument } from "@/features/profiles/localProfiles";
@@ -38,8 +39,32 @@ describe("progress collection view", () => {
       expect(spanishMessages.achievements.names[achievement.messageKey]).toBeTruthy();
       expect(englishMessages.achievements.names[achievement.messageKey]).toBeTruthy();
     }
-    expect(spanishMessages.achievements.collectionCount).toBe("{count} de {total} desbloqueados");
-    expect(englishMessages.achievements.collectionCount).toBe("{count} of {total} unlocked");
+    expect(spanishMessages.achievements.collectionCount).toBe("{unlocked} de {total} desbloqueados");
+    expect(englishMessages.achievements.collectionCount).toBe("{unlocked} of {total} unlocked");
+  });
+
+  it("resolves every progress-collection message through the real Spanish and English catalogs", () => {
+    for (const [locale, messages] of [
+      ["es", spanishMessages],
+      ["en", englishMessages]
+    ] as const) {
+      const rank = createTranslator({ locale, messages, namespace: "rank" });
+      const achievements = createTranslator({ locale, messages, namespace: "achievements" });
+      const resolved = [
+        rank("progressTitle"),
+        rank("rankTitle"),
+        rank("titleReached"),
+        rank("titleLocked"),
+        achievements("collectionTitle"),
+        achievements("collectionCount", { unlocked: 1, total: achievementDefinitions.length }),
+        achievements("locked"),
+        achievements("collectionHints.perfectIsland", { island: "Island" }),
+        achievements("collectionHints.perfectDoublePoints")
+      ];
+
+      expect(resolved).not.toContainEqual(expect.stringMatching(/^(rank|achievements)\./));
+      expect(resolved.every((message) => message.trim().length > 0)).toBe(true);
+    }
   });
 
   it("reads achievements only from the active profile, without writing progress", () => {

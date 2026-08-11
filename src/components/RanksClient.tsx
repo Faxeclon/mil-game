@@ -165,7 +165,7 @@ export function RanksClient() {
         </h2>
         <p className={styles.groupLead}>
           {tAchievements("collectionCount", {
-            count: earnedAchievementIds.size,
+            unlocked: earnedAchievementIds.size,
             total: achievementDefinitions.length
           })}
         </p>
