@@ -476,6 +476,7 @@
 .hub .bubble {
   margin-bottom: 0;
   padding: clamp(1.125rem, 4.5vw, 1.25rem) clamp(1.1rem, 4.5vw, 1.7rem);
+  text-align: left;
 }
 
 /* Keep Roqui's speech tail aimed at the face as the welcome bubble grows or shrinks. */
@@ -487,6 +488,7 @@
   margin-top: .75rem;
   display: grid;
   justify-items: start;
+  align-items: start;
   gap: .5rem;
 }
 
@@ -510,6 +512,7 @@
   line-height: 1.1;
   letter-spacing: -0.035em;
   text-wrap: balance;
+  text-align: left;
 }
 
 .hubApprentice {
@@ -740,6 +743,7 @@
   font-weight: 700;
   line-height: 1.4;
   text-wrap: balance;
+  text-align: left;
 }
 
 /*
