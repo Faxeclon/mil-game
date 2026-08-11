@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { createTranslator } from "next-intl";
 import { achievementDefinitions } from "@/features/achievements/achievementModel";
+import { getProgressTabFromHash } from "@/features/ranks/progressTabs";
 import { initialProgressState } from "@/features/progress/progressState";
 import { getActiveProgress, selectProfile, type ProfilesDocument } from "@/features/profiles/localProfiles";
 import englishMessages from "@/messages/en.json";
@@ -16,13 +17,39 @@ describe("progress collection view", () => {
     const component = await readFile(componentPath, "utf8");
     const styles = await readFile(stylesPath, "utf8");
 
-    expect(component).toContain('id="titles"');
+    expect(component).toContain('id="progress-panel-titles"');
     expect(component).toContain("rank.stars >= needed");
     expect(component).toContain("styles.rowReached");
     expect(component).toContain("styles.rowLocked");
     expect(component).toContain('t("titleNow")');
     expect(styles).toContain(".statusReached");
     expect(styles).toContain(".statusLocked");
+  });
+
+  it("maps each supported deep link to one progress tab and falls back safely to rank", () => {
+    expect(getProgressTabFromHash("")).toBe("rank");
+    expect(getProgressTabFromHash("#rank")).toBe("rank");
+    expect(getProgressTabFromHash("#titles")).toBe("titles");
+    expect(getProgressTabFromHash("#achievements")).toBe("achievements");
+    expect(getProgressTabFromHash("#unknown")).toBe("rank");
+  });
+
+  it("keeps exactly one panel mounted and synchronizes changes with browser history", async () => {
+    const component = await readFile(componentPath, "utf8");
+
+    expect(component).toContain('role="tablist"');
+    expect(component).toContain('role="tab"');
+    expect(component).toContain("aria-selected={activeTab === tab}");
+    expect(component).toContain('role="tabpanel"');
+    expect(component).toContain('activeTab === "rank"');
+    expect(component).toContain('activeTab === "titles"');
+    expect(component).toContain('activeTab === "achievements"');
+    expect(component).toContain("window.history.pushState");
+    expect(component).toContain('window.addEventListener("hashchange", syncTabFromHash)');
+    expect(component).toContain('window.addEventListener("popstate", syncTabFromHash)');
+    expect(component).toContain('event.key === "ArrowRight"');
+    expect(component).toContain('event.key === "ArrowLeft"');
+    expect(component).not.toContain("setProgressState");
   });
 
   it("renders the five centralized achievement definitions with localized collection copy", async () => {

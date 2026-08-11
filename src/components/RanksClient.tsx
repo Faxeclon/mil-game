@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState, type KeyboardEvent } from "react";
 import { Check, ChevronLeft, Egg, Film, LockKeyhole, Medal, Search, ShieldCheck, Star, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Narrator } from "@/components/Narrator";
@@ -13,11 +14,11 @@ import {
   titleKeys,
   type RankTier
 } from "@/features/ranks/playerRank";
+import { getProgressTabFromHash, progressTabs, type ProgressTab } from "@/features/ranks/progressTabs";
 import { Link } from "@/i18n/navigation";
 import styles from "./RanksClient.module.css";
 
 const TIERS: readonly RankTier[] = ["bronze", "silver", "gold"];
-
 /** Where a tier begins, as a share of the stars on offer. */
 const TIER_FLOOR: Readonly<Record<RankTier, number>> = {
   bronze: 0,
@@ -60,8 +61,41 @@ export function RanksClient() {
   const { hydrated, progressState } = useProgress();
   const rank = getPlayerRank(progressState);
   const earnedAchievementIds = new Set(progressState.achievementIds);
+  const [activeTab, setActiveTab] = useState<ProgressTab>("rank");
+
+  useEffect(() => {
+    const syncTabFromHash = () => setActiveTab(getProgressTabFromHash(window.location.hash));
+
+    syncTabFromHash();
+    window.addEventListener("hashchange", syncTabFromHash);
+    window.addEventListener("popstate", syncTabFromHash);
+    return () => {
+      window.removeEventListener("hashchange", syncTabFromHash);
+      window.removeEventListener("popstate", syncTabFromHash);
+    };
+  }, []);
 
   const starsForPercent = (percent: number) => Math.ceil((percent / 100) * rank.maxStars);
+  const selectTab = (tab: ProgressTab) => {
+    if (tab === activeTab) return;
+    setActiveTab(tab);
+    window.history.pushState(null, "", `${window.location.pathname}${window.location.search}#${tab}`);
+  };
+  const moveTabFocus = (tab: ProgressTab) => {
+    selectTab(tab);
+    requestAnimationFrame(() => document.getElementById(`progress-tab-${tab}`)?.focus());
+  };
+  const onTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    const index = progressTabs.indexOf(activeTab);
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      moveTabFocus(progressTabs[(index + 1) % progressTabs.length]);
+    }
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      moveTabFocus(progressTabs[(index + progressTabs.length - 1) % progressTabs.length]);
+    }
+  };
 
   return (
     <div className={styles.ranks}>
@@ -78,12 +112,29 @@ export function RanksClient() {
       <h1 className={styles.title}>{t("progressTitle")}</h1>
       <p className={styles.lead}>{t("howItWorks")}</p>
 
-      <p className={styles.standing}>
-        <Star aria-hidden="true" fill="currentColor" size={16} />
-        {hydrated ? t("stars", { stars: rank.stars, max: rank.maxStars }) : t("none")}
-      </p>
+      <div aria-label={t("progressTitle")} className={styles.tabList} role="tablist">
+        {progressTabs.map((tab) => (
+          <button
+            aria-controls={`progress-panel-${tab}`}
+            aria-selected={activeTab === tab}
+            className={activeTab === tab ? styles.tabActive : styles.tab}
+            id={`progress-tab-${tab}`}
+            key={tab}
+            onClick={() => selectTab(tab)}
+            onKeyDown={onTabKeyDown}
+            role="tab"
+            type="button"
+          >
+            {tab === "rank" ? t("rankTitle") : tab === "titles" ? t("titlesTitle") : tAchievements("collectionTitle")}
+          </button>
+        ))}
+      </div>
 
-      <section aria-labelledby="ranks-tiers" className={styles.group}>
+      {activeTab === "rank" && <section aria-labelledby="progress-tab-rank" className={styles.group} id="progress-panel-rank" role="tabpanel">
+        <p className={styles.standing}>
+          <Star aria-hidden="true" fill="currentColor" size={16} />
+          {hydrated ? t("stars", { stars: rank.stars, max: rank.maxStars }) : t("none")}
+        </p>
         <h2 className={styles.groupTitle} id="ranks-tiers">
           {t("rankTitle")}
         </h2>
@@ -114,9 +165,9 @@ export function RanksClient() {
             );
           })}
         </ul>
-      </section>
+      </section>}
 
-      <section aria-labelledby="ranks-titles" className={styles.group} id="titles">
+      {activeTab === "titles" && <section aria-labelledby="progress-tab-titles" className={styles.group} id="progress-panel-titles" role="tabpanel">
         <h2 className={styles.groupTitle} id="ranks-titles">
           {t("titlesTitle")}
         </h2>
@@ -157,9 +208,9 @@ export function RanksClient() {
             );
           })}
         </ul>
-      </section>
+      </section>}
 
-      <section aria-labelledby="ranks-achievements" className={styles.group}>
+      {activeTab === "achievements" && <section aria-labelledby="progress-tab-achievements" className={styles.group} id="progress-panel-achievements" role="tabpanel">
         <h2 className={styles.groupTitle} id="ranks-achievements">
           {tAchievements("collectionTitle")}
         </h2>
@@ -197,7 +248,7 @@ export function RanksClient() {
             );
           })}
         </ul>
-      </section>
+      </section>}
     </div>
   );
 }
