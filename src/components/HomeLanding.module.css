@@ -470,7 +470,7 @@
 }
 
 .hub .mascotRow {
-  align-items: center;
+  align-items: end;
 }
 
 .hub .bubble {
@@ -619,30 +619,6 @@
 .hubStatCardLink:focus-visible {
   outline: 3px solid var(--h-accent);
   outline-offset: 2px;
-}
-
-/*
- * The grown-up's door, at the foot of the child's home.
- *
- * Quiet on purpose: this screen belongs to the child, and an adult reaching for it already
- * knows what they are looking for. Big enough to hit, small enough not to compete.
- */
-.adultDoor {
-  min-height: 2.75rem;
-  margin: 1.25rem auto 0;
-  padding: 0 0.9rem;
-  display: flex;
-  width: fit-content;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  border: 1px solid var(--h-hairline-strong);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--h-ink-soft);
-  font-size: 0.84rem;
-  font-weight: 700;
-  text-decoration: none;
 }
 
 /* The friends tile is a link now, so it fills its cell and carries no underline. */

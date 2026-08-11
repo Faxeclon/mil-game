@@ -9,7 +9,6 @@ import {
   Check,
   Feather,
   Flame,
-  GraduationCap,
   Medal,
   Play,
   QrCode,
@@ -35,7 +34,6 @@ import { normalizeLocalNickname } from "@/features/profile/localNickname";
 import { needsLocalNicknameCompletion } from "@/features/progress/progressState";
 import { getLocalPlayedOn, getStreakToday } from "@/features/progress/streak";
 import { readClassSet } from "@/features/teacher/classSetStorage";
-import { getAdultHome } from "@/features/adults/adultAccount";
 import { useAdultAccount } from "@/features/adults/adultAccountStore";
 import { getChildrenOf } from "@/features/adults/childrenOfAdult";
 import { countFriends } from "@/features/friends/friendsModel";
@@ -67,7 +65,6 @@ const apprenticeAvatarIcons: Record<ApprenticeAvatarId, LucideIcon> = {
 export function HomeLanding() {
   const t = useTranslations("home");
   const tIslands = useTranslations("islands");
-  const tStorage = useTranslations("storage");
   const tVersus = useTranslations("versus");
   const tFriends = useTranslations("friends");
   const tAdult = useTranslations("adult");
@@ -103,7 +100,6 @@ export function HomeLanding() {
   // available here and the streak cannot differ between server and client markup.
   const [today] = useState(() => getLocalPlayedOn(new Date()));
   const { hydrated: adultHydrated, account } = useAdultAccount();
-  const adultHome = getAdultHome(account);
   const childCount = getChildrenOf(account, savedProfiles).length;
   // Read once on mount: the card set belongs to this device and nothing else writes it.
   const [classSet] = useState(() => readClassSet());
@@ -277,21 +273,6 @@ export function HomeLanding() {
             </span>
           </Link>
 
-          <p className={styles.guestNotice}>
-            {guardian ? tGuardian("grantedPending") : tStorage("guestNotice")}
-          </p>
-
-          {/*
-            The grown-up's way in, from the child's own screen.
-            An adult picking up this phone - the one whose email a child linked, or the
-            teacher it belongs to - had nowhere to go from here without going through the
-            child's settings. It is small and at the foot on purpose: this is the child's
-            home, and the door is for somebody who already knows they want it.
-          */}
-          <Link className={styles.adultDoor} href={adultHome ?? "/adult/join"}>
-            <GraduationCap aria-hidden="true" size={15} />
-            {account ? tAdult("myTools") : tAdult("signIn")}
-          </Link>
         </section>
       </div>
     );

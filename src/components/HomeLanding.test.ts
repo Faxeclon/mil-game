@@ -6,6 +6,7 @@ import spanishMessages from "@/messages/es.json";
 
 const componentPath = join(process.cwd(), "src", "components", "HomeLanding.tsx");
 const stylesPath = join(process.cwd(), "src", "components", "HomeLanding.module.css");
+const settingsPath = join(process.cwd(), "src", "components", "SettingsClient.tsx");
 
 describe("HomeLanding continuation", () => {
   it("puts the existing next-mission link in Roqui's welcome instead of a duplicate child card", async () => {
@@ -39,5 +40,26 @@ describe("HomeLanding continuation", () => {
     expect(styles).toContain(".hubStatCardLink");
     expect(component).toContain('aria-label={tRank("seeLadder")}');
     expect(component).not.toContain('className={styles.hubStatDetail}');
+  });
+
+  it("keeps the child hub focused while adult and guardian entry remain available from settings", async () => {
+    const component = await readFile(componentPath, "utf8");
+    const settings = await readFile(settingsPath, "utf8");
+    const childHub = component.slice(
+      component.indexOf("if (!grownUpAtHome"),
+      component.indexOf("if (needsLocalNicknameCompletion")
+    );
+
+    expect(childHub).not.toContain("styles.guestNotice");
+    expect(childHub).not.toContain("styles.adultDoor");
+    expect(settings).toContain('href="/adult/join"');
+    expect(settings).toContain('href="/guardian"');
+  });
+
+  it("aligns Roqui with the speech-bubble tail without changing the hero structure", async () => {
+    const styles = await readFile(stylesPath, "utf8");
+
+    expect(styles).toContain(".hub .mascotRow");
+    expect(styles).toContain("align-items: end;");
   });
 });
