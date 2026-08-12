@@ -168,6 +168,21 @@ export function getAdultHome(account: AdultAccount | null): "/teacher" | "/adult
 }
 
 /**
+ * Whether the home screen belongs to the grown-up rather than to a child.
+ *
+ * Signing in decides it, and nothing else. A phone that has been played on is ordinary -
+ * a classroom device is handed round, a family one is shared - and letting that profile
+ * answer the question dropped whichever grown-up had signed in straight into the child's
+ * hub: that child's friends, medal, rank and streak, none of it theirs to be reading.
+ *
+ * The child's hub is not lost, it is behind the grown-up leaving. The phone belongs to
+ * whoever said this device is theirs, until they say otherwise.
+ */
+export function isGrownUpAtHome(account: AdultAccount | null): boolean {
+  return account !== null;
+}
+
+/**
  * The name a grown-up plays under, taken from the address they already gave.
  *
  * Choosing to play creates or selects their profile: they already said who they are, so

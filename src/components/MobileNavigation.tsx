@@ -7,7 +7,6 @@ import { getAdultHome } from "@/features/adults/adultAccount";
 import { useAdultAccount } from "@/features/adults/adultAccountStore";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link, usePathname } from "@/i18n/navigation";
-import { AdultPlayLink } from "./AdultPlayLink";
 
 /**
  * Primary navigation for small screens. Hidden during the tutorial game shell.
@@ -57,7 +56,12 @@ export function MobileNavigation() {
    */
   if (isTeacher) {
     destinations.push({ href: "/teacher/cards", icon: QrCode, label: tCards("navLabel") });
-  } else if (onboarded || account) {
+  } else if (!account && onboarded) {
+    /*
+     * The map belongs to whoever plays, and no grown-up does. A parent came to see how
+     * their children are getting on, not to earn a streak of their own; their own tools
+     * are the next entry along, and this bar is what is on screen the whole time.
+     */
     destinations.push({ href: "/worlds", icon: Map, label: t("worlds") });
   }
 
@@ -81,14 +85,6 @@ export function MobileNavigation() {
       >
         {destinations.map(({ href, icon: Icon, label }) => {
           const isActive = pathname === href;
-          if (href === "/worlds" && account) {
-            return (
-              <AdultPlayLink aria-label={label} className="mobile-bottom-nav__link" key={href}>
-                <Icon aria-hidden="true" size={21} strokeWidth={2.4} />
-                <span>{label}</span>
-              </AdultPlayLink>
-            );
-          }
           return (
             <Link
               aria-current={isActive ? "page" : undefined}
