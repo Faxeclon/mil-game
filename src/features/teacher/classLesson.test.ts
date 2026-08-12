@@ -126,6 +126,34 @@ describe("what the teacher reads afterwards", () => {
     expect(getHardestQuestion(lesson)?.question.roundId).toBe("hard");
   });
 
+  /*
+   * The bug this replaced: with every question tied at nobody wrong, the reduce fell
+   * through to the first one and the class summary announced "the hardest was question 1:
+   * 0 students got it wrong" - untrue, and alarming enough to send a teacher back over a
+   * question the class never struggled with.
+   */
+  it("names no hardest question when nobody got one wrong", () => {
+    let lesson = createLesson("p");
+    lesson = recordQuestion(lesson, makeRound("one", "left"), {
+      [set.cards[0].cardId]: "A",
+      [set.cards[1].cardId]: "A"
+    });
+    lesson = recordQuestion(lesson, makeRound("two", "left"), {
+      [set.cards[0].cardId]: "A",
+      [set.cards[1].cardId]: "A"
+    });
+
+    expect(getHardestQuestion(lesson)).toBeNull();
+  });
+
+  it("names no hardest question when the class answered nothing at all", () => {
+    let lesson = createLesson("p");
+    lesson = recordQuestion(lesson, makeRound("one", "left"), {});
+    lesson = recordQuestion(lesson, makeRound("two", "left"), {});
+
+    expect(getHardestQuestion(lesson)).toBeNull();
+  });
+
   it("has no hardest question before anything was asked", () => {
     expect(getHardestQuestion(createLesson("p"))).toBeNull();
   });

@@ -594,6 +594,35 @@
   line-height: 1.45;
 }
 
+/*
+ * What the lesson showed, on the screen at the end of it.
+ *
+ * Left-aligned and quiet, unlike the block used during a live round. The filled orange
+ * panel is for a class watching a result appear; here it made a plain observation about
+ * one question read as though something had gone wrong.
+ */
+.insight {
+  margin: 0.9rem 0 0;
+  padding: 0.55rem 0 0.55rem 0.85rem;
+  border-left: 3px solid var(--c-accent);
+  color: var(--c-ink);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: left;
+}
+
+/* Nothing to summarise. Said once, calmly, instead of as three separate warnings. */
+.nothingAnswered {
+  margin: 0.9rem 0 0;
+  padding: 0.85rem;
+  border: 1px dashed var(--c-hairline-strong, #d5cfcd);
+  border-radius: 0.9rem;
+  color: var(--c-ink-soft);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
 .list {
   margin: 0;
   padding: 0;

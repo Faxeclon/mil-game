@@ -26,6 +26,16 @@ export function IslandsNavLink({ className }: { className?: string }) {
 
   if (!hasMounted || !hydrated || !adultHydrated) return null;
   if (!onboarded && !account) return null;
+  /*
+   * Not for a teacher.
+   *
+   * Their work is the class - printing the cards, running the questions, reading what the
+   * room got wrong - and the map is a child's game. Leaving it in the header put the one
+   * door they never use next to the ones they do, in the bar that is always on screen.
+   * Parents keep it: trying the game is the shortest way to understand what their child is
+   * doing.
+   */
+  if (account?.role === "teacher") return null;
 
   const mapLink = (
     <Link aria-label={t("worlds")} className={className} href="/worlds">

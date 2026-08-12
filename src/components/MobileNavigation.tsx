@@ -1,6 +1,6 @@
 "use client";
 
-import { GraduationCap, Home, Map, SlidersHorizontal, Users, type LucideIcon } from "lucide-react";
+import { GraduationCap, Home, Map, QrCode, SlidersHorizontal, Users, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useHasMounted } from "@/features/app/useHasMounted";
 import { getAdultHome } from "@/features/adults/adultAccount";
@@ -21,6 +21,7 @@ export function MobileNavigation() {
   const pathname = usePathname();
   const t = useTranslations("header");
   const tAdult = useTranslations("adult");
+  const tCards = useTranslations("cards");
   const hasMounted = useHasMounted();
   const { hydrated, onboarded } = useProgress();
   const { hydrated: adultHydrated, account } = useAdultAccount();
@@ -40,12 +41,25 @@ export function MobileNavigation() {
     { href: "/", icon: Home, label: t("home") }
   ];
 
+  const isTeacher = account?.role === "teacher";
+
   /*
-   * The map is offered to a player, and to any grown-up who signed in. For a grown-up,
-   * that explicit navigation selects their own profile before opening the islands. Only a
-   * device with nobody on it is refused, and there the map could only ask for a name.
+   * A teacher gets the cards instead of the islands.
+   *
+   * Not because playing is forbidden - the map is still reachable from their own panel -
+   * but because this bar is the one thing on screen while standing in front of a class,
+   * and what they need there is the sheet of cards to print or the class to run. Sending
+   * that tap to a child's game map was offering the wrong door in the only place where
+   * there is no time to look for the right one.
+   *
+   * Everyone else keeps the map: a player, and a parent, for whom the game is exactly what
+   * they came to look at.
    */
-  if (onboarded || account) destinations.push({ href: "/worlds", icon: Map, label: t("worlds") });
+  if (isTeacher) {
+    destinations.push({ href: "/teacher/cards", icon: QrCode, label: tCards("navLabel") });
+  } else if (onboarded || account) {
+    destinations.push({ href: "/worlds", icon: Map, label: t("worlds") });
+  }
 
   if (account && adultHome) {
     destinations.push({

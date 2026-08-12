@@ -27,10 +27,19 @@ export type ProvenanceMetadata = {
   sourceReference?: string;
 };
 
+/**
+ * What kind of file this is.
+ *
+ * Optional, and absent means an image: every pack written before video existed keeps
+ * working untouched, and a new one only says so when it differs.
+ */
+export type TutorialMediaKind = "image" | "video";
+
 export type TutorialMediaAsset = {
   id: string;
   src: string;
   altKey: string;
+  kind?: TutorialMediaKind;
   origin: MediaOrigin;
   reliability?: InformationReliability;
   provenance: ProvenanceMetadata;

@@ -111,7 +111,7 @@ export function TeacherCardsClient() {
           <p className={styles.fieldHint}>{t("nameHint")}</p>
         </div>
 
-        <button className={styles.primary} type="button" onClick={generate}>
+        <button className={styles.action} type="button" onClick={generate}>
           {t("generate")}
         </button>
       </div>
