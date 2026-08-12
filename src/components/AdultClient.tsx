@@ -11,7 +11,6 @@ import { useProgress } from "@/features/progress/ProgressProvider";
 import { getLocalPlayedOn } from "@/features/progress/streak";
 import { Link } from "@/i18n/navigation";
 import { LoadingRoqui } from "./LoadingRoqui";
-import { AdultPlayLink } from "./AdultPlayLink";
 import styles from "./AdultClient.module.css";
 
 /**
@@ -178,19 +177,13 @@ export function AdultClient() {
       <p className={styles.privacy}>{t("privacy")}</p>
 
       {/*
-        A parent is offered the game; a teacher is not.
+        No way into the game from here, for either kind of grown-up.
 
-        A parent looks at this panel to understand what their child is doing, and trying it
-        themselves is the shortest way to that. A teacher's work is the class: printing the
-        cards, running the questions, reading what the room got wrong. Playing a child's
-        map from here was a road back into the part of the app they do not use, taking up
-        the most prominent button on their screen.
+        This panel answers one question - how are the children I look after doing - and the
+        game is a child's. A grown-up's own run would put a second streak and a second rank
+        on a device that already belongs to somebody who plays, and it took the most
+        prominent button on the screen to do it.
       */}
-      {account?.role !== "teacher" && (
-        <section aria-label={t("homePlayLabel")}>
-          <AdultPlayLink className={styles.primary}>{t("homePlayAction")}</AdultPlayLink>
-        </section>
-      )}
 
       {/* Unlinking only changes who can see this profile from the adult panel. */}
       {unlinking && (

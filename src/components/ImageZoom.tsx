@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { Maximize2, Minus, Plus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -108,7 +109,18 @@ export function ImageZoom({
         <Maximize2 aria-hidden="true" size={15} strokeWidth={2.5} />
       </button>
 
-      {open && (
+      {/*
+        Sent to the end of <body> rather than left where it sits in the page.
+
+        Every game screen puts `position: relative; z-index: 1` on its direct children, so
+        an overlay rendered inside one of them is sealed into that layer: however high its
+        own z-index, it cannot rise above a sibling further down the page. The enlarged
+        picture came up underneath "Check answer" and "Back to the island".
+
+        A portal is the fix rather than a bigger number, because a bigger number would only
+        win until the next screen introduces its own stacking context.
+      */}
+      {open && createPortal(
         <div
           aria-label={t("title")}
           aria-modal="true"
@@ -170,7 +182,8 @@ export function ImageZoom({
           </div>
 
           <p className={styles.hint}>{magnified ? t("panHint") : t("hint")}</p>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

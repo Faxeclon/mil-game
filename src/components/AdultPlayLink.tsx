@@ -25,6 +25,17 @@ export function AdultPlayLink({ children, className, "aria-label": ariaLabel }: 
   const { startAdultPlay } = useProgress();
   const adultPlayName = getAdultPlayName(account);
 
+  /*
+   * Never for a teacher.
+   *
+   * Their whole role here is supervising: printing the cards, running the questions,
+   * reading what the room got wrong. Playing a mission is a child's work, and a teacher's
+   * own game would be a second set of medals and a streak on a device that belongs to a
+   * class. Enforced in the one component every door goes through, so a link added
+   * somewhere else later cannot quietly reopen it.
+   */
+  if (account?.role === "teacher") return null;
+
   if (!account || !adultPlayName) {
     return (
       <Link aria-label={ariaLabel} className={className} href="/worlds">

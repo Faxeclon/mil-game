@@ -6,14 +6,14 @@ import { useHasMounted } from "@/features/app/useHasMounted";
 import { useAdultAccount } from "@/features/adults/adultAccountStore";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link } from "@/i18n/navigation";
-import { AdultPlayLink } from "./AdultPlayLink";
 
 /**
- * The map link, offered once somebody on this device can actually open it.
+ * The map link, offered only to somebody who plays.
  *
- * That is a player with a profile, or a grown-up who signed in. A grown-up's explicit map
- * action first selects their own profile; only an empty device is left without the link,
- * because there the map could do nothing but ask for a name.
+ * That is a child with a profile. A grown-up of either kind is left without it: a teacher
+ * supervises a class and a parent watches how their children are doing, and neither came
+ * here to earn medals. A grown-up's own game would be a second streak and a second rank
+ * sitting on a device that already belongs to somebody who plays.
  *
  * It renders nothing until the stored progress is known, which also keeps the server
  * markup identical for every visitor.
@@ -25,31 +25,12 @@ export function IslandsNavLink({ className }: { className?: string }) {
   const { hydrated: adultHydrated, account } = useAdultAccount();
 
   if (!hasMounted || !hydrated || !adultHydrated) return null;
-  if (!onboarded && !account) return null;
-  /*
-   * Not for a teacher.
-   *
-   * Their work is the class - printing the cards, running the questions, reading what the
-   * room got wrong - and the map is a child's game. Leaving it in the header put the one
-   * door they never use next to the ones they do, in the bar that is always on screen.
-   * Parents keep it: trying the game is the shortest way to understand what their child is
-   * doing.
-   */
-  if (account?.role === "teacher") return null;
+  if (account || !onboarded) return null;
 
-  const mapLink = (
+  return (
     <Link aria-label={t("worlds")} className={className} href="/worlds">
       <Map aria-hidden="true" size={19} />
       <span>{t("worlds")}</span>
     </Link>
-  );
-
-  if (!account) return mapLink;
-
-  return (
-    <AdultPlayLink aria-label={t("worlds")} className={className}>
-      <Map aria-hidden="true" size={19} />
-      <span>{t("worlds")}</span>
-    </AdultPlayLink>
   );
 }
