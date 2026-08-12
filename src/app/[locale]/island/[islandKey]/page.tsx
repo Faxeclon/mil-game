@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { IslandView } from "@/components/IslandView";
+import { ChildExperienceRouteGuard } from "@/components/ChildExperienceRouteGuard";
 import { PageContainer } from "@/components/PageContainer";
 import { ProfileRouteGuard } from "@/components/ProfileRouteGuard";
 import { islands, type IslandKey } from "@/features/levels/levelModel";
@@ -20,9 +21,11 @@ export default async function IslandPage({ params }: IslandPageProps) {
   return (
     <main id="main-content">
       <PageContainer className="island-shell">
-        <ProfileRouteGuard>
-          <IslandView island={islandKey as IslandKey} />
-        </ProfileRouteGuard>
+        <ChildExperienceRouteGuard>
+          <ProfileRouteGuard>
+            <IslandView island={islandKey as IslandKey} />
+          </ProfileRouteGuard>
+        </ChildExperienceRouteGuard>
       </PageContainer>
     </main>
   );
