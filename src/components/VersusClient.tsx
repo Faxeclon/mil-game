@@ -1,13 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useReducer, useState } from "react";
 import { Check, ChevronLeft, Smartphone, Sparkles, Target, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { playSound } from "@/features/audio/soundEffects";
 import { Narrator } from "@/components/Narrator";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
-import { useProgress } from "@/features/progress/ProgressProvider";
 import type { TutorialRound } from "@/content/schemas/tutorial";
 import {
   buildVersusDeck,
@@ -18,10 +16,14 @@ import {
 } from "@/features/versus/versusState";
 import { Link } from "@/i18n/navigation";
 import { ImageZoom } from "./ImageZoom";
+import { RoundMedia } from "./RoundMedia";
 import styles from "./VersusClient.module.css";
 
 /** Short matches on purpose: a shared phone changes hands, and patience is finite. */
 const TURN_CHOICES = [3, 5] as const;
+
+/** How long the turn card stays up before the round appears. */
+const HANDOVER_MS = 1_400;
 
 /**
  * Versus on a single phone, played in turns.
@@ -33,8 +35,6 @@ const TURN_CHOICES = [3, 5] as const;
 export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
   const t = useTranslations("versus");
   const tTutorial = useTranslations("tutorial");
-  const tEducation = useTranslations("education");
-  const { profiles } = useProgress();
   const [state, dispatch] = useReducer(versusReducer, initialVersusState);
   const [turnsPerPlayer, setTurnsPerPlayer] = useState<number>(TURN_CHOICES[0]);
   const [deck, setDeck] = useState<TutorialRound[]>([]);
@@ -53,16 +53,32 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
   }, [handoverKey]);
 
   /*
-   * The two seats take the nicknames of the players already on this phone, when there
-   * are two. Nobody has to type anything: the children who share the device are exactly
-   * the ones who are about to share the match.
+   * The turn card clears itself.
+   *
+   * Long enough to read four words and look up, short enough that it never feels like a
+   * screen to get through. A tap still skips it, so a throttled timer in a backgrounded
+   * tab cannot strand anybody.
    */
-  const localNames = profiles.profiles
-    .map((profile) => profile.progress.localNickname)
-    .filter((nickname): nickname is string => Boolean(nickname));
-  const usesLocalNames = localNames.length >= 2;
-  const playerName = (player: VersusPlayer) =>
-    usesLocalNames ? localNames[player - 1] : t(player === 1 ? "playerOne" : "playerTwo");
+  useEffect(() => {
+    if (!handoverKey) return;
+    const timer = window.setTimeout(() => dispatch({ type: "ready" }), HANDOVER_MS);
+    return () => clearTimeout(timer);
+  }, [handoverKey]);
+
+  /*
+   * Two seats, not two profiles.
+   *
+   * The seats used to borrow the nicknames of whoever had a profile on this phone, on the
+   * assumption that the children who share the device are the ones about to share the
+   * match. That assumption is wrong often enough to be a bug: it announced "Sebas vs hola"
+   * when the second profile was a test, and it names an absent sibling when a friend is
+   * the one actually holding the phone.
+   *
+   * Nobody is asked to type a name either. A match lasts a few minutes and nothing about
+   * it is saved, so "Player 1" and "Player 2" say everything the two of them need to know
+   * about whose turn it is.
+   */
+  const playerName = (player: VersusPlayer) => t(player === 1 ? "playerOne" : "playerTwo");
 
   const beginMatch = (turns: number) => {
     setTurnsPerPlayer(turns);
@@ -87,16 +103,19 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
           </span>
           <span className={styles.lineupName}>{playerName(2)}</span>
         </p>
-        {usesLocalNames && <p className={styles.lineupNote}>{t("namesFromProfiles")}</p>}
 
+        {/*
+          One rule, and it is the only one this screen needs: the phone changes hands.
+
+          "Who published this, and is the original source available?" used to sit here as a
+          second line. It is a good question and it belongs in the feedback after a round -
+          but in a lobby, in front of two children about to pass a phone back and forth, it
+          is a paragraph of advice standing between them and the game.
+        */}
         <ol className={styles.rules}>
           <li className={styles.rule}>
             <Smartphone aria-hidden="true" size={16} />
             {t("rulePass")}
-          </li>
-          <li className={styles.rule}>
-            <Sparkles aria-hidden="true" size={16} />
-            {tEducation("sourceQuestion")}
           </li>
         </ol>
 
@@ -164,31 +183,58 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
     );
   }
 
+  /*
+   * The name and the number are separated on purpose.
+   *
+   * They used to sit side by side at the same size and weight, so "Player 1 0" read as one
+   * label and nobody could see that the 0 was a score climbing. Small quiet name, large
+   * figure underneath: the thing that changes is the thing that is big.
+   */
+  const scoreSide = (player: VersusPlayer) => (
+    <span
+      className={`${styles.scoreSide} ${state.player === player ? styles.scoreActive : styles.scoreIdle}`}
+    >
+      <span className={styles.scoreName}>{playerName(player)}</span>
+      <span className={styles.scoreValue}>{state.scores[player - 1]}</span>
+    </span>
+  );
+
   const scoreboard = (
     <p className={styles.scoreboard}>
-      <span className={state.player === 1 ? styles.scoreActive : styles.scoreIdle}>
-        {playerName(1)} {state.scores[0]}
-      </span>
+      {scoreSide(1)}
       <span className={styles.scoreRound}>{t("turn", { current: state.roundIndex + 1, total: totalRounds })}</span>
-      <span className={state.player === 2 ? styles.scoreActive : styles.scoreIdle}>
-        {playerName(2)} {state.scores[1]}
-      </span>
+      {scoreSide(2)}
     </p>
   );
 
   if (state.status === "handover") {
     return (
-      <section aria-labelledby="versus-title" className={styles.versus}>
-        {scoreboard}
-        <MascotSlot alt={t("mascotAlt")} className={styles.mascot} mood="encouraging" priority />
-        <h1 className={styles.title} id="versus-title">
-          {t("handTo", { player: playerName(state.player) })}
-        </h1>
-        <p className={styles.lead}>{t("handoverHint")}</p>
-        <button className={styles.primary} type="button" onClick={() => dispatch({ type: "ready" })}>
-          {t("ready", { player: playerName(state.player) })}
-        </button>
-      </section>
+      /*
+       * A card that announces the turn and then gets out of the way.
+       *
+       * It used to ask "ready, Player 2?" under a heading that already said it was Player
+       * 2's turn - the same fact twice, with a button between the two of them and the game.
+       * Now it says whose turn it is and moves on by itself.
+       *
+       * Still tappable, and that is not decoration: if a timer is throttled by a
+       * backgrounded tab, a tap is the way out rather than a stuck screen.
+       */
+      <button
+        aria-label={t("handTo", { player: playerName(state.player) })}
+        className={`${styles.handover} app-chrome-hidden`}
+        type="button"
+        onClick={() => dispatch({ type: "ready" })}
+      >
+        <span className={styles.handoverStage}>
+          <MascotSlot alt={t("mascotAlt")} className={styles.handoverMascot} mood="encouraging" priority />
+          <span aria-live="polite" className={styles.handoverTitle}>
+            {t("handTo", { player: playerName(state.player) })}
+          </span>
+          <span className={styles.handoverScore}>
+            {state.scores[0]} – {state.scores[1]}
+          </span>
+        </span>
+      </button>
     );
   }
 
@@ -197,6 +243,17 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
 
   return (
     <section aria-labelledby="versus-question" className={styles.versus}>
+      {/*
+        The way out sits above the scoreboard, where a back link belongs, rather than at
+        the foot of the page under the answer button. It goes home rather than to the
+        islands: a match is not part of the map, so returning to the map was dropping
+        somebody into a place they had not come from.
+      */}
+      <Link className={styles.quit} href="/">
+        <ChevronLeft aria-hidden="true" size={16} />
+        {t("exitHome")}
+      </Link>
+
       {scoreboard}
 
       <p className={styles.turnChip}>
@@ -239,7 +296,11 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
               be mistaken for choosing.
             */
             <div className={styles.cardWrap} key={choice.id}>
-            <ImageZoom alt={tTutorial(choice.media.altKey)} src={choice.media.src} />
+            <ImageZoom
+              alt={tTutorial(choice.media.altKey)}
+              kind={choice.media.kind}
+              src={choice.media.src}
+            />
             <button
               aria-label={tTutorial("choiceAria", {
                 position: tTutorial(choice.position),
@@ -252,9 +313,9 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
               onClick={() => dispatch({ type: "select", choiceId: choice.id })}
             >
               <span className={styles.cardMedia}>
-                <Image
+                <RoundMedia
                   alt={tTutorial(choice.media.altKey)}
-                  fill
+                  kind={choice.media.kind}
                   sizes="(max-width: 700px) 45vw, 320px"
                   src={choice.media.src}
                 />
@@ -314,10 +375,6 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
         </div>
       )}
 
-      <Link className={styles.quit} href="/worlds">
-        <ChevronLeft aria-hidden="true" size={16} />
-        {t("exit")}
-      </Link>
     </section>
   );
 }
