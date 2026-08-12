@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
-import { Accessibility, Check, ChevronLeft, Sparkles, Target, Timer as TimerIcon } from "lucide-react";
+import { Check, ChevronLeft, Sparkles, Target, Timer as TimerIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { playSound } from "@/features/audio/soundEffects";
 import { Narrator } from "@/components/Narrator";
@@ -353,11 +353,15 @@ export function TutorialClient({
           <ChevronLeft aria-hidden="true" size={20} />
           <span>{t("exit")}</span>
         </Link>
+        {/*
+          Nothing but the way out and where you are.
+
+          The options link used to sit here and it was the only round screen that had one -
+          the single-image and timed rounds never did. Leaving a mission to change a
+          setting means abandoning the round, so the door was offering to undo the very
+          thing the child had just started.
+        */}
         <p className={styles.headerProgress}>{t("progress", { current: round.order, total: pack.rounds.length })}</p>
-        <Link className={styles.headerLink} href="/settings">
-          <Accessibility aria-hidden="true" size={18} />
-          <span>{t("settings")}</span>
-        </Link>
       </header>
 
       <div aria-hidden="true" className={styles.progressTrack}>

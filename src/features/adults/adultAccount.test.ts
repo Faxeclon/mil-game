@@ -9,6 +9,7 @@ import {
   getAdultHome,
   getAdultPlayName,
   isFamily,
+  isGrownUpAtHome,
   isTeacher,
   LEGACY_ADULT_STORAGE_KEY,
   LEGACY_TEACHER_STORAGE_KEY,
@@ -20,6 +21,7 @@ import {
   signInAdult,
   signOutActiveAdult,
   writeAdultsDocument,
+  type AdultAccount,
   type AdultsDocument
 } from "./adultAccount";
 
@@ -110,6 +112,26 @@ describe("what signing in adds", () => {
     const { found } = registerAdultAccount(emptyAdultsDocument, "@example.com", "family", "2026-08-08");
 
     expect(getAdultPlayName(found)).toBe("@example.com");
+  });
+});
+
+describe("whose home the home screen is", () => {
+  const teacher = createAdultAccount("rosa@example.com", "teacher", "2026-08-01") as AdultAccount;
+  const parent = createAdultAccount("marta@example.com", "family", "2026-08-01") as AdultAccount;
+
+  it("belongs to whoever is playing when nobody signed in", () => {
+    expect(isGrownUpAtHome(null)).toBe(false);
+  });
+
+  /*
+   * The bug this exists to stop, and it happened to both kinds of grown-up. A shared phone
+   * has been played on - that is what shared means - and letting that decide dropped
+   * whoever signed in into the child's hub: their friends, their medal, their rank, their
+   * streak. None of it belongs to the person reading it.
+   */
+  it("stays the grown-up's even when a child has been playing on the device", () => {
+    expect(isGrownUpAtHome(teacher)).toBe(true);
+    expect(isGrownUpAtHome(parent)).toBe(true);
   });
 });
 

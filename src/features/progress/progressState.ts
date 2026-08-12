@@ -80,7 +80,9 @@ export type ProgressState = {
   rankMissionCeiling: number;
   /** Only profiles created after map onboarding existed may need its one-time guide. */
   mapOnboardingStage: MapOnboardingStage;
-  /** True once the player has completed local profile setup and the introduction. */
+  /** The narrative prologue shown once after this profile is created. */
+  introStorySeen: boolean;
+  /** True once the player has completed local profile setup. */
   onboarded?: boolean;
   /** A private display label stored only on this device. */
   localNickname: string | null;
@@ -166,6 +168,7 @@ export const initialProgressState: ProgressState = {
   rushUnlockedIslands: [],
   rankMissionCeiling: playableMissionCount,
   mapOnboardingStage: "map-island",
+  introStorySeen: false,
   localNickname: null,
   apprenticeAvatarId: null,
   bestResultsByLevelId: {},
@@ -203,6 +206,8 @@ export function resetProgressKeepingProfile(state: ProgressState): ProgressState
     guardian: state.guardian,
     // This is an explanation about this profile, not progress that should repeat after a reset.
     localMedalNoticePresented: state.localMedalNoticePresented,
+    // The prologue explains the world, not a run of the game.
+    introStorySeen: state.introStorySeen,
     // Whose game this is survives too, or a grown-up's reset would turn them into a child.
     adultEmail: state.adultEmail
   };
@@ -426,6 +431,11 @@ export function parseProgressState(value: unknown): ProgressState {
   const pendingAchievementCelebrationIds = parseAchievementIds(value.pendingAchievementCelebrationIds)
     .filter((id) => achievementIds.includes(id));
   const localMedalNoticePresented = value.localMedalNoticePresented === true;
+  // Existing local profiles already completed the former onboarding, so never insert a
+  // new narrative sequence into their return to the game.
+  const introStorySeen = typeof value.introStorySeen === "boolean"
+    ? value.introStorySeen
+    : value.onboarded === true || completedLevelIds.length > 0;
 
   return {
     version: PROGRESS_VERSION,
@@ -446,6 +456,7 @@ export function parseProgressState(value: unknown): ProgressState {
     mapOnboardingStage: mapOnboardingStages.includes(value.mapOnboardingStage as MapOnboardingStage)
       ? value.mapOnboardingStage as MapOnboardingStage
       : value.mapOnboardingCompleted === false ? "map-island" : "complete",
+    introStorySeen,
     // Finishing anything proves the player already went through onboarding.
     ...(value.onboarded === true || completedLevelIds.length > 0
       ? { onboarded: true }
@@ -463,7 +474,7 @@ export function parseProgressState(value: unknown): ProgressState {
   };
 }
 
-/** Records that local profile setup and the introduction are behind the player. */
+/** Records that local profile setup is complete; the narrative prologue is tracked separately. */
 export function markOnboarded(
   state: ProgressState,
   localNickname?: string,
@@ -486,6 +497,11 @@ export function markOnboarded(
     ...(nickname ? { localNickname: nickname } : {}),
     apprenticeAvatarId: avatarId
   };
+}
+
+/** Records that this profile has completed or skipped the one-time narrative prologue. */
+export function markIntroStorySeen(state: ProgressState): ProgressState {
+  return state.introStorySeen ? state : { ...state, introStorySeen: true };
 }
 
 /**

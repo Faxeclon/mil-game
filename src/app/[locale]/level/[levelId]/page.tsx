@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { MissionIntro } from "@/components/MissionIntro";
+import { ChildExperienceRouteGuard } from "@/components/ChildExperienceRouteGuard";
 import { MissionRouteGuard } from "@/components/MissionRouteGuard";
 import { PageContainer } from "@/components/PageContainer";
 import { ProfileRouteGuard } from "@/components/ProfileRouteGuard";
@@ -54,7 +55,8 @@ export default async function LevelPage({ params }: LevelPageProps) {
   return (
     <main id="main-content">
       <PageContainer className="tutorial-shell tutorial-game-shell">
-        <ProfileRouteGuard>
+        <ChildExperienceRouteGuard>
+          <ProfileRouteGuard>
           <MissionRouteGuard missionId={mission.id}>
             {/* Roqui presents a new island or theme before its first mission opens. */}
             <MissionIntro missionId={mission.id}>
@@ -79,7 +81,8 @@ export default async function LevelPage({ params }: LevelPageProps) {
               )}
             </MissionIntro>
           </MissionRouteGuard>
-        </ProfileRouteGuard>
+          </ProfileRouteGuard>
+        </ChildExperienceRouteGuard>
       </PageContainer>
     </main>
   );

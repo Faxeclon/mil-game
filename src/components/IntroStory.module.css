@@ -1,0 +1,117 @@
+.story {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  height: 100dvh;
+  overflow: hidden;
+  background: #10182a;
+  color: #fff;
+  isolation: isolate;
+}
+
+.visual,
+.topGradient,
+.bottomGradient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.visual {
+  z-index: -3;
+  background: var(--story-image) center center / cover no-repeat;
+  animation: sceneIn 260ms ease-out both;
+}
+
+.topGradient {
+  z-index: -2;
+  background: linear-gradient(to bottom, rgb(8 18 39 / 58%), transparent 24%);
+}
+
+.bottomGradient {
+  z-index: -1;
+  background: linear-gradient(to top, rgb(8 18 39 / 90%), rgb(8 18 39 / 42%) 38%, transparent 68%);
+}
+
+.skip {
+  min-height: 2.75rem;
+  position: absolute;
+  z-index: 1;
+  top: max(0.5rem, env(safe-area-inset-top));
+  right: max(0.5rem, env(safe-area-inset-right));
+  padding: 0.55rem 0.8rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(8 18 39 / 48%);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.dialogue {
+  width: min(calc(100% - 2rem), 42rem);
+  position: absolute;
+  right: 1rem;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  left: 1rem;
+  margin: 0 auto;
+  padding: clamp(1rem, 4vw, 1.35rem);
+  border: 2px solid rgb(255 255 255 / 80%);
+  border-radius: 1.4rem;
+  background: rgb(255 255 255 / 96%);
+  box-shadow: 0 14px 36px rgb(0 0 0 / 30%);
+  color: #17233d;
+}
+
+.dialogueAdvance {
+  width: 100%;
+  min-height: 4rem;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.dialogueAdvance:disabled { cursor: default; }
+
+.text { font-size: clamp(1.1rem, 4.7vw, 1.4rem); font-weight: 800; line-height: 1.35; }
+.continueMark { flex: 0 0 auto; color: #d64716; font-size: 0.72rem; animation: nudge 1.2s ease-in-out infinite; }
+
+.finish {
+  min-height: 2.9rem;
+  margin-top: 0.9rem;
+  padding: 0.55rem 1.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: #e54b16;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.skip:focus-visible,
+.dialogueAdvance:focus-visible,
+.finish:focus-visible { outline: 3px solid #ffca46; outline-offset: 3px; }
+
+@keyframes sceneIn { from { opacity: 0.82; } to { opacity: 1; } }
+@keyframes nudge { 50% { transform: translateY(3px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .visual,
+  .continueMark { animation: none; }
+}
+
+@media (min-width: 48rem) {
+  .dialogue { right: auto; left: 5vw; margin: 0; }
+  .skip { top: max(1rem, env(safe-area-inset-top)); right: max(1rem, env(safe-area-inset-right)); }
+}

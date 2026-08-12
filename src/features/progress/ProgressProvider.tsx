@@ -23,6 +23,7 @@ import {
   unlockAchievementsInStore,
   acknowledgeAchievementCelebrationInStore,
   markLocalMedalNoticePresentedInStore,
+  markIntroStorySeenInStore,
   getProgressSnapshot,
   markOnboardedInStore,
   advanceMapOnboardingInStore,
@@ -51,6 +52,7 @@ export type ProgressApi = {
   /** Raw state, for the zone and level helpers that derive from it. */
   progressState: ProgressState;
   onboarded: boolean;
+  introStorySeen: boolean;
   completedLevelIds: LevelId[];
   completeLevel: (levelId: LevelId, result: LevelAttempt) => void;
   createBonusOpportunity: (input: BonusOpportunityInput) => void;
@@ -65,6 +67,7 @@ export type ProgressApi = {
   localNickname: string | null;
   apprenticeAvatarId: ApprenticeAvatarId | null;
   markOnboarded: (localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId) => void;
+  markIntroStorySeen: () => void;
   /** Puts a signed-in grown-up into the game as themselves, asking them nothing. */
   startAdultPlay: (email: string, nickname: string) => boolean;
   advanceMapOnboarding: () => void;
@@ -99,6 +102,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       lastResult: state.lastResult,
       progressState: state,
       onboarded: state.onboarded === true,
+      introStorySeen: state.introStorySeen,
       localNickname: state.localNickname,
       apprenticeAvatarId: state.apprenticeAvatarId,
       completedLevelIds: state.completedLevelIds,
@@ -113,6 +117,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       acknowledgeAchievementCelebration: acknowledgeAchievementCelebrationInStore,
       markLocalMedalNoticePresented: markLocalMedalNoticePresentedInStore,
       markOnboarded: markOnboardedInStore,
+      markIntroStorySeen: markIntroStorySeenInStore,
       startAdultPlay: startAdultPlayInStore,
       advanceMapOnboarding: advanceMapOnboardingInStore,
       resetProgress: resetProgressInStore,

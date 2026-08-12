@@ -1,9 +1,10 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { ChevronLeft, GraduationCap, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { AdultRole } from "@/features/adults/adultAccount";
+import { getAdultJoinRouteAccess } from "@/features/adults/adultJoinRouteAccess";
 import { registerAdult, signIn, useAdultAccount } from "@/features/adults/adultAccountStore";
 import { getLocalPlayedOn } from "@/features/progress/streak";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -28,6 +29,7 @@ export function AdultJoinClient() {
   const emailFieldId = useId();
   const router = useRouter();
   const { hydrated, account, adults } = useAdultAccount();
+  const access = getAdultJoinRouteAccess(hydrated, account);
 
   // A device that has met somebody opens on the short form; a new one has nothing to
   // sign in against, so it opens on the only door that can work.
@@ -36,13 +38,14 @@ export function AdultJoinClient() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<"invalid" | "newHere" | null>(null);
 
-  if (!hydrated) return <LoadingRoqui message={t("signIn")} title={t("title")} />;
+  useEffect(() => {
+    if (access.kind === "redirect") router.replace(access.path);
+  }, [access, router]);
+
+  if (access.kind === "checking") return <LoadingRoqui message={t("signIn")} title={t("title")} />;
 
   // Somebody is already signed in; their own tools are the only sensible answer.
-  if (account) {
-    router.replace(account.role === "teacher" ? "/teacher" : "/adult");
-    return <LoadingRoqui message={t("signIn")} title={t("title")} />;
-  }
+  if (access.kind === "redirect") return <LoadingRoqui message={t("signIn")} title={t("title")} />;
 
   const isRegistering = registering ?? adults.accounts.length === 0;
   const enter = (path: string) => router.push(path);

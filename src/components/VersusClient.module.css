@@ -46,6 +46,55 @@
   width: clamp(6rem, 26vw, 9rem);
 }
 
+/* ------------------------------------------------------------ Turn handover */
+
+/*
+ * A full screen for a second and a bit, then gone.
+ *
+ * Full screen rather than a panel because it has one job: make the other player look up.
+ * Anything else visible behind it would be the round they are not meant to see yet.
+ */
+.handover {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 5vw, 2.5rem);
+  border: 0;
+  background: radial-gradient(circle at 50% 34%, #fffdfc 0 38%, #ffeade 100%);
+  color: #1f2a44;
+  cursor: pointer;
+  font: inherit;
+  text-align: center;
+}
+
+.handoverStage {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+}
+
+.handoverMascot {
+  width: clamp(7rem, 34vw, 11rem);
+}
+
+.handoverTitle {
+  max-width: 16ch;
+  font-size: clamp(1.7rem, 7vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.handoverScore {
+  color: #5b6780;
+  font-size: 1.1rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
 .title {
   max-width: 18ch;
   margin: 0;
@@ -186,30 +235,52 @@
 .scoreboard {
   width: 100%;
   margin: 0;
-  padding: 0.45rem 0.6rem;
+  padding: 0.4rem 0.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
   border: 1px solid var(--v-hairline);
-  border-radius: 999px;
+  border-radius: 1.1rem;
   background: var(--v-paper);
-  font-size: 0.85rem;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 
 /* Whose turn it is reads from the ring and the weight, not from the colour alone. */
+/* Name above, figure below: what changes during the match is the part that is large. */
+.scoreSide {
+  min-width: 5.5rem;
+  padding: 0.25rem 0.7rem;
+  display: grid;
+  justify-items: center;
+  gap: 0.05rem;
+  border-radius: 0.9rem;
+}
+
+.scoreName {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.scoreValue {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Whose turn it is, said by a ring rather than by colour alone. */
 .scoreActive {
-  padding: 0.2rem 0.7rem;
-  border-radius: 999px;
   background: var(--v-accent-soft);
   box-shadow: inset 0 0 0 2px var(--v-accent);
   color: var(--v-accent-ink);
 }
 
 .scoreIdle {
-  padding: 0.2rem 0.7rem;
   color: var(--v-ink-soft);
 }
 
@@ -445,8 +516,12 @@
   color: var(--v-ink);
 }
 
+/* A back link, so it sits at the top left rather than centred under the game. */
 .quit {
   min-height: 2.6rem;
+  align-self: start;
+  justify-content: flex-start;
+  padding-left: 0;
   color: var(--v-ink-soft);
   font-size: 0.85rem;
   font-weight: 700;
