@@ -15,7 +15,7 @@ describe("HomeLanding continuation", () => {
     expect(component).toContain('className={styles.hubContinue}');
     expect(component).toContain('className={styles.hubDialogContent}');
     expect(component).toContain('className={`${styles.primaryAction} ${styles.hubContinueAction}`}');
-    expect(component).toContain('href={`/level/${nextMission.id}`}');
+    expect(component).toContain('href={introStorySeen ? `/level/${nextMission.id}` : "/worlds"}');
     expect(component).not.toContain("hubNextDestination");
     expect(component).not.toContain('t("hubContinueLabel")');
   });
@@ -88,5 +88,12 @@ describe("HomeLanding continuation", () => {
 
     expect(component).not.toContain("IntroStory");
     expect(component).not.toContain('router.replace("/worlds")');
+  });
+
+  it("sends a new child through Islands before their first mission, then keeps normal continuation", async () => {
+    const component = await readFile(componentPath, "utf8");
+
+    expect(component).toContain("introStorySeen,");
+    expect(component).toContain('href={introStorySeen ? `/level/${nextMission.id}` : "/worlds"}');
   });
 });

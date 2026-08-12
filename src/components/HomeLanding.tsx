@@ -78,6 +78,7 @@ export function HomeLanding() {
     onboarded,
     markOnboarded,
     progressState,
+    introStorySeen,
     localNickname: savedLocalNickname,
     apprenticeAvatarId: savedApprenticeAvatarId,
     guardian,
@@ -155,7 +156,10 @@ export function HomeLanding() {
                 </p>
                 <div className={styles.hubContinue}>
                   {nextMission ? (
-                    <Link className={`${styles.primaryAction} ${styles.hubContinueAction}`} href={`/level/${nextMission.id}`}>
+                    <Link
+                      className={`${styles.primaryAction} ${styles.hubContinueAction}`}
+                      href={introStorySeen ? `/level/${nextMission.id}` : "/worlds"}
+                    >
                       <Play aria-hidden="true" size={17} fill="currentColor" />
                       {t("hubContinue")}
                     </Link>
