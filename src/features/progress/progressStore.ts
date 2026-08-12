@@ -14,6 +14,7 @@ import {
   authorizeGuardian,
   completeLevel,
   initialProgressState,
+  markIntroStorySeen,
   markLocalMedalNoticePresented,
   markOnboarded,
   advanceMapOnboarding,
@@ -175,6 +176,10 @@ export function markLocalMedalNoticePresentedInStore(): void {
 
 export function markOnboardedInStore(localNickname?: string, apprenticeAvatarId?: ApprenticeAvatarId): void {
   applyToActiveProgress((state) => markOnboarded(state, localNickname, apprenticeAvatarId));
+}
+
+export function markIntroStorySeenInStore(): void {
+  applyToActiveProgress(markIntroStorySeen);
 }
 
 /**

@@ -82,4 +82,11 @@ describe("HomeLanding continuation", () => {
     expect(styles).toContain(".hub .mascotRow");
     expect(styles).toContain("align-items: end;");
   });
+
+  it("keeps profile creation on Home; Islands owns the voluntary narrative entry", async () => {
+    const component = await readFile(componentPath, "utf8");
+
+    expect(component).not.toContain("IntroStory");
+    expect(component).not.toContain('router.replace("/worlds")');
+  });
 });

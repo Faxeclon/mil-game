@@ -5,6 +5,7 @@ import {
   completeLevel,
   didPassLevelAttempt,
   initialProgressState,
+  markIntroStorySeen,
   markOnboarded,
   needsLocalNicknameCompletion,
   parseProgressState,
@@ -39,6 +40,7 @@ describe("canonical level progress", () => {
        */
       rankMissionCeiling: missionBlueprint.filter((mission) => mission.packId).length,
       mapOnboardingStage: "map-island",
+      introStorySeen: false,
       localNickname: null,
       apprenticeAvatarId: null,
       bestResultsByLevelId: {},
@@ -77,6 +79,16 @@ describe("canonical level progress", () => {
 });
 
 describe("legacy migration", () => {
+  it("keeps established profiles out of the new story while fresh profiles still need it", () => {
+    const established = parseProgressState({
+      version: PROGRESS_VERSION,
+      onboarded: true,
+      completedLevelIds: []
+    });
+
+    expect(established.introStorySeen).toBe(true);
+    expect(initialProgressState.introStorySeen).toBe(false);
+  });
   it("migrates only the unambiguous legacy training completion", () => {
     const state = parseProgressState({
       version: PROGRESS_VERSION,
@@ -153,6 +165,7 @@ describe("legacy migration", () => {
       rushUnlockedIslands: [],
       rankMissionCeiling: 8,
       mapOnboardingStage: "complete",
+      introStorySeen: true,
       onboarded: true,
       localNickname: "Faxe",
       apprenticeAvatarId: "fox",
@@ -186,6 +199,24 @@ describe("legacy migration", () => {
     expect(parseProgressState({ version: PROGRESS_VERSION }).apprenticeAvatarId).toBeNull();
     expect(parseProgressState({ version: PROGRESS_VERSION, apprenticeAvatarId: "roqui" }).apprenticeAvatarId).toBeNull();
     expect(parseProgressState({ version: PROGRESS_VERSION, apprenticeAvatarId: 42 }).apprenticeAvatarId).toBeNull();
+  });
+});
+
+describe("intro story progress", () => {
+  it("marks a profile story once without changing its game progress", () => {
+    const profile = markOnboarded(initialProgressState, "Luz", "owl");
+    const seen = markIntroStorySeen(profile);
+
+    expect(seen.introStorySeen).toBe(true);
+    expect(seen.completedLevelIds).toEqual([]);
+    expect(seen.achievementIds).toEqual([]);
+    expect(markIntroStorySeen(seen)).toBe(seen);
+  });
+
+  it("keeps the story acknowledgement when progress is reset", () => {
+    const state = markIntroStorySeen(markOnboarded(initialProgressState, "Luz", "owl"));
+
+    expect(resetProgressKeepingProfile(state).introStorySeen).toBe(true);
   });
 });
 

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useId, useState } from "react";
 import {
   Bird,
@@ -40,7 +39,7 @@ import { countFriends } from "@/features/friends/friendsModel";
 import { useFriends } from "@/features/friends/friendsStore";
 import { getPlayerRank } from "@/features/ranks/playerRank";
 import { useProgress } from "@/features/progress/ProgressProvider";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { enableSoundForNewProfile } from "@/features/audio/soundPreference";
 import { useBackgroundMusic } from "./BackgroundMusicProvider";
 import { AdultPlayLink } from "./AdultPlayLink";
@@ -58,9 +57,8 @@ const apprenticeAvatarIcons: Record<ApprenticeAvatarId, LucideIcon> = {
 /**
  * Entry point of the game, in two steps.
  *
- * First the player picks an apprentice and enters a local display name. Then Roqui takes
- * over the whole screen and introduces the problem one line at a time; a tap anywhere
- * moves on, and the last one opens mission 1.
+ * First the player picks an apprentice and enters a local display name, then returns to
+ * their Home. The map owns the optional one-time narrative entry.
  */
 export function HomeLanding() {
   const t = useTranslations("home");
@@ -73,7 +71,6 @@ export function HomeLanding() {
   const tGuardian = useTranslations("guardian");
   const tTeacherAccount = useTranslations("teacherAccount");
   const tCards = useTranslations("cards");
-  const router = useRouter();
   const { enableForNewProfile } = useBackgroundMusic();
   const nameFieldId = useId();
   const {
@@ -87,15 +84,11 @@ export function HomeLanding() {
     savedProfiles
   } = useProgress();
 
-  const lines = t.raw("dialogue") as string[];
   const apprenticeNames = t.raw("profileAvatars") as string[];
 
-  const step = "account" as "account" | "intro";
-  const [lineIndex, setLineIndex] = useState(0);
   const [apprenticeAvatarId, setApprenticeAvatarId] = useState<ApprenticeAvatarId>(defaultApprenticeAvatarId);
   const [localNickname, setLocalNickname] = useState("");
   const [nicknameError, setNicknameError] = useState(false);
-  const [creatingProfile, setCreatingProfile] = useState(false);
   // Read once per mount: the hub only renders after hydration, so the device clock is
   // available here and the streak cannot differ between server and client markup.
   const [today] = useState(() => getLocalPlayedOn(new Date()));
@@ -106,7 +99,7 @@ export function HomeLanding() {
 
   // Nothing is rendered until the stored progress is known, so a returning player never
   // sees the sign-up screen flash before their own home.
-  if (!hydrated || !adultHydrated || creatingProfile) {
+  if (!hydrated || !adultHydrated) {
     return <div className={`${styles.splash} app-chrome-hidden`} />;
   }
 
@@ -124,12 +117,8 @@ export function HomeLanding() {
    */
   const grownUpAtHome = account !== null && (!onboarded || progressState.adultEmail !== null);
 
-  /*
-   * A child with a completed local profile gets their own home instead of onboarding again.
-   * While the introduction is still on screen the hub must not take over: signing up
-   * flips `onboarded` immediately, and the hub would flash before the route changes.
-   */
-  if (!grownUpAtHome && onboarded && !needsLocalNicknameCompletion(progressState) && step !== "intro") {
+  /** A child with a completed local profile returns to their Home. */
+  if (!grownUpAtHome && onboarded && !needsLocalNicknameCompletion(progressState)) {
     const overall = getGlobalProgress(progressState);
     const nextMission = getNextMission(progressState);
     const activeIsland = getAvailableIsland(progressState);
@@ -284,7 +273,7 @@ export function HomeLanding() {
     );
   }
 
-  if (needsLocalNicknameCompletion(progressState) && step !== "intro") {
+  if (needsLocalNicknameCompletion(progressState)) {
     return (
       <div className={`${styles.landing} app-chrome-hidden`}>
         <div className={styles.accountLanguage}>
@@ -338,65 +327,6 @@ export function HomeLanding() {
           </button>
         </section>
       </div>
-    );
-  }
-
-  if (step === "intro") {
-    const isLastLine = lineIndex >= lines.length - 1;
-
-    return (
-      /* Fixed and above the app chrome, so the header and the bottom bar are covered
-         and the introduction feels like its own moment. */
-      <button
-        aria-label={t("dialogueAria", { current: lineIndex + 1, total: lines.length })}
-        className={`${styles.intro} app-chrome-hidden`}
-        type="button"
-        onClick={() => {
-          if (!isLastLine) {
-            setLineIndex((index) => index + 1);
-            return;
-          }
-          markOnboarded(localNickname, apprenticeAvatarId);
-          router.push("/tutorial");
-        }}
-      >
-        <span className={styles.introStage}>
-          <span className={styles.introBubble}>
-            <span className={styles.line}>{lines[lineIndex]}</span>
-          </span>
-
-          <span className={styles.introMascot}>
-            <Image
-              alt={t("mascotAlt")}
-              height={1024}
-              priority
-              sizes="(max-width: 480px) 62vw, 22rem"
-              src="/media/mascot/roqui-detective.png"
-              width={1024}
-            />
-          </span>
-
-          <span aria-hidden="true" className={styles.dots}>
-            {lines.map((line, index) => (
-              <span className={`${styles.dot} ${index <= lineIndex ? styles.dotSeen : ""}`} key={line} />
-            ))}
-          </span>
-
-          <span aria-hidden="true" className={styles.introHint}>
-            {t("dialogueNext")}
-          </span>
-        </span>
-
-        <span aria-live="polite" className={styles.srOnly}>
-          {lines[lineIndex]}
-        </span>
-        {/*
-         * Roqui introducing himself is the first text of the whole game, and a child who
-         * cannot read it yet has nothing else to go on. It renders nothing, so it can sit
-         * inside the tap target the whole screen is.
-         */}
-        <Narrator lines={[lines[lineIndex]]} />
-      </button>
     );
   }
 
@@ -632,9 +562,7 @@ export function HomeLanding() {
               return;
             }
             if (enableSoundForNewProfile()) enableForNewProfile();
-            setCreatingProfile(true);
             markOnboarded(nickname, apprenticeAvatarId);
-            router.replace("/worlds");
           }}
         >
           {t("profileSubmit")}
