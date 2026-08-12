@@ -103,9 +103,19 @@ export function getHardestQuestion(lesson: ClassLesson): QuestionResult | null {
   const results = getQuestionResults(lesson);
   if (results.length === 0) return null;
 
-  return results.reduce((hardest, current) =>
-    current.answered - current.right > hardest.answered - hardest.right ? current : hardest
+  const hardest = results.reduce((worst, current) =>
+    current.answered - current.right > worst.answered - worst.right ? current : worst
   );
+
+  /*
+   * No question was hardest if nobody got one wrong.
+   *
+   * Without this the reduce returns the first question by default - every one of them tied
+   * at zero - and the class summary announced "the hardest was question 1: 0 pupils got it
+   * wrong", which is both untrue and alarming. A teacher reading it would go back over a
+   * question the class never struggled with.
+   */
+  return hardest.answered - hardest.right > 0 ? hardest : null;
 }
 
 export type LessonSummary = {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { LevelId } from "@/features/levels/levelModel";
+import { missionBlueprint, type LevelId } from "@/features/levels/levelModel";
 import * as progressState from "./progressState";
 import {
   completeLevel,
@@ -32,7 +32,12 @@ describe("canonical level progress", () => {
       pendingAchievementCelebrationIds: [],
       localMedalNoticePresented: false,
       rushUnlockedIslands: [],
-      rankMissionCeiling: 13,
+      /*
+       * Derived rather than written out. A fresh player's rank scale is the catalogue as it
+       * stands today, so pinning the number here only meant this test failed every time a
+       * mission was added or removed - which says nothing about whether the code is right.
+       */
+      rankMissionCeiling: missionBlueprint.filter((mission) => mission.packId).length,
       mapOnboardingStage: "map-island",
       localNickname: null,
       apprenticeAvatarId: null,

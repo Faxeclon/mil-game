@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Bird, Cat, Feather, Star, Trophy, Turtle, Wind, Rabbit, Zap, type LucideIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { playSound } from "@/features/audio/soundEffects";
 import { Narrator } from "@/components/Narrator";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { LocalMedalToast } from "./LocalMedalToast";
@@ -68,6 +69,7 @@ export function MissionResults() {
     ? getSectionCompletionEvent(progressState, result.levelId)
     : null;
   const focusKey = result ? `result:${result.attemptId}` : `empty:${attempt ?? ""}`;
+  const resultPassed = result?.passed === true;
   const bonusId = celebration
     ? getBonusOpportunityId(celebration.categoryKey, celebration.completionAttemptId)
     : null;
@@ -77,7 +79,16 @@ export function MissionResults() {
     if (!hydrated || focusedResultRef.current === focusKey) return;
     headingRef.current?.focus();
     focusedResultRef.current = focusKey;
-  }, [focusKey, hydrated]);
+    /*
+     * Sounded on the same moment the heading takes focus, and keyed on the same attempt.
+     * That key is what a reload cannot fake: coming back to this page later re-reads a
+     * result already seen, and a fanfare for it would celebrate nothing that just happened.
+     *
+     * Only a pass. Not passing is an invitation to try again, and a jingle over it would
+     * read as applause for having got it wrong.
+     */
+    if (resultPassed) playSound("missionComplete");
+  }, [focusKey, hydrated, resultPassed]);
 
   useEffect(() => {
     if (celebration) continueRef.current?.focus();

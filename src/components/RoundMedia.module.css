@@ -1,0 +1,10 @@
+/* Fills the same box `next/image` fills with `fill`, so a clip and a picture sit in a
+   round identically and neither is given away by its shape. */
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}

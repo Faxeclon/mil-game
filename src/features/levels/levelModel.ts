@@ -94,9 +94,13 @@ const levelBlueprintEntries = [
   { id: "creators-2", category: "creators", order: 2, mode: "single", packId: "creators-single-v1" },
 
   // Island 4 - Videos: the same question asked of moving pictures. A clip is judged from
-  // its frames, where changes can be worth checking but never prove an origin on their own.
-  { id: "clips-1", category: "clips", order: 1, mode: "compare", packId: "clips-compare-v1" },
-  { id: "clips-2", category: "clips", order: 2, mode: "single", packId: "clips-single-v1" }
+  // how it moves, where a change can be worth checking but never proves an origin by itself.
+  //
+  // One clip at a time, with no second one beside it. Two videos side by side on a phone
+  // are two small squares both moving at once, and a child ends up comparing which looks
+  // nicer rather than watching either of them. Alone, there is nothing to compare against
+  // but their own judgement, which is the skill this island is for.
+  { id: "clips-1", category: "clips", order: 1, mode: "single", packId: "clips-single-v1" }
 ] as const satisfies readonly MissionBlueprint[];
 
 /** A level identifier authored in the current level catalog. */

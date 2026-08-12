@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
-import Image from "next/image";
 import {
   Camera,
   CameraOff,
@@ -61,6 +60,7 @@ import {
 } from "@/features/teacher/scanSession";
 import { Link } from "@/i18n/navigation";
 import { ImageZoom } from "./ImageZoom";
+import { RoundMedia } from "./RoundMedia";
 import { LoadingRoqui } from "./LoadingRoqui";
 import {
   getNodePositions,
@@ -542,16 +542,30 @@ export function TeacherScanClient() {
           {t("lessonDoneLead", { questions: summary.questionsAsked, right: summary.right, answered: summary.answered })}
         </p>
 
-        {hardest && (
-          <p className={styles.summary}>
-            {t("hardestQuestion", {
-              number: hardest.index + 1,
-              wrong: hardest.answered - hardest.right
-            })}
-          </p>
-        )}
+        {/*
+          A class that answered nothing is one fact, not three warnings. Said once and
+          quietly: the teacher already knows the lesson did not happen, and stacking
+          "hardest question", "not everyone finished" and a table of zeroes on top of that
+          reads like the app is reporting a fault.
+        */}
+        {summary.answered === 0 ? (
+          <p className={styles.nothingAnswered}>{t("noAnswers")}</p>
+        ) : (
+          <>
+            {hardest && (
+              <p className={styles.insight}>
+                {t("hardestQuestion", {
+                  number: hardest.index + 1,
+                  wrong: hardest.answered - hardest.right
+                })}
+              </p>
+            )}
 
-        {summary.incomplete > 0 && <p className={styles.pending}>{t("incomplete", { count: summary.incomplete })}</p>}
+            {summary.incomplete > 0 && (
+              <p className={styles.pending}>{t("incomplete", { count: summary.incomplete })}</p>
+            )}
+          </>
+        )}
 
         <section aria-labelledby="lesson-results" className={styles.listBox}>
           <h2 className={styles.sectionTitle} id="lesson-results">
@@ -569,6 +583,13 @@ export function TeacherScanClient() {
           </ul>
         </section>
 
+        {/*
+          One way out, and it goes back to the missions.
+          There used to be two: "start another class", which returned here to the mission
+          list, and "back", which left for the printable guide. A teacher pressing "back"
+          after a lesson expects the missions they just came from, not a page of rules, and
+          the guide is a click away from that list anyway.
+        */}
         <div className={styles.actions}>
           <button
             className={styles.primary}
@@ -582,11 +603,8 @@ export function TeacherScanClient() {
             }}
           >
             <RotateCcw aria-hidden="true" size={16} />
-            {t("newLesson")}
+            {t("backToMissions")}
           </button>
-          <Link className={styles.secondary} href="/teacher">
-            {tCards("back")}
-          </Link>
         </div>
       </div>
     );
@@ -659,13 +677,17 @@ export function TeacherScanClient() {
         <figure className={styles.single}>
           {/* A class four rows back needs this more than anyone. */}
           <div className={styles.singleMedia}>
-            <Image
+            <RoundMedia
               alt={tTutorial(round.media[0].altKey)}
-              fill
+              kind={round.media[0].kind}
               sizes="(max-width: 700px) 90vw, 420px"
               src={round.media[0].src}
             />
-            <ImageZoom alt={tTutorial(round.media[0].altKey)} src={round.media[0].src} />
+            <ImageZoom
+              alt={tTutorial(round.media[0].altKey)}
+              kind={round.media[0].kind}
+              src={round.media[0].src}
+            />
           </div>
         </figure>
       ) : (
@@ -677,13 +699,13 @@ export function TeacherScanClient() {
             return (
               <figure className={isRight ? styles.optionRight : styles.option} key={asset.id}>
                 <div className={styles.optionMedia}>
-                  <Image
+                  <RoundMedia
                     alt={tTutorial(asset.altKey)}
-                    fill
+                    kind={asset.kind}
                     sizes="(max-width: 700px) 45vw, 320px"
                     src={asset.src}
                   />
-                  <ImageZoom alt={tTutorial(asset.altKey)} src={asset.src} />
+                  <ImageZoom alt={tTutorial(asset.altKey)} kind={asset.kind} src={asset.src} />
                 </div>
                 <figcaption className={styles.optionLabel}>
                   {letter}

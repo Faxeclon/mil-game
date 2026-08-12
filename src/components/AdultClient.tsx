@@ -177,9 +177,20 @@ export function AdultClient() {
       */}
       <p className={styles.privacy}>{t("privacy")}</p>
 
-      <section aria-label={t("homePlayLabel")}>
-        <AdultPlayLink className={styles.primary}>{t("homePlayAction")}</AdultPlayLink>
-      </section>
+      {/*
+        A parent is offered the game; a teacher is not.
+
+        A parent looks at this panel to understand what their child is doing, and trying it
+        themselves is the shortest way to that. A teacher's work is the class: printing the
+        cards, running the questions, reading what the room got wrong. Playing a child's
+        map from here was a road back into the part of the app they do not use, taking up
+        the most prominent button on their screen.
+      */}
+      {account?.role !== "teacher" && (
+        <section aria-label={t("homePlayLabel")}>
+          <AdultPlayLink className={styles.primary}>{t("homePlayAction")}</AdultPlayLink>
+        </section>
+      )}
 
       {/* Unlinking only changes who can see this profile from the adult panel. */}
       {unlinking && (

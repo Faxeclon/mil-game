@@ -130,18 +130,18 @@
   "careful" while the word says what actually happens.
 */
 .discard {
-  min-height: 2.75rem;
-  padding: 0 0.6rem;
+  min-height: 3rem;
+  padding: 0 1rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  border: 0;
-  border-radius: 0.7rem;
+  gap: 0.4rem;
+  border: 1px solid #e8bdb2;
+  border-radius: 0.85rem;
   background: transparent;
   color: #a3341b;
   cursor: pointer;
   font: inherit;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 800;
 }
 
@@ -162,6 +162,12 @@
 }
 
 /* Round targets with nothing written on them: the shape has to be big enough to read. */
+/*
+ * Round, and only ever for a single icon.
+ *
+ * A button carrying words was sharing this, and 3.4rem of circle is not a place words fit:
+ * "Generar tarjetas" spilled over the edges of a disc. Text buttons use `.action` below.
+ */
 .primary,
 .secondary {
   width: 3.4rem;
@@ -172,6 +178,31 @@
   border: 0;
   border-radius: 999px;
   cursor: pointer;
+}
+
+/* The one button on this screen that says what it does in words. */
+.action {
+  min-height: 3.35rem;
+  width: min(100%, 18rem);
+  margin-top: 1.35rem;
+  padding: 0.7rem 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--c-accent-strong);
+  color: #fff;
+  font: inherit;
+  font-size: 1.02rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.action:focus-visible {
+  outline: 3px solid var(--c-accent-strong);
+  outline-offset: 3px;
 }
 
 .primary {

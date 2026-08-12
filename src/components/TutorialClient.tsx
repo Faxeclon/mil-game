@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { Accessibility, Check, ChevronLeft, Sparkles, Target, Timer as TimerIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { playSound } from "@/features/audio/soundEffects";
 import { Narrator } from "@/components/Narrator";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
@@ -191,6 +192,12 @@ export function TutorialClient({
       if (warningRoundRef.current !== activeRoundId && crossedFinalWarning(previousRemainingMs, remainingMs)) {
         warningRoundRef.current = activeRoundId;
         setTimerAnnouncement({ roundId: activeRoundId, kind: "warning" });
+        /*
+         * Once, on the crossing, guarded by the same ref that keeps the spoken warning
+         * from repeating. A tick every second would be a clock counting a child down, and
+         * a calmer game drops this sound entirely rather than turning it down.
+         */
+        playSound("timeWarning");
       }
       previousRemainingMs = remainingMs;
       if (hasTimedOut(remainingMs)) closeAsTimedOut();
@@ -546,6 +553,12 @@ export function TutorialClient({
                       ? { remainingMs: getRemainingMs(deadline, answeredAt), durationMs: deadline.durationMs }
                       : {})
                   });
+                  /*
+                   * A right answer rises, a wrong one does not fall: getting it wrong is
+                   * how anybody learns to look, so the miss is a plain note rather than a
+                   * verdict. Both are silent unless somebody switched sound on.
+                   */
+                  playSound(selectedIsCorrect ? "correct" : "wrong");
                 }}
               >
                 {t("submit")}

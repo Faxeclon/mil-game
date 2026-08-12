@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Maximize2, Minus, Plus, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { TutorialMediaKind } from "@/content/schemas/tutorial";
 import styles from "./ImageZoom.module.css";
 
 /**
@@ -26,11 +27,14 @@ type ZoomTimer = { label: string; warning: boolean };
 export function ImageZoom({
   src,
   alt,
+  kind = "image",
   timer,
   closeSignal = 0
 }: {
   src: string;
   alt: string;
+  /** A clip enlarges by playing bigger, not by freezing a frame. */
+  kind?: TutorialMediaKind;
   /** Derived from the game's existing deadline; ImageZoom never owns a clock. */
   timer?: ZoomTimer;
   /** Timeout or a finished run can dismiss the overlay without restoring stale focus. */
@@ -119,14 +123,33 @@ export function ImageZoom({
             className={magnified ? styles.stageMagnified : styles.stage}
             onClick={(event) => event.stopPropagation()}
           >
-            <Image
-              alt={alt}
-              className={styles.picture}
-              height={1600}
-              sizes="100vw"
-              src={src}
-              width={1200}
-            />
+            {/*
+              A clip is just as small on a phone as a picture is, and the tell it hides -
+              how a paw lands, whether a whisker survives the step - is exactly the sort of
+              detail this control exists for. It keeps playing while enlarged: a frozen
+              frame would hide the movement the child is meant to be watching.
+            */}
+            {kind === "video" ? (
+              <video
+                aria-label={alt}
+                autoPlay
+                className={styles.picture}
+                controls={false}
+                loop
+                muted
+                playsInline
+                src={src}
+              />
+            ) : (
+              <Image
+                alt={alt}
+                className={styles.picture}
+                height={1600}
+                sizes="100vw"
+                src={src}
+                width={1200}
+              />
+            )}
           </div>
 
           <div className={styles.controls} onClick={(event) => event.stopPropagation()}>

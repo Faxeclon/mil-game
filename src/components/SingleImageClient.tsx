@@ -1,10 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useReducer, useRef, useState } from "react";
 import { Camera, Check, ChevronLeft, HelpCircle, Sparkles, Target } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { playSound } from "@/features/audio/soundEffects";
 import { Narrator } from "@/components/Narrator";
+import { RoundMedia } from "@/components/RoundMedia";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import type { SinglePack } from "@/content/schemas/tutorial";
@@ -174,14 +175,19 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
           screen where looking closer matters most, so the magnifier belongs here first.
         */}
         <figure className={styles.figure}>
-          <Image
+          <RoundMedia
             alt={t(round.media.altKey)}
-            fill
+            kind={round.media.kind}
             priority
             sizes="(max-width: 700px) 88vw, 420px"
             src={round.media.src}
           />
-          <ImageZoom alt={t(round.media.altKey)} src={round.media.src} />
+          {/*
+           * Clips get the magnifier too. A video is exactly as small on a phone as a
+           * picture is, and the tell it hides - how a paw lands, whether a whisker
+           * survives the step - is the sort of detail this control exists for.
+           */}
+          <ImageZoom alt={t(round.media.altKey)} kind={round.media.kind} src={round.media.src} />
         </figure>
 
         {state.answerSubmitted ? (
@@ -274,6 +280,14 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
             onClick={() => {
               responseTimer.finishRound(round.id, monotonicNow());
               dispatch({ type: "submit", correct: isCorrect });
+              /*
+               * "You cannot tell", answered right, is the hardest thing this game teaches
+               * and the only answer that is a refusal to decide. It gets a shape of its
+               * own so it does not land as just another hit.
+               */
+              playSound(
+                !isCorrect ? "wrong" : round.answer === "unknown" ? "uncertainCorrect" : "correct"
+              );
             }}
           >
             {t("submit")}

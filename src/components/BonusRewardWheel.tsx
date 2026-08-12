@@ -3,6 +3,7 @@
 import { Gift, RotateCw, ShieldPlus, Sparkles, Timer } from "lucide-react";
 import { useRef, useState, type CSSProperties } from "react";
 import { useTranslations } from "next-intl";
+import { playSound, playWheelSpin } from "@/features/audio/soundEffects";
 import {
   bonusWheelSegments,
   type BonusOpportunity,
@@ -57,10 +58,18 @@ export function BonusRewardWheel({ bonus, onContinue }: { bonus: BonusOpportunit
       return;
     }
     setSpinning(true);
+    const spinMs = reducedMotion ? 0 : 900;
+    /*
+     * Clicks that spread apart as it slows, then the reward. Scheduled against the audio
+     * clock in one go, so the sound keeps time with the drawing even on a phone busy
+     * animating it - and a wheel that does not turn does not tick either.
+     */
+    if (spinMs > 0) playWheelSpin(spinMs / 1000);
+    else playSound("wheelReward");
     window.setTimeout(() => {
       spinLock.current = false;
       setSpinning(false);
-    }, reducedMotion ? 0 : 900);
+    }, spinMs);
   };
 
   const rotation = selected ? getWheelRotation(selected) : 0;

@@ -1,9 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { Check, ChevronLeft, Smartphone, Sparkles, Target, Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { playSound } from "@/features/audio/soundEffects";
 import { Narrator } from "@/components/Narrator";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { useProgress } from "@/features/progress/ProgressProvider";
@@ -38,6 +39,18 @@ export function VersusClient({ rounds }: { rounds: readonly TutorialRound[] }) {
   const [turnsPerPlayer, setTurnsPerPlayer] = useState<number>(TURN_CHOICES[0]);
   const [deck, setDeck] = useState<TutorialRound[]>([]);
   const totalRounds = deck.length;
+
+  /*
+   * The phone changing hands, sounded once per handover.
+   *
+   * Keyed on the turn rather than on the status, so a redraw of the same handover screen
+   * stays quiet and only an actual change of player rings. The two children are sitting
+   * together looking at one screen, and this is what makes the other one look up.
+   */
+  const handoverKey = state.status === "handover" ? `${state.roundIndex}:${state.player}` : null;
+  useEffect(() => {
+    if (handoverKey) playSound("turnHandover");
+  }, [handoverKey]);
 
   /*
    * The two seats take the nicknames of the players already on this phone, when there
