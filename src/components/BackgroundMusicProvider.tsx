@@ -6,6 +6,7 @@ import {
   NarrationDuckingController,
   playBackgroundMusic
 } from "@/features/audio/backgroundMusicController";
+import { connectMusicDucking } from "@/features/audio/soundEffects";
 import { setSoundEnabled, useSoundEnabled } from "@/features/audio/soundPreference";
 
 type BackgroundMusicContextValue = {
@@ -58,6 +59,17 @@ export function BackgroundMusicProvider({ children }: { children: React.ReactNod
   const duckForSpeech = useCallback(() => duckingController.current.start(), []);
 
   const restoreAfterSpeech = useCallback(() => duckingController.current.stop(), []);
+
+  /*
+   * Hands the same ducking to the sound effects, which are played from plain handlers
+   * rather than from hooks and so cannot reach this context on their own. The controller
+   * counts its callers, so a chime landing mid-sentence never lifts the music back over
+   * a voice that is still reading.
+   */
+  useEffect(() => {
+    connectMusicDucking({ duck: duckForSpeech, restore: restoreAfterSpeech });
+    return () => connectMusicDucking(null);
+  }, [duckForSpeech, restoreAfterSpeech]);
 
   useEffect(() => {
     if (!enabled || playbackAllowed.current) return;

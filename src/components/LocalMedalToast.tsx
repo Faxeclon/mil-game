@@ -4,6 +4,7 @@ import { Medal, X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
+import { playSound } from "@/features/audio/soundEffects";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import styles from "./LocalMedalToast.module.css";
 
@@ -41,6 +42,8 @@ export function LocalMedalToast({ onPresented }: { onPresented: () => void }) {
     if (!presentedRef.current) {
       presentedRef.current = true;
       onPresented();
+      // Guarded by the same ref that records the showing, so it rings once, never on a redraw.
+      playSound("medal");
     }
     const timer = window.setTimeout(dismiss, AUTO_DISMISS_MS);
     return () => clearTimeout(timer);

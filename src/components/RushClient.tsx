@@ -24,6 +24,7 @@ import { BonusRewardWheel } from "./BonusRewardWheel";
 import { BonusAchievementCelebration } from "./BonusAchievementCelebration";
 import { getBonusRunAchievementIds, type AchievementId } from "@/features/achievements/achievementModel";
 import { isShieldActivation, SHIELD_FEEDBACK_MS } from "@/features/rush/shieldFeedback";
+import { playSound } from "@/features/audio/soundEffects";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import { getBonusFlowStage } from "@/features/bonus/bonusFlow";
 import styles from "./RushClient.module.css";
@@ -203,7 +204,16 @@ export function RushClient({
     const action = { type: "answer" as const, saidAi, item, total: deck.length, reward };
     const next = rushReducer(state, action);
     if (next === state) return;
-    if (isShieldActivation(state, next)) {
+    /*
+     * The shield lands rather than climbs: being saved is relief, not a prize. Any other
+     * miss is the plain note, and a hit rises - the same three sounds the rest of the game
+     * uses, so a child does not have to learn a second vocabulary for the timed run.
+     */
+    const shielded = isShieldActivation(state, next);
+    const said = next.status === "playing" ? next.lastAnswer : null;
+    playSound(shielded ? "shieldSaved" : said === "right" ? "correct" : "wrong");
+
+    if (shielded) {
       shieldFeedbackLockRef.current = true;
       setShieldFeedbackVisible(true);
       shieldFeedbackTimerRef.current = window.setTimeout(() => {
