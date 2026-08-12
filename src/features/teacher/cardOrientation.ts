@@ -80,9 +80,15 @@ export function getTopEdgeAngle(corners: readonly unknown[]): number | null {
  */
 export function getCardOrientation(corners: readonly unknown[]): CardOrientation {
   const angle = getTopEdgeAngle(corners);
-  if (angle === null) return "ambiguous";
+  return angle === null ? "ambiguous" : getCardOrientationFromAngle(angle);
+}
 
-  if (angularDistance(angle, 0) <= ORIENTATION_TOLERANCE_DEGREES) return "A";
-  if (angularDistance(angle, 180) <= ORIENTATION_TOLERANCE_DEGREES) return "B";
+/** Converts a decoder-reported rotation into the side shown by the paper card. */
+export function getCardOrientationFromAngle(angle: unknown): CardOrientation {
+  if (typeof angle !== "number" || !Number.isFinite(angle)) return "ambiguous";
+  const normalized = ((angle % 360) + 360) % 360;
+
+  if (angularDistance(normalized, 0) <= ORIENTATION_TOLERANCE_DEGREES) return "A";
+  if (angularDistance(normalized, 180) <= ORIENTATION_TOLERANCE_DEGREES) return "B";
   return "ambiguous";
 }

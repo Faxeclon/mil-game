@@ -1,48 +1,30 @@
-import jsQR from "jsqr";
+import { prepareZXingModule, readBarcodes, type Position } from "zxing-wasm/reader";
+import { parseCardPayload } from "./classCards";
 import type { CardDetection } from "./scanSession";
 
+/** The reader is deliberately capped: enough for a classroom group, bounded for a phone. */
+export const MAX_SYMBOLS_PER_FRAME = 12;
+
 /**
- * The thin layer that touches the camera, kept apart from every rule that matters.
- *
- * Reading a code is the one part of the classroom mode that cannot be tested without a
- * lens, so it is deliberately the smallest file in the feature: open a camera, decode a
- * frame, pass what comes back to `scanSession`. Everything worth arguing about -
- * confidence, duplicates, which way up - lives on the other side of that boundary and is
- * covered by tests.
- *
- * ## Why not the browser's own BarcodeDetector
- *
- * It was used here first, and it produced a bug worth writing down: every card read as A.
- *
- * The whole card mechanic depends on knowing which way up the paper is, and a QR decoder
- * normalises rotation before returning text, so the payload cannot say. The rotation has
- * to come from geometry. `BarcodeDetector` exposes `cornerPoints`, and the specification
- * says only that they run "in clockwise direction and starting with top-left" - it never
- * says whose top-left. In practice they arrive ordered by the *image*, so the first edge
- * points rightwards no matter how the card is turned, and every answer came out A.
- *
- * jsQR reports the three finder patterns - the large squares a QR uses to declare its own
- * orientation - as distinct, named points. The line from the code's top-left finder to its
- * top-right finder is the top edge of the printed card, whatever angle the paper is at.
- * That is the one piece of information the mechanic needs, and it is the reason for the
- * dependency.
- *
- * ## What it costs
- *
- * jsQR decodes one code per frame, where BarcodeDetector could return several. A teacher
- * sweeping the room therefore collects cards one at a time rather than a row at once. At
- * four frames a second that is still a class in well under a minute, and `scanSession`
- * already requires two consistent readings per card, so a slow sweep was always the shape
- * of this.
+ * The reader WASM is served by Kikiria, rather than fetched from the package's CDN default.
+ * That keeps the classroom scanner available after the app's first offline visit.
  */
+const READER_WASM_URL = "/zxing/zxing_reader.wasm";
+const zxingOverrides = { locateFile: () => READER_WASM_URL };
+let readerPreparation: Promise<unknown> | null = null;
 
-/** Longest edge of the frame handed to the decoder. */
-const MAX_SCAN_EDGE = 640;
+function prepareReader(): Promise<unknown> {
+  readerPreparation ??= Promise.resolve(prepareZXingModule({ overrides: zxingOverrides, fireImmediately: true }));
+  return readerPreparation;
+}
+
+/** Longest edge handed to the detector: 960×540 from a typical 1080p landscape camera. */
+export const MAX_SCAN_EDGE = 960;
 
 /**
- * Full-resolution frames are wasted work on the phone this is built for: a QR held up
- * across a classroom is still tens of pixels wide at this size, and decoding a 1080p frame
- * four times a second would heat the device for no extra reading.
+ * A bounded frame retains several small classroom cards without asking a phone to process
+ * 4K video. The frame loop is capped at four attempts a second and skips work while WASM
+ * is busy, so this is an upper bound rather than competing decode jobs.
  */
 export function getScanScale(width: number, height: number): number {
   const longest = Math.max(width, height);
@@ -60,6 +42,14 @@ export function canOpenCamera(): boolean {
 
 export type CardDetector = { detect: (source: CanvasImageSource) => Promise<CardDetection[]> };
 
+/** A load failure is distinct from an ordinary frame with no visible code. */
+export class CardScannerUnavailableError extends Error {
+  constructor(cause?: unknown) {
+    super("The multi-QR reader could not start.", { cause });
+    this.name = "CardScannerUnavailableError";
+  }
+}
+
 function getFrameSize(source: CanvasImageSource): { width: number; height: number } | null {
   const video = source as HTMLVideoElement;
   if (typeof video.videoWidth === "number" && video.videoWidth > 0) {
@@ -72,58 +62,70 @@ function getFrameSize(source: CanvasImageSource): { width: number; height: numbe
   return null;
 }
 
+function cornersFrom(position: Position): CardDetection["corners"] {
+  return [position.topLeft, position.topRight, position.bottomRight, position.bottomLeft];
+}
+
 /**
- * Builds a detector, or nothing when there is no canvas to decode through.
- *
- * Failures inside a frame resolve to an empty list rather than throwing: a single
- * unreadable frame is ordinary while a camera pans across a room, and it must not end the
- * sweep.
+ * Keeps only Kikiria cards and one copy of each card identity in a camera frame.
+ * A foreign class remains deliberately: `scanSession` reports it as foreign instead of
+ * silently treating a real printed card as malformed.
+ */
+export function collectCardDetections(
+  results: ReadonlyArray<{ text: string; position: Position; orientation: number }>
+): CardDetection[] {
+  const seen = new Set<string>();
+  const detections: CardDetection[] = [];
+
+  for (const result of results) {
+    const identity = parseCardPayload(result.text);
+    if (!identity) continue;
+    const key = `${identity.classToken}:${identity.cardId}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    detections.push({ payload: result.text, corners: cornersFrom(result.position), orientation: result.orientation });
+  }
+
+  return detections;
+}
+
+/**
+ * Reads every QR code visible in one canvas frame. `zxing-wasm` returns an array, unlike
+ * the former jsQR call which returned only its first match.
  */
 export function createCardDetector(): CardDetector | null {
   if (!canDetectCodes()) return null;
 
   const canvas = document.createElement("canvas");
-  // The frame is read back on every pass, which is exactly what this hint is for.
   const context = canvas.getContext("2d", { willReadFrequently: true });
   if (!context) return null;
 
   return {
     async detect(source) {
+      const size = getFrameSize(source);
+      if (!size) return [];
+
+      const scale = getScanScale(size.width, size.height);
+      const width = Math.max(1, Math.round(size.width * scale));
+      const height = Math.max(1, Math.round(size.height * scale));
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+
+      context.drawImage(source, 0, 0, width, height);
+      const frame = context.getImageData(0, 0, width, height);
+
       try {
-        const size = getFrameSize(source);
-        if (!size) return [];
-
-        const scale = getScanScale(size.width, size.height);
-        const width = Math.max(1, Math.round(size.width * scale));
-        const height = Math.max(1, Math.round(size.height * scale));
-        if (canvas.width !== width || canvas.height !== height) {
-          canvas.width = width;
-          canvas.height = height;
-        }
-
-        context.drawImage(source, 0, 0, width, height);
-        const frame = context.getImageData(0, 0, width, height);
-
-        /*
-         * Cards are printed black on white, so there is no reason to spend a second pass
-         * looking for an inverted code on a phone that has none to spare.
-         */
-        const code = jsQR(frame.data, width, height, { inversionAttempts: "dontInvert" });
-        if (!code) return [];
-
-        /*
-         * The two finder patterns, in the order `cardOrientation` expects: the code's own
-         * top-left first, then its top-right. Their coordinates are in image space, so the
-         * line between them carries the rotation of the paper - which is the whole point.
-         */
-        return [
-          {
-            payload: code.data,
-            corners: [code.location.topLeftFinderPattern, code.location.topRightFinderPattern]
-          }
-        ];
-      } catch {
-        return [];
+        await prepareReader();
+        const results = await readBarcodes(frame, {
+          formats: ["QRCode"],
+          tryHarder: true,
+          maxNumberOfSymbols: MAX_SYMBOLS_PER_FRAME
+        });
+        return collectCardDetections(results);
+      } catch (error) {
+        throw new CardScannerUnavailableError(error);
       }
     }
   };
@@ -133,13 +135,7 @@ export type CameraFailure = "denied" | "unavailable" | "unsupported";
 
 export type CameraResult = { kind: "ready"; stream: MediaStream } | { kind: "failed"; reason: CameraFailure };
 
-/**
- * Asks for the back camera, which is the one pointed at a classroom.
- *
- * The reasons are separated because the answer to each is different: a refused permission
- * can be granted, a missing camera means using another device, and an unsupported browser
- * means neither. Telling a teacher "something went wrong" would leave them stuck.
- */
+/** Asks for the back camera, which is the one pointed at a classroom. */
 export async function openCamera(): Promise<CameraResult> {
   if (!canOpenCamera()) return { kind: "failed", reason: "unsupported" };
 
@@ -161,11 +157,5 @@ export function closeCamera(stream: MediaStream | null): void {
   stream?.getTracks().forEach((track) => track.stop());
 }
 
-/**
- * How often frames are examined.
- *
- * Every frame would be wasteful on the low-end phone this is built for, and a teacher
- * walking between desks does not move faster than this. Decoding happens on the main
- * thread, so this interval is also what keeps the page responsive while the camera is on.
- */
+/** Four attempts a second at most; a busy decode skips the following frame. */
 export const SCAN_INTERVAL_MS = 250;

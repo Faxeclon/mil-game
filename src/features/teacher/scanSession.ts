@@ -1,5 +1,5 @@
 import { findCardInSet, parseCardPayload, type CardAnswer, type TeacherCard, type TeacherClassSet } from "./classCards";
-import { getCardOrientation } from "./cardOrientation";
+import { getCardOrientation, getCardOrientationFromAngle } from "./cardOrientation";
 
 /**
  * One question, one classroom, one camera sweeping the room.
@@ -38,7 +38,12 @@ export type ScanSession = {
  * The payload is the decoded text and the corners are where the code sat in the image.
  * Both are needed and neither is enough: the text says who, the corners say which way up.
  */
-export type CardDetection = { payload: unknown; corners: readonly unknown[] };
+export type CardDetection = {
+  payload: unknown;
+  corners: readonly unknown[];
+  /** A decoder-measured rotation for this individual QR, when available. */
+  orientation?: unknown;
+};
 
 export type ScanOutcome =
   /** First confirmed answer for this card. */
@@ -92,7 +97,9 @@ export function applyDetection(
   const card = findCardInSet(set, identity);
   if (!card) return { session, outcome: { kind: "unknown" } };
 
-  const orientation = getCardOrientation(detection.corners);
+  const orientation = detection.orientation === undefined
+    ? getCardOrientation(detection.corners)
+    : getCardOrientationFromAngle(detection.orientation);
   if (orientation === "ambiguous") {
     // A sideways glimpse must not count towards confidence, or a card waved about would
     // eventually confirm whichever side happened to be seen twice.
@@ -122,6 +129,27 @@ export function applyDetection(
   if (settled === orientation) return { session: session_, outcome: { kind: "unchanged", card, answer: orientation } };
   if (settled === undefined) return { session: session_, outcome: { kind: "recorded", card, answer: orientation } };
   return { session: session_, outcome: { kind: "changed", card, answer: orientation } };
+}
+
+/**
+ * Applies every distinct card a camera frame found, keeping confidence isolated by card.
+ * Each call still goes through `applyDetection`, so a row of cards cannot share a streak.
+ */
+export function applyDetections(
+  session: ScanSession,
+  set: TeacherClassSet,
+  detections: readonly CardDetection[]
+): { session: ScanSession; outcomes: ScanOutcome[] } {
+  let next = session;
+  const outcomes: ScanOutcome[] = [];
+
+  for (const detection of detections) {
+    const applied = applyDetection(next, set, detection);
+    next = applied.session;
+    outcomes.push(applied.outcome);
+  }
+
+  return { session: next, outcomes };
 }
 
 /**

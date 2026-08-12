@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   getCardOrientation,
+  getCardOrientationFromAngle,
   getTopEdgeAngle,
   ORIENTATION_TOLERANCE_DEGREES,
   type CardCorner
@@ -25,6 +26,11 @@ function cornersAtAngle(degrees: number, size = 100): CardCorner[] {
 }
 
 describe("reading which way up a card is held", () => {
+  it("uses the same A/B tolerance for a decoder-provided rotation", () => {
+    expect(getCardOrientationFromAngle(0)).toBe("A");
+    expect(getCardOrientationFromAngle(180)).toBe("B");
+    expect(getCardOrientationFromAngle(90)).toBe("ambiguous");
+  });
   it("calls an upright card A and an upside-down card B", () => {
     expect(getCardOrientation(cornersAtAngle(0))).toBe("A");
     expect(getCardOrientation(cornersAtAngle(180))).toBe("B");
