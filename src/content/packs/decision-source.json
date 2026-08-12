@@ -1,0 +1,45 @@
+{
+  "id": "decision-source-v1",
+  "kind": "source",
+  "rounds": [
+    {
+      "id": "decision-source-round-1",
+      "order": 1,
+      "situationKey": "source.noClass.situation",
+      "questionKey": "source.noClass.question",
+      "options": [
+        { "id": "lookalike", "labelKey": "source.noClass.lookalike", "whyKey": "source.noClass.whyLookalike" },
+        { "id": "official", "labelKey": "source.noClass.official", "whyKey": "source.noClass.whyOfficial" },
+        { "id": "forward", "labelKey": "source.noClass.forward", "whyKey": "source.noClass.whyForward" }
+      ],
+      "answerId": "official",
+      "rememberKey": "source.noClass.remember"
+    },
+    {
+      "id": "decision-source-round-2",
+      "order": 2,
+      "situationKey": "source.animalFound.situation",
+      "questionKey": "source.animalFound.question",
+      "options": [
+        { "id": "likes", "labelKey": "source.animalFound.likes", "whyKey": "source.animalFound.whyLikes" },
+        { "id": "original", "labelKey": "source.animalFound.original", "whyKey": "source.animalFound.whyOriginal" },
+        { "id": "friend", "labelKey": "source.animalFound.friend", "whyKey": "source.animalFound.whyFriend" }
+      ],
+      "answerId": "original",
+      "rememberKey": "source.animalFound.remember"
+    },
+    {
+      "id": "decision-source-round-3",
+      "order": 3,
+      "situationKey": "source.noSource.situation",
+      "questionKey": "source.noSource.question",
+      "options": [
+        { "id": "believe", "labelKey": "source.noSource.believe", "whyKey": "source.noSource.whyBelieve" },
+        { "id": "reject", "labelKey": "source.noSource.reject", "whyKey": "source.noSource.whyReject" },
+        { "id": "wait", "labelKey": "source.noSource.wait", "whyKey": "source.noSource.whyWait" }
+      ],
+      "answerId": "wait",
+      "rememberKey": "source.noSource.remember"
+    }
+  ]
+}

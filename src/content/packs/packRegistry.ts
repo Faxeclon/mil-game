@@ -1,6 +1,10 @@
 import englishMessages from "@/messages/en.json";
 import spanishMessages from "@/messages/es.json";
 import type { ProvenanceMetadata, SinglePack, TutorialPack } from "@/content/schemas/tutorial";
+import { validateDecisionPack, type DecisionPack } from "@/content/schemas/decision";
+import decisionPublishJson from "./decision-publish.json";
+import decisionShareJson from "./decision-share.json";
+import decisionSourceJson from "./decision-source.json";
 import { validateSinglePack } from "@/content/validators/validateSinglePack";
 import { validateTutorialPack } from "@/content/validators/validateTutorialPack";
 import animalsCompareJson from "./animals-compare.json";
@@ -94,9 +98,26 @@ export function getSinglePack(packId: string | undefined): SinglePack | undefine
   return packId ? singlePacks[packId] : undefined;
 }
 
-/** True when some authored pack, of either shape, answers to this id. */
+/**
+ * Packs for the missions that ask what to do rather than what something is.
+ *
+ * Their own registry because their shape is genuinely different: a situation and a set of
+ * actions, with no image and no origin to judge. Sharing a registry would have meant one
+ * type where half the fields never apply.
+ */
+export const decisionPacks: Readonly<Record<string, DecisionPack>> = {
+  "decision-source-v1": validateDecisionPack(decisionSourceJson),
+  "decision-share-v1": validateDecisionPack(decisionShareJson),
+  "decision-publish-v1": validateDecisionPack(decisionPublishJson)
+};
+
+export function getDecisionPack(packId: string | undefined): DecisionPack | undefined {
+  return packId ? decisionPacks[packId] : undefined;
+}
+
+/** True when some authored pack, of any shape, answers to this id. */
 export function hasContentPack(packId: string | undefined): boolean {
-  return Boolean(getContentPack(packId) ?? getSinglePack(packId));
+  return Boolean(getContentPack(packId) ?? getSinglePack(packId) ?? getDecisionPack(packId));
 }
 
 /** The pack every player meets first; the tutorial route has no mission to ask. */

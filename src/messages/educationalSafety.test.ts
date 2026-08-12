@@ -70,6 +70,30 @@ describe("active educational feedback", () => {
     expect(activeTutorialFeedback.es).not.toMatch(/demuestra que es ia|delata que es ia/);
   });
 
+  /*
+   * The category intros were outside every check above, and two of them had turned into
+   * exactly the rule the rest of the game refuses to teach: "look at hands, feet and the
+   * crowd", "watch the paws, the ears". A line that names where to look, read before a
+   * single round, is the most rule-like sentence a child meets - and the tells it points
+   * at stop being true the moment the next model is released.
+   *
+   * Naming a part of a body is not banned everywhere: inside a round, beside "a clue is
+   * not proof", it teaches something. As an instruction with nothing qualifying it, it is
+   * a recipe, so the intros keep to the topic and to looking carefully.
+   */
+  it("keeps category intros from turning body parts into a detection recipe", () => {
+    for (const intro of Object.values(english.islands.categories).flatMap((category) =>
+      "intro" in category ? [category.intro] : []
+    )) {
+      expect(intro.toLowerCase()).not.toMatch(/hands|feet|paws|ears|fingers/);
+    }
+    for (const intro of Object.values(spanish.islands.categories).flatMap((category) =>
+      "intro" in category ? [category.intro] : []
+    )) {
+      expect(intro.toLowerCase()).not.toMatch(/manos|pies|patas|orejas|dedos/);
+    }
+  });
+
   it("keeps concrete scene clues while teaching their limits", () => {
     expect(english.tutorial.packs.animalsTimed.r3.verification).toContain("mirror");
     expect(english.tutorial.packs.animalsTimed.r3.remember).toContain("clue, not proof");

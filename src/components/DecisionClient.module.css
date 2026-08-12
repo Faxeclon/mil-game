@@ -1,0 +1,246 @@
+/*
+ * A mission with no picture in it.
+ *
+ * Everywhere else the image is the subject and the text supports it. Here the situation is
+ * the subject, so it gets the weight a photograph would have had: large, calm, with Roqui
+ * beside it as the one telling it.
+ */
+
+.round {
+  --d-ink: #1f2a44;
+  --d-ink-soft: #5b6780;
+  --d-hairline: #ece7e6;
+  --d-hairline-strong: #d5cfcd;
+  --d-accent: #c93c0b;
+  --d-accent-ink: #b8380a;
+  --d-accent-soft: #ffece4;
+  --d-right: #1c6b3f;
+  --d-right-soft: #f1f8f3;
+
+  width: min(100%, 44rem);
+  margin: 0 auto;
+  padding-bottom: 3rem;
+  color: var(--d-ink);
+}
+
+.header {
+  min-height: 3rem;
+  margin-top: clamp(0.4rem, 2vw, 0.9rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.headerLink {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: var(--d-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.progress {
+  margin: 0;
+  color: var(--d-ink-soft);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.track {
+  height: 0.4rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--d-hairline);
+}
+
+.track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--d-accent);
+  transition: width 240ms ease;
+}
+
+.board {
+  margin-top: 1.1rem;
+}
+
+.chip {
+  width: fit-content;
+  margin: 0;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: var(--d-accent-soft);
+  color: var(--d-accent-ink);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* Roqui tells the situation, the same way he says everything else in this game. */
+.situation {
+  margin-top: 0.9rem;
+  padding: 0.9rem 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border: 2px solid var(--d-hairline-strong);
+  border-radius: 1.1rem;
+  background: #fff;
+}
+
+.mascot {
+  width: clamp(3rem, 12vw, 4rem);
+  flex: none;
+}
+
+.situationText {
+  margin: 0;
+  font-size: clamp(1rem, 3.6vw, 1.1rem);
+  line-height: 1.45;
+}
+
+.question {
+  margin: 1.1rem 0 0;
+  font-size: clamp(1.25rem, 5vw, 1.6rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.options {
+  margin: 0.9rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+/* Big targets: this is answered on a phone, often a shared one, often standing up. */
+.option {
+  width: 100%;
+  min-height: 3.4rem;
+  padding: 0.75rem 0.9rem;
+  display: grid;
+  gap: 0.3rem;
+  border: 2px solid var(--d-hairline-strong);
+  border-radius: 0.9rem;
+  background: #fff;
+  color: var(--d-ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.option:disabled {
+  cursor: default;
+}
+
+.optionChosen {
+  border-color: var(--d-accent);
+  background: var(--d-accent-soft);
+}
+
+/* Never colour alone: the tick inside the label carries this too. */
+.optionRight {
+  border-color: var(--d-right);
+  background: var(--d-right-soft);
+}
+
+.optionMiss {
+  border-color: var(--d-accent);
+  background: #fff;
+}
+
+.optionLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.optionWhy {
+  color: var(--d-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.primary {
+  width: 100%;
+  min-height: 3.2rem;
+  margin-top: 1rem;
+  padding: 0 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0.9rem;
+  background: var(--d-accent);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.primary:disabled {
+  background: var(--d-hairline-strong);
+  color: var(--d-ink-soft);
+  cursor: not-allowed;
+}
+
+.feedback {
+  margin-top: 1rem;
+  padding: 0.95rem 1rem;
+  border: 2px solid var(--d-hairline-strong);
+  border-radius: 1.1rem;
+  background: #fff;
+}
+
+.verdict {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.best {
+  margin: 0.3rem 0 0;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--d-right);
+}
+
+/* The line that is true whether they got it right or not. */
+.remember {
+  margin: 0.6rem 0 0;
+  padding: 0.65rem 0.8rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  border-radius: 0.8rem;
+  background: var(--d-accent-soft);
+  color: var(--d-accent-ink);
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.hint {
+  margin: 0.6rem 0 0;
+  color: var(--d-ink-soft);
+  font-size: 0.88rem;
+}
+
+.handover {
+  margin: 3rem auto;
+  text-align: center;
+  font-weight: 700;
+}

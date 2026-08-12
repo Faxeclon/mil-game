@@ -85,14 +85,33 @@ describe("the answer a card cannot give", () => {
 });
 
 describe("every mission the game has", () => {
+  /*
+   * Every mission about a picture can be put to a class, whatever shape it takes.
+   *
+   * Decision missions are the deliberate exception and the reason for the filter: they ask
+   * what a child would do about a situation, and a card with one side marked A and the
+   * other B cannot carry three courses of action. Squeezing them in would mean dropping an
+   * option, which changes the question into a different one.
+   */
+  const cardable = playable.filter((entry) => entry.mode !== "decision");
+
   it("offers at least one question to a class, whatever kind of mission it is", () => {
-    for (const entry of playable) {
+    for (const entry of cardable) {
       expect(canBeAskedInClass(entry), entry.id).toBe(true);
     }
   });
 
+  it("leaves out the missions a two-sided card could not ask", () => {
+    const decisions = playable.filter((entry) => entry.mode === "decision");
+
+    expect(decisions.length).toBeGreaterThan(0);
+    for (const entry of decisions) {
+      expect(canBeAskedInClass(entry), entry.id).toBe(false);
+    }
+  });
+
   it("covers the single-image missions too, not only the comparisons", () => {
-    const singles = playable.filter((entry) => !isComparisonMode(entry.mode));
+    const singles = cardable.filter((entry) => !isComparisonMode(entry.mode));
 
     expect(singles.length).toBeGreaterThan(0);
     for (const entry of singles) {

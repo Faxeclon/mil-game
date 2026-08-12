@@ -40,7 +40,18 @@ describe("final integration messages", () => {
   });
 
   it("keeps persisted island keys and routes stable while labels change", () => {
-    expect(islands.map((island) => island.key)).toEqual(["training", "difference", "source", "videos"]);
+    /*
+     * These keys are written into every saved profile, so renaming one would orphan the
+     * progress of anybody who had already played. Adding to the end is safe and is what
+     * this list is for: it catches a rename, not a new island.
+     */
+    expect(islands.map((island) => island.key)).toEqual([
+      "training",
+      "difference",
+      "source",
+      "videos",
+      "decisions"
+    ]);
   });
 
   it("does not retain the confirmed obsolete tutorial keys", () => {

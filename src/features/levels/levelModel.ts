@@ -10,7 +10,22 @@
  */
 
 /** How a mission is played. */
-export const levelModes = ["compare", "compare-timed", "single", "single-uncertain", "meme"] as const;
+export const levelModes = [
+  "compare",
+  "compare-timed",
+  "single",
+  "single-uncertain",
+  "meme",
+  /**
+   * A mission that asks what to do rather than what something is.
+   *
+   * Every mode above ends at a judgement about a picture. This one starts where that
+   * leaves off - who could confirm this, what do I do before passing it on, how do I say
+   * that I made this with AI - and it is the only mode that keeps working when the next
+   * image generator stops leaving anything to see.
+   */
+  "decision"
+] as const;
 
 export type LevelMode = (typeof levelModes)[number];
 
@@ -21,7 +36,17 @@ export const islands = [
   { key: "training", order: 1, icon: "training" },
   { key: "difference", order: 2, icon: "context" },
   { key: "source", order: 3, icon: "source" },
-  { key: "videos", order: 4, icon: "videos" }
+  { key: "videos", order: 4, icon: "videos" },
+  /*
+   * The last island, and the only one that is not about looking.
+   *
+   * Everything before it trains judgement: what is this, who made it, can I even tell.
+   * This one asks what the child does next - who could confirm a claim, what to do before
+   * passing something on, how to say that a picture was made with AI. It comes last
+   * because deciding what to do only means something once you know what you are deciding
+   * about.
+   */
+  { key: "decisions", order: 5, icon: "share" }
 ] as const satisfies readonly { key: string; order: number; icon: MapIcon }[];
 
 export type IslandKey = (typeof islands)[number]["key"];
@@ -32,7 +57,10 @@ export const categories = [
   { key: "sports", island: "difference", order: 2, icon: "videos" },
   { key: "creators", island: "source", order: 1, icon: "voices" },
   { key: "memes", island: "difference", order: 3, icon: "share" },
-  { key: "clips", island: "videos", order: 1, icon: "videos" }
+  { key: "clips", island: "videos", order: 1, icon: "videos" },
+  { key: "checking", island: "decisions", order: 1, icon: "source" },
+  { key: "sharing", island: "decisions", order: 2, icon: "share" },
+  { key: "creating", island: "decisions", order: 3, icon: "voices" }
 ] as const satisfies readonly { key: string; island: IslandKey; order: number; icon: MapIcon }[];
 
 export type CategoryKey = (typeof categories)[number]["key"];
@@ -93,6 +121,7 @@ const levelBlueprintEntries = [
   },
   { id: "creators-2", category: "creators", order: 2, mode: "single", packId: "creators-single-v1" },
 
+
   // Island 4 - Videos: the same question asked of moving pictures. A clip is judged from
   // how it moves, where a change can be worth checking but never proves an origin by itself.
   //
@@ -100,7 +129,19 @@ const levelBlueprintEntries = [
   // are two small squares both moving at once, and a child ends up comparing which looks
   // nicer rather than watching either of them. Alone, there is nothing to compare against
   // but their own judgement, which is the skill this island is for.
-  { id: "clips-1", category: "clips", order: 1, mode: "single", packId: "clips-single-v1" }
+  { id: "clips-1", category: "clips", order: 1, mode: "single", packId: "clips-single-v1" },
+
+  /*
+   * Island 5 - Deciding: what to do, once you know what you are looking at.
+   *
+   * These are the only missions with no picture in them, and that is the point. A tell
+   * that works today stops working when the next model ships; "find who published it" and
+   * "stop before you pass it on" do not. Declared last because that is the order a child
+   * meets them in.
+   */
+  { id: "checking-1", category: "checking", order: 1, mode: "decision", packId: "decision-source-v1" },
+  { id: "sharing-1", category: "sharing", order: 1, mode: "decision", packId: "decision-share-v1" },
+  { id: "creating-1", category: "creating", order: 1, mode: "decision", packId: "decision-publish-v1" }
 ] as const satisfies readonly MissionBlueprint[];
 
 /** A level identifier authored in the current level catalog. */
@@ -121,7 +162,13 @@ const difficultyByMode: Record<LevelMode, LevelDifficulty> = {
   "compare-timed": "medium",
   single: "medium",
   "single-uncertain": "hard",
-  meme: "hard"
+  meme: "hard",
+  /*
+   * Not hard to see - there is nothing to see. What it asks is whether the child can hold
+   * back for a moment and choose, which is a different kind of demand from squinting at a
+   * picture, and one a younger player can meet.
+   */
+  decision: "medium"
 };
 
 export function getLevelDifficulty(mode: LevelMode): LevelDifficulty {

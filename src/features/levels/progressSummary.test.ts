@@ -31,7 +31,7 @@ describe("the playable path", () => {
     // The first island opens the game and the last one closes it; the middle is content.
     expect(playableMissionOrder.map((entry) => entry.id)).toEqual(playableIds());
     expect(playableMissionOrder.at(0)?.id).toBe("basics-1");
-    expect(playableMissionOrder.at(-1)?.category).toBe("clips");
+    expect(playableMissionOrder.at(-1)?.category).toBe("creating");
   });
 });
 

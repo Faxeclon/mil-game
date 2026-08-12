@@ -13,6 +13,7 @@ import {
   RotateCcw,
   ScanLine,
   SearchCheck,
+  Share2,
   SquareCheckBig,
   X,
   type LucideIcon
@@ -105,7 +106,14 @@ const islandIcons: Record<IslandKey, LucideIcon> = {
   training: SearchCheck,
   difference: Layers3,
   source: FileSearch,
-  videos: Clapperboard
+  videos: Clapperboard,
+  /*
+   * Never actually drawn. A decision mission asks what a child would do about a situation,
+   * and a card with an A side and a B side cannot carry three courses of action - so the
+   * classroom filter drops that island before this map is read. The entry exists because
+   * the record has to be complete, which is also what will make the next island say so.
+   */
+  decisions: Share2
 };
 
 /**

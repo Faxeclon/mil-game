@@ -1,0 +1,31 @@
+{
+  "id": "decision-publish-v1",
+  "kind": "publish",
+  "rounds": [
+    {
+      "id": "decision-publish-round-1",
+      "order": 1,
+      "situationKey": "publish.poster.situation",
+      "questionKey": "publish.poster.question",
+      "options": [
+        { "id": "asPhoto", "labelKey": "publish.poster.asPhoto", "whyKey": "publish.poster.whyAsPhoto" },
+        { "id": "saySo", "labelKey": "publish.poster.saySo", "whyKey": "publish.poster.whySaySo" }
+      ],
+      "answerId": "saySo",
+      "rememberKey": "publish.poster.remember"
+    },
+    {
+      "id": "decision-publish-round-2",
+      "order": 2,
+      "situationKey": "publish.homework.situation",
+      "questionKey": "publish.homework.question",
+      "options": [
+        { "id": "copyIt", "labelKey": "publish.homework.copyIt", "whyKey": "publish.homework.whyCopyIt" },
+        { "id": "checkAndCredit", "labelKey": "publish.homework.checkAndCredit", "whyKey": "publish.homework.whyCheckAndCredit" },
+        { "id": "hideIt", "labelKey": "publish.homework.hideIt", "whyKey": "publish.homework.whyHideIt" }
+      ],
+      "answerId": "checkAndCredit",
+      "rememberKey": "publish.homework.remember"
+    }
+  ]
+}
