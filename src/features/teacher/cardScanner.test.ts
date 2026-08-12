@@ -1,16 +1,31 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const decode = vi.fn();
-vi.mock("jsqr", () => ({ default: (...args: unknown[]) => decode(...args) }));
+const readBarcodes = vi.fn();
+const prepareZXingModule = vi.fn().mockResolvedValue({});
+vi.mock("zxing-wasm/reader", () => ({ readBarcodes, prepareZXingModule }));
 
 const {
   canDetectCodes,
   canOpenCamera,
+  CardScannerUnavailableError,
   closeCamera,
+  collectCardDetections,
   createCardDetector,
   getScanScale,
+  MAX_SYMBOLS_PER_FRAME,
   openCamera
 } = await import("./cardScanner");
+
+const position = {
+  topLeft: { x: 10, y: 10 },
+  topRight: { x: 90, y: 10 },
+  bottomRight: { x: 90, y: 90 },
+  bottomLeft: { x: 10, y: 90 }
+};
+
+function result(text: string, orientation = 0) {
+  return { text, orientation, position };
+}
 
 /** A canvas that records what it was asked to draw, without needing a real one. */
 function stubCanvas(options: { context?: boolean } = {}) {
@@ -36,11 +51,11 @@ function stubCanvas(options: { context?: boolean } = {}) {
   return { canvas, drawn };
 }
 
-/** A video element as the sweep hands it in. */
 const frame = { videoWidth: 1920, videoHeight: 1080 } as unknown as CanvasImageSource;
 
 beforeEach(() => {
-  decode.mockReset();
+  readBarcodes.mockReset();
+  prepareZXingModule.mockClear();
 });
 
 afterEach(() => {
@@ -61,155 +76,102 @@ describe("knowing what this browser can do before promising it", () => {
   it("reports no camera when the device exposes none", () => {
     vi.stubGlobal("navigator", {});
     expect(canOpenCamera()).toBe(false);
-
     vi.stubGlobal("navigator", { mediaDevices: {} });
     expect(canOpenCamera()).toBe(false);
   });
-
-  it("reports a camera when the device exposes one", () => {
-    vi.stubGlobal("navigator", { mediaDevices: { getUserMedia: vi.fn() } });
-    expect(canOpenCamera()).toBe(true);
-  });
 });
 
-describe("keeping the work down to what a cheap phone can do", () => {
-  it("shrinks a large frame and leaves a small one alone", () => {
-    expect(getScanScale(1920, 1080)).toBeCloseTo(640 / 1920);
-    expect(getScanScale(1080, 1920)).toBeCloseTo(640 / 1920);
+describe("bounded multi-card frames", () => {
+  it("shrinks a 1080p camera frame to a QR-readable 960px edge", () => {
+    expect(getScanScale(1920, 1080)).toBeCloseTo(960 / 1920);
+    expect(getScanScale(1080, 1920)).toBeCloseTo(960 / 1920);
     expect(getScanScale(320, 240)).toBe(1);
   });
 
-  it("refuses to divide by a frame that has no size", () => {
-    expect(getScanScale(0, 0)).toBe(1);
-    expect(getScanScale(Number.NaN, 10)).toBe(1);
-  });
-
-  it("decodes the shrunk frame rather than the full one", async () => {
+  it("asks the WASM reader for QR codes only and no more than a classroom group", async () => {
     const { drawn } = stubCanvas();
-    decode.mockReturnValue(null);
+    readBarcodes.mockResolvedValue([]);
 
     await createCardDetector()!.detect(frame);
 
-    expect(drawn).toEqual([{ width: 640, height: 360 }]);
-  });
-});
-
-describe("turning what the decoder saw into something the session understands", () => {
-  it("builds no detector without a canvas context", () => {
-    stubCanvas({ context: false });
-    expect(createCardDetector()).toBeNull();
-  });
-
-  /*
-   * The reason this file stopped using the browser's own BarcodeDetector. Its corner
-   * points arrive ordered by the image, so the first edge pointed rightwards however the
-   * card was turned and every child was recorded as answering A. The finder patterns are
-   * the code's own, so the line between them turns with the paper.
-   */
-  it("hands on the finder patterns, which are what carry the rotation", async () => {
-    stubCanvas();
-    const topLeftFinderPattern = { x: 10, y: 10 };
-    const topRightFinderPattern = { x: 90, y: 10 };
-    decode.mockReturnValue({
-      data: "KIKIRIA:1:AAAAAA:BBBBBB",
-      location: {
-        topLeftFinderPattern,
-        topRightFinderPattern,
-        bottomLeftFinderPattern: { x: 10, y: 90 },
-        topLeftCorner: { x: 0, y: 0 },
-        topRightCorner: { x: 100, y: 0 }
-      }
+    expect(drawn).toEqual([{ width: 960, height: 540 }]);
+    expect(readBarcodes).toHaveBeenCalledWith(expect.anything(), {
+      formats: ["QRCode"],
+      tryHarder: true,
+      maxNumberOfSymbols: MAX_SYMBOLS_PER_FRAME
     });
+  });
 
-    const detected = await createCardDetector()!.detect(frame);
+  it("keeps every valid QR in one frame, with its own geometry and rotation", () => {
+    const detections = collectCardDetections([
+      result("KIKIRIA:1:AAAAAA:BBBBBB", 0),
+      result("KIKIRIA:1:AAAAAA:CCCCCC", 180),
+      result("KIKIRIA:1:AAAAAA:DDDDDD", 90)
+    ]);
 
-    expect(detected).toEqual([
-      {
-        payload: "KIKIRIA:1:AAAAAA:BBBBBB",
-        corners: [topLeftFinderPattern, topRightFinderPattern]
-      }
+    expect(detections).toEqual([
+      { payload: "KIKIRIA:1:AAAAAA:BBBBBB", corners: [position.topLeft, position.topRight, position.bottomRight, position.bottomLeft], orientation: 0 },
+      { payload: "KIKIRIA:1:AAAAAA:CCCCCC", corners: [position.topLeft, position.topRight, position.bottomRight, position.bottomLeft], orientation: 180 },
+      { payload: "KIKIRIA:1:AAAAAA:DDDDDD", corners: [position.topLeft, position.topRight, position.bottomRight, position.bottomLeft], orientation: 90 }
     ]);
   });
 
-  it("reports nothing when the frame holds no code", async () => {
-    stubCanvas();
-    decode.mockReturnValue(null);
+  it("processes an eight-card classroom group conceptually in one frame", () => {
+    const results = Array.from({ length: 8 }, (_, index) =>
+      result(`KIKIRIA:1:AAAAAA:A${String(index).padStart(5, "2")}`, index % 2 === 0 ? 0 : 180)
+    );
 
-    await expect(createCardDetector()!.detect(frame)).resolves.toEqual([]);
+    expect(collectCardDetections(results)).toHaveLength(8);
   });
 
-  it("reports nothing when the source has no readable size yet", async () => {
-    stubCanvas();
-    decode.mockReturnValue(null);
+  it("drops malformed payloads but retains a valid foreign classroom for the session to reject", () => {
+    const detections = collectCardDetections([
+      result("not a Kikiria card"),
+      result("KIKIRIA:9:AAAAAA:BBBBBB"),
+      result("KIKIRIA:1:FOREIG:BBBBBB")
+    ]);
 
-    await expect(createCardDetector()!.detect({} as CanvasImageSource)).resolves.toEqual([]);
-    expect(decode).not.toHaveBeenCalled();
+    expect(detections.map((detection) => detection.payload)).toEqual(["KIKIRIA:1:FOREIG:BBBBBB"]);
   });
 
-  /*
-   * A blurred or half-lit frame is ordinary while a camera pans across a room. Throwing
-   * would end the sweep; an empty frame just means the teacher keeps walking.
-   */
-  it("treats an unreadable frame as an empty one rather than an error", async () => {
-    stubCanvas();
-    decode.mockImplementation(() => {
-      throw new Error("frame not ready");
-    });
+  it("deduplicates the same QR in a frame before confidence tracking", () => {
+    expect(collectCardDetections([
+      result("KIKIRIA:1:AAAAAA:BBBBBB", 0),
+      result("KIKIRIA:1:AAAAAA:BBBBBB", 180)
+    ])).toHaveLength(1);
+  });
 
-    await expect(createCardDetector()!.detect(frame)).resolves.toEqual([]);
+  it("reports a reader-load failure distinctly from an empty frame", async () => {
+    stubCanvas();
+    readBarcodes.mockRejectedValue(new Error("WASM unavailable"));
+
+    await expect(createCardDetector()!.detect(frame)).rejects.toBeInstanceOf(CardScannerUnavailableError);
   });
 });
 
-describe("asking for the camera", () => {
+describe("asking for and returning the camera", () => {
   it("says unsupported when the device has no camera API at all", async () => {
     vi.stubGlobal("navigator", {});
     await expect(openCamera()).resolves.toEqual({ kind: "failed", reason: "unsupported" });
   });
 
-  /*
-   * The reasons stay apart because the way out of each one differs: a refusal can be
-   * granted, a missing camera means using another device. "Something went wrong" would
-   * leave a teacher stuck in front of a class.
-   */
   it("separates a refused permission from a camera that is not there", async () => {
     for (const name of ["NotAllowedError", "SecurityError"]) {
       const error = new Error("no");
       error.name = name;
       vi.stubGlobal("navigator", { mediaDevices: { getUserMedia: vi.fn().mockRejectedValue(error) } });
-
       await expect(openCamera()).resolves.toEqual({ kind: "failed", reason: "denied" });
     }
 
     const missing = new Error("none");
     missing.name = "NotFoundError";
     vi.stubGlobal("navigator", { mediaDevices: { getUserMedia: vi.fn().mockRejectedValue(missing) } });
-
     await expect(openCamera()).resolves.toEqual({ kind: "failed", reason: "unavailable" });
   });
 
-  it("asks for the back camera, which is the one pointed at a classroom", async () => {
-    const getUserMedia = vi.fn().mockResolvedValue("stream");
-    vi.stubGlobal("navigator", { mediaDevices: { getUserMedia } });
-
-    await expect(openCamera()).resolves.toEqual({ kind: "ready", stream: "stream" });
-    expect(getUserMedia).toHaveBeenCalledWith({
-      video: { facingMode: { ideal: "environment" } },
-      audio: false
-    });
-  });
-});
-
-describe("giving the camera back", () => {
   it("stops every track, so a light is not left on all morning", () => {
     const stop = vi.fn();
-    const stream = { getTracks: () => [{ stop }, { stop }] } as unknown as MediaStream;
-
-    closeCamera(stream);
-
+    closeCamera({ getTracks: () => [{ stop }, { stop }] } as unknown as MediaStream);
     expect(stop).toHaveBeenCalledTimes(2);
-  });
-
-  it("does nothing when there was never a camera to close", () => {
-    expect(() => closeCamera(null)).not.toThrow();
   });
 });

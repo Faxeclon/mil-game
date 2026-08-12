@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createClassSet, encodeCardPayload, type TeacherClassSet } from "./classCards";
 import {
   applyDetection,
+  applyDetections,
   closeAnswers,
   CONFIRMATIONS_NEEDED,
   createScanSession,
@@ -62,6 +63,56 @@ function seeUntilConfirmed(session: ScanSession, set: TeacherClassSet, index: nu
 }
 
 describe("holding a card up", () => {
+  it("keeps confidence independent for every card in a multi-QR frame", () => {
+    const set = makeSet(4);
+    const frameOne = applyDetections(createScanSession(set), set, [
+      { ...detect(set, 0, upright), orientation: 0 },
+      { ...detect(set, 1, upright), orientation: 180 },
+      { ...detect(set, 2, upright), orientation: 0 }
+    ]);
+    const frameTwo = applyDetections(frameOne.session, set, [
+      { ...detect(set, 0, upright), orientation: 0 },
+      { ...detect(set, 1, upright), orientation: 180 },
+      { ...detect(set, 3, upright), orientation: 0 }
+    ]);
+
+    expect(frameTwo.outcomes.map((outcome) => outcome.kind)).toEqual(["recorded", "recorded", "pending"]);
+    expect(getTally(frameTwo.session, set)).toEqual({ a: 1, b: 1, answered: 2, pending: 2 });
+    expect(frameTwo.session.streaks).toHaveProperty(set.cards[2].cardId);
+    expect(frameTwo.session.streaks).toHaveProperty(set.cards[3].cardId);
+  });
+
+  it("does not let a card confirmed in one group frame count twice", () => {
+    const set = makeSet(2);
+    const first = applyDetections(createScanSession(set), set, [
+      { ...detect(set, 0, upright), orientation: 0 },
+      { ...detect(set, 1, upright), orientation: 180 }
+    ]);
+    const second = applyDetections(first.session, set, [
+      { ...detect(set, 0, upright), orientation: 0 },
+      { ...detect(set, 1, upright), orientation: 180 }
+    ]);
+    const third = applyDetections(second.session, set, [
+      { ...detect(set, 0, upright), orientation: 0 }
+    ]);
+    const fourth = applyDetections(third.session, set, [
+      { ...detect(set, 0, upright), orientation: 0 }
+    ]);
+
+    expect(getTally(second.session, set)).toEqual({ a: 1, b: 1, answered: 2, pending: 0 });
+    expect(fourth.outcomes[0].kind).toBe("unchanged");
+  });
+
+  it("uses each decoder-reported orientation without guessing at sideways cards", () => {
+    const set = makeSet(2);
+    const result = applyDetections(createScanSession(set), set, [
+      { ...detect(set, 0, upright), orientation: 90 },
+      { ...detect(set, 1, upright), orientation: 180 }
+    ]);
+
+    expect(result.outcomes.map((outcome) => outcome.kind)).toEqual(["ambiguous", "pending"]);
+  });
+
   it("waits for the reading to hold still before recording anything", () => {
     const set = makeSet();
     const first = applyDetection(createScanSession(set), set, detect(set, 0, upright));

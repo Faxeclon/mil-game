@@ -53,7 +53,7 @@ import {
   type ClassLesson
 } from "@/features/teacher/classLesson";
 import {
-  applyDetection,
+  applyDetections,
   closeAnswers,
   createScanSession,
   getTally,
@@ -245,13 +245,12 @@ export function TeacherScanClient() {
         const detections = await detector.detect(video);
         if (cancelled || detections.length === 0) return;
 
-        let current = sessionRef.current;
+        const current = sessionRef.current;
         if (!current) return;
         let spoken = "";
 
-        for (const detection of detections) {
-          const { session: next, outcome } = applyDetection(current, set, detection);
-          current = next;
+        const { session: next, outcomes } = applyDetections(current, set, detections);
+        for (const outcome of outcomes) {
           if (outcome.kind === "recorded" || outcome.kind === "changed") {
             spoken = t("announceAnswer", { number: outcome.card.number, answer: outcome.answer });
           } else if (outcome.kind === "ambiguous") {
@@ -259,9 +258,18 @@ export function TeacherScanClient() {
           }
         }
 
-        sessionRef.current = current;
-        setSession(current);
+        sessionRef.current = next;
+        setSession(next);
         if (spoken) setAnnouncement(spoken);
+      } catch {
+        if (!cancelled) {
+          closeCamera(streamRef.current);
+          streamRef.current = null;
+          if (videoRef.current) videoRef.current.srcObject = null;
+          // The existing retryable scanner-unavailable state keeps the lesson usable if
+          // WebAssembly cannot initialise, instead of leaving a rejected frame loop.
+          setCamera({ kind: "failed", reason: "unavailable" });
+        }
       } finally {
         busy = false;
       }

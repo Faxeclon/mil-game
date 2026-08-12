@@ -1,7 +1,9 @@
-import jsQR from "jsqr";
 import QRCode from "qrcode";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { prepareZXingModule, readBarcodes } from "zxing-wasm/reader";
 import { describe, expect, it } from "vitest";
-import { getCardOrientation } from "./cardOrientation";
+import { getCardOrientationFromAngle } from "./cardOrientation";
 
 /**
  * The one test that would have caught the bug.
@@ -79,25 +81,86 @@ function rotate(frame: Frame, quarterTurns: number): Frame {
   return { data, width, height };
 }
 
-/** What the scanner does with a frame, minus the camera and the canvas. */
-function read(frame: Frame) {
-  const code = jsQR(frame.data, frame.width, frame.height, { inversionAttempts: "dontInvert" });
+/** Puts several paper cards into one camera frame, with a white gap between them. */
+function combine(...frames: Frame[]): Frame {
+  const gap = MODULE_PIXELS * 8;
+  const width = frames.reduce((total, frame) => total + frame.width, gap * Math.max(0, frames.length - 1));
+  const height = Math.max(...frames.map((frame) => frame.height));
+  const data = new Uint8ClampedArray(width * height * 4).fill(255);
+  let offsetX = 0;
+
+  for (const frame of frames) {
+    for (let y = 0; y < frame.height; y += 1) {
+      const sourceStart = y * frame.width * 4;
+      const targetStart = (y * width + offsetX) * 4;
+      data.set(frame.data.subarray(sourceStart, sourceStart + frame.width * 4), targetStart);
+    }
+    offsetX += frame.width + gap;
+  }
+
+  return { data, width, height };
+}
+
+/** What the production scanner does with a frame, minus the camera and canvas. */
+async function read(frame: Frame) {
+  const code = await readWithZxing(frame);
   if (!code) return null;
   return {
-    payload: code.data,
-    orientation: getCardOrientation([
-      code.location.topLeftFinderPattern,
-      code.location.topRightFinderPattern
-    ])
+    payload: code.text,
+    orientation: getCardOrientationFromAngle(code.orientation)
   };
 }
 
 const PAYLOAD = "KIKIRIA:7:A1B2C3:D4E5F6";
+const readerWasm = readFileSync(resolve(process.cwd(), "node_modules/zxing-wasm/dist/reader/zxing_reader.wasm"));
+const readerWasmBinary = readerWasm.buffer.slice(
+  readerWasm.byteOffset,
+  readerWasm.byteOffset + readerWasm.byteLength
+) as ArrayBuffer;
+
+prepareZXingModule({
+  // The integration test deliberately uses the installed WASM, never the package CDN.
+  overrides: { wasmBinary: readerWasmBinary },
+  fireImmediately: false
+});
+
+async function readWithZxing(frame: Frame) {
+  const [result] = await readBarcodes(frame as unknown as ImageData, {
+    formats: ["QRCode"],
+    tryHarder: true,
+    maxNumberOfSymbols: 12
+  });
+  return result;
+}
 
 describe("a real card, actually turned", () => {
-  it("decodes the same child whichever way the card is held", () => {
-    const upright = read(renderQr(PAYLOAD));
-    const upsideDown = read(rotate(renderQr(PAYLOAD), 2));
+  it("proves ZXing reports the per-card rotations used for A and B", async () => {
+    const upright = await readWithZxing(renderQr(PAYLOAD));
+    const upsideDown = await readWithZxing(rotate(renderQr(PAYLOAD), 2));
+
+    expect(upright?.text).toBe(PAYLOAD);
+    expect(upright?.orientation).toBe(0);
+    expect(upsideDown?.text).toBe(PAYLOAD);
+    expect(upsideDown?.orientation).toBe(180);
+  });
+
+  it("reads two separate cards from one composed camera frame", async () => {
+    const first = "KIKIRIA:1:AAAAAA:BBBBBB";
+    const second = "KIKIRIA:1:AAAAAA:CCCCCC";
+    const results = await readBarcodes(combine(renderQr(first), rotate(renderQr(second), 2)) as unknown as ImageData, {
+      formats: ["QRCode"],
+      tryHarder: true,
+      maxNumberOfSymbols: 12
+    });
+
+    expect(results.map((result) => result.text).sort()).toEqual([first, second]);
+    expect(results.find((result) => result.text === first)?.orientation).toBe(0);
+    expect(results.find((result) => result.text === second)?.orientation).toBe(180);
+  });
+
+  it("decodes the same child whichever way the card is held", async () => {
+    const upright = await read(renderQr(PAYLOAD));
+    const upsideDown = await read(rotate(renderQr(PAYLOAD), 2));
 
     expect(upright?.payload).toBe(PAYLOAD);
     expect(upsideDown?.payload).toBe(PAYLOAD);
@@ -108,20 +171,20 @@ describe("a real card, actually turned", () => {
    * ordered by the image, so both of these came back "A" and every child in the room was
    * recorded as answering the same thing.
    */
-  it("answers A upright and B upside down", () => {
-    expect(read(renderQr(PAYLOAD))?.orientation).toBe("A");
-    expect(read(rotate(renderQr(PAYLOAD), 2))?.orientation).toBe("B");
+  it("answers A upright and B upside down", async () => {
+    expect((await read(renderQr(PAYLOAD)))?.orientation).toBe("A");
+    expect((await read(rotate(renderQr(PAYLOAD), 2)))?.orientation).toBe("B");
   });
 
-  it("refuses a card held sideways instead of guessing", () => {
-    expect(read(rotate(renderQr(PAYLOAD), 1))?.orientation).toBe("ambiguous");
-    expect(read(rotate(renderQr(PAYLOAD), 3))?.orientation).toBe("ambiguous");
+  it("refuses a card held sideways instead of guessing", async () => {
+    expect((await read(rotate(renderQr(PAYLOAD), 1)))?.orientation).toBe("ambiguous");
+    expect((await read(rotate(renderQr(PAYLOAD), 3)))?.orientation).toBe("ambiguous");
   });
 
   /* Two cards in a class must not answer alike just because both were held upright. */
-  it("keeps each card's own identity while reading its orientation", () => {
-    const first = read(renderQr("KIKIRIA:1:AAAAAA:BBBBBB"));
-    const second = read(rotate(renderQr("KIKIRIA:2:CCCCCC:DDDDDD"), 2));
+  it("keeps each card's own identity while reading its orientation", async () => {
+    const first = await read(renderQr("KIKIRIA:1:AAAAAA:BBBBBB"));
+    const second = await read(rotate(renderQr("KIKIRIA:2:CCCCCC:DDDDDD"), 2));
 
     expect(first?.payload).toBe("KIKIRIA:1:AAAAAA:BBBBBB");
     expect(first?.orientation).toBe("A");
