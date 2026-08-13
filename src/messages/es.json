@@ -247,12 +247,6 @@
         "plazaFountain": "Ilustración temporal de una fuente en medio de una plaza."
       },
       "videos": {
-        "handSteady": "Tira temporal de tres cuadros de una mano que mantiene siempre cinco dedos.",
-        "handShifting": "Tira temporal de tres cuadros de una mano a la que le cambia el número de dedos.",
-        "signSteady": "Tira temporal de tres cuadros de un cartel cuyas letras no cambian.",
-        "signShifting": "Tira temporal de tres cuadros de un cartel cuyas letras cambian entre cuadros.",
-        "ballSteady": "Tira temporal de tres cuadros de una pelota que rebota parejo.",
-        "ballShifting": "Tira temporal de tres cuadros de una pelota que cambia de tamaño mientras se mueve.",
         "catReal": "Video de un gato moviéndose en una habitación.",
         "catAi": "Video de un gato moviéndose en una habitación.",
         "skaterClip": "Tira temporal de tres cuadros de una patineta recorriendo una rampa.",
@@ -358,20 +352,6 @@
         "r3": {
           "verification": "Antes de compartirla, busca quién la publicó primero.",
           "remember": "Compartir sin comprobar también es parte del problema."
-        }
-      },
-      "clipsCompare": {
-        "r1": {
-          "observation": "Compara cuadro con cuadro: cuenta los dedos en cada uno.",
-          "remember": "Lo que cambia sin motivo entre cuadros es una pista."
-        },
-        "r2": {
-          "observation": "Lee el cartel en los tres cuadros: ¿dice lo mismo siempre?",
-          "remember": "El texto dentro de un video suele ser lo primero que falla."
-        },
-        "r3": {
-          "verification": "Si el video se ve raro, busca de dónde salió antes de creerlo.",
-          "remember": "Un video puede verse perfecto y aun así no saberse su origen."
         }
       },
       "clipsSingle": {
@@ -1276,8 +1256,10 @@
       "animals2": "Animales · Misión 2",
       "animals3": "Animales · Misión 3",
       "sports1": "Deportes · Misión 1",
-      "sports2": "Deportes · Misión 2"
-    }
+      "sports2": "Deportes · Misión 2",
+      "videos1": "Videos · Misión 1"
+    },
+    "basedOnImage": "Basada en una imagen de {creator} · {source}"
   },
   "islandStory": {
     "skip": "Saltar →",

@@ -13,7 +13,6 @@ import animalsSingleJson from "./animals-single.json";
 import sportsSingleJson from "./sports-single.json";
 import animalsTimedJson from "./animals-timed.json";
 import cityBasicsTimedJson from "./city-basics-timed.json";
-import clipsCompareJson from "./clips-compare.json";
 import clipsSingleJson from "./clips-single.json";
 import sportsCompareJson from "./sports-compare.json";
 import tutorialPackJson from "./introductory-tutorial.json";
@@ -48,8 +47,7 @@ export const contentPacks: Readonly<Record<string, TutorialPack>> = {
   "city-basics-timed-v1": load(cityBasicsTimedJson),
   "animals-compare-v1": load(animalsCompareJson),
   "animals-timed-v1": load(animalsTimedJson),
-  "sports-compare-v1": load(sportsCompareJson),
-  "clips-compare-v1": load(clipsCompareJson)
+  "sports-compare-v1": load(sportsCompareJson)
 };
 
 export function getContentPack(packId: string | undefined): TutorialPack | undefined {
@@ -103,7 +101,8 @@ export const creditedPackPresentationKeys = {
   "animals-timed-v1": "animals2",
   "animals-single-v1": "animals3",
   "sports-compare-v1": "sports1",
-  "sports-single-v1": "sports2"
+  "sports-single-v1": "sports2",
+  "clips-single-v1": "videos1"
 } as const;
 
 /** Only audited assets are exposed publicly; this neutral list deliberately has no answer or side data. */

@@ -22,17 +22,20 @@ export function CreditsClient() {
           <ul className={styles.creditList}>
             {items.map(({ media }) => {
               const credit = media.provenance.credit!;
+              const sourceCredit = credit.basedOnImage ?? credit;
               return <li className={styles.credit} key={media.id}>
                 {credit.creationMethod !== "ai-generated" && <strong>{credit.title ?? t("projectContent")}</strong>}
-                {credit.creator && <span>{credit.creator}</span>}
-                {credit.attributionText && <span>{credit.attributionText}</span>}
-                {credit.source && <span>{credit.source}{credit.license && <> {"·"} {credit.license}</>}</span>}
                 {credit.creationMethod === "ai-generated" && <span>{t("projectGenerated")}</span>}
+                {credit.basedOnImage
+                  ? <span>{t("basedOnImage", { creator: credit.basedOnImage.creator, source: credit.basedOnImage.source })}</span>
+                  : sourceCredit.creator && <span>{sourceCredit.creator}</span>}
+                {sourceCredit.attributionText && <span>{sourceCredit.attributionText}</span>}
+                {sourceCredit.source && <span>{sourceCredit.source}{sourceCredit.license && <> {"·"} {sourceCredit.license}</>}</span>}
                 {credit.creationMethod === "project-created" && <span>{t("projectCreated")}</span>}
                 {credit.modifications && <span>{credit.modifications}</span>}
                 <span className={styles.creditLinks}>
-                  {credit.sourceUrl && <a href={credit.sourceUrl} rel="noreferrer" target="_blank">{t("viewSource")} <ExternalLink aria-hidden="true" size={13} /></a>}
-                  {credit.licenseUrl && <a href={credit.licenseUrl} rel="noreferrer" target="_blank">{t("viewLicense")} <ExternalLink aria-hidden="true" size={13} /></a>}
+                  {sourceCredit.sourceUrl && <a href={sourceCredit.sourceUrl} rel="noreferrer" target="_blank">{t("viewSource")} <ExternalLink aria-hidden="true" size={13} /></a>}
+                  {sourceCredit.licenseUrl && <a href={sourceCredit.licenseUrl} rel="noreferrer" target="_blank">{t("viewLicense")} <ExternalLink aria-hidden="true" size={13} /></a>}
                 </span>
               </li>;
             })}

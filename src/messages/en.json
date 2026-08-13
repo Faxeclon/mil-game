@@ -247,12 +247,6 @@
         "plazaFountain": "Temporary illustration of a fountain in the middle of a square."
       },
       "videos": {
-        "handSteady": "Temporary strip of three frames of a hand that keeps the same five fingers.",
-        "handShifting": "Temporary strip of three frames of a hand whose number of fingers changes.",
-        "signSteady": "Temporary strip of three frames of a sign whose letters stay the same.",
-        "signShifting": "Temporary strip of three frames of a sign whose letters change between frames.",
-        "ballSteady": "Temporary strip of three frames of a ball bouncing evenly.",
-        "ballShifting": "Temporary strip of three frames of a ball that changes size as it moves.",
         "catReal": "Video of a cat moving around a room.",
         "catAi": "Video of a cat moving around a room.",
         "skaterClip": "Temporary strip of three frames of a skateboard moving along a ramp.",
@@ -358,20 +352,6 @@
         "r3": {
           "verification": "Before sharing it, find who published it first.",
           "remember": "Sharing without checking is part of the problem too."
-        }
-      },
-      "clipsCompare": {
-        "r1": {
-          "observation": "Compare frame with frame: count the fingers in each one.",
-          "remember": "Something that changes for no reason between frames is a clue."
-        },
-        "r2": {
-          "observation": "Read the sign in all three frames: does it say the same thing every time?",
-          "remember": "Text inside a video is usually the first thing to slip."
-        },
-        "r3": {
-          "verification": "If a video looks odd, find where it came from before believing it.",
-          "remember": "A video can look perfect and its origin still be unknown."
         }
       },
       "clipsSingle": {
@@ -1276,8 +1256,10 @@
       "animals2": "Animals · Mission 2",
       "animals3": "Animals · Mission 3",
       "sports1": "Sports · Mission 1",
-      "sports2": "Sports · Mission 2"
-    }
+      "sports2": "Sports · Mission 2",
+      "videos1": "Videos · Mission 1"
+    },
+    "basedOnImage": "Based on an image by {creator} · {source}"
   },
   "islandStory": {
     "skip": "Skip →",

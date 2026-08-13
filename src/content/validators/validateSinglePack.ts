@@ -56,7 +56,10 @@ function validateRound(
   );
   assert(typeof media.provenance.sourceName === "string" && media.provenance.sourceName.length > 0, `${path}.media.provenance.sourceName is required.`);
   assert(typeof media.provenance.licenseStatus === "string" && media.provenance.licenseStatus.length > 0, `${path}.media.provenance.licenseStatus is required.`);
-  assert(typeof media.provenance.temporary === "boolean", `${path}.media.provenance.temporary is required.`);
+  assert(
+    media.provenance.temporary === undefined || typeof media.provenance.temporary === "boolean",
+    `${path}.media.provenance.temporary must be a boolean when provided.`
+  );
   if (media.src.includes("/placeholders/")) {
     assert(media.provenance.temporary, `${path}.media.provenance.temporary must be true for placeholder media.`);
   }

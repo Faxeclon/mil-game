@@ -18,24 +18,32 @@ export const provenanceSourceTypes = [
 
 export type ProvenanceSourceType = (typeof provenanceSourceTypes)[number];
 
+type CreditLicense = "Public Domain Mark 1.0" | "CC0 1.0" | "CC BY 2.0" | "CC BY 4.0" | "CC BY-SA 2.0" | "CC BY-SA 4.0" | "Pixabay Content License" | "Pexels License" | "project-generated";
+
+type ExternalSourceCredit = {
+  title?: string;
+  creator?: string;
+  attributionText?: string;
+  source?: string;
+  sourceUrl?: string;
+  license?: CreditLicense;
+  licenseUrl?: string;
+};
+
 export type ProvenanceMetadata = {
   sourceType: ProvenanceSourceType;
   sourceName: string;
   licenseStatus: string;
   generationMethod?: string;
-  temporary: boolean;
+  /** Omitted for reviewed final media; required and true for placeholders. */
+  temporary?: boolean;
   sourceReference?: string;
   /** Public credit data, present only once a resource has been audited. */
-  credit?: {
-    title?: string;
-    creator?: string;
-    attributionText?: string;
-    source?: string;
-    sourceUrl?: string;
-    license?: "Public Domain Mark 1.0" | "CC0 1.0" | "CC BY 2.0" | "CC BY 4.0" | "CC BY-SA 2.0" | "CC BY-SA 4.0" | "project-generated";
+  credit?: ExternalSourceCredit & {
     /** Publicly stated creation method; project provenance alone never implies AI. */
     creationMethod?: "ai-generated" | "project-created";
-    licenseUrl?: string;
+    /** Source image credited separately when an AI output was derived from it. */
+    basedOnImage?: ExternalSourceCredit & { creator: string; source: string };
     modifications?: string;
   };
 };

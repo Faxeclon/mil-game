@@ -29,7 +29,7 @@ describe("audited basics assets and credits", () => {
     expect(credits.get("basics-1-r3-cat-camera")).toMatchObject({ title: "los sueños azules de un gato", creator: "Martín Vicente, M." });
     expect(credits.get("basics-1-r2-earthquake-camera")).toMatchObject({ license: "CC BY 2.0", licenseUrl: ccBy });
     expect(credits.get("basics-2-r1-pope-real")).toMatchObject({ license: "CC BY-SA 2.0", licenseUrl: ccBySa });
-    for (const id of [...credits.keys()].filter((id) => id.endsWith("-ai"))) {
+    for (const id of [...credits.keys()].filter((id) => id.startsWith("basics-") && id.endsWith("-ai"))) {
       expect(credits.get(id)).toEqual({ license: "project-generated", creationMethod: "ai-generated" });
     }
 
