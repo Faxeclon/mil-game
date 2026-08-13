@@ -142,4 +142,44 @@ describe("the packs that actually ship", () => {
     expect(rightAnswerOf("decision-influence-v1", "decision-influence-round-3")).toBe("listenKnowing");
     expect(rightAnswerOf("decision-limits-v1", "decision-limits-round-3")).toBe("goodSign");
   });
+
+  it("keeps the decision lessons short, evidence-based and aligned in both languages", () => {
+    const message = (language: typeof spanishMessages, key: string) =>
+      lookup(language.decisions, key);
+
+    expect(message(spanishMessages, "source.noClass.question")).toBe("¿Dónde lo compruebas?");
+    expect(message(englishMessages, "source.noClass.question")).toBe("Where do you check it?");
+    expect(message(spanishMessages, "source.noClass.official")).toBe("En la página del colegio");
+    expect(message(spanishMessages, "source.noClass.crowd")).toBe("Por cuántas veces se compartió");
+    expect(message(spanishMessages, "source.noClass.askGroup")).toBe("En el grupo del salón");
+
+    expect(message(spanishMessages, "source.noSource.wait")).toBe("Todavía no sé");
+    expect(message(englishMessages, "source.noSource.wait")).toBe("I do not know yet");
+    expect(message(spanishMessages, "influence.giveaway.askWhoRuns")).toBe(
+      "Que la app cree que seguirás mirando"
+    );
+    expect(message(englishMessages, "influence.giveaway.askWhoRuns")).toBe(
+      "The app thinks you will keep watching"
+    );
+    expect(message(spanishMessages, "limits.homework.checkAndCredit")).toBe(
+      "Busco otras fuentes y puntos de vista"
+    );
+    expect(message(englishMessages, "limits.homework.checkAndCredit")).toBe(
+      "Look for other sources and viewpoints"
+    );
+    expect(message(spanishMessages, "share.poster.saySo")).toBe(
+      "Ilustración creada con ayuda de IA"
+    );
+    expect(message(englishMessages, "share.poster.saySo")).toBe(
+      "Illustration created with AI help"
+    );
+
+    for (const language of [spanishMessages, englishMessages]) {
+      const copy = JSON.stringify(language.decisions).toLowerCase();
+      expect(copy).not.toContain("oráculo");
+      expect(copy).not.toContain("oracle");
+      expect(copy).not.toContain("desconfiar de todo");
+      expect(copy).not.toContain("distrusting everybody");
+    }
+  });
 });
