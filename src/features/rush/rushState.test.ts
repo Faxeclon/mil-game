@@ -41,9 +41,9 @@ describe("the pool of images", () => {
 
     expect(fromAnimals.some((item) => item.src.includes("/animals/"))).toBe(true);
     expect(fromAnimals.some((item) => item.src.includes("/sports/"))).toBe(true);
-    expect(fromAnimals.some((item) => item.src.includes("/memes/"))).toBe(true);
+    expect(fromAnimals.some((item) => item.src.includes("/memes/"))).toBe(false);
     expect(fromSports).toEqual(fromAnimals);
-    expect(difference.every((item) => /\/(animals|sports|memes)\//.test(item.src))).toBe(true);
+    expect(difference.every((item) => /\/(animals|sports)\//.test(item.src))).toBe(true);
 
     const source = buildIslandRushPool("source", contentPacks, singlePacks);
     expect(source.every((item) => item.src.includes("/creators/"))).toBe(true);

@@ -64,7 +64,7 @@ describe("when Roqui presents a place", () => {
     // Every island with content is announced, and every later theme inside one. The first
     // theme of an island is not greeted twice: arriving at the island already said it.
     expect(islandGreetings).toEqual(new Set(["training", "difference", "source", "videos"]));
-    expect(categoryGreetings).toEqual(new Set(["sports", "memes"]));
+    expect(categoryGreetings).toEqual(new Set(["sports"]));
   });
 });
 

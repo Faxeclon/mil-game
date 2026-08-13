@@ -25,6 +25,7 @@ export function CreditsClient() {
               return <li className={styles.credit} key={media.id}>
                 {credit.creationMethod !== "ai-generated" && <strong>{credit.title ?? t("projectContent")}</strong>}
                 {credit.creator && <span>{credit.creator}</span>}
+                {credit.attributionText && <span>{credit.attributionText}</span>}
                 {credit.source && <span>{credit.source}{credit.license && <> {"·"} {credit.license}</>}</span>}
                 {credit.creationMethod === "ai-generated" && <span>{t("projectGenerated")}</span>}
                 {credit.creationMethod === "project-created" && <span>{t("projectCreated")}</span>}

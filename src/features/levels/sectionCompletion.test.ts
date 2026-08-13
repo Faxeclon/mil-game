@@ -38,9 +38,9 @@ describe("section completion events", () => {
   });
 
   it("returns to the general map when the last required section closes an island", () => {
-    const state = play(["basics-1", "basics-2", "animals-1", "animals-2", "animals-3", "sports-1", "sports-2", "memes-1", "memes-2"]);
-    expect(getSectionCompletionEvent(state, "memes-2")).toMatchObject({ categoryKey: "memes", islandCompleted: true, destination: { kind: "worlds" } });
-    expect(getContinueDestination(state, "memes-2")).toEqual({ kind: "worlds" });
+    const state = play(["basics-1", "basics-2", "animals-1", "animals-2", "animals-3", "sports-1", "sports-2"]);
+    expect(getSectionCompletionEvent(state, "sports-2")).toMatchObject({ categoryKey: "sports", islandCompleted: true, destination: { kind: "worlds" } });
+    expect(getContinueDestination(state, "sports-2")).toEqual({ kind: "worlds" });
   });
 
   it("does not create another event by replaying only a section's final mission", () => {

@@ -10,12 +10,12 @@
  */
 
 /** How a mission is played. */
-export const levelModes = ["compare", "compare-timed", "single", "single-uncertain", "meme"] as const;
+export const levelModes = ["compare", "compare-timed", "single", "single-uncertain"] as const;
 
 export type LevelMode = (typeof levelModes)[number];
 
 /** Icon names shared with the map artwork. */
-export type MapIcon = "training" | "source" | "context" | "voices" | "videos" | "share";
+export type MapIcon = "training" | "source" | "context" | "voices" | "videos";
 
 export const islands = [
   { key: "training", order: 1, icon: "training" },
@@ -31,7 +31,6 @@ export const categories = [
   { key: "animals", island: "difference", order: 1, icon: "context" },
   { key: "sports", island: "difference", order: 2, icon: "videos" },
   { key: "creators", island: "source", order: 1, icon: "voices" },
-  { key: "memes", island: "difference", order: 3, icon: "share" },
   { key: "clips", island: "videos", order: 1, icon: "videos" }
 ] as const satisfies readonly { key: string; island: IslandKey; order: number; icon: MapIcon }[];
 
@@ -77,11 +76,6 @@ const levelBlueprintEntries = [
   { id: "sports-1", category: "sports", order: 1, mode: "compare", packId: "sports-compare-v1" },
   { id: "sports-2", category: "sports", order: 2, mode: "single", packId: "sports-single-v1" },
 
-  // Memes belong with the images they are made of: a meme is a photo somebody wrote on,
-  // and the thing being judged is still the photo underneath.
-  { id: "memes-1", category: "memes", order: 1, mode: "meme", packId: "memes-uncertain-v1" },
-  { id: "memes-2", category: "memes", order: 2, mode: "meme", packId: "memes-single-v1" },
-
   // Island 3 - Checking the source: the image stops being enough, and admitting that is
   // the answer. This is where "I cannot tell by looking" becomes a correct thing to say.
   {
@@ -103,8 +97,12 @@ const levelBlueprintEntries = [
   { id: "clips-1", category: "clips", order: 1, mode: "single", packId: "clips-single-v1" }
 ] as const satisfies readonly MissionBlueprint[];
 
-/** A level identifier authored in the current level catalog. */
-export type LevelId = (typeof levelBlueprintEntries)[number]["id"];
+/** Removed content IDs remain parseable only so local legacy progress is never discarded. */
+export const legacyRetiredLevelIds = ["memes-1", "memes-2"] as const;
+export type LegacyRetiredLevelId = (typeof legacyRetiredLevelIds)[number];
+
+/** Active level IDs plus identifiers retained solely for legacy progress normalization. */
+export type LevelId = (typeof levelBlueprintEntries)[number]["id"] | LegacyRetiredLevelId;
 
 export const missionBlueprint: readonly MissionBlueprint[] = levelBlueprintEntries;
 
@@ -121,7 +119,6 @@ const difficultyByMode: Record<LevelMode, LevelDifficulty> = {
   "compare-timed": "medium",
   single: "medium",
   "single-uncertain": "hard",
-  meme: "hard"
 };
 
 export function getLevelDifficulty(mode: LevelMode): LevelDifficulty {
@@ -148,7 +145,7 @@ export function getMissionById(missionId: string): MissionBlueprint | undefined 
 
 /** Narrows untrusted route or stored input to an authored level identifier. */
 export function isLevelId(value: unknown): value is LevelId {
-  return typeof value === "string" && missionBlueprint.some((mission) => mission.id === value);
+  return typeof value === "string" && (missionBlueprint.some((mission) => mission.id === value) || legacyRetiredLevelIds.includes(value as LegacyRetiredLevelId));
 }
 
 export function getMissionsByCategory(category: CategoryKey): MissionBlueprint[] {

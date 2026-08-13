@@ -12,15 +12,25 @@
           "position": "left",
           "media": {
             "id": "sports-1-r1-messi-real",
-            "src": "/media/tutorial/sports/sports-1/r1-real.png",
+            "src": "/media/tutorial/sports/sports-1/r1-real.jpg",
             "altKey": "media.sports.messi.real",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "temporary": false
+              "sourceType": "licensed",
+              "sourceName": "Wikimedia Commons",
+              "licenseStatus": "CC BY 4.0",
+              "temporary": false,
+              "credit": {
+                "title": "Lionel Messi playing for Argentina at the 2022 FIFA World Cup",
+                "creator": "Hossein Zohrevand",
+                "source": "Wikimedia Commons",
+                "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lionel-Messi-Argentina-2022-FIFA-World-Cup.jpg",
+                "license": "CC BY 4.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+                "modifications": "Technical resizing only",
+                "attributionText": "Tasnim News Agency"
+              }
             }
           }
         },
@@ -34,11 +44,15 @@
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "generationMethod": "AI-generated media from an external source; generator not documented",
-              "temporary": false
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "project-generated",
+              "generationMethod": "AI-generated with Gemini for Kikiria",
+              "temporary": false,
+              "credit": {
+                "license": "project-generated",
+                "creationMethod": "ai-generated"
+              }
             }
           }
         }
@@ -67,9 +81,13 @@
             "provenance": {
               "sourceType": "project-generated",
               "sourceName": "Kikiria project team",
-              "licenseStatus": "Rights status not documented",
-              "generationMethod": "AI-generated for Kikiria",
-              "temporary": false
+              "licenseStatus": "project-generated",
+              "generationMethod": "AI-generated with Gemini for Kikiria",
+              "temporary": false,
+              "credit": {
+                "license": "project-generated",
+                "creationMethod": "ai-generated"
+              }
             }
           }
         },
@@ -83,10 +101,19 @@
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "temporary": false
+              "sourceType": "licensed",
+              "sourceName": "Wikimedia Commons",
+              "licenseStatus": "CC BY 2.0",
+              "temporary": false,
+              "credit": {
+                "title": "Los Angeles Lakers @ Cleveland Cavaliers, March 21, 2022",
+                "creator": "Erik Drost",
+                "source": "Wikimedia Commons",
+                "sourceUrl": "https://commons.wikimedia.org/wiki/File:LeBron_James_(51960276445)_(cropped).jpg",
+                "license": "CC BY 2.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+                "modifications": "Technical resizing only"
+              }
             }
           }
         }
@@ -113,10 +140,19 @@
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "temporary": false
+              "sourceType": "licensed",
+              "sourceName": "Wikimedia Commons",
+              "licenseStatus": "CC0 1.0",
+              "temporary": false,
+              "credit": {
+                "title": "Fábio Coentráo, Real Madrid - Dinamo Zagreb, Champions League 2011",
+                "creator": "Addesolen",
+                "source": "Wikimedia Commons",
+                "sourceUrl": "https://es.wikipedia.org/wiki/Archivo:Fabio_Coentrao.jpg",
+                "license": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "modifications": "Technical resizing only"
+              }
             }
           }
         },
@@ -132,9 +168,13 @@
             "provenance": {
               "sourceType": "project-generated",
               "sourceName": "Kikiria project team",
-              "licenseStatus": "Rights status not documented",
-              "generationMethod": "AI-generated for Kikiria",
-              "temporary": false
+              "licenseStatus": "project-generated",
+              "generationMethod": "AI-generated with Gemini for Kikiria",
+              "temporary": false,
+              "credit": {
+                "license": "project-generated",
+                "creationMethod": "ai-generated"
+              }
             }
           }
         }

@@ -29,9 +29,10 @@ export type ProvenanceMetadata = {
   credit?: {
     title?: string;
     creator?: string;
+    attributionText?: string;
     source?: string;
     sourceUrl?: string;
-    license?: "Public Domain Mark 1.0" | "CC0 1.0" | "CC BY 2.0" | "CC BY-SA 2.0" | "CC BY-SA 4.0" | "project-generated";
+    license?: "Public Domain Mark 1.0" | "CC0 1.0" | "CC BY 2.0" | "CC BY 4.0" | "CC BY-SA 2.0" | "CC BY-SA 4.0" | "project-generated";
     /** Publicly stated creation method; project provenance alone never implies AI. */
     creationMethod?: "ai-generated" | "project-created";
     licenseUrl?: string;

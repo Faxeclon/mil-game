@@ -67,9 +67,9 @@ describe("the answer a card cannot give", () => {
    * flattened onto whichever side is closer.
    */
   it("leaves out the rounds whose answer is that you cannot tell", () => {
-    const pack = getSinglePack("memes-uncertain-v1")!;
+    const pack = getSinglePack("creators-uncertain-v1")!;
     const uncertain = pack.rounds.filter((round) => round.answer === "unknown").length;
-    const questions = buildClassQuestions(mission("memes-1"));
+    const questions = buildClassQuestions(mission("creators-1"));
 
     expect(uncertain).toBeGreaterThan(0);
     expect(questions).toHaveLength(pack.rounds.length - uncertain);
@@ -79,8 +79,8 @@ describe("the answer a card cannot give", () => {
   it("tells the teacher how many rounds the cards can carry", () => {
     expect(countAskableRounds(mission("animals-1"))).toEqual({ askable: 3, total: 3 });
 
-    const memes = countAskableRounds(mission("memes-1"));
-    expect(memes.askable).toBeLessThan(memes.total);
+    const creators = countAskableRounds(mission("creators-1"));
+    expect(creators.askable).toBeLessThan(creators.total);
   });
 });
 

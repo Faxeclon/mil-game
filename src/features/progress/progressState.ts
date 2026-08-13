@@ -542,6 +542,7 @@ export function completeLevel(
   const alreadyCompleted = state.completedLevelIds.includes(levelId);
   const passed = didPassLevelAttempt(attempt.correctRounds, attempt.totalRounds);
   const mission = missionBlueprint.find((entry) => entry.id === levelId);
+  if (!mission) return state;
   const score = attempt.score ?? null;
 
   /*
@@ -563,7 +564,7 @@ export function completeLevel(
   const completedLevelIds = alreadyCompleted || !passed ? state.completedLevelIds : [...state.completedLevelIds, levelId];
   const replayIdsByCategory = { ...(state.sectionReplayIdsByCategory ?? {}) };
   let sectionCompletionEvent: ProgressState["sectionCompletionEvent"];
-  if (mission && passed) {
+  if (passed) {
     const categoryMissions = missionBlueprint.filter((entry) => entry.category === mission.category && entry.packId);
     const categoryWasCompleted = categoryMissions.every((entry) => state.completedLevelIds.includes(entry.id as LevelId));
     const categoryIsCompleted = categoryMissions.every((entry) => completedLevelIds.includes(entry.id as LevelId));

@@ -53,8 +53,7 @@ describe("island, category and mission blueprint", () => {
     expect(islandOrder).toEqual([...islands].sort((a, b) => a.order - b.order).map((island) => island.key));
     expect(getCategoriesByIsland("difference").map((category) => category.key)).toEqual([
       "animals",
-      "sports",
-      "memes"
+      "sports"
     ]);
   });
 
@@ -93,7 +92,6 @@ describe("mode helpers", () => {
     expect(getLevelDifficulty("compare-timed")).toBe("medium");
     expect(getLevelDifficulty("single")).toBe("medium");
     expect(getLevelDifficulty("single-uncertain")).toBe("hard");
-    expect(getLevelDifficulty("meme")).toBe("hard");
   });
 
   it("separates two-image modes from single-image ones", () => {

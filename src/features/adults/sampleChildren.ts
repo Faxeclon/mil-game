@@ -58,7 +58,7 @@ const samples: readonly Sample[] = [
   {
     nickname: "Lucía",
     avatar: "owl",
-    done: ["basics-1", "basics-2", "animals-1", "animals-2", "animals-3", "sports-1", "sports-2", "memes-1"],
+    done: ["basics-1", "basics-2", "animals-1", "animals-2", "animals-3", "sports-1", "sports-2"],
     score: 900,
     streakDays: 5,
     lastPlayed: 0,

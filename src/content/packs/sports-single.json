@@ -9,19 +9,27 @@
       "promptKey": "singleQuestion",
       "media": {
         "id": "sports-single-skate-park",
-        "src": "/media/tutorial/placeholders/sports/skate-park.svg",
+        "src": "/media/tutorial/sports/sports-2/r1-real.jpg",
         "altKey": "media.sports.skatePark",
-        "origin": "ai-generated",
+        "origin": "camera-captured",
         "reliability": "unverified",
         "provenance": {
-          "sourceType": "project-placeholder",
-          "sourceName": "UNESCO Youth Hackathon temporary media team",
-          "licenseStatus": "Project placeholder; not for final use",
-          "temporary": true,
-          "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+          "sourceType": "licensed",
+          "sourceName": "Flickr",
+          "licenseStatus": "CC BY 2.0",
+          "temporary": false,
+          "credit": {
+            "title": "Adult Outdoor Sports",
+            "creator": "Seattle Parks & Recreation",
+            "source": "Flickr",
+            "sourceUrl": "https://www.flickr.com/photos/48268815@N02/16045095995",
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/",
+            "modifications": "Technical resizing only"
+          }
         }
       },
-      "answer": "ai-generated",
+      "answer": "camera-captured",
       "feedback": {
         "observationKey": "packs.sportsSingle.r1.observation",
         "uncertaintyKey": "packs.sportsSingle.r1.remember"
@@ -34,18 +42,23 @@
       "promptKey": "singleQuestion",
       "media": {
         "id": "sports-single-tennis-court",
-        "src": "/media/tutorial/placeholders/sports/tennis-court.svg",
+        "src": "/media/tutorial/sports/sports-2/r2-ai.png",
         "altKey": "media.sports.tennisCourt",
-        "origin": "camera-captured",
+        "origin": "ai-generated",
         "reliability": "unverified",
         "provenance": {
-          "sourceType": "project-placeholder",
-          "sourceName": "UNESCO Youth Hackathon temporary media team",
-          "licenseStatus": "Project placeholder; not for final use",
-          "temporary": true
+          "sourceType": "project-generated",
+          "sourceName": "Kikiria project team",
+          "licenseStatus": "project-generated",
+          "generationMethod": "AI-generated with Gemini for Kikiria",
+          "temporary": false,
+          "credit": {
+            "license": "project-generated",
+            "creationMethod": "ai-generated"
+          }
         }
       },
-      "answer": "camera-captured",
+      "answer": "ai-generated",
       "feedback": {
         "questionKey": "packs.sportsSingle.r2.question",
         "uncertaintyKey": "packs.sportsSingle.r2.remember"
@@ -58,19 +71,27 @@
       "promptKey": "singleQuestion",
       "media": {
         "id": "sports-single-boxing-ring",
-        "src": "/media/tutorial/placeholders/sports/boxing-ring.svg",
+        "src": "/media/tutorial/sports/sports-2/r3-real.jpg",
         "altKey": "media.sports.boxingRing",
-        "origin": "ai-generated",
+        "origin": "camera-captured",
         "reliability": "unverified",
         "provenance": {
-          "sourceType": "project-placeholder",
-          "sourceName": "UNESCO Youth Hackathon temporary media team",
-          "licenseStatus": "Project placeholder; not for final use",
-          "temporary": true,
-          "generationMethod": "Temporary hand-authored SVG; represents a future reviewed AI-media slot only."
+          "sourceType": "licensed",
+          "sourceName": "Wikimedia Commons",
+          "licenseStatus": "CC BY-SA 4.0",
+          "temporary": false,
+          "credit": {
+            "title": "UnderwaterDivingChess",
+            "creator": "Etan Ilfeld",
+            "source": "Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:UnderwaterDivingChess.jpg",
+            "license": "CC BY-SA 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+            "modifications": "Technical resizing only"
+          }
         }
       },
-      "answer": "ai-generated",
+      "answer": "camera-captured",
       "feedback": {
         "verificationKey": "packs.sportsSingle.r3.verification",
         "uncertaintyKey": "packs.sportsSingle.r3.remember"

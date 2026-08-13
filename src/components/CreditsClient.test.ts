@@ -16,6 +16,7 @@ describe("credits screen", () => {
     expect(source).toContain('rel="noreferrer"');
     expect(source).toContain('credit.creationMethod === "ai-generated"');
     expect(source).toContain('credit.creationMethod === "project-created"');
+    expect(source).toContain("credit.attributionText");
     expect(source).not.toContain('credit.license === "project-generated"');
   });
 
@@ -29,6 +30,8 @@ describe("credits screen", () => {
       expect(messages.credits.projectCreated).toBeTruthy();
       expect(messages.credits.packs.basics1).toBeTruthy();
       expect(messages.credits.packs.basics2).toBeTruthy();
+      expect(messages.credits.packs.sports1).toBeTruthy();
+      expect(messages.credits.packs.sports2).toBeTruthy();
     }
   });
 

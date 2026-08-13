@@ -24,7 +24,7 @@ describe("final media packs", () => {
     ["city-basics-timed-v1", ["r1-real.jpg", "r1-ai.png", "r2-ai.png", "r2-real.jpg", "r3-real.jpg", "r3-ai.png"]],
     ["animals-compare-v1", ["r1-real.jpg", "r1-ai.png", "r2-ai.png", "r2-real.jpg", "r3-real.jpg", "r3-ai.png"]],
     ["animals-timed-v1", ["r1-real.jpg", "r1-ai.png", "r2-ai.png", "r2-real.jpg", "r3-real.jpg", "r3-ai.png"]],
-    ["sports-compare-v1", ["r1-real.png", "r1-ai.png", "r2-ai.png", "r2-real.jpg", "r3-real.jpg", "r3-ai.png"]]
+    ["sports-compare-v1", ["r1-real.jpg", "r1-ai.png", "r2-ai.png", "r2-real.jpg", "r3-real.jpg", "r3-ai.png"]]
   ] as const;
 
   it("keeps each comparison level at three final-media rounds with exact asset paths", () => {
@@ -51,6 +51,7 @@ describe("final media packs", () => {
       "/media/tutorial/animals/animals-2/r2-ai.png",
       "/media/tutorial/animals/animals-2/r3-ai.png",
       "/media/tutorial/animals/animals-3/r2-ai.png",
+      "/media/tutorial/sports/sports-1/r1-ai.png",
       "/media/tutorial/sports/sports-1/r2-ai.png",
       "/media/tutorial/sports/sports-1/r3-ai.png"
     ]);
