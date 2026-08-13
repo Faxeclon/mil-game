@@ -12,15 +12,23 @@
           "position": "left",
           "media": {
             "id": "basics-1-r1-monkey-camera",
-            "src": "/media/tutorial/basics/basics-1/r1-monkey-camera.png",
+            "src": "/media/tutorial/basics/basics-1/r1-monkey-camera.jpg",
             "altKey": "media.round1LeftAlt",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-created",
-              "sourceName": "Project-supplied basics-1 media",
-              "licenseStatus": "Provided to the project for use",
-              "temporary": false
+              "sourceType": "licensed",
+              "sourceName": "Flickr",
+              "licenseStatus": "Public Domain Mark 1.0",
+              "temporary": false,
+              "credit": {
+                "title": "Proboscis Monkey",
+                "creator": "Hasselkus PR",
+                "source": "Flickr",
+                "sourceUrl": "https://www.flickr.com/photos/54550615@N03/12517606813",
+                "license": "Public Domain Mark 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/"
+              }
             }
           }
         },
@@ -34,10 +42,15 @@
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-created",
-              "sourceName": "Project-supplied basics-1 media",
-              "licenseStatus": "Provided to the project for use",
-              "temporary": false
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "project-generated",
+              "temporary": false,
+              "generationMethod": "AI-generated for Kikiria",
+              "credit": {
+                "license": "project-generated",
+                "creationMethod": "ai-generated"
+              }
             }
           }
         }
@@ -64,10 +77,18 @@
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-created",
-              "sourceName": "Project-supplied basics-1 media",
-              "licenseStatus": "Provided to the project for use",
-              "temporary": false
+              "sourceType": "licensed",
+              "sourceName": "Flickr",
+              "licenseStatus": "CC BY 2.0",
+              "temporary": false,
+              "credit": {
+                "title": "Hatay, Turkey, 9 February 2023. Members of the UK's International Search & Rescue Team prepare their kit on arrival in Hatay ahead of commencing search & rescue operations following the 6 February earthquakes.",
+                "creator": "Foreign, Commonwealth & Development Office",
+                "source": "Flickr",
+                "sourceUrl": "https://www.flickr.com/photos/10246637@N04/52678985044",
+                "license": "CC BY 2.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by/2.0/"
+              }
             }
           }
         },
@@ -81,10 +102,15 @@
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-created",
-              "sourceName": "Project-supplied basics-1 media",
-              "licenseStatus": "Provided to the project for use",
-              "temporary": false
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "project-generated",
+              "temporary": false,
+              "generationMethod": "AI-generated for Kikiria",
+              "credit": {
+                "license": "project-generated",
+                "creationMethod": "ai-generated"
+              }
             }
           }
         }
@@ -106,15 +132,20 @@
           "position": "left",
           "media": {
             "id": "basics-1-r3-cat-ai",
-            "src": "/media/tutorial/basics/basics-1/r3-cat-ai.jpeg",
+            "src": "/media/tutorial/basics/basics-1/r3-cat-ai.png",
             "altKey": "media.round3LeftAlt",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-created",
-              "sourceName": "Project-supplied basics-1 media",
-              "licenseStatus": "Provided to the project for use",
-              "temporary": false
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "project-generated",
+              "temporary": false,
+              "generationMethod": "AI-generated for Kikiria",
+              "credit": {
+                "license": "project-generated",
+                "creationMethod": "ai-generated"
+              }
             }
           }
         },
@@ -123,15 +154,23 @@
           "position": "right",
           "media": {
             "id": "basics-1-r3-cat-camera",
-            "src": "/media/tutorial/basics/basics-1/r3-cat-camera.jpg",
+            "src": "/media/tutorial/basics/basics-1/r3-cat-camera.png",
             "altKey": "media.round3RightAlt",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "project-created",
-              "sourceName": "Project-supplied basics-1 media",
-              "licenseStatus": "Provided to the project for use",
-              "temporary": false
+              "sourceType": "licensed",
+              "sourceName": "Flickr",
+              "licenseStatus": "CC0 1.0",
+              "temporary": false,
+              "credit": {
+                "title": "los sue?os azules de un gato",
+                "creator": "Mart?n Vicente, M.",
+                "source": "Flickr",
+                "sourceUrl": "https://www.flickr.com/photos/32179778@N00/54927760288",
+                "license": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+              }
             }
           }
         }

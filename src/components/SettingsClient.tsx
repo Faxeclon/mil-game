@@ -13,6 +13,7 @@ import {
   Settings2,
   ShieldCheck,
   Smartphone,
+  BookOpen,
   Trash2,
   Type,
   Users,
@@ -399,6 +400,13 @@ function DataSection() {
             </Link>
           </div>
         )}
+      </section>
+
+      <section className={styles.group}>
+        <Link className={styles.teacherEntry} href="/settings/credits">
+          <BookOpen aria-hidden="true" size={17} />
+          {t("credits")}
+        </Link>
       </section>
 
       {/*

@@ -635,6 +635,13 @@
   text-decoration: none;
 }
 
+.creditList { margin: .8rem 0 0; padding: 0; list-style: none; }
+.credit { display: grid; gap: .18rem; padding: .8rem 0; border-top: 1px solid var(--s-hairline); color: var(--s-ink-soft); font-size: .82rem; line-height: 1.4; }
+.credit:first-child { border-top: 0; padding-top: 0; }
+.credit strong { color: var(--s-ink); }
+.creditLinks { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: .2rem; }
+.creditLinks a { display: inline-flex; align-items: center; gap: .2rem; color: var(--s-accent-ink); font-weight: 800; }
+
 .resetStart {
   border: 1px solid var(--s-hairline-strong);
   background: transparent;

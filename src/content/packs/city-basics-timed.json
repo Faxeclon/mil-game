@@ -12,15 +12,24 @@
           "position": "left",
           "media": {
             "id": "basics-2-r1-pope-real",
-            "src": "/media/tutorial/basics/basics-2/r1-real.png",
+            "src": "/media/tutorial/basics/basics-2/r1-real.jpg",
             "altKey": "media.basics.pope.real",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "temporary": false
+              "sourceType": "licensed",
+              "sourceName": "Wikimedia Commons",
+              "licenseStatus": "CC BY-SA 2.0",
+              "temporary": false,
+              "credit": {
+                "title": "Pope Francis Korea Haemi Castle 19",
+                "creator": "Korea.net / Korean Culture and Information Service (Jeon Han)",
+                "source": "Wikimedia Commons",
+                "sourceUrl": "https://commons.wikimedia.org/w/index.php?curid=34828249",
+                "license": "CC BY-SA 2.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/",
+                "modifications": "Technical resizing only"
+              }
             }
           }
         },
@@ -29,16 +38,20 @@
           "position": "right",
           "media": {
             "id": "basics-2-r1-pope-ai",
-            "src": "/media/tutorial/basics/basics-2/r1-ai.jpg",
+            "src": "/media/tutorial/basics/basics-2/r1-ai.png",
             "altKey": "media.basics.pope.ai",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "generationMethod": "AI-generated media from an external source; generator not documented",
-              "temporary": false
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "project-generated",
+              "temporary": false,
+              "generationMethod": "AI-generated for Kikiria",
+              "credit": {
+                "license": "project-generated",
+                "creationMethod": "ai-generated"
+              }
             }
           }
         }
@@ -60,16 +73,20 @@
           "position": "left",
           "media": {
             "id": "basics-2-r2-kangaroo-ai",
-            "src": "/media/tutorial/basics/basics-2/r2-ai.jpg",
+            "src": "/media/tutorial/basics/basics-2/r2-ai.png",
             "altKey": "media.basics.kangaroo.ai",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "generationMethod": "AI-generated media from an external source; generator not documented",
-              "temporary": false
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "project-generated",
+              "temporary": false,
+              "generationMethod": "AI-generated for Kikiria",
+              "credit": {
+                "license": "project-generated",
+                "creationMethod": "ai-generated"
+              }
             }
           }
         },
@@ -83,10 +100,18 @@
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "temporary": false
+              "sourceType": "licensed",
+              "sourceName": "Flickr",
+              "licenseStatus": "CC BY-SA 2.0",
+              "temporary": false,
+              "credit": {
+                "title": "Old man Kangaroo-1=",
+                "creator": "Sheba Also 18 Million Views",
+                "source": "Flickr",
+                "sourceUrl": "https://www.flickr.com/photos/34534185@N00/8620289019",
+                "license": "CC BY-SA 2.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/"
+              }
             }
           }
         }
@@ -108,15 +133,23 @@
           "position": "left",
           "media": {
             "id": "basics-2-r3-ronaldo-real",
-            "src": "/media/tutorial/basics/basics-2/r3-real.png",
+            "src": "/media/tutorial/basics/basics-2/r3-real.jpg",
             "altKey": "media.basics.ronaldo.real",
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "temporary": false
+              "sourceType": "licensed",
+              "sourceName": "Flickr",
+              "licenseStatus": "Public Domain Mark 1.0",
+              "temporary": false,
+              "credit": {
+                "title": "soccer-manchester-united-fc-cristiano-ronaldo-champions-league-1920x1080-sports-football-hd-art-wallpaper-preview",
+                "creator": "jake_stone",
+                "source": "Flickr",
+                "sourceUrl": "https://www.flickr.com/photos/194896174@N02/51852054740",
+                "license": "Public Domain Mark 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/mark/1.0/"
+              }
             }
           }
         },
@@ -130,11 +163,15 @@
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "generationMethod": "AI-generated media from an external source; generator not documented",
-              "temporary": false
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "project-generated",
+              "temporary": false,
+              "generationMethod": "AI-generated for Kikiria",
+              "credit": {
+                "license": "project-generated",
+                "creationMethod": "ai-generated"
+              }
             }
           }
         }

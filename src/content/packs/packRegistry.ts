@@ -99,5 +99,19 @@ export function hasContentPack(packId: string | undefined): boolean {
   return Boolean(getContentPack(packId) ?? getSinglePack(packId));
 }
 
+export type CreditedMedia = { packId: string; media: { id: string; provenance: ProvenanceMetadata } };
+
+/** Only audited assets are exposed publicly; this neutral list deliberately has no answer or side data. */
+export function getCreditedMedia(): CreditedMedia[] {
+  return Object.entries(contentPacks).flatMap(([packId, pack]) =>
+    pack.rounds.flatMap((round) =>
+      round.choices
+        .map((choice) => choice.media)
+        .filter((media) => media.provenance.credit)
+        .map((media) => ({ packId, media }))
+    )
+  );
+}
+
 /** The pack every player meets first; the tutorial route has no mission to ask. */
 export const introductoryTutorialPack = contentPacks["introductory-tutorial-v1"];
