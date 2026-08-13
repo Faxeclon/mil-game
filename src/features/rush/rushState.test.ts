@@ -8,6 +8,7 @@ import {
   getRushAccuracy,
   getBonusRushDuration,
   getBonusRushScore,
+  islandHasRush,
   initialRushState,
   rushReducer,
   RUSH_SECONDS,
@@ -45,8 +46,16 @@ describe("the pool of images", () => {
     expect(fromSports).toEqual(fromAnimals);
     expect(difference.every((item) => /\/(animals|sports|memes)\//.test(item.src))).toBe(true);
 
-    const source = buildIslandRushPool("source", contentPacks, singlePacks);
-    expect(source.every((item) => item.src.includes("/creators/"))).toBe(true);
+    const videos = buildIslandRushPool("videos", contentPacks, singlePacks);
+    expect(videos.length).toBeGreaterThan(0);
+    expect(videos.every((item) => item.src.includes("/videos/"))).toBe(true);
+  });
+
+  it("has nothing to run for an island made of decisions, and says so before a Bonus is given", () => {
+    // Nothing to look at means nothing to time. The Bonus is withheld on this answer.
+    expect(buildIslandRushPool("decisions", contentPacks, singlePacks)).toEqual([]);
+    expect(islandHasRush("decisions")).toBe(false);
+    expect(islandHasRush("difference")).toBe(true);
   });
   it("takes only authored images with a definite binary answer, from both kinds of pack", () => {
     expect(pool.length).toBeGreaterThan(20);

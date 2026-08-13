@@ -5,8 +5,8 @@ describe("Bonus achievements", () => {
   it.each([
     ["training", "bonus-perfect-training"],
     ["difference", "bonus-perfect-difference"],
-    ["source", "bonus-perfect-source"],
-    ["videos", "bonus-perfect-videos"]
+    ["videos", "bonus-perfect-videos"],
+    ["decisions", "bonus-perfect-decisions"]
   ] as const)("unlocks the island achievement for a perfect %s run", (islandKey, achievementId) => {
     expect(getBonusRunAchievementIds({ islandKey, actualMistakeCount: 0, reward: "none" })).toEqual([achievementId]);
   });

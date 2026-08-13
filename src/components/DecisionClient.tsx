@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronLeft, Lightbulb } from "lucide-react";
+import { Check, ChevronLeft, Lightbulb, MessageSquareWarning, Sparkles, X } from "lucide-react";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { playSound } from "@/features/audio/soundEffects";
 import { Narrator } from "@/components/Narrator";
-import { MascotSlot } from "@/features/mascot/MascotSlot";
 import type { DecisionPack } from "@/content/schemas/decision";
 import { ActiveResponseTimer } from "@/features/game/activeResponseTimer";
 import type { LevelId } from "@/features/levels/levelModel";
@@ -83,7 +83,6 @@ export function DecisionClient({ pack, levelId, chipLabel }: DecisionClientProps
     );
   }
 
-  const chosen = round.options.find((option) => option.id === chosenId) ?? null;
   const answer = round.options.find((option) => option.id === round.answerId);
   const isRight = answered && chosenId === round.answerId;
 
@@ -116,9 +115,15 @@ export function DecisionClient({ pack, levelId, chipLabel }: DecisionClientProps
         <p className={styles.progress}>{t("roundOf", { current: round.order, total })}</p>
       </header>
 
-      <div aria-hidden="true" className={styles.track}>
-        <span style={{ width: `${(round.order / total) * 100}%` }} />
-      </div>
+      {/* One bead per situation, so a child sees how much is left without reading a number. */}
+      <ol aria-hidden="true" className={styles.track}>
+        {pack.rounds.map((entry) => (
+          <li
+            className={entry.order < round.order ? styles.beadDone : entry.order === round.order ? styles.beadNow : ""}
+            key={entry.id}
+          />
+        ))}
+      </ol>
 
       <div className={styles.board} key={round.id}>
         <p className={styles.chip}>{chipLabel}</p>
@@ -132,17 +137,49 @@ export function DecisionClient({ pack, levelId, chipLabel }: DecisionClientProps
           lines={[t(round.situationKey), t(round.questionKey), ...round.options.map((o) => t(o.labelKey))]}
         />
 
+        {/*
+         * Drawn as a message that just arrived, because that is what it is. A child meets
+         * these situations on a screen with a notification on it, not as an exercise, and
+         * the shape is doing the same work the photograph does everywhere else: it says
+         * what kind of thing you are looking at before a single word is read.
+         */}
         <div className={styles.situation}>
-          <MascotSlot alt={tTutorial("mascotAlt")} className={styles.mascot} mood="thinking" priority />
-          <p className={styles.situationText}>{t(round.situationKey)}</p>
+          {/*
+           * The map's Roqui, not the avatar one.
+           *
+           * The avatar artwork carries its own coloured tile because it is drawn to sit
+           * inside a rounded frame. Standing on a page there is no frame to fill, so the
+           * tile reads as a green box behind him. This is the same character cut out, the
+           * one who already walks the island trail.
+           */}
+          <div className={styles.stand}>
+            <Image
+              alt={tTutorial("mascotAlt")}
+              className={styles.mascot}
+              height={512}
+              priority
+              src="/media/mascot/roqui-map-left.png"
+              width={512}
+            />
+          </div>
+          <div className={styles.bubble}>
+            <p className={styles.bubbleTag}>
+              <MessageSquareWarning aria-hidden="true" size={14} />
+              {t("incoming")}
+            </p>
+            <p className={styles.situationText}>{t(round.situationKey)}</p>
+          </div>
         </div>
 
         <h1 className={styles.question} id="decision-question">
           {t(round.questionKey)}
         </h1>
 
+        {/* The prompt belongs above the options: below the button it is read too late. */}
+        {!answered && <p className={styles.hint}>{t("choose")}</p>}
+
         <ul className={styles.options}>
-          {round.options.map((option) => {
+          {round.options.map((option, index) => {
             const isChosen = chosenId === option.id;
             const isAnswer = option.id === round.answerId;
             const shown = answered && (isChosen || isAnswer);
@@ -161,12 +198,29 @@ export function DecisionClient({ pack, levelId, chipLabel }: DecisionClientProps
                     .join(" ")}
                   disabled={answered}
                   type="button"
-                  onClick={() => setChosenId(option.id)}
+                  onClick={() => {
+                    setChosenId(option.id);
+                    // The same tick the wheel uses: short, quiet, and it confirms the tap
+                    // landed on a screen where nothing else moves when you touch it.
+                    playSound("wheelTick");
+                  }}
                 >
                   <span className={styles.optionLabel}>
-                    {t(option.labelKey)}
-                    {/* Never colour alone: the tick says which one it was. */}
-                    {answered && isAnswer && <Check aria-hidden="true" size={16} />}
+                    {/*
+                     * Never colour alone. Before answering the marker is just the option's
+                     * letter; afterwards it becomes a tick or a cross, so the outcome is
+                     * readable in greyscale and by somebody who cannot tell red from green.
+                     */}
+                    <span aria-hidden="true" className={styles.marker}>
+                      {answered && isAnswer ? (
+                        <Check size={16} strokeWidth={3} />
+                      ) : answered && isChosen ? (
+                        <X size={16} strokeWidth={3} />
+                      ) : (
+                        String.fromCharCode(65 + index)
+                      )}
+                    </span>
+                    <span className={styles.optionText}>{t(option.labelKey)}</span>
                   </span>
                   {/*
                     Why, for the option they picked and for the one that helps most. A
@@ -185,8 +239,13 @@ export function DecisionClient({ pack, levelId, chipLabel }: DecisionClientProps
             {t("confirm")}
           </button>
         ) : (
-          <div className={styles.feedback} role="status">
-            <p className={styles.verdict}>{isRight ? t("right") : t("wrong")}</p>
+          <div className={`${styles.feedback} ${isRight ? styles.feedbackRight : styles.feedbackMiss}`} role="status">
+            <p className={styles.verdict}>
+              <span aria-hidden="true" className={styles.verdictMark}>
+                {isRight ? <Sparkles size={16} strokeWidth={2.6} /> : <X size={16} strokeWidth={3} />}
+              </span>
+              {isRight ? t("right") : t("wrong")}
+            </p>
             {!isRight && answer && <p className={styles.best}>{t(answer.labelKey)}</p>}
             <p className={styles.remember}>
               <Lightbulb aria-hidden="true" size={15} />
@@ -197,8 +256,6 @@ export function DecisionClient({ pack, levelId, chipLabel }: DecisionClientProps
             </button>
           </div>
         )}
-
-        {chosen && !answered && <p className={styles.hint}>{t("choose")}</p>}
       </div>
     </section>
   );

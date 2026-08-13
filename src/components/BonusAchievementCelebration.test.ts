@@ -46,10 +46,10 @@ describe("Bonus achievement toast", () => {
 
   it("has complete localized names for every stable achievement ID", () => {
     expect(spanishMessages.achievements.names).toEqual({
-      starCadet: "⭐ Cadete Estrella", detailHunter: "🔎 Cazador de Detalles", sourceSleuth: "🕵️ Detective de Fuentes", directorsEye: "🎬 Ojo de Director", eggspert: "🥚 Eggperto"
+      starCadet: "⭐ Cadete Estrella", detailHunter: "🔎 Cazador de Detalles", directorsEye: "🎬 Ojo de Director", steadyHand: "🕵️ Cabeza Fría", eggspert: "🥚 Eggperto"
     });
     expect(englishMessages.achievements.names).toEqual({
-      starCadet: "⭐ Star Cadet", detailHunter: "🔎 Detail Hunter", sourceSleuth: "🕵️ Source Sleuth", directorsEye: "🎬 Director’s Eye", eggspert: "🥚 Eggspert"
+      starCadet: "⭐ Star Cadet", detailHunter: "🔎 Detail Hunter", directorsEye: "🎬 Director’s Eye", steadyHand: "🕵️ Cool Head", eggspert: "🥚 Eggspert"
     });
     expect(spanishMessages.achievements).toMatchObject({ twoUnlocked: "¡2 logros desbloqueados!", dismiss: "Cerrar notificación" });
     expect(englishMessages.achievements).toMatchObject({ twoUnlocked: "2 achievements unlocked!", dismiss: "Dismiss notification" });

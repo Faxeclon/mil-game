@@ -32,11 +32,18 @@ export type LevelMode = (typeof levelModes)[number];
 /** Icon names shared with the map artwork. */
 export type MapIcon = "training" | "source" | "context" | "voices" | "videos" | "share";
 
+/*
+ * Four islands, each one finished, rather than five with a thin one among them.
+ *
+ * There used to be an island called "checking the source" that never asked anybody to
+ * check a source: it showed two more pictures and judged them by eye, like the island
+ * before it. Naming a skill the content does not teach is worse than not having the
+ * island, so it is gone and its two missions with it.
+ */
 export const islands = [
   { key: "training", order: 1, icon: "training" },
   { key: "difference", order: 2, icon: "context" },
-  { key: "source", order: 3, icon: "source" },
-  { key: "videos", order: 4, icon: "videos" },
+  { key: "videos", order: 3, icon: "videos" },
   /*
    * The last island, and the only one that is not about looking.
    *
@@ -46,7 +53,7 @@ export const islands = [
    * because deciding what to do only means something once you know what you are deciding
    * about.
    */
-  { key: "decisions", order: 5, icon: "share" }
+  { key: "decisions", order: 4, icon: "share" }
 ] as const satisfies readonly { key: string; order: number; icon: MapIcon }[];
 
 export type IslandKey = (typeof islands)[number]["key"];
@@ -55,7 +62,6 @@ export const categories = [
   { key: "basics", island: "training", order: 1, icon: "training" },
   { key: "animals", island: "difference", order: 1, icon: "context" },
   { key: "sports", island: "difference", order: 2, icon: "videos" },
-  { key: "creators", island: "source", order: 1, icon: "voices" },
   { key: "memes", island: "difference", order: 3, icon: "share" },
   { key: "clips", island: "videos", order: 1, icon: "videos" },
   { key: "checking", island: "decisions", order: 1, icon: "source" },
@@ -110,19 +116,7 @@ const levelBlueprintEntries = [
   { id: "memes-1", category: "memes", order: 1, mode: "meme", packId: "memes-uncertain-v1" },
   { id: "memes-2", category: "memes", order: 2, mode: "meme", packId: "memes-single-v1" },
 
-  // Island 3 - Checking the source: the image stops being enough, and admitting that is
-  // the answer. This is where "I cannot tell by looking" becomes a correct thing to say.
-  {
-    id: "creators-1",
-    category: "creators",
-    order: 1,
-    mode: "single-uncertain",
-    packId: "creators-uncertain-v1"
-  },
-  { id: "creators-2", category: "creators", order: 2, mode: "single", packId: "creators-single-v1" },
-
-
-  // Island 4 - Videos: the same question asked of moving pictures. A clip is judged from
+  // Island 3 - Videos: the same question asked of moving pictures. A clip is judged from
   // how it moves, where a change can be worth checking but never proves an origin by itself.
   //
   // One clip at a time, with no second one beside it. Two videos side by side on a phone
@@ -132,7 +126,7 @@ const levelBlueprintEntries = [
   { id: "clips-1", category: "clips", order: 1, mode: "single", packId: "clips-single-v1" },
 
   /*
-   * Island 5 - Deciding: what to do, once you know what you are looking at.
+   * Island 4 - Deciding: what to do, once you know what you are looking at.
    *
    * These are the only missions with no picture in them, and that is the point. A tell
    * that works today stops working when the next model ships; "find who published it" and

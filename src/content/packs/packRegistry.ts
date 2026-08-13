@@ -9,8 +9,6 @@ import { validateSinglePack } from "@/content/validators/validateSinglePack";
 import { validateTutorialPack } from "@/content/validators/validateTutorialPack";
 import animalsCompareJson from "./animals-compare.json";
 import animalsSingleJson from "./animals-single.json";
-import creatorsSingleJson from "./creators-single.json";
-import creatorsUncertainJson from "./creators-uncertain.json";
 import memesSingleJson from "./memes-single.json";
 import memesUncertainJson from "./memes-uncertain.json";
 import sportsSingleJson from "./sports-single.json";
@@ -87,8 +85,6 @@ export function getContentPack(packId: string | undefined): TutorialPack | undef
 export const singlePacks: Readonly<Record<string, SinglePack>> = {
   "animals-single-v1": validateSinglePack(animalsSingleJson, hasTutorialLocalizationKey),
   "sports-single-v1": validateSinglePack(sportsSingleJson, hasTutorialLocalizationKey),
-  "creators-uncertain-v1": validateSinglePack(creatorsUncertainJson, hasTutorialLocalizationKey),
-  "creators-single-v1": validateSinglePack(creatorsSingleJson, hasTutorialLocalizationKey),
   "memes-uncertain-v1": validateSinglePack(memesUncertainJson, hasTutorialLocalizationKey),
   "memes-single-v1": validateSinglePack(memesSingleJson, hasTutorialLocalizationKey),
   "clips-single-v1": validateSinglePack(clipsSingleJson, hasTutorialLocalizationKey)

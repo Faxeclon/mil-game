@@ -40,7 +40,7 @@ describe("turning a mission into questions for a class", () => {
    * nothing to compare, so the sides become the answers themselves.
    */
   it("asks a single picture as who-made-it, not as which-one", () => {
-    const questions = buildClassQuestions(mission("creators-2"));
+    const questions = buildClassQuestions(mission("animals-3"));
 
     expect(questions).toHaveLength(3);
     for (const question of questions) {
@@ -51,8 +51,8 @@ describe("turning a mission into questions for a class", () => {
   });
 
   it("puts made-with-AI on A and taken-with-a-camera on B", () => {
-    const pack = getSinglePack("creators-single-v1")!;
-    const questions = buildClassQuestions(mission("creators-2"));
+    const pack = getSinglePack("animals-single-v1")!;
+    const questions = buildClassQuestions(mission("animals-3"));
 
     pack.rounds.forEach((round, index) => {
       expect(questions[index].correct).toBe(round.answer === "ai-generated" ? "A" : "B");

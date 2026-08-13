@@ -11,6 +11,7 @@ import { LocalMedalToast } from "./LocalMedalToast";
 import { getIslandOfMission, getMissionById, type LevelId } from "@/features/levels/levelModel";
 import { getNextLevelInSection, getSectionCompletionEvent, type SectionCompletionEvent } from "@/features/levels/levelProgress";
 import { getBonusDestinationPath, getBonusOpportunityId, type BonusDestination } from "@/features/bonus/bonusOpportunity";
+import { islandHasRush } from "@/features/rush/rushState";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import {
   apprenticeAvatarIds,
@@ -70,7 +71,12 @@ export function MissionResults() {
     : null;
   const focusKey = result ? `result:${result.attemptId}` : `empty:${attempt ?? ""}`;
   const resultPassed = result?.passed === true;
-  const bonusId = celebration
+  /*
+   * No Bonus where there is no Rush to spend it on. The deciding island has no pictures,
+   * so its ticket would open an empty run - and a reward that leads nowhere is worse than
+   * no reward, because the child already believed they had won something.
+   */
+  const bonusId = celebration && islandHasRush(celebration.islandKey)
     ? getBonusOpportunityId(celebration.categoryKey, celebration.completionAttemptId)
     : null;
   const bonus = bonusId ? progressState.bonusOpportunities.find((entry) => entry.id === bonusId) : undefined;

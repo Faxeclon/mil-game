@@ -116,9 +116,15 @@ describe("legacy migration", () => {
       completedLevelIds: ["basics-1", "basics-2", "animals-1", "animals-2", "animals-3", "sports-1", "sports-2", "creators-1"]
     });
 
-    expect(state.completedLevelIds).toHaveLength(8);
-    expect(state.rushUnlockedIslands).toEqual(["training", "difference", "source"]);
-    expect(state.rankMissionCeiling).toBe(8);
+    /*
+     * "creators-1" belonged to an island that no longer exists. A save that still names it
+     * is not corrupt, it is only old: the id is dropped and everything around it survives,
+     * which is the whole reason only completions are persisted.
+     */
+    expect(state.completedLevelIds).toHaveLength(7);
+    expect(state.completedLevelIds).not.toContain("creators-1");
+    expect(state.rushUnlockedIslands).toEqual(["training", "difference"]);
+    expect(state.rankMissionCeiling).toBe(7);
   });
 
   it("retains legacy Rush unlock data without turning it into a Bonus ticket", () => {
@@ -163,7 +169,7 @@ describe("legacy migration", () => {
       pendingAchievementCelebrationIds: [],
       localMedalNoticePresented: false,
       rushUnlockedIslands: [],
-      rankMissionCeiling: 8,
+      rankMissionCeiling: 7,
       mapOnboardingStage: "complete",
       introStorySeen: true,
       onboarded: true,

@@ -48,7 +48,8 @@ describe("islands", () => {
   it("opens the first island and closes the rest", () => {
     expect(getIslandState(initialProgressState, "training")).toBe("available");
     expect(getIslandState(initialProgressState, "difference")).toBe("locked");
-    expect(getIslandState(initialProgressState, "source")).toBe("locked");
+    expect(getIslandState(initialProgressState, "videos")).toBe("locked");
+    expect(getIslandState(initialProgressState, "decisions")).toBe("locked");
   });
 
   it("opens the next island only when the previous one is finished", () => {
