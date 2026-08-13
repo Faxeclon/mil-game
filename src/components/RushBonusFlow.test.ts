@@ -13,6 +13,7 @@ describe("consumable Bonus Rush flow", () => {
     expect(guard).toContain("admittedRun.profileId === profiles.activeId");
     expect(guard).toContain("completedBonusId === admittedRun.bonusId");
     expect(guard).toContain("router.replace(`/island/${island}`)");
+    expect(guard).toContain("const permitted = supportsRush && Boolean(activeBonus || completedInThisVisit)");
     expect(guard).not.toContain("isIslandRushUnlocked");
   });
 

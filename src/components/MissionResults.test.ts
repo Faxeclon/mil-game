@@ -81,6 +81,16 @@ describe("section-completion Bonus offer", () => {
     expect(screen).toContain("<BonusAchievementCelebration ids={islandCompletionAchievementIds} onPresented={acknowledgeAchievementCelebration}");
   });
 
+  it("keeps a final island achievement toast mounted above GameFinale until it is dismissed", async () => {
+    const screen = await source("MissionResults.tsx");
+    expect(screen).toContain("const [finaleAchievementToastIds, setFinaleAchievementToastIds]");
+    expect(screen).toContain("const gameFinished = !finaleDismissed && hasFinishedEveryMission(progressState)");
+    expect(screen).toContain("<GameFinale finale={getGameFinale(progressState)} onClose={() => setFinaleDismissed(true)} />");
+    expect(screen).toContain("onDismissed={() => setFinaleAchievementToastIds([])}");
+    expect(screen).toContain("const acknowledgeFinalAchievementCelebration");
+    expect(screen).toContain("onPresented={acknowledgeFinalAchievementCelebration}");
+  });
+
   it("makes accepting active, and declining or Escape consume and follow the saved destination", async () => {
     const screen = await source("MissionResults.tsx");
     expect(screen).toContain("activateBonusOpportunity(bonus.id)");

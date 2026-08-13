@@ -14,6 +14,7 @@ describe("Bonus achievement toast", () => {
     expect(component).toContain("useAccessibility");
     expect(component).toContain("AUTO_DISMISS_MS = 4500");
     expect(component).toContain("onPresented(visibleIds)");
+    expect(component).toContain("onDismissed?.()");
     expect(component).toContain('aria-label={t("dismiss")}');
     expect(component).toContain("createPortal");
     expect(component).toContain("document.body.append(root)");

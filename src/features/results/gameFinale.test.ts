@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { initialProgressState, type ProgressState } from "@/features/progress/progressState";
 import { islands, type LevelId } from "@/features/levels/levelModel";
 import { playableMissionOrder } from "@/features/levels/progressSummary";
+import { getNextMission } from "@/features/levels/levelProgress";
 import { getGameFinale, hasFinishedEveryMission } from "./gameFinale";
 
 function withEveryMission(score: number): ProgressState {
@@ -66,5 +67,9 @@ describe("the closing screen's numbers", () => {
       completedLevelIds: playableMissionOrder.slice(0, -1).map((mission) => mission.id as LevelId)
     };
     expect(hasFinishedEveryMission(allButOne)).toBe(false);
+  });
+
+  it("leaves Home with no invalid next mission after the final Deciding mission", () => {
+    expect(getNextMission(withEveryMission(1000))).toBeNull();
   });
 });

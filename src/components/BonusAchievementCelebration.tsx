@@ -20,7 +20,15 @@ const icons: Record<AchievementIcon, LucideIcon> = {
 };
 
 /** A non-blocking, one-time toast for every newly earned achievement. */
-export function BonusAchievementCelebration({ ids, onPresented }: { ids: readonly AchievementId[]; onPresented: (ids: readonly AchievementId[]) => void }) {
+export function BonusAchievementCelebration({
+  ids,
+  onPresented,
+  onDismissed
+}: {
+  ids: readonly AchievementId[];
+  onPresented: (ids: readonly AchievementId[]) => void;
+  onDismissed?: () => void;
+}) {
   const t = useTranslations("achievements");
   const { reducedMotion } = useAccessibility();
   const [visible, setVisible] = useState(true);
@@ -32,8 +40,11 @@ export function BonusAchievementCelebration({ ids, onPresented }: { ids: readonl
   const dismiss = useCallback(() => {
     if (closing) return;
     setClosing(true);
-    window.setTimeout(() => setVisible(false), reducedMotion ? 120 : EXIT_MS);
-  }, [closing, reducedMotion]);
+    window.setTimeout(() => {
+      setVisible(false);
+      onDismissed?.();
+    }, reducedMotion ? 120 : EXIT_MS);
+  }, [closing, onDismissed, reducedMotion]);
 
   useEffect(() => {
     const root = document.createElement("div");

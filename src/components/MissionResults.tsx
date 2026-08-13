@@ -13,7 +13,7 @@ import { getIslandOfMission, getMissionById, type LevelId } from "@/features/lev
 import { getNextLevelInSection, getSectionCompletionEvent, type SectionCompletionEvent } from "@/features/levels/levelProgress";
 import { getBonusDestinationPath, getBonusOpportunityId, type BonusDestination } from "@/features/bonus/bonusOpportunity";
 import { islandHasRush } from "@/features/rush/rushState";
-import { getIslandCompletionAchievementIds } from "@/features/achievements/achievementModel";
+import { getIslandCompletionAchievementIds, type AchievementId } from "@/features/achievements/achievementModel";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import {
   apprenticeAvatarIds,
@@ -67,6 +67,7 @@ export function MissionResults() {
   const bonusDialogRef = useRef<HTMLElement>(null);
   const [bonusOfferOpen, setBonusOfferOpen] = useState(false);
   const [finaleDismissed, setFinaleDismissed] = useState(false);
+  const [finaleAchievementToastIds, setFinaleAchievementToastIds] = useState<AchievementId[]>([]);
   const [localMedalToastKey, setLocalMedalToastKey] = useState<string | null>(null);
   const result = getFreshResult(lastResult, attempt);
   const localMedalToastCandidateKey = result?.passed && progressState.completedLevelIds.length === 1 && !progressState.localMedalNoticePresented
@@ -89,6 +90,7 @@ export function MissionResults() {
   const islandCompletionAchievementIds = celebration?.islandCompleted
     ? getIslandCompletionAchievementIds(celebration.islandKey).filter((id) => progressState.pendingAchievementCelebrationIds.includes(id))
     : [];
+  const gameFinished = !finaleDismissed && hasFinishedEveryMission(progressState);
 
   useEffect(() => {
     if (!hydrated || focusedResultRef.current === focusKey) return;
@@ -163,9 +165,32 @@ export function MissionResults() {
    * the moment worth nothing. Nothing new is persisted for it either - the whole screen is
    * derived from completions and best runs, which were already being kept.
    */
-  const gameFinished = !finaleDismissed && hasFinishedEveryMission(progressState);
   if (gameFinished) {
-    return <GameFinale finale={getGameFinale(progressState)} onClose={() => setFinaleDismissed(true)} />;
+    const achievementToastIds = finaleAchievementToastIds.length > 0
+      ? finaleAchievementToastIds
+      : islandCompletionAchievementIds;
+    const acknowledgeFinalAchievementCelebration = (ids: readonly AchievementId[]) => {
+      /*
+       * The final island may earn an achievement at the exact moment the whole map closes.
+       * Keep those IDs mounted after they are acknowledged, otherwise that persisted update
+       * would unmount the toast before a child can see it.
+       */
+      setFinaleAchievementToastIds((current) => current.length > 0 ? current : [...ids]);
+      acknowledgeAchievementCelebration(ids);
+    };
+
+    return (
+      <>
+        <GameFinale finale={getGameFinale(progressState)} onClose={() => setFinaleDismissed(true)} />
+        {achievementToastIds.length > 0 && (
+          <BonusAchievementCelebration
+            ids={achievementToastIds}
+            onDismissed={() => setFinaleAchievementToastIds([])}
+            onPresented={acknowledgeFinalAchievementCelebration}
+          />
+        )}
+      </>
+    );
   }
 
   const mission = getMissionById(result.levelId);

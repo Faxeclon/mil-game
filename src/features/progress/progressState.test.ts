@@ -150,6 +150,18 @@ describe("legacy migration", () => {
     expect(state.localMedalNoticePresented).toBe(false);
   });
 
+  it("keeps a legacy completed Deciding island stable without silently backfilling its new achievement", () => {
+    const state = parseProgressState({
+      version: PROGRESS_VERSION,
+      completedLevelIds: ["checking-1", "influence-1", "limits-1", "sharing-1"]
+    });
+
+    expect(state.completedLevelIds).toEqual(["checking-1", "influence-1", "limits-1", "sharing-1"]);
+    expect(state.achievementIds).toEqual([]);
+    expect(state.pendingAchievementCelebrationIds).toEqual([]);
+    expect(state.bonusOpportunities).toEqual([]);
+  });
+
   it("migrates playerName to the canonical device-only local nickname without losing progress", () => {
     const state = parseProgressState({
       version: PROGRESS_VERSION,
@@ -272,7 +284,7 @@ describe("results", () => {
     expect(replayed.pendingAchievementCelebrationIds).toEqual(["bonus-perfect-videos"]);
   });
 
-  it("awards only the Deciding island achievement when its final mission completes", () => {
+  it("awards only the Deciding island achievement once, without a Bonus ticket even on replay", () => {
     let state = initialProgressState;
     for (const [index, levelId] of (["checking-1", "influence-1", "limits-1", "sharing-1"] as const).entries()) {
       state = completeLevel(state, levelId, {
@@ -285,6 +297,15 @@ describe("results", () => {
     expect(state.pendingAchievementCelebrationIds).toEqual(["bonus-perfect-decisions"]);
     expect(state.bonusOpportunities).toEqual([]);
     expect(state.rushUnlockedIslands).not.toContain("decisions");
+
+    const replayed = completeLevel(
+      { ...state, pendingAchievementCelebrationIds: [] },
+      "sharing-1",
+      { ...completedAttempt, attemptId: "attempt_523e4567-e89b-12d3-a456-426614174000" }
+    );
+    expect(replayed.achievementIds).toEqual(["bonus-perfect-decisions"]);
+    expect(replayed.pendingAchievementCelebrationIds).toEqual([]);
+    expect(replayed.bonusOpportunities).toEqual([]);
   });
 
   it("stores the actual completed level id in the result", () => {
