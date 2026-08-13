@@ -17,10 +17,18 @@
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "temporary": false
+              "sourceType": "licensed",
+              "sourceName": "Wikimedia Commons",
+              "licenseStatus": "CC BY-SA 4.0",
+              "temporary": false,
+              "credit": {
+                "title": "Dog sleeping on sofa",
+                "creator": "Nicole Qowens",
+                "source": "Wikimedia Commons",
+                "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dog_sleeping_on_sofa.jpg",
+                "license": "CC BY-SA 4.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+              }
             }
           }
         },
@@ -36,9 +44,13 @@
             "provenance": {
               "sourceType": "project-generated",
               "sourceName": "Kikiria project team",
-              "licenseStatus": "Rights status not documented",
-              "generationMethod": "AI-generated for Kikiria",
-              "temporary": false
+              "licenseStatus": "project-generated",
+              "generationMethod": "AI-generated with Gemini for Kikiria",
+              "temporary": false,
+              "credit": {
+                "license": "project-generated",
+                "creationMethod": "ai-generated"
+              }
             }
           }
         }
@@ -67,9 +79,13 @@
             "provenance": {
               "sourceType": "project-generated",
               "sourceName": "Kikiria project team",
-              "licenseStatus": "Rights status not documented",
-              "generationMethod": "AI-generated for Kikiria",
-              "temporary": false
+              "licenseStatus": "project-generated",
+              "generationMethod": "AI-generated with Gemini for Kikiria",
+              "temporary": false,
+              "credit": {
+                "license": "project-generated",
+                "creationMethod": "ai-generated"
+              }
             }
           }
         },
@@ -83,10 +99,18 @@
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "temporary": false
+              "sourceType": "licensed",
+              "sourceName": "Wikimedia Commons",
+              "licenseStatus": "CC0 1.0",
+              "temporary": false,
+              "credit": {
+                "title": "Horse jumping training",
+                "creator": "Beersrobert000",
+                "source": "Wikimedia Commons",
+                "sourceUrl": "https://commons.wikimedia.org/wiki/File:Horse_jumping_training.jpg",
+                "license": "CC0 1.0",
+                "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/"
+              }
             }
           }
         }
@@ -113,10 +137,18 @@
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "temporary": false
+              "sourceType": "licensed",
+              "sourceName": "Flickr",
+              "licenseStatus": "CC BY-SA 2.0",
+              "temporary": false,
+              "credit": {
+                "title": "Sphynx cat looking in mirror",
+                "creator": "Shannon Badiee",
+                "source": "Flickr",
+                "sourceUrl": "https://www.flickr.com/photos/thetopaz/13519370585/",
+                "license": "CC BY-SA 2.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/"
+              }
             }
           }
         },
@@ -132,9 +164,13 @@
             "provenance": {
               "sourceType": "project-generated",
               "sourceName": "Kikiria project team",
-              "licenseStatus": "Rights status not documented",
-              "generationMethod": "AI-generated for Kikiria",
-              "temporary": false
+              "licenseStatus": "project-generated",
+              "generationMethod": "AI-generated with Gemini for Kikiria",
+              "temporary": false,
+              "credit": {
+                "license": "project-generated",
+                "creationMethod": "ai-generated"
+              }
             }
           }
         }

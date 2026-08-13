@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import englishMessages from "@/messages/en.json";
 import spanishMessages from "@/messages/es.json";
-import { getContentPack, getSinglePack, reserveMediaProvenance } from "./packRegistry";
+import { getContentPack, getSinglePack } from "./packRegistry";
 
 type MessageTree = Record<string, unknown>;
 
@@ -22,7 +22,7 @@ function expectMedia(src: string, altKey: string) {
 describe("final media packs", () => {
   const comparisons = [
     ["city-basics-timed-v1", ["r1-real.jpg", "r1-ai.png", "r2-ai.png", "r2-real.jpg", "r3-real.jpg", "r3-ai.png"]],
-    ["animals-compare-v1", ["r1-real.jpg", "r1-ai.jpg", "r2-ai.jpg", "r2-real.jpg", "r3-real.jpg", "r3-ai.jpg"]],
+    ["animals-compare-v1", ["r1-real.jpg", "r1-ai.png", "r2-ai.png", "r2-real.jpg", "r3-real.jpg", "r3-ai.png"]],
     ["animals-timed-v1", ["r1-real.jpg", "r1-ai.png", "r2-ai.png", "r2-real.jpg", "r3-real.jpg", "r3-ai.png"]],
     ["sports-compare-v1", ["r1-real.png", "r1-ai.png", "r2-ai.png", "r2-real.jpg", "r3-real.jpg", "r3-ai.png"]]
   ] as const;
@@ -39,11 +39,14 @@ describe("final media packs", () => {
     }
   });
 
-  it("records transparent provenance for every active and reserve final asset", () => {
+  it("records transparent provenance for every active final asset", () => {
     const projectGenerated = new Set([
       "/media/tutorial/basics/basics-2/r1-ai.png",
       "/media/tutorial/basics/basics-2/r2-ai.png",
       "/media/tutorial/basics/basics-2/r3-ai.png",
+      "/media/tutorial/animals/animals-1/r1-ai.png",
+      "/media/tutorial/animals/animals-1/r2-ai.png",
+      "/media/tutorial/animals/animals-1/r3-ai.png",
       "/media/tutorial/animals/animals-2/r1-ai.png",
       "/media/tutorial/animals/animals-2/r2-ai.png",
       "/media/tutorial/animals/animals-2/r3-ai.png",
@@ -65,16 +68,6 @@ describe("final media packs", () => {
       );
       expect(media.provenance.temporary).toBe(false);
     }
-    expect(reserveMediaProvenance).toEqual({
-      "/media/tutorial/animals/animals-2/reserve/raccoon-ai.jpg": expect.objectContaining({
-        sourceType: "project-generated",
-        temporary: false
-      }),
-      "/media/tutorial/animals/animals-2/reserve/raccoon-real.jpg": expect.objectContaining({
-        sourceType: "external-unverified",
-        temporary: false
-      })
-    });
   });
 
   it("uses the approved subjects in their established order", () => {
@@ -109,7 +102,5 @@ describe("final media packs", () => {
     ]);
     for (const round of pack.rounds) expectMedia(round.media.src, round.media.altKey);
     expect(JSON.stringify(pack)).not.toContain("raccoon");
-    expect(existsSync(join(process.cwd(), "public/media/tutorial/animals/animals-2/reserve/raccoon-real.jpg"))).toBe(true);
-    expect(existsSync(join(process.cwd(), "public/media/tutorial/animals/animals-2/reserve/raccoon-ai.jpg"))).toBe(true);
   });
 });

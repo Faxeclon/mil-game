@@ -19,27 +19,6 @@ import clipsSingleJson from "./clips-single.json";
 import sportsCompareJson from "./sports-compare.json";
 import tutorialPackJson from "./introductory-tutorial.json";
 
-/**
- * Final media deliberately held in reserve, rather than assigned to a playable round.
- * Keeping its provenance beside the pack registry makes the record available to future
- * content selection without changing the active level data.
- */
-export const reserveMediaProvenance = {
-  "/media/tutorial/animals/animals-2/reserve/raccoon-ai.jpg": {
-    sourceType: "project-generated",
-    sourceName: "Kikiria project team",
-    licenseStatus: "Rights status not documented",
-    generationMethod: "AI-generated for Kikiria",
-    temporary: false
-  },
-  "/media/tutorial/animals/animals-2/reserve/raccoon-real.jpg": {
-    sourceType: "external-unverified",
-    sourceName: "External source not yet documented",
-    licenseStatus: "Rights status unresolved",
-    temporary: false
-  }
-} as const satisfies Readonly<Record<string, ProvenanceMetadata>>;
-
 function hasNestedKey(messages: object, key: string): boolean {
   let current: unknown = messages;
   for (const part of key.split(".")) {
@@ -121,12 +100,15 @@ export type CreditedMedia = { packId: string; media: { id: string; provenance: P
 /** Public presentation keys for audited packs. Pack ids never leak into child-facing UI. */
 export const creditedPackPresentationKeys = {
   "introductory-tutorial-v1": "basics1",
-  "city-basics-timed-v1": "basics2"
+  "city-basics-timed-v1": "basics2",
+  "animals-compare-v1": "animals1",
+  "animals-timed-v1": "animals2",
+  "animals-single-v1": "animals3"
 } as const;
 
 /** Only audited assets are exposed publicly; this neutral list deliberately has no answer or side data. */
 export function getCreditedMedia(): CreditedMedia[] {
-  return Object.entries(contentPacks).flatMap(([packId, pack]) =>
+  const comparisons = Object.entries(contentPacks).flatMap(([packId, pack]) =>
     pack.rounds.flatMap((round) =>
       round.choices
         .map((choice) => choice.media)
@@ -134,6 +116,12 @@ export function getCreditedMedia(): CreditedMedia[] {
         .map((media) => ({ packId, media }))
     )
   );
+  const singles = Object.entries(singlePacks).flatMap(([packId, pack]) =>
+    pack.rounds
+      .filter((round) => round.media.provenance.credit)
+      .map((round) => ({ packId, media: round.media }))
+  );
+  return [...comparisons, ...singles];
 }
 
 /** The pack every player meets first; the tutorial route has no mission to ask. */
