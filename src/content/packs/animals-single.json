@@ -14,10 +14,18 @@
         "origin": "camera-captured",
         "reliability": "unverified",
         "provenance": {
-          "sourceType": "external-unverified",
-          "sourceName": "External source not yet documented",
-          "licenseStatus": "Rights status unresolved",
-          "temporary": false
+          "sourceType": "licensed",
+          "sourceName": "Wikimedia Commons",
+          "licenseStatus": "CC BY 2.0",
+          "temporary": false,
+          "credit": {
+            "title": "Balaeniceps rex -Ueno Zoo, Tokyo, Japan-8a",
+            "creator": "Bob Owen",
+            "source": "Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Balaeniceps_rex_-Ueno_Zoo,_Tokyo,_Japan-8a.jpg",
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0/"
+          }
         }
       },
       "answer": "camera-captured",
@@ -40,9 +48,13 @@
         "provenance": {
           "sourceType": "project-generated",
           "sourceName": "Kikiria project team",
-          "licenseStatus": "Rights status not documented",
-          "generationMethod": "AI-generated for Kikiria",
-          "temporary": false
+          "licenseStatus": "project-generated",
+          "generationMethod": "AI-generated with Gemini for Kikiria",
+          "temporary": false,
+          "credit": {
+            "license": "project-generated",
+            "creationMethod": "ai-generated"
+          }
         }
       },
       "answer": "ai-generated",
@@ -63,10 +75,18 @@
         "origin": "camera-captured",
         "reliability": "unverified",
         "provenance": {
-          "sourceType": "external-unverified",
-          "sourceName": "External source not yet documented",
-          "licenseStatus": "Rights status unresolved",
-          "temporary": false
+          "sourceType": "licensed",
+          "sourceName": "Wikimedia Commons",
+          "licenseStatus": "CC BY-SA 4.0",
+          "temporary": false,
+          "credit": {
+            "title": "Goats in an argan tree, Morocco",
+            "creator": "Elena Tatiana Chis",
+            "source": "Wikimedia Commons",
+            "sourceUrl": "https://commons.wikimedia.org/wiki/File:Goats_in_an_argan_tree_Morocco.jpg",
+            "license": "CC BY-SA 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+          }
         }
       },
       "answer": "camera-captured",

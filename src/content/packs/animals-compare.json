@@ -17,10 +17,18 @@
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "temporary": false
+              "sourceType": "licensed",
+              "sourceName": "Wikimedia Commons",
+              "licenseStatus": "CC BY-SA 2.0",
+              "temporary": false,
+              "credit": {
+                "title": "Surprised Sheep",
+                "creator": "Amanda Slater",
+                "source": "Wikimedia Commons",
+                "sourceUrl": "https://commons.wikimedia.org/wiki/File:Surprised_Sheep.jpg",
+                "license": "CC BY-SA 2.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0/"
+              }
             }
           }
         },
@@ -29,16 +37,20 @@
           "position": "right",
           "media": {
             "id": "animals-1-r1-sheep-ai",
-            "src": "/media/tutorial/animals/animals-1/r1-ai.jpg",
+            "src": "/media/tutorial/animals/animals-1/r1-ai.png",
             "altKey": "media.animals.sheep.ai",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "generationMethod": "AI-generated media from an external source; generator not documented",
-              "temporary": false
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "project-generated",
+              "generationMethod": "AI-generated with Gemini for Kikiria",
+              "temporary": false,
+              "credit": {
+                "license": "project-generated",
+                "creationMethod": "ai-generated"
+              }
             }
           }
         }
@@ -60,16 +72,20 @@
           "position": "left",
           "media": {
             "id": "animals-1-r2-squirrel-ai",
-            "src": "/media/tutorial/animals/animals-1/r2-ai.jpg",
+            "src": "/media/tutorial/animals/animals-1/r2-ai.png",
             "altKey": "media.animals.squirrel.ai",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "generationMethod": "AI-generated media from an external source; generator not documented",
-              "temporary": false
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "project-generated",
+              "generationMethod": "AI-generated with Gemini for Kikiria",
+              "temporary": false,
+              "credit": {
+                "license": "project-generated",
+                "creationMethod": "ai-generated"
+              }
             }
           }
         },
@@ -83,10 +99,18 @@
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "temporary": false
+              "sourceType": "licensed",
+              "sourceName": "Flickr",
+              "licenseStatus": "CC BY 2.0",
+              "temporary": false,
+              "credit": {
+                "title": "Squirrel eating an ice cream cone",
+                "creator": "Kham Tran",
+                "source": "Flickr",
+                "sourceUrl": "https://www.flickr.com/photos/21078870@N06/3558009610",
+                "license": "CC BY 2.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by/2.0/"
+              }
             }
           }
         }
@@ -113,10 +137,18 @@
             "origin": "camera-captured",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "temporary": false
+              "sourceType": "licensed",
+              "sourceName": "Wikimedia Commons",
+              "licenseStatus": "CC BY-SA 4.0",
+              "temporary": false,
+              "credit": {
+                "title": "Cattle tyrant (Machetornis rixosa) on Capybara",
+                "creator": "Charles J. Sharp",
+                "source": "Wikimedia Commons",
+                "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cattle_tyrant_(Machetornis_rixosa)_on_Capybara.jpg",
+                "license": "CC BY-SA 4.0",
+                "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/"
+              }
             }
           }
         },
@@ -125,16 +157,20 @@
           "position": "right",
           "media": {
             "id": "animals-1-r3-capybara-ai",
-            "src": "/media/tutorial/animals/animals-1/r3-ai.jpg",
+            "src": "/media/tutorial/animals/animals-1/r3-ai.png",
             "altKey": "media.animals.capybara.ai",
             "origin": "ai-generated",
             "reliability": "unverified",
             "provenance": {
-              "sourceType": "external-unverified",
-              "sourceName": "External source not yet documented",
-              "licenseStatus": "Rights status unresolved",
-              "generationMethod": "AI-generated media from an external source; generator not documented",
-              "temporary": false
+              "sourceType": "project-generated",
+              "sourceName": "Kikiria project team",
+              "licenseStatus": "project-generated",
+              "generationMethod": "AI-generated with Gemini for Kikiria",
+              "temporary": false,
+              "credit": {
+                "license": "project-generated",
+                "creationMethod": "ai-generated"
+              }
             }
           }
         }

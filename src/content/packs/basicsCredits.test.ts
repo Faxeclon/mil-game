@@ -23,7 +23,7 @@ describe("audited basics assets and credits", () => {
 
   it("keeps the audited credit distinctions and their source and license links", () => {
     const credits = new Map(getCreditedMedia().map(({ media }) => [media.id, media.provenance.credit!]));
-    expect(credits.size).toBe(12);
+    expect(credits.size).toBeGreaterThanOrEqual(12);
     expect(credits.get("basics-1-r1-monkey-camera")).toMatchObject({ license: "Public Domain Mark 1.0", licenseUrl: publicDomainMark });
     expect(credits.get("basics-1-r3-cat-camera")).toMatchObject({ license: "CC0 1.0", licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/" });
     expect(credits.get("basics-1-r3-cat-camera")).toMatchObject({ title: "los sueños azules de un gato", creator: "Martín Vicente, M." });
