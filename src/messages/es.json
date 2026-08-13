@@ -160,51 +160,36 @@
     "uncertainCorrect": "¡Exacto! Aquí mirar no alcanzaba.",
     "uncertainMissed": "Esta no se podía saber solo mirando.",
     "media": {
-      "round1LeftAlt": "Mono mirando a cámara con la boca abierta.",
-      "round1RightAlt": "Mono junto a una persona en un mercado.",
+      "round1LeftAlt": "Un mono sentado sobre una baranda.",
+      "round1RightAlt": "Un mono tira del bolso de una mujer en un mercado.",
       "round2LeftAlt": "Calle con edificios dañados y escombros.",
       "round2RightAlt": "Calle urbana con grandes grietas y automóviles.",
       "round3LeftAlt": "Gato naranja sentado sobre una mesa de cocina.",
-      "round3RightAlt": "Gato blanco recostado mirando a cámara.",
+      "round3RightAlt": "Un gato blanco y naranja sentado en un callejón.",
       "animals": {
-        "dogPark": "Ilustración temporal de un perro parado sobre el pasto de un parque.",
-        "catPattern": "Ilustración temporal de un gato cuyo pelaje repite siempre el mismo dibujo.",
-        "birdBranch": "Ilustración temporal de un pájaro posado en una rama, con el cielo detrás.",
-        "rabbitGrass": "Ilustración temporal de un conejo sentado entre pasto alto.",
-        "fishWater": "Ilustración temporal de un pez nadando bajo el agua, con burbujas.",
-        "horseSunset": "Ilustración temporal de un caballo en un campo al atardecer.",
-        "turtleSand": "Ilustración temporal de una tortuga cruzando la arena.",
-        "owlNight": "Ilustración temporal de un búho en una rama bajo un cielo de noche.",
-        "butterflyFlower": "Ilustración temporal de una mariposa posada sobre una flor grande.",
-        "sheepField": "Ilustración temporal de una oveja parada en un campo verde.",
-        "foxSnow": "Ilustración temporal de un zorro caminando sobre la nieve.",
-        "frogLeaf": "Ilustración temporal de una rana sentada sobre una hoja flotante.",
-        "roosterYard": "Ilustración temporal de un gallo parado en el corral de una granja.",
-        "deerForest": "Ilustración temporal de un venado entre los árboles de un bosque.",
-        "cowField": "Ilustración temporal de una vaca parada en un campo abierto.",
         "sheep": {
-          "ai": "Una oveja en un corral.",
-          "real": "Una oveja al aire libre."
+          "ai": "Una oveja frente a un granero.",
+          "real": "Una oveja en un corral."
         },
         "squirrel": {
-          "ai": "Varias ardillas sobre el suelo del bosque.",
+          "ai": "Una ardilla junto a una mazorca sobre un tacho de basura.",
           "real": "Una ardilla junto a una mazorca de maíz."
         },
         "capybara": {
           "ai": "Un capibara cerca del agua.",
-          "real": "Un capibara en el agua."
+          "real": "Un capibara en el agua con un pájaro encima."
         },
         "dog": {
           "ai": "Un perro recostado en un sofá con una pelota de tenis.",
           "real": "Un perro dormido sobre un sofá."
         },
         "horse": {
-          "ai": "Un caballo en un paisaje abierto.",
-          "real": "Un caballo en un paisaje abierto."
+          "ai": "Una persona monta a caballo sobre una cerca.",
+          "real": "Una persona monta a caballo sobre un obstáculo."
         },
         "cat": {
-          "ai": "Un gato mirando a cámara.",
-          "real": "Un gato mirando a cámara."
+          "ai": "Un gato frente a un espejo.",
+          "real": "Un gato frente a un espejo."
         },
         "shoebill": {
           "real": "Un picozapato de pie entre plantas."
@@ -217,17 +202,11 @@
         }
       },
       "sports": {
-        "soccerField": "Ilustración temporal de una pelota de fútbol en una cancha con líneas blancas.",
-        "hoopLights": "Ilustración temporal de un aro de básquet bajo luces muy brillantes.",
-        "poolLanes": "Ilustración temporal de una piscina vista desde arriba, con carriles.",
-        "runningTrack": "Ilustración temporal de una pista de atletismo con alguien corriendo.",
-        "bicycleRoad": "Ilustración temporal de una bicicleta en una carretera junto a unas colinas.",
-        "volleyballSand": "Ilustración temporal de una pelota de vóley sobre una red en la arena.",
-        "skatePark": "Ilustración temporal de una rampa de skate con una tabla en el aire.",
-        "tennisCourt": "Ilustración temporal de una cancha de tenis vista desde arriba, con una pelota.",
-        "boxingRing": "Ilustración temporal de un ring de box con dos guantes colgados de la cuerda.",
+        "skatePark": "Un corredor cruza la meta en una pista.",
+        "tennisCourt": "Una persona hace un truco con patineta.",
+        "boxingRing": "Una persona juega ajedrez bajo el agua.",
         "messi": {
-          "ai": "Un futbolista sostiene una moneda grande frente a un estadio.",
+          "ai": "Un futbolista está junto a un robot en una cancha.",
           "real": "Un futbolista en un estadio."
         },
         "mrbeast": {
@@ -237,24 +216,15 @@
           "real": "Un jugador de básquetbol en la cancha."
         },
         "football": {
-          "ai": "Un balón de fútbol en un campo.",
+          "ai": "Dos futbolistas de blanco en una cancha.",
           "real": "Un futbolista de blanco controla un balón en un estadio."
         }
       },
       "city": {
-        "parkBench": "Ilustración temporal de una banca bajo un árbol en un parque.",
-        "oddHouse": "Ilustración temporal de una casa cuyas ventanas se repiten de forma extraña.",
-        "bigTree": "Ilustración temporal de un árbol grande sobre una colina.",
-        "riverBridge": "Ilustración temporal de un puente cruzando un río ancho.",
-        "streetBus": "Ilustración temporal de un bus en una calle de la ciudad.",
-        "plazaFountain": "Ilustración temporal de una fuente en medio de una plaza."
       },
       "videos": {
         "catReal": "Un gato caminando en cámara lenta.",
         "catAi": "Un gato sentado en una habitación.",
-        "skaterClip": "Tira temporal de tres cuadros de una patineta recorriendo una rampa.",
-        "dancerClip": "Tira temporal de tres cuadros de una figura que cambia la posición de los brazos.",
-        "paradeClip": "Tira temporal de tres cuadros de unas banderas moviéndose en fila.",
         "handWritingAi": "Una mano escribiendo en un cuaderno."
       },
       "basics": {
@@ -345,7 +315,7 @@
       },
       "sportsSingle": {
         "r1": {
-          "observation": "Fíjate en el público y el fondo, no solo en el protagonista.",
+          "observation": "Fíjate en toda la escena, no solo en la persona que corre.",
           "remember": "Un detalle que no encaja puede hacerte dudar, pero una imagen de IA también puede verse correcta. Revisa la fuente."
         },
         "r2": {

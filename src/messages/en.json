@@ -160,51 +160,36 @@
     "uncertainCorrect": "Exactly! Looking was not enough here.",
     "uncertainMissed": "This one could not be known by looking alone.",
     "media": {
-      "round1LeftAlt": "Monkey looking at the camera with its mouth open.",
-      "round1RightAlt": "Monkey beside a person in a market.",
+      "round1LeftAlt": "A monkey sitting on a railing.",
+      "round1RightAlt": "A monkey pulls on a woman's bag in a market.",
       "round2LeftAlt": "Street with damaged buildings and rubble.",
       "round2RightAlt": "Urban street with large cracks and cars.",
       "round3LeftAlt": "Orange cat sitting on a kitchen counter.",
-      "round3RightAlt": "White cat lying down and looking at the camera.",
+      "round3RightAlt": "A white and orange cat sitting in an alley.",
       "animals": {
-        "dogPark": "Temporary illustration of a dog standing on the grass in a park.",
-        "catPattern": "Temporary illustration of a cat whose coat repeats the very same pattern.",
-        "birdBranch": "Temporary illustration of a bird perched on a branch against the sky.",
-        "rabbitGrass": "Temporary illustration of a rabbit sitting in tall grass.",
-        "fishWater": "Temporary illustration of a fish swimming underwater with bubbles.",
-        "horseSunset": "Temporary illustration of a horse in a field at sunset.",
-        "turtleSand": "Temporary illustration of a turtle crossing the sand.",
-        "owlNight": "Temporary illustration of an owl on a branch under a night sky.",
-        "butterflyFlower": "Temporary illustration of a butterfly resting on a large flower.",
-        "sheepField": "Temporary illustration of a sheep standing in a green field.",
-        "foxSnow": "Temporary illustration of a fox walking across the snow.",
-        "frogLeaf": "Temporary illustration of a frog sitting on a floating leaf.",
-        "roosterYard": "Temporary illustration of a rooster standing in a farmyard.",
-        "deerForest": "Temporary illustration of a deer among the trees of a forest.",
-        "cowField": "Temporary illustration of a cow standing in an open field.",
         "sheep": {
-          "ai": "A sheep in a pen.",
-          "real": "A sheep outdoors."
+          "ai": "A sheep in front of a barn.",
+          "real": "A sheep in a pen."
         },
         "squirrel": {
-          "ai": "Several squirrels on the forest floor.",
+          "ai": "A squirrel beside an ear of corn on a bin.",
           "real": "A squirrel beside an ear of corn."
         },
         "capybara": {
           "ai": "A capybara near water.",
-          "real": "A capybara in the water."
+          "real": "A capybara in the water with a bird on top."
         },
         "dog": {
           "ai": "A dog lying on a sofa with a tennis ball.",
           "real": "A dog asleep on a sofa."
         },
         "horse": {
-          "ai": "A horse in an open landscape.",
-          "real": "A horse in an open landscape."
+          "ai": "A person riding a horse over a fence.",
+          "real": "A person riding a horse over an obstacle."
         },
         "cat": {
-          "ai": "A cat looking at the camera.",
-          "real": "A cat looking at the camera."
+          "ai": "A cat in front of a mirror.",
+          "real": "A cat in front of a mirror."
         },
         "shoebill": {
           "real": "A shoebill standing among plants."
@@ -217,17 +202,11 @@
         }
       },
       "sports": {
-        "soccerField": "Temporary illustration of a football on a pitch with white lines.",
-        "hoopLights": "Temporary illustration of a basketball hoop under very bright lights.",
-        "poolLanes": "Temporary illustration of a swimming pool seen from above, with lanes.",
-        "runningTrack": "Temporary illustration of a running track with someone running.",
-        "bicycleRoad": "Temporary illustration of a bicycle on a road beside some hills.",
-        "volleyballSand": "Temporary illustration of a volleyball above a net on the sand.",
-        "skatePark": "Temporary illustration of a skate ramp with a board in the air.",
-        "tennisCourt": "Temporary illustration of a tennis court seen from above, with a ball.",
-        "boxingRing": "Temporary illustration of a boxing ring with two gloves hanging on the rope.",
+        "skatePark": "A runner crosses the finish line on a track.",
+        "tennisCourt": "A person performs a skateboard trick.",
+        "boxingRing": "A person plays chess underwater.",
         "messi": {
-          "ai": "A football player holds a large coin in front of a stadium.",
+          "ai": "A football player stands beside a robot on a pitch.",
           "real": "A football player in a stadium."
         },
         "mrbeast": {
@@ -237,24 +216,15 @@
           "real": "A basketball player on the court."
         },
         "football": {
-          "ai": "A football on a field.",
+          "ai": "Two football players in white on a pitch.",
           "real": "A football player in white controls a ball in a stadium."
         }
       },
       "city": {
-        "parkBench": "Temporary illustration of a bench under a tree in a park.",
-        "oddHouse": "Temporary illustration of a house whose windows repeat in an odd way.",
-        "bigTree": "Temporary illustration of a large tree on a hill.",
-        "riverBridge": "Temporary illustration of a bridge crossing a wide river.",
-        "streetBus": "Temporary illustration of a bus on a city street.",
-        "plazaFountain": "Temporary illustration of a fountain in the middle of a square."
       },
       "videos": {
         "catReal": "A cat walking in slow motion.",
         "catAi": "A cat sitting in a room.",
-        "skaterClip": "Temporary strip of three frames of a skateboard moving along a ramp.",
-        "dancerClip": "Temporary strip of three frames of a figure whose arms change position.",
-        "paradeClip": "Temporary strip of three frames of flags moving in a row.",
         "handWritingAi": "A hand writing in a notebook."
       },
       "basics": {
@@ -345,7 +315,7 @@
       },
       "sportsSingle": {
         "r1": {
-          "observation": "Check the crowd and the background, not only the main figure.",
+          "observation": "Look at the whole scene, not only the runner.",
           "remember": "A detail that does not fit can raise questions, but AI images can look correct too. Check the source."
         },
         "r2": {

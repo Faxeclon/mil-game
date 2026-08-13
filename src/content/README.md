@@ -21,10 +21,6 @@ A mission whose `packId` does not resolve stays "coming soon" and gets no route,
 
 Two missions must not share a pack: the map shows them as separate missions, so playing the same rounds twice would be a broken promise. `packs/packRegistry.test.ts` enforces this, along with the rule that the answer is not always on the same side.
 
-## Replacing temporary media
-
-The SVGs in `public/media/tutorial/placeholders/` are hand-authored layout placeholders. They are **not** evidence of how AI-generated or camera-captured media looks, and must never be described as either. Every placeholder has `temporary: true` in its provenance. Replace them only with reviewed, age-appropriate images that have either documented usage rights for camera-captured media or documented project creation/licensing for AI-generated media. The project team must review every final media item before publication.
-
 Each choice needs an `origin` (`camera-captured`, `ai-generated`, `digitally-edited`, or `unknown`) and provenance containing source type, source name, license/usage status, the temporary marker, and generation method where useful. Media origin and information reliability are independent: a camera image can mislead, and an AI image can be labelled and used honestly.
 
 ## Localization and accessibility

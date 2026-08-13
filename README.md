@@ -20,12 +20,8 @@ npm.cmd run typecheck
 npm.cmd run build
 ```
 
-## Tutorial media
-
-The current SVG artwork in `public/media/tutorial/placeholders/` is temporary and hand-authored. It does not demonstrate AI-generation characteristics or camera reliability. Before release, replace each item according to [the content guidance](src/content/README.md): use team-reviewed, age-appropriate media with documented rights or generation/licensing provenance, mark temporary assets, and preserve separate `origin` and `reliability` fields.
-
 ## Current scope and next stage
 
-Implemented: bilingual routing, responsive app shell, mission preview, accessibility foundations, the validated three-round tutorial, temporary-media contracts, and deterministic in-memory tutorial state.
+Implemented: bilingual routing, responsive app shell, mission preview, accessibility foundations, reviewed tutorial media contracts, and deterministic in-memory tutorial state.
 
 Recommended next: author and review final media and learning cases, then design the individual post-verification case. Do not add scoring or persistent progress until its educational purpose and privacy model are specified.
