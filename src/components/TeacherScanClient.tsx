@@ -7,12 +7,12 @@ import {
   Check,
   ChevronLeft,
   Clapperboard,
-  FileSearch,
   Layers3,
   Play,
   RotateCcw,
   ScanLine,
   SearchCheck,
+  Share2,
   SquareCheckBig,
   X,
   type LucideIcon
@@ -104,15 +104,21 @@ function islandOf(category: string): IslandKey | undefined {
 const islandIcons: Record<IslandKey, LucideIcon> = {
   training: SearchCheck,
   difference: Layers3,
-  source: FileSearch,
-  videos: Clapperboard
+  videos: Clapperboard,
+  /*
+   * Never actually drawn. A decision mission asks what a child would do about a situation,
+   * and a card with an A side and a B side cannot carry three courses of action - so the
+   * classroom filter drops that island before this map is read. The entry exists because
+   * the record has to be complete, which is also what will make the next island say so.
+   */
+  decisions: Share2
 };
 
 /**
  * The askable missions, in islands rather than in one column.
  *
- * Thirteen buttons of equal weight is a list to be read; four short groups is a shape to
- * be scanned. Same missions, same order - only the grouping is new.
+ * Ten buttons of equal weight is a list to be read; three short groups is a shape to be
+ * scanned. Same missions, same order - only the grouping is new.
  */
 const missionsByIsland = islands
   .map((island) => {
@@ -138,7 +144,7 @@ const missionsByIsland = islands
  *
  * Not a separate lesson: it is the first mission of the training island, the same one a
  * child meets alone. A teacher opening this screen for the first time should not have to
- * work out which of thirteen names is the beginning.
+ * work out which of ten names is the beginning.
  */
 const tutorialMission = missionsByIsland[0]?.missions[0] ?? askableMissions[0];
 

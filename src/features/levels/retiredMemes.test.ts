@@ -34,7 +34,7 @@ describe("retired Memes content", () => {
     expect(getIslandProgress(legacyWithMemes, "difference")).toMatchObject({ done: 0, total: 5, percent: 0 });
     expect(getGlobalProgress(legacyWithMemes).done).toBe(0);
     expect(isIslandCompleted(legacyWithMemes, "difference")).toBe(false);
-    expect(countPlayableMissions()).toBe(10);
+    expect(countPlayableMissions()).toBe(12);
   });
 
   it("hydrates legacy Meme IDs without retaining their removed content", () => {
@@ -52,6 +52,6 @@ describe("retired Memes content", () => {
 
   it("does not generate retired Meme routes", async () => {
     const page = await readFile(join(process.cwd(), "src", "app", "[locale]", "level", "[levelId]", "page.tsx"), "utf8");
-    expect(page).toContain("if (!mission || (!pack && !singlePack)) notFound()");
+    expect(page).toContain("if (!mission || (!pack && !singlePack && !decisionPack)) notFound()");
   });
 });

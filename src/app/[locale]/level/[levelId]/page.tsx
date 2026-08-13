@@ -5,9 +5,10 @@ import { ChildExperienceRouteGuard } from "@/components/ChildExperienceRouteGuar
 import { MissionRouteGuard } from "@/components/MissionRouteGuard";
 import { PageContainer } from "@/components/PageContainer";
 import { ProfileRouteGuard } from "@/components/ProfileRouteGuard";
+import { DecisionClient } from "@/components/DecisionClient";
 import { SingleImageClient } from "@/components/SingleImageClient";
 import { TutorialClient } from "@/components/TutorialClient";
-import { getContentPack, getSinglePack, hasContentPack } from "@/content/packs/packRegistry";
+import { getContentPack, getDecisionPack, getSinglePack, hasContentPack } from "@/content/packs/packRegistry";
 import {
   getLevelDifficulty,
   getMissionById,
@@ -20,6 +21,16 @@ type LevelPageProps = { params: Promise<{ locale: string; levelId: string }> };
 
 /** The one mission that introduces the game before it starts. */
 const FIRST_MISSION_ID = "basics-1";
+
+/*
+ * The first mission that asks what to do rather than what something is.
+ *
+ * Read off the catalog instead of written down, so reordering that island cannot leave
+ * its explanation attached to a mission in the middle of it.
+ */
+const FIRST_DECISION_MISSION_ID = missionBlueprint.find(
+  (mission) => mission.mode === "decision" && mission.packId
+)?.id;
 
 export function generateStaticParams() {
   return missionBlueprint
@@ -40,7 +51,8 @@ export default async function LevelPage({ params }: LevelPageProps) {
   // blueprint shows up as a missing route rather than as somebody else's rounds.
   const pack = getContentPack(mission?.packId);
   const singlePack = getSinglePack(mission?.packId);
-  if (!mission || (!pack && !singlePack)) notFound();
+  const decisionPack = getDecisionPack(mission?.packId);
+  if (!mission || (!pack && !singlePack && !decisionPack)) notFound();
 
   const t = await getTranslations("islands");
   const chipLabel = `${t(`categories.${mission.category}.title`)} · ${t("missionNumber", { number: mission.order })}`;
@@ -60,7 +72,16 @@ export default async function LevelPage({ params }: LevelPageProps) {
           <MissionRouteGuard missionId={mission.id}>
             {/* Roqui presents a new island or theme before its first mission opens. */}
             <MissionIntro missionId={mission.id}>
-              {singlePack ? (
+              {decisionPack ? (
+                /* No entry card and no meta: a situation is the screen, and a card in
+                   front of it would only delay the one thing there is to read. */
+                <DecisionClient
+                  chipLabel={chipLabel}
+                  levelId={mission.id as LevelId}
+                  pack={decisionPack}
+                  showBriefing={mission.id === FIRST_DECISION_MISSION_ID}
+                />
+              ) : singlePack ? (
                 <SingleImageClient
                   chipLabel={chipLabel}
                   entryMeta={entryMeta}

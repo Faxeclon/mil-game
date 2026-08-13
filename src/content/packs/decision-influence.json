@@ -1,0 +1,45 @@
+{
+  "id": "decision-influence-v1",
+  "kind": "influence",
+  "rounds": [
+    {
+      "id": "decision-influence-round-1",
+      "order": 1,
+      "situationKey": "influence.sponsored.situation",
+      "questionKey": "influence.sponsored.question",
+      "options": [
+        { "id": "trustHim", "labelKey": "influence.sponsored.trustHim", "whyKey": "influence.sponsored.whyTrustHim" },
+        { "id": "askWhoPays", "labelKey": "influence.sponsored.askWhoPays", "whyKey": "influence.sponsored.whyAskWhoPays" },
+        { "id": "countLikes", "labelKey": "influence.sponsored.countLikes", "whyKey": "influence.sponsored.whyCountLikes" }
+      ],
+      "answerId": "askWhoPays",
+      "rememberKey": "influence.sponsored.remember"
+    },
+    {
+      "id": "decision-influence-round-2",
+      "order": 2,
+      "situationKey": "influence.giveaway.situation",
+      "questionKey": "influence.giveaway.question",
+      "options": [
+        { "id": "shareFast", "labelKey": "influence.giveaway.shareFast", "whyKey": "influence.giveaway.whyShareFast" },
+        { "id": "askWhoRuns", "labelKey": "influence.giveaway.askWhoRuns", "whyKey": "influence.giveaway.whyAskWhoRuns" },
+        { "id": "sendData", "labelKey": "influence.giveaway.sendData", "whyKey": "influence.giveaway.whySendData" }
+      ],
+      "answerId": "askWhoRuns",
+      "rememberKey": "influence.giveaway.remember"
+    },
+    {
+      "id": "decision-influence-round-3",
+      "order": 3,
+      "situationKey": "influence.honest.situation",
+      "questionKey": "influence.honest.question",
+      "options": [
+        { "id": "ignoreAll", "labelKey": "influence.honest.ignoreAll", "whyKey": "influence.honest.whyIgnoreAll" },
+        { "id": "listenKnowing", "labelKey": "influence.honest.listenKnowing", "whyKey": "influence.honest.whyListenKnowing" },
+        { "id": "buyAnyway", "labelKey": "influence.honest.buyAnyway", "whyKey": "influence.honest.whyBuyAnyway" }
+      ],
+      "answerId": "listenKnowing",
+      "rememberKey": "influence.honest.remember"
+    }
+  ]
+}

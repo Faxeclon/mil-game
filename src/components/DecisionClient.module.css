@@ -1,0 +1,639 @@
+/*
+ * A mission with no picture in it.
+ *
+ * Everywhere else the image is the subject and the text supports it. Here the situation is
+ * the subject, so it gets the weight a photograph would have had: it arrives as a message,
+ * with Roqui beside it as the one who brought it, and the options are what you do about it.
+ *
+ * The palette is the comparison missions', value for value, and not the blue one in
+ * globals.css - that belongs to an earlier design the playing screens have already left
+ * behind. A child walks here straight out of those missions, so the cream, the terracotta
+ * and the greens have to be the same or the island reads as a different app.
+ */
+
+.round {
+  --d-ink: #1f2a44;
+  --d-ink-soft: #5b6780;
+  --d-paper: #ffffff;
+  --d-hairline: #ece7e6;
+  --d-hairline-strong: #d5cfcd;
+  --d-accent: #c93c0b;
+  --d-accent-ink: #b8380a;
+  --d-accent-soft: #ffece4;
+  --d-right: #1f7a28;
+  --d-right-soft: #e8f6e9;
+  /* The wrong pick gets its own red, so "the one you chose" never means "the right one". */
+  --d-miss: #d9432a;
+  --d-miss-soft: #ffe9e4;
+  --d-amber: #a9700d;
+  --d-amber-soft: #fdf3e0;
+  --d-shadow: 0 1px 2px rgba(31, 42, 68, 0.05), 0 12px 28px rgba(31, 42, 68, 0.08);
+  --d-shadow-lift: 0 2px 4px rgba(31, 42, 68, 0.07), 0 18px 38px rgba(31, 42, 68, 0.11);
+
+  width: min(100%, 44rem);
+  margin: 0 auto;
+  padding-bottom: 3rem;
+  color: var(--d-ink);
+}
+
+/*
+ * The same full-bleed cream the comparison missions paint.
+ *
+ * Painted from here rather than from globals so the map and the home screen keep their
+ * own background, and flat rather than a gradient: a gradient on a fixed layer does not
+ * scroll with the content and reads as a second surface sliding behind the page.
+ */
+.round::before {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  background: #fff7f3;
+  content: "";
+  pointer-events: none;
+}
+
+/* Lifted just above that backdrop. Nothing here is `position: fixed`, so it is safe. */
+.round > * {
+  position: relative;
+  z-index: 1;
+}
+
+.header {
+  min-height: 3rem;
+  margin-top: clamp(0.4rem, 2vw, 0.9rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.headerLink {
+  min-height: 2.75rem;
+  padding-right: 0.4rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  border-radius: 0.7rem;
+  color: var(--d-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.headerLink:hover {
+  color: var(--d-accent-ink);
+}
+
+.progress {
+  margin: 0;
+  color: var(--d-ink-soft);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+/*
+ * One bead per situation instead of a filling bar.
+ *
+ * A bar answers "how far along am I" with a fraction; three beads answer it by being
+ * countable at a glance, which is the question a six-year-old is actually asking.
+ */
+.track {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 0.35rem;
+  list-style: none;
+}
+
+.track > li {
+  height: 0.4rem;
+  flex: 1;
+  border-radius: 999px;
+  background: var(--d-hairline);
+  transition: background-color 260ms ease, transform 260ms ease;
+}
+
+.beadDone {
+  background: var(--d-accent-soft) !important;
+}
+
+.beadNow {
+  background: var(--d-accent) !important;
+}
+
+/*
+ * No panel around it, exactly like the comparison missions.
+ *
+ * Those put their cards straight onto the cream, and a framed box here would be a second
+ * surface the other screens do not have. The white cards below are what stands out from
+ * the background; boxing them again would flatten that.
+ */
+.board {
+  margin-top: 1.1rem;
+  animation: board-in 320ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+/* Each situation arrives rather than replaces: the key on this node restarts it. */
+@keyframes board-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.6rem);
+  }
+}
+
+/* The mission chip of the comparison screens, down to the letter spacing. */
+.chip {
+  width: fit-content;
+  margin: 0 auto 0.7rem;
+  padding: 0.26rem 0.7rem;
+  border-radius: 999px;
+  background: var(--d-accent-soft);
+  color: var(--d-accent-ink);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+/*
+ * Roqui standing on the ground, with the message floating beside him as a cloud.
+ *
+ * He is not saying it - it arrived, and he is looking at it with you. That is why the
+ * cloud drifts rather than points: a speech tail would claim these are his words, and the
+ * whole question of the mission is what to do about words that are somebody else's.
+ */
+.situation {
+  margin-top: 0.9rem;
+  display: flex;
+  /*
+   * The cloud is written after him in the markup so a screen reader hears who is standing
+   * there before what floats above him, and drawn before him here so the eye meets the
+   * message first. Reversing the column is what lets both orders be right at once.
+   */
+  flex-direction: column-reverse;
+  align-items: stretch;
+}
+
+/* The ground under him: a soft ellipse, so he is standing rather than floating. */
+.stand {
+  position: relative;
+  width: fit-content;
+  margin-left: 0.6rem;
+  padding-bottom: 0.55rem;
+}
+
+.stand::after {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 78%;
+  height: 0.5rem;
+  content: "";
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(31, 42, 68, 0.22), rgba(31, 42, 68, 0));
+}
+
+.mascot {
+  width: clamp(4.5rem, 20vw, 6.5rem);
+  height: auto;
+  display: block;
+  animation: roqui-breathe 4.5s ease-in-out infinite;
+}
+
+@keyframes roqui-breathe {
+  50% {
+    transform: translateY(-0.15rem);
+  }
+}
+
+/*
+ * The cloud: one rounded body plus two trailing puffs that lead the eye down to him.
+ *
+ * Drawn with pseudo-elements rather than an SVG because this screen has to look the same
+ * on a phone that is refusing to download anything else, and because the puffs then
+ * inherit the same border and fill without a second file to keep in step.
+ */
+.bubble {
+  position: relative;
+  margin-bottom: 1.5rem;
+  padding: 0.95rem 1.1rem;
+  border: 2px solid var(--d-hairline-strong);
+  border-radius: 1.6rem;
+  background: var(--d-paper);
+  box-shadow: var(--d-shadow);
+  animation: cloud-drift 5.5s ease-in-out infinite;
+}
+
+.bubble::before,
+.bubble::after {
+  position: absolute;
+  content: "";
+  border: 2px solid var(--d-hairline-strong);
+  border-radius: 50%;
+  background: var(--d-paper);
+}
+
+/* The puffs step down from the cloud towards the head of whoever is reading it. */
+.bubble::before {
+  bottom: -0.75rem;
+  left: 1.9rem;
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.bubble::after {
+  bottom: -1.4rem;
+  left: 1.3rem;
+  width: 0.55rem;
+  height: 0.55rem;
+}
+
+@keyframes cloud-drift {
+  50% {
+    transform: translateY(-0.25rem);
+  }
+}
+
+.bubbleTag {
+  margin: 0 0 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--d-accent-ink);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.situationText {
+  margin: 0;
+  /* Also used as a span inside the briefing button, where a paragraph is not allowed. */
+  display: block;
+  font-size: clamp(1rem, 3.6vw, 1.1rem);
+  line-height: 1.45;
+}
+
+/* ------------------------------------------------------- Roqui's introduction */
+
+/*
+ * The whole thing is one button, so anywhere you touch moves the story on. It is the only
+ * interaction a six-year-old can be relied on to find, and it is what mission one already
+ * does, so this reads as the same kind of moment rather than a new screen.
+ */
+.briefing {
+  width: 100%;
+  min-height: 60vh;
+  margin-top: clamp(1rem, 5vw, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.5rem;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.briefing .bubble {
+  animation: board-in 260ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.briefing .situationText {
+  font-size: clamp(1.15rem, 4.4vw, 1.4rem);
+  font-weight: 700;
+}
+
+/*
+ * Roqui is the subject here, not a decoration beside the text.
+ *
+ * At the size a situation gives him he read as a sticker dropped in the corner of an
+ * empty screen. This is the one moment in the island where he is the one talking, so he
+ * stands in the middle of it and takes the room the empty page was wasting.
+ */
+.briefing .stand {
+  margin: 0 auto;
+}
+
+/* With him in the middle, the puffs come down the middle too. */
+.briefing .bubble::before {
+  left: calc(50% - 2.1rem);
+}
+
+.briefing .bubble::after {
+  left: calc(50% - 2.9rem);
+}
+
+.briefing .mascot {
+  width: clamp(7rem, 34vw, 10.5rem);
+}
+
+.briefing .hint {
+  margin: 0;
+  color: var(--d-ink-soft);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.dots > span {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--d-hairline-strong);
+  transition: background-color 200ms ease;
+}
+
+.dotSeen {
+  background: var(--d-accent) !important;
+}
+
+.question {
+  margin: 1.2rem 0 0;
+  font-size: clamp(1.3rem, 5vw, 1.65rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.options {
+  margin: 0.9rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+  list-style: none;
+}
+
+/* Big targets: this is answered on a phone, often a shared one, often standing up. */
+.option {
+  width: 100%;
+  min-height: 3.4rem;
+  padding: 0.8rem 0.9rem;
+  display: grid;
+  gap: 0.35rem;
+  border: 2px solid var(--d-hairline-strong);
+  border-radius: 0.95rem;
+  background: var(--d-paper);
+  box-shadow: var(--d-shadow);
+  color: var(--d-ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.option:hover:not(:disabled) {
+  border-color: var(--d-ink-soft);
+  box-shadow: var(--d-shadow-lift);
+  transform: translateY(-1px);
+}
+
+.option:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.option:disabled {
+  cursor: default;
+}
+
+/* The marker is the letter until it is the verdict, so the row never relies on colour. */
+.marker {
+  width: 1.6rem;
+  height: 1.6rem;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--d-hairline);
+  color: var(--d-ink-soft);
+  font-size: 0.85rem;
+  font-weight: 800;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.optionChosen {
+  border-color: var(--d-accent);
+  background: var(--d-accent-soft);
+}
+
+.optionChosen .marker {
+  background: var(--d-accent);
+  color: #fff;
+}
+
+.optionRight {
+  border-color: var(--d-right);
+  background: var(--d-right-soft);
+}
+
+.optionRight .marker {
+  background: var(--d-right);
+  color: #fff;
+}
+
+.optionMiss {
+  border-color: var(--d-miss);
+  background: var(--d-miss-soft);
+}
+
+.optionMiss .marker {
+  background: var(--d-miss);
+  color: #fff;
+}
+
+/* Neither answer is dimmed away: the reason for each one is the lesson. */
+.option:disabled:not(.optionRight):not(.optionMiss) {
+  opacity: 0.72;
+}
+
+.optionLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 1rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.optionText {
+  flex: 1;
+}
+
+.optionWhy {
+  padding-left: 2.15rem;
+  color: var(--d-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+  animation: why-in 240ms ease both;
+}
+
+@keyframes why-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.2rem);
+  }
+}
+
+.primary {
+  width: 100%;
+  min-height: 3.3rem;
+  margin-top: 1.1rem;
+  padding: 0 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0.95rem;
+  background: var(--d-accent);
+  box-shadow: 0 2px 0 var(--d-accent-ink), 0 12px 22px -14px rgba(201, 60, 11, 0.9);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.02rem;
+  font-weight: 800;
+  transition: transform 140ms ease, box-shadow 140ms ease, background-color 160ms ease;
+}
+
+.primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.primary:active:not(:disabled) {
+  box-shadow: 0 0 0 var(--d-accent-ink);
+  transform: translateY(2px);
+}
+
+.primary:disabled {
+  background: var(--d-hairline);
+  box-shadow: none;
+  color: var(--d-ink-soft);
+  cursor: not-allowed;
+}
+
+.feedback {
+  margin-top: 1.1rem;
+  padding: 1rem 1.05rem;
+  border: 2px solid var(--d-hairline-strong);
+  border-left-width: 0.4rem;
+  border-radius: 1.1rem;
+  background: var(--d-paper);
+  box-shadow: var(--d-shadow);
+  animation: board-in 300ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.feedbackRight {
+  border-color: var(--d-right);
+}
+
+.feedbackMiss {
+  border-color: var(--d-miss);
+}
+
+.verdict {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.verdictMark {
+  width: 1.7rem;
+  height: 1.7rem;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: #fff;
+}
+
+.feedbackRight .verdictMark {
+  background: var(--d-right);
+}
+
+.feedbackMiss .verdictMark {
+  background: var(--d-miss);
+}
+
+.best {
+  margin: 0.4rem 0 0;
+  padding-left: 2.15rem;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--d-right);
+}
+
+/*
+ * The line that is true whether they got it right or not.
+ *
+ * Orange on a warm panel, which is exactly how "Recuerda" is drawn in the comparison
+ * missions. Same lesson, same colour, so a child reads it as the same kind of thing.
+ */
+.remember {
+  margin: 0.75rem 0 0;
+  padding: 0.7rem 0.85rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  border-left: 4px solid var(--d-amber);
+  border-radius: 0 0.65rem 0.65rem 0;
+  background: var(--d-amber-soft);
+  color: var(--d-ink);
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.remember > svg {
+  flex: none;
+  margin-top: 0.15rem;
+}
+
+.hint {
+  margin: 0.5rem 0 0;
+  color: var(--d-ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.handover {
+  margin: 3rem auto;
+  text-align: center;
+  font-weight: 700;
+}
+
+/* The app-wide setting is handled globally; this covers the one set in the phone itself. */
+@media (prefers-reduced-motion: reduce) {
+  .board,
+  .feedback,
+  .optionWhy,
+  .bubble,
+  .mascot {
+    animation: none;
+  }
+
+  .option:hover:not(:disabled),
+  .primary:hover:not(:disabled),
+  .primary:active:not(:disabled) {
+    transform: none;
+  }
+}

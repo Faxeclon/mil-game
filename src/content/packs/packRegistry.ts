@@ -1,12 +1,15 @@
 import englishMessages from "@/messages/en.json";
 import spanishMessages from "@/messages/es.json";
 import type { ProvenanceMetadata, SinglePack, TutorialPack } from "@/content/schemas/tutorial";
+import { validateDecisionPack, type DecisionPack } from "@/content/schemas/decision";
+import decisionInfluenceJson from "./decision-influence.json";
+import decisionLimitsJson from "./decision-limits.json";
+import decisionShareJson from "./decision-share.json";
+import decisionSourceJson from "./decision-source.json";
 import { validateSinglePack } from "@/content/validators/validateSinglePack";
 import { validateTutorialPack } from "@/content/validators/validateTutorialPack";
 import animalsCompareJson from "./animals-compare.json";
 import animalsSingleJson from "./animals-single.json";
-import creatorsSingleJson from "./creators-single.json";
-import creatorsUncertainJson from "./creators-uncertain.json";
 import sportsSingleJson from "./sports-single.json";
 import animalsTimedJson from "./animals-timed.json";
 import cityBasicsTimedJson from "./city-basics-timed.json";
@@ -60,8 +63,6 @@ export function getContentPack(packId: string | undefined): TutorialPack | undef
 export const singlePacks: Readonly<Record<string, SinglePack>> = {
   "animals-single-v1": validateSinglePack(animalsSingleJson, hasTutorialLocalizationKey),
   "sports-single-v1": validateSinglePack(sportsSingleJson, hasTutorialLocalizationKey),
-  "creators-uncertain-v1": validateSinglePack(creatorsUncertainJson, hasTutorialLocalizationKey),
-  "creators-single-v1": validateSinglePack(creatorsSingleJson, hasTutorialLocalizationKey),
   "clips-single-v1": validateSinglePack(clipsSingleJson, hasTutorialLocalizationKey)
 };
 
@@ -69,9 +70,27 @@ export function getSinglePack(packId: string | undefined): SinglePack | undefine
   return packId ? singlePacks[packId] : undefined;
 }
 
-/** True when some authored pack, of either shape, answers to this id. */
+/**
+ * Packs for the missions that ask what to do rather than what something is.
+ *
+ * Their own registry because their shape is genuinely different: a situation and a set of
+ * actions, with no image and no origin to judge. Sharing a registry would have meant one
+ * type where half the fields never apply.
+ */
+export const decisionPacks: Readonly<Record<string, DecisionPack>> = {
+  "decision-source-v1": validateDecisionPack(decisionSourceJson),
+  "decision-influence-v1": validateDecisionPack(decisionInfluenceJson),
+  "decision-limits-v1": validateDecisionPack(decisionLimitsJson),
+  "decision-share-v1": validateDecisionPack(decisionShareJson)
+};
+
+export function getDecisionPack(packId: string | undefined): DecisionPack | undefined {
+  return packId ? decisionPacks[packId] : undefined;
+}
+
+/** True when some authored pack, of any shape, answers to this id. */
 export function hasContentPack(packId: string | undefined): boolean {
-  return Boolean(getContentPack(packId) ?? getSinglePack(packId));
+  return Boolean(getContentPack(packId) ?? getSinglePack(packId) ?? getDecisionPack(packId));
 }
 
 export type CreditedMedia = { packId: string; media: { id: string; provenance: ProvenanceMetadata } };

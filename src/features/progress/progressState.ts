@@ -21,7 +21,7 @@ export type MapOnboardingStage = (typeof mapOnboardingStages)[number];
 
 /** The published catalog before the four new content missions were added. */
 const LEGACY_CATALOG_LEVEL_IDS: readonly LevelId[] = [
-  "basics-1", "basics-2", "animals-1", "animals-2", "animals-3", "sports-1", "sports-2", "creators-1"
+  "basics-1", "basics-2", "animals-1", "animals-2", "animals-3", "sports-1", "sports-2"
 ];
 
 const playableMissionCount = missionBlueprint.filter((mission) => mission.packId).length;

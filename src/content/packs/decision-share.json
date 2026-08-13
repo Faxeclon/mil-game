@@ -1,0 +1,57 @@
+{
+  "id": "decision-share-v1",
+  "kind": "share",
+  "rounds": [
+    {
+      "id": "decision-share-round-1",
+      "order": 1,
+      "situationKey": "share.funnyMeme.situation",
+      "questionKey": "share.funnyMeme.question",
+      "options": [
+        { "id": "sendNow", "labelKey": "share.funnyMeme.sendNow", "whyKey": "share.funnyMeme.whySendNow" },
+        { "id": "checkFirst", "labelKey": "share.funnyMeme.checkFirst", "whyKey": "share.funnyMeme.whyCheckFirst" },
+        { "id": "deleteIt", "labelKey": "share.funnyMeme.deleteIt", "whyKey": "share.funnyMeme.whyDeleteIt" }
+      ],
+      "answerId": "checkFirst",
+      "rememberKey": "share.funnyMeme.remember"
+    },
+    {
+      "id": "decision-share-round-2",
+      "order": 2,
+      "situationKey": "share.classmateVideo.situation",
+      "questionKey": "share.classmateVideo.question",
+      "options": [
+        { "id": "forward", "labelKey": "share.classmateVideo.forward", "whyKey": "share.classmateVideo.whyForward" },
+        { "id": "tellAdult", "labelKey": "share.classmateVideo.tellAdult", "whyKey": "share.classmateVideo.whyTellAdult" },
+        { "id": "ignore", "labelKey": "share.classmateVideo.ignore", "whyKey": "share.classmateVideo.whyIgnore" }
+      ],
+      "answerId": "tellAdult",
+      "rememberKey": "share.classmateVideo.remember"
+    },
+    {
+      "id": "decision-share-round-3",
+      "order": 3,
+      "situationKey": "share.trustedFriend.situation",
+      "questionKey": "share.trustedFriend.question",
+      "options": [
+        { "id": "trustFriend", "labelKey": "share.trustedFriend.trustFriend", "whyKey": "share.trustedFriend.whyTrustFriend" },
+        { "id": "askOrigin", "labelKey": "share.trustedFriend.askOrigin", "whyKey": "share.trustedFriend.whyAskOrigin" },
+        { "id": "argue", "labelKey": "share.trustedFriend.argue", "whyKey": "share.trustedFriend.whyArgue" }
+      ],
+      "answerId": "askOrigin",
+      "rememberKey": "share.trustedFriend.remember"
+    },
+    {
+      "id": "decision-share-round-4",
+      "order": 4,
+      "situationKey": "share.poster.situation",
+      "questionKey": "share.poster.question",
+      "options": [
+        { "id": "asPhoto", "labelKey": "share.poster.asPhoto", "whyKey": "share.poster.whyAsPhoto" },
+        { "id": "saySo", "labelKey": "share.poster.saySo", "whyKey": "share.poster.whySaySo" }
+      ],
+      "answerId": "saySo",
+      "rememberKey": "share.poster.remember"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getContentPack, getSinglePack } from "@/content/packs/packRegistry";
+import { getContentPack, getSinglePack, singlePacks } from "@/content/packs/packRegistry";
 import { getMissionById, isComparisonMode, missionBlueprint } from "@/features/levels/levelModel";
 import { buildClassQuestions, canBeAskedInClass, countAskableRounds } from "./classQuestions";
 
@@ -40,7 +40,7 @@ describe("turning a mission into questions for a class", () => {
    * nothing to compare, so the sides become the answers themselves.
    */
   it("asks a single picture as who-made-it, not as which-one", () => {
-    const questions = buildClassQuestions(mission("creators-2"));
+    const questions = buildClassQuestions(mission("animals-3"));
 
     expect(questions).toHaveLength(3);
     for (const question of questions) {
@@ -51,8 +51,8 @@ describe("turning a mission into questions for a class", () => {
   });
 
   it("puts made-with-AI on A and taken-with-a-camera on B", () => {
-    const pack = getSinglePack("creators-single-v1")!;
-    const questions = buildClassQuestions(mission("creators-2"));
+    const pack = getSinglePack("animals-single-v1")!;
+    const questions = buildClassQuestions(mission("animals-3"));
 
     pack.rounds.forEach((round, index) => {
       expect(questions[index].correct).toBe(round.answer === "ai-generated" ? "A" : "B");
@@ -60,39 +60,51 @@ describe("turning a mission into questions for a class", () => {
   });
 });
 
-describe("the answer a card cannot give", () => {
+describe("the binary answers a card can carry", () => {
   /*
-   * "You cannot tell by looking" is the most valuable answer in the game. A card has two
-   * sides and no way to say it, so those rounds are left for the phone instead of being
-   * flattened onto whichever side is closer.
+   * Every active single-image pack has a binary answer. The separate decision missions
+   * deliberately stay out of teacher cards because they have three possible actions.
    */
-  it("leaves out the rounds whose answer is that you cannot tell", () => {
-    const pack = getSinglePack("creators-uncertain-v1")!;
-    const uncertain = pack.rounds.filter((round) => round.answer === "unknown").length;
-    const questions = buildClassQuestions(mission("creators-1"));
-
-    expect(uncertain).toBeGreaterThan(0);
-    expect(questions).toHaveLength(pack.rounds.length - uncertain);
-    expect(questions.every((question) => question.correct === "A" || question.correct === "B")).toBe(true);
+  it("keeps active single-image rounds binary", () => {
+    for (const pack of Object.values(singlePacks)) {
+      expect(pack.rounds.every((round) => round.answer !== "unknown"), pack.id).toBe(true);
+    }
   });
 
   it("tells the teacher how many rounds the cards can carry", () => {
     expect(countAskableRounds(mission("animals-1"))).toEqual({ askable: 3, total: 3 });
-
-    const creators = countAskableRounds(mission("creators-1"));
-    expect(creators.askable).toBeLessThan(creators.total);
+    expect(countAskableRounds(mission("sports-2"))).toEqual({ askable: 3, total: 3 });
   });
 });
 
 describe("every mission the game has", () => {
+  /*
+   * Every mission about a picture can be put to a class, whatever shape it takes.
+   *
+   * Decision missions are the deliberate exception and the reason for the filter: they ask
+   * what a child would do about a situation, and a card with one side marked A and the
+   * other B cannot carry three courses of action. Squeezing them in would mean dropping an
+   * option, which changes the question into a different one.
+   */
+  const cardable = playable.filter((entry) => entry.mode !== "decision");
+
   it("offers at least one question to a class, whatever kind of mission it is", () => {
-    for (const entry of playable) {
+    for (const entry of cardable) {
       expect(canBeAskedInClass(entry), entry.id).toBe(true);
     }
   });
 
+  it("leaves out the missions a two-sided card could not ask", () => {
+    const decisions = playable.filter((entry) => entry.mode === "decision");
+
+    expect(decisions.length).toBeGreaterThan(0);
+    for (const entry of decisions) {
+      expect(canBeAskedInClass(entry), entry.id).toBe(false);
+    }
+  });
+
   it("covers the single-image missions too, not only the comparisons", () => {
-    const singles = playable.filter((entry) => !isComparisonMode(entry.mode));
+    const singles = cardable.filter((entry) => !isComparisonMode(entry.mode));
 
     expect(singles.length).toBeGreaterThan(0);
     for (const entry of singles) {

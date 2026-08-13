@@ -4,8 +4,13 @@ import type { BonusWheelReward } from "@/features/bonus/bonusOpportunity";
 export const achievementDefinitions = [
   { id: "bonus-perfect-training", islandKey: "training", messageKey: "starCadet", icon: "star", collectionHint: "perfect-island" },
   { id: "bonus-perfect-difference", islandKey: "difference", messageKey: "detailHunter", icon: "search", collectionHint: "perfect-island" },
-  { id: "bonus-perfect-source", islandKey: "source", messageKey: "sourceSleuth", icon: "detective", collectionHint: "perfect-island" },
   { id: "bonus-perfect-videos", islandKey: "videos", messageKey: "directorsEye", icon: "film", collectionHint: "perfect-island" },
+  /*
+   * One achievement per island, so the collection has a hole in it exactly when the map
+   * does. The island this replaced is gone; an id that no island can award would sit in
+   * the collection screen as a badge nobody could ever earn.
+   */
+  { id: "bonus-perfect-decisions", islandKey: "decisions", messageKey: "steadyHand", icon: "detective", collectionHint: "perfect-island" },
   { id: "bonus-eggspert", messageKey: "eggspert", icon: "egg", collectionHint: "perfect-double-points" }
 ] as const;
 

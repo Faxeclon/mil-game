@@ -5,7 +5,9 @@ import { MapPin, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { getMissionIntro } from "@/features/levels/missionIntro";
+import { getIslandStoryScenes } from "@/features/onboarding/islandStory";
 import { useProgress } from "@/features/progress/ProgressProvider";
+import { IslandStory } from "./IslandStory";
 import styles from "./MissionIntro.module.css";
 
 /**
@@ -30,6 +32,23 @@ export function MissionIntro({ missionId, children }: { missionId: string; child
   if (!intro) return <>{children}</>;
 
   const isIsland = intro.kind === "island";
+
+  /*
+   * An island with scenes tells them instead of saying its line.
+   *
+   * Same moment, same trigger, same one-time rule - only richer, and only where the turn in
+   * the game is big enough to be worth stopping for. An island without scenes never learns
+   * this file exists.
+   */
+  if (isIsland) {
+    const scenes = getIslandStoryScenes(intro.islandKey);
+    if (scenes.length > 0) {
+      return (
+        <IslandStory islandKey={intro.islandKey} scenes={scenes} onComplete={() => setDismissed(true)} />
+      );
+    }
+  }
+
   const title = isIsland ? t(`list.${intro.islandKey}.title`) : t(`categories.${intro.categoryKey}.title`);
   const line = isIsland ? t(`list.${intro.islandKey}.intro`) : t(`categories.${intro.categoryKey}.intro`);
 

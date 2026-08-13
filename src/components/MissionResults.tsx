@@ -11,6 +11,7 @@ import { LocalMedalToast } from "./LocalMedalToast";
 import { getIslandOfMission, getMissionById, type LevelId } from "@/features/levels/levelModel";
 import { getNextLevelInSection, getSectionCompletionEvent, type SectionCompletionEvent } from "@/features/levels/levelProgress";
 import { getBonusDestinationPath, getBonusOpportunityId, type BonusDestination } from "@/features/bonus/bonusOpportunity";
+import { islandHasRush } from "@/features/rush/rushState";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import {
   apprenticeAvatarIds,
@@ -18,6 +19,8 @@ import {
   type ApprenticeAvatarId
 } from "@/features/profile/apprenticeAvatar";
 import { useProgress } from "@/features/progress/ProgressProvider";
+import { getGameFinale, hasFinishedEveryMission } from "@/features/results/gameFinale";
+import { GameFinale } from "./GameFinale";
 import { getReplayPath } from "@/features/results/resultNavigation";
 import { formatElapsedTime, getFreshResult, getRequestedAttempt } from "@/features/results/resultPresentation";
 import { getScoreSummary } from "@/features/results/scoreSummary";
@@ -60,6 +63,7 @@ export function MissionResults() {
   const bonusPlayRef = useRef<HTMLButtonElement>(null);
   const bonusDialogRef = useRef<HTMLElement>(null);
   const [bonusOfferOpen, setBonusOfferOpen] = useState(false);
+  const [finaleDismissed, setFinaleDismissed] = useState(false);
   const [localMedalToastKey, setLocalMedalToastKey] = useState<string | null>(null);
   const result = getFreshResult(lastResult, attempt);
   const localMedalToastCandidateKey = result?.passed && progressState.completedLevelIds.length === 1 && !progressState.localMedalNoticePresented
@@ -70,7 +74,12 @@ export function MissionResults() {
     : null;
   const focusKey = result ? `result:${result.attemptId}` : `empty:${attempt ?? ""}`;
   const resultPassed = result?.passed === true;
-  const bonusId = celebration
+  /*
+   * No Bonus where there is no Rush to spend it on. The deciding island has no pictures,
+   * so its ticket would open an empty run - and a reward that leads nowhere is worse than
+   * no reward, because the child already believed they had won something.
+   */
+  const bonusId = celebration && islandHasRush(celebration.islandKey)
     ? getBonusOpportunityId(celebration.categoryKey, celebration.completionAttemptId)
     : null;
   const bonus = bonusId ? progressState.bonusOpportunities.find((entry) => entry.id === bonusId) : undefined;
@@ -138,6 +147,19 @@ export function MissionResults() {
         </Link>
       </section>
     );
+  }
+
+  /*
+   * The end of the map, shown once, over the result that closed it.
+   *
+   * Tied to a fresh result rather than to a stored flag: coming back to this page later
+   * re-reads a result already seen, and celebrating the end of the game again would make
+   * the moment worth nothing. Nothing new is persisted for it either - the whole screen is
+   * derived from completions and best runs, which were already being kept.
+   */
+  const gameFinished = !finaleDismissed && hasFinishedEveryMission(progressState);
+  if (gameFinished) {
+    return <GameFinale finale={getGameFinale(progressState)} onClose={() => setFinaleDismissed(true)} />;
   }
 
   const mission = getMissionById(result.levelId);

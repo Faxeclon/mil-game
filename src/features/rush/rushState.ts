@@ -157,6 +157,22 @@ export function buildIslandRushPool(
 }
 
 /**
+ * Whether an island has anything to run against a clock.
+ *
+ * The deciding island does not: its missions ask what a child would do about a situation
+ * and there is no picture in them, so its pool comes out empty. Awarding its Bonus would
+ * hand out a ticket to a Rush with nothing to show.
+ *
+ * Answered from the catalog rather than from the packs, so a caller does not have to pull
+ * every image manifest into its bundle to ask a question about the map.
+ */
+export function islandHasRush(island: IslandKey): boolean {
+  return getPlayableCategories(island)
+    .flatMap((category) => getPlayableMissions(category.key))
+    .some((mission) => mission.mode !== "decision");
+}
+
+/**
  * A Bonus is earned by one section, so it reuses only that section's authored media.
  * Keeping this beside the island pool means future categories need no route-specific code.
  */

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { missionBlueprint } from "@/features/levels/levelModel";
-import { contentPacks, getContentPack, getSinglePack, hasContentPack, singlePacks } from "./packRegistry";
+import { contentPacks, decisionPacks, getContentPack, getSinglePack, hasContentPack, singlePacks } from "./packRegistry";
 
 const playableMissions = missionBlueprint.filter((mission) => Boolean(mission.packId));
 
@@ -109,10 +109,8 @@ describe("every mission plays its own rounds", () => {
     }
   });
 
-  it("has at least one mission where looking is not enough to know", () => {
-    const uncertain = Object.values(singlePacks).filter((pack) => pack.allowsUncertain);
-
-    expect(uncertain.length).toBeGreaterThan(0);
+  it("keeps the decisions that cannot be settled by looking in their own pack shape", () => {
+    expect(Object.keys(decisionPacks)).toHaveLength(4);
   });
 
   it("keeps a single-image answer equal to the image's own origin", () => {

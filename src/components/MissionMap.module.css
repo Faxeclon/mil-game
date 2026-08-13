@@ -97,9 +97,17 @@
   display: none;
 }
 
+/*
+ * Room per island, not just room for the island.
+ *
+ * The first pass gave each one barely more height than its own orb, so three of them
+ * stacked into a knot in the top third with the page empty underneath - the trail read as
+ * one clustered object rather than as three places you travel between. The gap between
+ * them is what makes it a journey, so it is sized deliberately rather than left over.
+ */
 .journey.compact {
   margin-top: clamp(0.5rem, 2vw, 0.9rem);
-  height: calc(var(--island-count, 3) * clamp(5.4rem, 16vw, 6.8rem));
+  height: calc(var(--island-count, 3) * clamp(7rem, 21vw, 8.75rem));
 }
 
 /*
