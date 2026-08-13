@@ -1,0 +1,45 @@
+{
+  "id": "decision-limits-v1",
+  "kind": "limits",
+  "rounds": [
+    {
+      "id": "decision-limits-round-1",
+      "order": 1,
+      "situationKey": "limits.chocolate.situation",
+      "questionKey": "limits.chocolate.question",
+      "options": [
+        { "id": "obeyIt", "labelKey": "limits.chocolate.obeyIt", "whyKey": "limits.chocolate.whyObeyIt" },
+        { "id": "askAgain", "labelKey": "limits.chocolate.askAgain", "whyKey": "limits.chocolate.whyAskAgain" },
+        { "id": "checkFirst", "labelKey": "limits.chocolate.checkFirst", "whyKey": "limits.chocolate.whyCheckFirst" }
+      ],
+      "answerId": "checkFirst",
+      "rememberKey": "limits.chocolate.remember"
+    },
+    {
+      "id": "decision-limits-round-2",
+      "order": 2,
+      "situationKey": "limits.homework.situation",
+      "questionKey": "limits.homework.question",
+      "options": [
+        { "id": "copyIt", "labelKey": "limits.homework.copyIt", "whyKey": "limits.homework.whyCopyIt" },
+        { "id": "checkAndCredit", "labelKey": "limits.homework.checkAndCredit", "whyKey": "limits.homework.whyCheckAndCredit" },
+        { "id": "hideIt", "labelKey": "limits.homework.hideIt", "whyKey": "limits.homework.whyHideIt" }
+      ],
+      "answerId": "checkAndCredit",
+      "rememberKey": "limits.homework.remember"
+    },
+    {
+      "id": "decision-limits-round-3",
+      "order": 3,
+      "situationKey": "limits.admits.situation",
+      "questionKey": "limits.admits.question",
+      "options": [
+        { "id": "uselessTool", "labelKey": "limits.admits.uselessTool", "whyKey": "limits.admits.whyUselessTool" },
+        { "id": "goodSign", "labelKey": "limits.admits.goodSign", "whyKey": "limits.admits.whyGoodSign" },
+        { "id": "keepAsking", "labelKey": "limits.admits.keepAsking", "whyKey": "limits.admits.whyKeepAsking" }
+      ],
+      "answerId": "goodSign",
+      "rememberKey": "limits.admits.remember"
+    }
+  ]
+}

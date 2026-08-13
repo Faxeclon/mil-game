@@ -8,9 +8,9 @@
       "situationKey": "source.noClass.situation",
       "questionKey": "source.noClass.question",
       "options": [
-        { "id": "lookalike", "labelKey": "source.noClass.lookalike", "whyKey": "source.noClass.whyLookalike" },
+        { "id": "crowd", "labelKey": "source.noClass.crowd", "whyKey": "source.noClass.whyCrowd" },
         { "id": "official", "labelKey": "source.noClass.official", "whyKey": "source.noClass.whyOfficial" },
-        { "id": "forward", "labelKey": "source.noClass.forward", "whyKey": "source.noClass.whyForward" }
+        { "id": "askGroup", "labelKey": "source.noClass.askGroup", "whyKey": "source.noClass.whyAskGroup" }
       ],
       "answerId": "official",
       "rememberKey": "source.noClass.remember"

@@ -22,6 +22,16 @@ type LevelPageProps = { params: Promise<{ locale: string; levelId: string }> };
 /** The one mission that introduces the game before it starts. */
 const FIRST_MISSION_ID = "basics-1";
 
+/*
+ * The first mission that asks what to do rather than what something is.
+ *
+ * Read off the catalog instead of written down, so reordering that island cannot leave
+ * its explanation attached to a mission in the middle of it.
+ */
+const FIRST_DECISION_MISSION_ID = missionBlueprint.find(
+  (mission) => mission.mode === "decision" && mission.packId
+)?.id;
+
 export function generateStaticParams() {
   return missionBlueprint
     .filter((mission) => hasContentPack(mission.packId))
@@ -69,6 +79,7 @@ export default async function LevelPage({ params }: LevelPageProps) {
                   chipLabel={chipLabel}
                   levelId={mission.id as LevelId}
                   pack={decisionPack}
+                  showBriefing={mission.id === FIRST_DECISION_MISSION_ID}
                 />
               ) : singlePack ? (
                 <SingleImageClient

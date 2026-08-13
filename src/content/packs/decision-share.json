@@ -40,6 +40,18 @@
       ],
       "answerId": "askOrigin",
       "rememberKey": "share.trustedFriend.remember"
+    },
+    {
+      "id": "decision-share-round-4",
+      "order": 4,
+      "situationKey": "share.poster.situation",
+      "questionKey": "share.poster.question",
+      "options": [
+        { "id": "asPhoto", "labelKey": "share.poster.asPhoto", "whyKey": "share.poster.whyAsPhoto" },
+        { "id": "saySo", "labelKey": "share.poster.saySo", "whyKey": "share.poster.whySaySo" }
+      ],
+      "answerId": "saySo",
+      "rememberKey": "share.poster.remember"
     }
   ]
 }

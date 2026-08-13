@@ -2,7 +2,8 @@ import englishMessages from "@/messages/en.json";
 import spanishMessages from "@/messages/es.json";
 import type { ProvenanceMetadata, SinglePack, TutorialPack } from "@/content/schemas/tutorial";
 import { validateDecisionPack, type DecisionPack } from "@/content/schemas/decision";
-import decisionPublishJson from "./decision-publish.json";
+import decisionInfluenceJson from "./decision-influence.json";
+import decisionLimitsJson from "./decision-limits.json";
 import decisionShareJson from "./decision-share.json";
 import decisionSourceJson from "./decision-source.json";
 import { validateSinglePack } from "@/content/validators/validateSinglePack";
@@ -82,8 +83,9 @@ export function getSinglePack(packId: string | undefined): SinglePack | undefine
  */
 export const decisionPacks: Readonly<Record<string, DecisionPack>> = {
   "decision-source-v1": validateDecisionPack(decisionSourceJson),
-  "decision-share-v1": validateDecisionPack(decisionShareJson),
-  "decision-publish-v1": validateDecisionPack(decisionPublishJson)
+  "decision-influence-v1": validateDecisionPack(decisionInfluenceJson),
+  "decision-limits-v1": validateDecisionPack(decisionLimitsJson),
+  "decision-share-v1": validateDecisionPack(decisionShareJson)
 };
 
 export function getDecisionPack(packId: string | undefined): DecisionPack | undefined {

@@ -64,9 +64,18 @@ export const categories = [
   { key: "sports", island: "difference", order: 2, icon: "videos" },
   { key: "memes", island: "difference", order: 3, icon: "share" },
   { key: "clips", island: "videos", order: 1, icon: "videos" },
+  /*
+   * Four themes, in the order the questions get harder to answer alone.
+   *
+   * Who said it is checkable: there is an official page or there is not. Why they said it
+   * asks about somebody else's interest, which is never written on the message. Whether
+   * you have enough to decide asks about your own knowledge. And only then, what you do
+   * with it - which is the one that touches another person.
+   */
   { key: "checking", island: "decisions", order: 1, icon: "source" },
-  { key: "sharing", island: "decisions", order: 2, icon: "share" },
-  { key: "creating", island: "decisions", order: 3, icon: "voices" }
+  { key: "influence", island: "decisions", order: 2, icon: "voices" },
+  { key: "limits", island: "decisions", order: 3, icon: "context" },
+  { key: "sharing", island: "decisions", order: 4, icon: "share" }
 ] as const satisfies readonly { key: string; island: IslandKey; order: number; icon: MapIcon }[];
 
 export type CategoryKey = (typeof categories)[number]["key"];
@@ -134,8 +143,9 @@ const levelBlueprintEntries = [
    * meets them in.
    */
   { id: "checking-1", category: "checking", order: 1, mode: "decision", packId: "decision-source-v1" },
-  { id: "sharing-1", category: "sharing", order: 1, mode: "decision", packId: "decision-share-v1" },
-  { id: "creating-1", category: "creating", order: 1, mode: "decision", packId: "decision-publish-v1" }
+  { id: "influence-1", category: "influence", order: 1, mode: "decision", packId: "decision-influence-v1" },
+  { id: "limits-1", category: "limits", order: 1, mode: "decision", packId: "decision-limits-v1" },
+  { id: "sharing-1", category: "sharing", order: 1, mode: "decision", packId: "decision-share-v1" }
 ] as const satisfies readonly MissionBlueprint[];
 
 /** A level identifier authored in the current level catalog. */

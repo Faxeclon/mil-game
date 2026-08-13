@@ -20,6 +20,8 @@ type DecisionClientProps = {
   pack: DecisionPack;
   levelId: LevelId;
   chipLabel: string;
+  /** Roqui explains the island before its first mission, the way he does before mission one. */
+  showBriefing?: boolean;
 };
 
 function monotonicNow(): number {
@@ -39,7 +41,7 @@ function monotonicNow(): number {
  * or does not. Being told only that somebody else's answer was better teaches nothing
  * about their own reasoning.
  */
-export function DecisionClient({ pack, levelId, chipLabel }: DecisionClientProps) {
+export function DecisionClient({ pack, levelId, chipLabel, showBriefing = false }: DecisionClientProps) {
   const t = useTranslations("decisions");
   const tTutorial = useTranslations("tutorial");
   const router = useRouter();
@@ -51,15 +53,21 @@ export function DecisionClient({ pack, levelId, chipLabel }: DecisionClientProps
   const [correctCount, setCorrectCount] = useState(0);
   const [finished, setFinished] = useState(false);
   const [responseTimer] = useState(() => new ActiveResponseTimer());
+  const [briefingIndex, setBriefingIndex] = useState(0);
   const recordedRef = useRef(false);
+
+  const briefingLines = t.raw("briefing") as string[];
+  const briefingOpen = showBriefing && briefingIndex < briefingLines.length;
 
   const round = pack.rounds[roundIndex];
   const total = pack.rounds.length;
 
+  // The clock starts when the first situation is actually on screen, never while Roqui is
+  // still explaining: time spent listening is not time spent deciding.
   useEffect(() => {
-    if (finished || !round) return;
+    if (finished || !round || briefingOpen) return;
     responseTimer.startRound(round.id, monotonicNow());
-  }, [finished, responseTimer, round]);
+  }, [briefingOpen, finished, responseTimer, round]);
 
   // Written before navigating, so the results screen can demand this exact attempt.
   useEffect(() => {
@@ -80,6 +88,58 @@ export function DecisionClient({ pack, levelId, chipLabel }: DecisionClientProps
       <p className={styles.handover} role="status">
         {tTutorial("savingResult")}
       </p>
+    );
+  }
+
+  /*
+   * Roqui says what this island is, before it starts.
+   *
+   * It earns the interruption in a way the other islands would not: everywhere else the
+   * screen explains itself, because there is a picture and a question about it. Here a
+   * child arrives at a wall of text with no image and no idea why, and "there is nothing
+   * to look at" is precisely the thing that has to be said out loud.
+   */
+  if (briefingOpen) {
+    const line = briefingLines[briefingIndex];
+
+    return (
+      <section className={`${styles.round} tutorial-round`}>
+        <button
+          aria-label={t("briefingAria", { current: briefingIndex + 1, total: briefingLines.length })}
+          className={styles.briefing}
+          type="button"
+          onClick={() => setBriefingIndex((index) => index + 1)}
+        >
+          {/* Roqui first in the markup, drawn under the bubble - same as in a situation. */}
+          <span className={styles.situation}>
+            <span className={styles.stand}>
+              <Image
+                alt={tTutorial("mascotAlt")}
+                className={styles.mascot}
+                height={512}
+                priority
+                src="/media/mascot/roqui-map-left.png"
+                width={512}
+              />
+            </span>
+            <span className={styles.bubble} key={briefingIndex}>
+              <span className={styles.situationText}>{line}</span>
+            </span>
+          </span>
+
+          <span aria-hidden="true" className={styles.dots}>
+            {briefingLines.map((_, index) => (
+              <span className={index <= briefingIndex ? styles.dotSeen : ""} key={index} />
+            ))}
+          </span>
+
+          <span aria-hidden="true" className={styles.hint}>
+            {briefingIndex >= briefingLines.length - 1 ? t("briefingStart") : t("briefingNext")}
+          </span>
+        </button>
+
+        <Narrator lines={[line]} />
+      </section>
     );
   }
 

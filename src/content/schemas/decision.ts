@@ -12,14 +12,21 @@
  * carry a situation and ask about a choice, and forcing one shape to be both would leave
  * every field optional and meaningless.
  */
-export const decisionKinds = ["source", "share", "publish"] as const;
+export const decisionKinds = ["source", "influence", "limits", "share"] as const;
 
 /**
  * What a mission is training.
  *
- * `source`  - which of several origins could actually confirm a claim
- * `share`   - what to do before passing something on, or when it targets somebody
- * `publish` - how to be honest about something you made with AI
+ * `source`    - which of several origins could actually confirm a claim
+ * `influence` - who gains something by convincing you, and whether they said so
+ * `limits`    - when you do not have enough to decide, including when a machine sounds sure
+ * `share`     - what to do before passing something on, and how to be honest about your own
+ *
+ * `influence` and `limits` are the two halves media literacy is usually missing when it is
+ * taught as detection. A child can be perfectly able to tell a photograph from a generated
+ * image and still buy whatever their favourite creator was paid to hold up, or take a
+ * confident wrong answer from a chatbot as settled fact. Neither is answered by looking
+ * harder.
  */
 export type DecisionKind = (typeof decisionKinds)[number];
 

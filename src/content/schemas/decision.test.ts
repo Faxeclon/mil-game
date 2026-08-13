@@ -122,4 +122,24 @@ describe("the packs that actually ship", () => {
       }
     }
   });
+
+  /*
+   * The documented failure mode of games like this one is teaching children to distrust
+   * everything rather than to tell things apart, and the two newest missions are where it
+   * would happen: every round is about somebody who might be trying to influence you, or a
+   * machine that might be wrong. Answer "refuse" every time and a child learns that the
+   * safe move is always no, which is not judgement - it is the absence of it.
+   *
+   * So each of those missions carries a round whose right answer is to accept: the creator
+   * who says up front that she was paid, and the tool that admits it does not know. Both
+   * of them are trustworthy precisely because they told you where they stood, which is the
+   * lesson that distrusting everything would erase.
+   */
+  it("rewards trusting the ones who were honest, not only refusing", () => {
+    const rightAnswerOf = (packId: string, roundId: string) =>
+      decisionPacks[packId]?.rounds.find((round) => round.id === roundId)?.answerId;
+
+    expect(rightAnswerOf("decision-influence-v1", "decision-influence-round-3")).toBe("listenKnowing");
+    expect(rightAnswerOf("decision-limits-v1", "decision-limits-round-3")).toBe("goodSign");
+  });
 });
