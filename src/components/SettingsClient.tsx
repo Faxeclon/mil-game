@@ -13,6 +13,7 @@ import {
   Settings2,
   ShieldCheck,
   Smartphone,
+  BookOpen,
   Trash2,
   Type,
   Users,
@@ -216,6 +217,8 @@ export function SettingsClient() {
       </dialog>
 
       <ResetSection />
+
+      <CreditsSection />
 
       <LeaveProfileButton />
     </div>
@@ -436,6 +439,20 @@ function DataSection() {
         </section>
       )}
     </>
+  );
+}
+
+/** Informational links stay near the foot of Settings, after actions that affect the device. */
+function CreditsSection() {
+  const t = useTranslations("settings");
+  return (
+    <section aria-labelledby="settings-information" className={styles.group}>
+      <h2 className={styles.groupTitle} id="settings-information">{t("informationTitle")}</h2>
+      <Link className={styles.teacherEntry} href="/settings/credits">
+        <BookOpen aria-hidden="true" size={17} />
+        {t("credits")}
+      </Link>
+    </section>
   );
 }
 
