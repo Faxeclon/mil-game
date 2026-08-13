@@ -13,6 +13,7 @@ import { createAttemptMetadata } from "@/features/progress/attemptMetadata";
 import type { LevelAttempt } from "@/features/progress/progressState";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { getResultsAttemptPath } from "@/features/results/resultNavigation";
+import { calculateLevelScore, type RoundOutcome } from "@/features/scoring/levelScore";
 import { Link, useRouter } from "@/i18n/navigation";
 import styles from "./DecisionClient.module.css";
 
@@ -54,6 +55,14 @@ export function DecisionClient({ pack, levelId, chipLabel, showBriefing = false 
   const [finished, setFinished] = useState(false);
   const [responseTimer] = useState(() => new ActiveResponseTimer());
   const [briefingIndex, setBriefingIndex] = useState(0);
+  /*
+   * One outcome per situation, so this mission is scored on the same scale as every other.
+   *
+   * Kept as a list rather than a running total because that is what the shared calculator
+   * takes, and because it means the rule here cannot drift from the rule elsewhere: no
+   * clock, so a right answer is worth full marks and speed earns nothing.
+   */
+  const [outcomes, setOutcomes] = useState<RoundOutcome[]>([]);
   const recordedRef = useRef(false);
 
   const briefingLines = t.raw("briefing") as string[];
@@ -77,11 +86,12 @@ export function DecisionClient({ pack, levelId, chipLabel, showBriefing = false 
       correctRounds: correctCount,
       totalRounds: total,
       elapsedMs: responseTimer.getElapsedMs(),
+      score: calculateLevelScore(outcomes),
       ...createAttemptMetadata()
     };
     completeLevel(levelId, attempt);
     router.replace(getResultsAttemptPath(attempt.attemptId));
-  }, [completeLevel, correctCount, finished, levelId, responseTimer, router, total]);
+  }, [completeLevel, correctCount, finished, levelId, outcomes, responseTimer, router, total]);
 
   if (finished) {
     return (
@@ -151,6 +161,7 @@ export function DecisionClient({ pack, levelId, chipLabel, showBriefing = false 
     responseTimer.finishRound(round.id, monotonicNow());
     const right = chosenId === round.answerId;
     if (right) setCorrectCount((count) => count + 1);
+    setOutcomes((list) => [...list, right ? { result: "correct" } : { result: "incorrect" }]);
     setAnswered(true);
     playSound(right ? "correct" : "wrong");
   };

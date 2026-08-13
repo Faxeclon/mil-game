@@ -1,0 +1,289 @@
+/*
+ * The closing screen. Fixed over everything, because it is the end of the game and not a
+ * section of the results page underneath it.
+ *
+ * The palette is the playing screens' cream and terracotta, so the last thing a child sees
+ * belongs to the same world as the first.
+ */
+
+.finale {
+  --f-ink: #1f2a44;
+  --f-ink-soft: #5b6780;
+  --f-paper: #ffffff;
+  --f-hairline: #ece7e6;
+  --f-accent: #c93c0b;
+  --f-accent-ink: #b8380a;
+  --f-accent-soft: #ffece4;
+  --f-gold: #e8a317;
+
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 1rem calc(1.25rem + env(safe-area-inset-bottom));
+  background: #fff7f3;
+  color: var(--f-ink);
+}
+
+/* A slow sunrise behind the whole thing, so the screen feels lit rather than decorated. */
+.rays {
+  position: fixed;
+  top: -30vh;
+  left: 50%;
+  width: min(140vw, 60rem);
+  height: min(140vw, 60rem);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(232, 163, 23, 0.24), rgba(232, 163, 23, 0) 62%);
+  transform: translateX(-50%);
+  animation: rays-breathe 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes rays-breathe {
+  50% {
+    transform: translateX(-50%) scale(1.08);
+  }
+}
+
+.stage {
+  position: relative;
+  width: min(100%, 30rem);
+  display: grid;
+  justify-items: center;
+  gap: 0.6rem;
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0;
+  padding: 0.26rem 0.7rem;
+  border-radius: 999px;
+  background: var(--f-accent-soft);
+  color: var(--f-accent-ink);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  animation: rise 420ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.9rem, 8vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  animation: rise 460ms cubic-bezier(0.2, 0.7, 0.3, 1) 60ms both;
+}
+
+.mascot {
+  width: clamp(6rem, 26vw, 8.5rem);
+  height: auto;
+  margin: 0.2rem 0 0.4rem;
+  animation: rise 500ms cubic-bezier(0.2, 0.7, 0.3, 1) 120ms both, hop 2.6s ease-in-out 900ms infinite;
+}
+
+@keyframes hop {
+  30% {
+    transform: translateY(-0.45rem);
+  }
+  45% {
+    transform: translateY(0);
+  }
+  60% {
+    transform: translateY(-0.2rem);
+  }
+  75% {
+    transform: translateY(0);
+  }
+}
+
+/* ------------------------------------------------------------------- The path */
+
+.trail {
+  width: 100%;
+  margin: 0.3rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.4rem;
+  list-style: none;
+}
+
+.stop {
+  display: grid;
+  grid-template-columns: 2.6rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.7rem;
+  border: 2px solid var(--f-hairline);
+  border-radius: 0.9rem;
+  background: var(--f-paper);
+  box-shadow: 0 1px 2px rgba(31, 42, 68, 0.05), 0 10px 22px rgba(31, 42, 68, 0.06);
+  text-align: left;
+  /* Filled in by the component, one beat per island: a row of icons becomes a path. */
+  animation: stop-in 480ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+
+.stopIcon {
+  width: 2.6rem;
+  height: 2.6rem;
+  display: grid;
+  place-items: center;
+  border-radius: 0.8rem;
+  background: var(--f-accent-soft);
+  color: var(--f-accent-ink);
+}
+
+.stopName {
+  min-width: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  line-height: 1.2;
+  /* Two-word island names must wrap inside their column, never over the stars. */
+  overflow-wrap: break-word;
+}
+
+.stopStars {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--f-ink-soft);
+  font-size: 0.85rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.stopStars > svg {
+  color: var(--f-gold);
+  fill: currentColor;
+}
+
+/* ------------------------------------------------------------------ The total */
+
+.total {
+  margin: 0.55rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.3rem 0.5rem;
+  animation: rise 460ms cubic-bezier(0.2, 0.7, 0.3, 1) 1.15s both;
+}
+
+.totalStar {
+  align-self: center;
+  color: var(--f-gold);
+  fill: currentColor;
+  animation: pop 620ms cubic-bezier(0.2, 1.4, 0.4, 1) 1.3s both;
+}
+
+.total strong {
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.total span {
+  color: var(--f-ink-soft);
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.line {
+  max-width: 26rem;
+  margin: 0.35rem 0 0;
+  color: var(--f-ink-soft);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-wrap: pretty;
+  animation: rise 460ms cubic-bezier(0.2, 0.7, 0.3, 1) 1.35s both;
+}
+
+.actions {
+  width: 100%;
+  margin-top: 0.9rem;
+  display: grid;
+  gap: 0.5rem;
+  animation: rise 460ms cubic-bezier(0.2, 0.7, 0.3, 1) 1.5s both;
+}
+
+.primary,
+.secondary {
+  min-height: 3.3rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.95rem;
+  font: inherit;
+  font-size: 1.02rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.primary {
+  border: 0;
+  background: var(--f-accent);
+  box-shadow: 0 2px 0 var(--f-accent-ink), 0 12px 22px -14px rgba(201, 60, 11, 0.9);
+  color: #fff;
+}
+
+.primary:active {
+  box-shadow: 0 0 0 var(--f-accent-ink);
+  transform: translateY(2px);
+}
+
+.secondary {
+  border: 2px solid var(--f-hairline);
+  background: var(--f-paper);
+  color: var(--f-ink);
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------- The motion */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.7rem);
+  }
+}
+
+@keyframes stop-in {
+  from {
+    opacity: 0;
+    transform: translateX(-0.9rem);
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+/*
+ * Stillness keeps the screen and loses only the movement.
+ *
+ * Every element here animates in from invisible, so switching the animations off without
+ * this would leave a child looking at an empty page - the one moment of the game where
+ * that would be worst.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .rays,
+  .eyebrow,
+  .title,
+  .mascot,
+  .stop,
+  .total,
+  .totalStar,
+  .line,
+  .actions {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
