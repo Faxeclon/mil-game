@@ -26,6 +26,7 @@ describe("audited basics assets and credits", () => {
     expect(credits.size).toBe(12);
     expect(credits.get("basics-1-r1-monkey-camera")).toMatchObject({ license: "Public Domain Mark 1.0", licenseUrl: publicDomainMark });
     expect(credits.get("basics-1-r3-cat-camera")).toMatchObject({ license: "CC0 1.0", licenseUrl: "https://creativecommons.org/publicdomain/zero/1.0/" });
+    expect(credits.get("basics-1-r3-cat-camera")).toMatchObject({ title: "los sueños azules de un gato", creator: "Martín Vicente, M." });
     expect(credits.get("basics-1-r2-earthquake-camera")).toMatchObject({ license: "CC BY 2.0", licenseUrl: ccBy });
     expect(credits.get("basics-2-r1-pope-real")).toMatchObject({ license: "CC BY-SA 2.0", licenseUrl: ccBySa });
     for (const id of [...credits.keys()].filter((id) => id.endsWith("-ai"))) {

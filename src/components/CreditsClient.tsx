@@ -2,13 +2,12 @@
 
 import { ChevronLeft, ExternalLink } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { getCreditedMedia } from "@/content/packs/packRegistry";
+import { creditedPackPresentationKeys, getCreditedMedia } from "@/content/packs/packRegistry";
 import { Link } from "@/i18n/navigation";
 import styles from "./SettingsClient.module.css";
 
 export function CreditsClient() {
   const t = useTranslations("credits");
-  const tIslands = useTranslations("islands");
   const groups = new Map<string, ReturnType<typeof getCreditedMedia>>();
   for (const item of getCreditedMedia()) groups.set(item.packId, [...(groups.get(item.packId) ?? []), item]);
 
@@ -19,14 +18,14 @@ export function CreditsClient() {
       <p className={styles.lead}>{t("lead")}</p>
       {[...groups.entries()].map(([packId, items]) => (
         <section className={styles.group} key={packId}>
-          <h2 className={styles.groupTitle}>{packId === "introductory-tutorial-v1" ? tIslands("list.training.title") : packId}</h2>
+          <h2 className={styles.groupTitle}>{t(`packs.${creditedPackPresentationKeys[packId as keyof typeof creditedPackPresentationKeys]}`)}</h2>
           <ul className={styles.creditList}>
             {items.map(({ media }) => {
               const credit = media.provenance.credit!;
               return <li className={styles.credit} key={media.id}>
-                <strong>{credit.title ?? t("projectContent")}</strong>
+                {credit.creationMethod !== "ai-generated" && <strong>{credit.title ?? t("projectContent")}</strong>}
                 {credit.creator && <span>{credit.creator}</span>}
-                {credit.source && <span>{credit.source}{credit.license ? ` · ${credit.license}` : ""}</span>}
+                {credit.source && <span>{credit.source}{credit.license && <> {"·"} {credit.license}</>}</span>}
                 {credit.creationMethod === "ai-generated" && <span>{t("projectGenerated")}</span>}
                 {credit.creationMethod === "project-created" && <span>{t("projectCreated")}</span>}
                 {credit.modifications && <span>{credit.modifications}</span>}

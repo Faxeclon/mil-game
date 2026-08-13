@@ -218,6 +218,8 @@ export function SettingsClient() {
 
       <ResetSection />
 
+      <CreditsSection />
+
       <LeaveProfileButton />
     </div>
   );
@@ -402,13 +404,6 @@ function DataSection() {
         )}
       </section>
 
-      <section className={styles.group}>
-        <Link className={styles.teacherEntry} href="/settings/credits">
-          <BookOpen aria-hidden="true" size={17} />
-          {t("credits")}
-        </Link>
-      </section>
-
       {/*
         The doors that are still worth offering, and only those.
         A grown-up already signed in has their address in the row above and their tools in
@@ -444,6 +439,20 @@ function DataSection() {
         </section>
       )}
     </>
+  );
+}
+
+/** Informational links stay near the foot of Settings, after actions that affect the device. */
+function CreditsSection() {
+  const t = useTranslations("settings");
+  return (
+    <section aria-labelledby="settings-information" className={styles.group}>
+      <h2 className={styles.groupTitle} id="settings-information">{t("informationTitle")}</h2>
+      <Link className={styles.teacherEntry} href="/settings/credits">
+        <BookOpen aria-hidden="true" size={17} />
+        {t("credits")}
+      </Link>
+    </section>
   );
 }
 

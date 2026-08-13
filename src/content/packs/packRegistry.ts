@@ -101,6 +101,12 @@ export function hasContentPack(packId: string | undefined): boolean {
 
 export type CreditedMedia = { packId: string; media: { id: string; provenance: ProvenanceMetadata } };
 
+/** Public presentation keys for audited packs. Pack ids never leak into child-facing UI. */
+export const creditedPackPresentationKeys = {
+  "introductory-tutorial-v1": "basics1",
+  "city-basics-timed-v1": "basics2"
+} as const;
+
 /** Only audited assets are exposed publicly; this neutral list deliberately has no answer or side data. */
 export function getCreditedMedia(): CreditedMedia[] {
   return Object.entries(contentPacks).flatMap(([packId, pack]) =>
