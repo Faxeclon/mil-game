@@ -225,11 +225,14 @@ export function RanksClient() {
           {achievementDefinitions.map((achievement) => {
             const earned = earnedAchievementIds.has(achievement.id);
             const Icon = ACHIEVEMENT_ICONS[achievement.icon];
-            const hint = achievement.collectionHint === "perfect-island" && "islandKey" in achievement
-              ? tAchievements("collectionHints.perfectIsland", {
-                  island: tIslands(`list.${achievement.islandKey}.title`)
-                })
-              : tAchievements("collectionHints.perfectDoublePoints");
+            const islandName = "islandKey" in achievement
+              ? tIslands(`list.${achievement.islandKey}.title`)
+              : null;
+            const hint = achievement.collectionHint === "perfect-island" && islandName
+              ? tAchievements("collectionHints.perfectIsland", { island: islandName })
+              : achievement.collectionHint === "island-completion" && islandName
+                ? tAchievements("collectionHints.islandCompletion", { island: islandName })
+                : tAchievements("collectionHints.perfectDoublePoints");
 
             return (
               <li className={`${styles.row} ${earned ? styles.rowReached : styles.rowLocked}`} key={achievement.id}>

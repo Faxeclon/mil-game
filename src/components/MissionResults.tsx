@@ -8,10 +8,12 @@ import { playSound } from "@/features/audio/soundEffects";
 import { Narrator } from "@/components/Narrator";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
 import { LocalMedalToast } from "./LocalMedalToast";
+import { BonusAchievementCelebration } from "./BonusAchievementCelebration";
 import { getIslandOfMission, getMissionById, type LevelId } from "@/features/levels/levelModel";
 import { getNextLevelInSection, getSectionCompletionEvent, type SectionCompletionEvent } from "@/features/levels/levelProgress";
 import { getBonusDestinationPath, getBonusOpportunityId, type BonusDestination } from "@/features/bonus/bonusOpportunity";
 import { islandHasRush } from "@/features/rush/rushState";
+import { getIslandCompletionAchievementIds } from "@/features/achievements/achievementModel";
 import { useAccessibility } from "@/features/accessibility/accessibilityStore";
 import {
   apprenticeAvatarIds,
@@ -52,7 +54,8 @@ export function MissionResults() {
     createBonusOpportunity,
     activateBonusOpportunity,
     consumeBonusOpportunity,
-    markLocalMedalNoticePresented
+    markLocalMedalNoticePresented,
+    acknowledgeAchievementCelebration
   } = useProgress();
   const searchParams = useSearchParams();
   const attempt = getRequestedAttempt(searchParams);
@@ -83,6 +86,9 @@ export function MissionResults() {
     ? getBonusOpportunityId(celebration.categoryKey, celebration.completionAttemptId)
     : null;
   const bonus = bonusId ? progressState.bonusOpportunities.find((entry) => entry.id === bonusId) : undefined;
+  const islandCompletionAchievementIds = celebration?.islandCompleted
+    ? getIslandCompletionAchievementIds(celebration.islandKey).filter((id) => progressState.pendingAchievementCelebrationIds.includes(id))
+    : [];
 
   useEffect(() => {
     if (!hydrated || focusedResultRef.current === focusKey) return;
@@ -188,6 +194,15 @@ export function MissionResults() {
   const completeCelebration = () => {
     if (!celebration || navigateOnceRef.current) return;
     if (bonus?.status === "consumed" || bonus?.status === "active") return;
+    if (!bonus) {
+      navigateOnceRef.current = true;
+      router.push(
+        celebration.destination.kind === "island"
+          ? getBonusDestinationPath({ kind: "island", islandKey: celebration.destination.islandKey })
+          : getBonusDestinationPath({ kind: "worlds" })
+      );
+      return;
+    }
     setBonusOfferOpen(true);
   };
 
@@ -300,6 +315,9 @@ export function MissionResults() {
 
       {localMedalToastKey === `${profiles.activeId ?? "none"}:${result.attemptId ?? "legacy"}` && (
         <LocalMedalToast onPresented={markLocalMedalNoticePresented} />
+      )}
+      {islandCompletionAchievementIds.length > 0 && (
+        <BonusAchievementCelebration ids={islandCompletionAchievementIds} onPresented={acknowledgeAchievementCelebration} />
       )}
 
       <div className={styles.actions}>

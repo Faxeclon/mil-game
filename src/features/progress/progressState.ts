@@ -7,7 +7,7 @@ import { isAttemptId, parseCompletedAt, parseElapsedMs } from "./attemptMetadata
 import { parseBestResults, updateBestResults, type BestResultsByLevelId } from "./bestResults";
 import { parseLevelScore } from "@/features/scoring/levelScore";
 import { RUSH_SECONDS } from "@/features/rush/rushState";
-import { isAchievementId, type AchievementId } from "@/features/achievements/achievementModel";
+import { addAchievements, getIslandCompletionAchievementIds, getNewAchievementIds, isAchievementId, type AchievementId } from "@/features/achievements/achievementModel";
 import { initialStreak, isPlayedOn, parseStreak, recordPlayedDay, type Streak } from "./streak";
 import {
   grantGuardianConsent,
@@ -584,7 +584,14 @@ export function completeLevel(
       }
     }
   }
+  const previouslyCompletedIslands = completedIslands(state.completedLevelIds);
   const newlyCompletedIslands = completedIslands(completedLevelIds);
+  const newlyCompletedIslandAchievements = passed
+    ? newlyCompletedIslands
+        .filter((island) => !previouslyCompletedIslands.includes(island))
+        .flatMap(getIslandCompletionAchievementIds)
+    : [];
+  const unlockedAchievementIds = getNewAchievementIds(state.achievementIds, newlyCompletedIslandAchievements);
 
   return {
     ...state,
@@ -593,7 +600,11 @@ export function completeLevel(
       ? { sectionReplayIdsByCategory: replayIdsByCategory }
       : {}),
     ...(sectionCompletionEvent ? { sectionCompletionEvent } : {}),
-    rushUnlockedIslands: [...new Set([...state.rushUnlockedIslands, ...newlyCompletedIslands])],
+    // Legacy only: it no longer authorizes Rush. Keep historic values, but do not add
+    // islands whose authored design has no Bonus challenge.
+    rushUnlockedIslands: [...new Set([...state.rushUnlockedIslands, ...newlyCompletedIslands.filter((island) => islands.find((entry) => entry.key === island)?.bonusEligible)])],
+    achievementIds: addAchievements(state.achievementIds, unlockedAchievementIds),
+    pendingAchievementCelebrationIds: addAchievements(state.pendingAchievementCelebrationIds, unlockedAchievementIds),
     rankMissionCeiling: Math.max(state.rankMissionCeiling, completedLevelIds.length),
     // Every run counts, including the replays a record ignores: this is time spent, not
     // a score, and a child who played the same mission five times did spend that time.

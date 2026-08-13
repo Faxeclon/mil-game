@@ -73,6 +73,14 @@ describe("section-completion Bonus offer", () => {
     expect(screen).toContain("bonusOfferOpen && bonus?.status === \"pending\"");
   });
 
+  it("closes non-Bonus island completions at their normal destination and presents their earned achievement once", async () => {
+    const screen = await source("MissionResults.tsx");
+    expect(screen).toContain("if (!bonus) {");
+    expect(screen).toContain('celebration.destination.kind === "island"');
+    expect(screen).toContain("getIslandCompletionAchievementIds(celebration.islandKey)");
+    expect(screen).toContain("<BonusAchievementCelebration ids={islandCompletionAchievementIds} onPresented={acknowledgeAchievementCelebration}");
+  });
+
   it("makes accepting active, and declining or Escape consume and follow the saved destination", async () => {
     const screen = await source("MissionResults.tsx");
     expect(screen).toContain("activateBonusOpportunity(bonus.id)");

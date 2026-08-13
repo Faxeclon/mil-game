@@ -19,7 +19,7 @@ const icons: Record<AchievementIcon, LucideIcon> = {
   egg: Egg
 };
 
-/** A non-blocking, one-time toast for every achievement earned in the completed Bonus. */
+/** A non-blocking, one-time toast for every newly earned achievement. */
 export function BonusAchievementCelebration({ ids, onPresented }: { ids: readonly AchievementId[]; onPresented: (ids: readonly AchievementId[]) => void }) {
   const t = useTranslations("achievements");
   const { reducedMotion } = useAccessibility();

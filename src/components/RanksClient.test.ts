@@ -60,6 +60,7 @@ describe("progress collection view", () => {
     expect(component).toContain("progressState.achievementIds");
     expect(component).toContain('tAchievements("collectionCount"');
     expect(component).toContain('tAchievements("collectionHints.perfectIsland"');
+    expect(component).toContain('tAchievements("collectionHints.islandCompletion"');
     expect(component).toContain('tAchievements("collectionHints.perfectDoublePoints")');
 
     for (const achievement of achievementDefinitions) {
@@ -86,6 +87,7 @@ describe("progress collection view", () => {
         achievements("collectionCount", { unlocked: 1, total: achievementDefinitions.length }),
         achievements("locked"),
         achievements("collectionHints.perfectIsland", { island: "Island" }),
+        achievements("collectionHints.islandCompletion", { island: "Island" }),
         achievements("collectionHints.perfectDoublePoints")
       ];
 

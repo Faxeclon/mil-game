@@ -149,6 +149,9 @@
     "singleQuestion": "¿Quién hizo esta imagen?",
     "answerAi": "Hecha con IA",
     "answerCamera": "Tomada con cámara",
+    "videoSingleQuestion": "¿Cómo se hizo este video?",
+    "videoAnswerAi": "Generado con IA",
+    "videoAnswerCamera": "Grabado con cámara",
     "answerUnknown": "No se puede saber",
     "singleHint": "Aquí no hay con qué compararla. Mírala con calma.",
     "uncertainHint": "Ojo: a veces la respuesta correcta es que no se puede saber solo mirando.",
@@ -247,12 +250,12 @@
         "plazaFountain": "Ilustración temporal de una fuente en medio de una plaza."
       },
       "videos": {
-        "catReal": "Video de un gato moviéndose en una habitación.",
-        "catAi": "Video de un gato moviéndose en una habitación.",
+        "catReal": "Un gato caminando en cámara lenta.",
+        "catAi": "Un gato sentado en una habitación.",
         "skaterClip": "Tira temporal de tres cuadros de una patineta recorriendo una rampa.",
         "dancerClip": "Tira temporal de tres cuadros de una figura que cambia la posición de los brazos.",
         "paradeClip": "Tira temporal de tres cuadros de unas banderas moviéndose en fila.",
-        "handWritingAi": "Video de una mano escribiendo en un cuaderno."
+        "handWritingAi": "Una mano escribiendo en un cuaderno."
       },
       "basics": {
         "pope": {
@@ -356,17 +359,17 @@
       },
       "clipsSingle": {
         "r1": {
-          "observation": "Sin otro video al lado, revisa que el movimiento sea parejo entre cuadros.",
-          "remember": "Un movimiento raro es una pista, no una prueba."
+          "observation": "Mira todo el video. ¿Algo te llama la atención?",
+          "remember": "Una pista no basta. Revisa la fuente."
         },
         "r2": {
-          "question": "¿Para qué se habrá hecho este video?",
-          "remember": "Un video corto se hace para que lo compartas rápido."
+          "question": "¿Se ve raro… o solo va en cámara lenta?",
+          "remember": "Un video real también puede verse raro."
         },
         "r3": {
           "verification": "A veces los cuadros no alcanzan: hay que buscar el video completo y su fuente.",
-          "remember": "Que las letras fallen es una pista, no una prueba: también hay que ver de dónde salió el video.",
-          "observation": "Mira las letras: una computadora suele escribir formas que parecen palabras pero no dicen nada."
+          "remember": "Las letras raras son una pista, no una prueba.",
+          "observation": "¿Las letras se mantienen claras?"
         }
       }
     },
@@ -1219,6 +1222,7 @@
     "locked": "Bloqueado",
     "collectionHints": {
       "perfectIsland": "Completa el Bonus de {island} sin equivocarte.",
+      "islandCompletion": "Completa la isla {island}.",
       "perfectDoublePoints": "Consigue una partida perfecta con el premio x2."
     }
   },

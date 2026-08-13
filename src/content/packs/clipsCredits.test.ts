@@ -22,6 +22,35 @@ describe("audited Frame by Frame media", () => {
     expect(pack.rounds.every((round) => round.answer === round.media.origin)).toBe(true);
   });
 
+  it("uses video-specific wording and teaches visual clues as questions, not proof", () => {
+    expect(spanishMessages.tutorial).toMatchObject({
+      videoSingleQuestion: "¿Cómo se hizo este video?",
+      videoAnswerAi: "Generado con IA",
+      videoAnswerCamera: "Grabado con cámara",
+      media: { videos: { catAi: "Un gato sentado en una habitación.", catReal: "Un gato caminando en cámara lenta.", handWritingAi: "Una mano escribiendo en un cuaderno." } },
+      packs: {
+        clipsSingle: {
+          r1: { observation: "Mira todo el video. ¿Algo te llama la atención?", remember: "Una pista no basta. Revisa la fuente." },
+          r2: { question: "¿Se ve raro… o solo va en cámara lenta?", remember: "Un video real también puede verse raro." },
+          r3: { observation: "¿Las letras se mantienen claras?", remember: "Las letras raras son una pista, no una prueba." }
+        }
+      }
+    });
+    expect(englishMessages.tutorial).toMatchObject({
+      videoSingleQuestion: "How was this video made?",
+      videoAnswerAi: "Generated with AI",
+      videoAnswerCamera: "Recorded with a camera",
+      media: { videos: { catAi: "A cat sitting in a room.", catReal: "A cat walking in slow motion.", handWritingAi: "A hand writing in a notebook." } },
+      packs: {
+        clipsSingle: {
+          r1: { observation: "Watch the whole video. Does anything stand out?", remember: "One clue is not enough. Check the source." },
+          r2: { question: "Does it look strange… or is it just slow motion?", remember: "A real video can look strange too." },
+          r3: { observation: "Do the letters stay clear?", remember: "Odd letters are a clue, not proof." }
+        }
+      }
+    });
+  });
+
   it("records the falling cat as project-generated AI without an external source", () => {
     const cat = pack.rounds[0].media;
 

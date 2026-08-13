@@ -4,6 +4,8 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { LockKeyhole } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { getActiveBonusForIsland } from "@/features/bonus/bonusOpportunity";
+import { islands } from "@/features/levels/levelModel";
+import { islandHasRush } from "@/features/rush/rushState";
 import { useProgress } from "@/features/progress/ProgressProvider";
 import { Link, useRouter } from "@/i18n/navigation";
 import { LoadingRoqui } from "./LoadingRoqui";
@@ -23,6 +25,8 @@ export function RushRouteGuard({ island, children }: { island: string; children:
   const t = useTranslations("locked");
   const router = useRouter();
   const { hydrated, progressState, profiles } = useProgress();
+  const configuredIsland = islands.find((entry) => entry.key === island);
+  const supportsRush = configuredIsland ? islandHasRush(configuredIsland.key) : false;
   const activeBonus = getActiveBonusForIsland(progressState, island);
   const [admittedRun] = useState<{ bonusId: string; profileId: string | null } | null>(() =>
     activeBonus ? { bonusId: activeBonus.id, profileId: profiles.activeId } : null
@@ -43,7 +47,7 @@ export function RushRouteGuard({ island, children }: { island: string; children:
       (bonus) => bonus.id === admittedRun.bonusId && bonus.status === "consumed"
     )
   );
-  const permitted = Boolean(activeBonus || completedInThisVisit);
+  const permitted = supportsRush && Boolean(activeBonus || completedInThisVisit);
 
   useEffect(() => {
     if (hydrated && !permitted) router.replace(`/island/${island}`);

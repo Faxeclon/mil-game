@@ -11,6 +11,9 @@ describe("island-wide Bonus hunt wiring", () => {
     expect(page).not.toContain("buildCategoryRushPool");
     expect(client).toContain("pool: readonly RushItem[]");
     expect(client).not.toContain("poolsByCategory");
+    const guard = await readFile(join(process.cwd(), "src", "components", "RushRouteGuard.tsx"), "utf8");
+    expect(guard).toContain("const supportsRush");
+    expect(guard).toContain("supportsRush && Boolean(activeBonus || completedInThisVisit)");
   });
 
   it("continues restoring the exact persisted deck after refresh", async () => {

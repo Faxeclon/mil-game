@@ -40,9 +40,10 @@ export type MapIcon = "training" | "source" | "context" | "voices" | "videos" | 
  * island, so it is gone and its two missions with it.
  */
 export const islands = [
-  { key: "training", order: 1, icon: "training" },
-  { key: "difference", order: 2, icon: "context" },
-  { key: "videos", order: 3, icon: "videos" },
+  { key: "training", order: 1, icon: "training", bonusEligible: true },
+  { key: "difference", order: 2, icon: "context", bonusEligible: true },
+  // Videos is a lesson about treating visual anomalies as questions, not a speed challenge.
+  { key: "videos", order: 3, icon: "videos", bonusEligible: false },
   /*
    * The last island, and the only one that is not about looking.
    *
@@ -52,10 +53,15 @@ export const islands = [
    * because deciding what to do only means something once you know what you are deciding
    * about.
    */
-  { key: "decisions", order: 4, icon: "share" }
-] as const satisfies readonly { key: string; order: number; icon: MapIcon }[];
+  { key: "decisions", order: 4, icon: "share", bonusEligible: false }
+] as const satisfies readonly { key: string; order: number; icon: MapIcon; bonusEligible: boolean }[];
 
 export type IslandKey = (typeof islands)[number]["key"];
+
+/** Bonus Rush is deliberately a property of the island design, never inferred from media. */
+export function islandSupportsBonus(islandKey: IslandKey): boolean {
+  return islands.find((island) => island.key === islandKey)?.bonusEligible === true;
+}
 
 export const categories = [
   { key: "basics", island: "training", order: 1, icon: "training" },

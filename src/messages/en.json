@@ -149,6 +149,9 @@
     "singleQuestion": "Who made this image?",
     "answerAi": "Made with AI",
     "answerCamera": "Taken with a camera",
+    "videoSingleQuestion": "How was this video made?",
+    "videoAnswerAi": "Generated with AI",
+    "videoAnswerCamera": "Recorded with a camera",
     "answerUnknown": "You cannot tell",
     "singleHint": "There is nothing to compare it with. Take your time.",
     "uncertainHint": "Careful: sometimes the right answer is that looking is not enough to know.",
@@ -247,12 +250,12 @@
         "plazaFountain": "Temporary illustration of a fountain in the middle of a square."
       },
       "videos": {
-        "catReal": "Video of a cat moving around a room.",
-        "catAi": "Video of a cat moving around a room.",
+        "catReal": "A cat walking in slow motion.",
+        "catAi": "A cat sitting in a room.",
         "skaterClip": "Temporary strip of three frames of a skateboard moving along a ramp.",
         "dancerClip": "Temporary strip of three frames of a figure whose arms change position.",
         "paradeClip": "Temporary strip of three frames of flags moving in a row.",
-        "handWritingAi": "Video of a hand writing in a notebook."
+        "handWritingAi": "A hand writing in a notebook."
       },
       "basics": {
         "pope": {
@@ -356,17 +359,17 @@
       },
       "clipsSingle": {
         "r1": {
-          "observation": "With no second video beside it, check the movement is even between frames.",
-          "remember": "Odd movement is a clue, not proof."
+          "observation": "Watch the whole video. Does anything stand out?",
+          "remember": "One clue is not enough. Check the source."
         },
         "r2": {
-          "question": "What might this video have been made for?",
-          "remember": "A short video is made to be shared quickly."
+          "question": "Does it look strange… or is it just slow motion?",
+          "remember": "A real video can look strange too."
         },
         "r3": {
           "verification": "Sometimes the frames are not enough: find the whole video and its source.",
-          "remember": "Letters going wrong is a clue, not proof: you still have to find where the video came from.",
-          "observation": "Look at the letters: a computer often writes shapes that look like words but say nothing."
+          "remember": "Odd letters are a clue, not proof.",
+          "observation": "Do the letters stay clear?"
         }
       }
     },
@@ -1219,6 +1222,7 @@
     "locked": "Locked",
     "collectionHints": {
       "perfectIsland": "Complete the {island} Bonus without mistakes.",
+      "islandCompletion": "Complete the {island} island.",
       "perfectDoublePoints": "Get a perfect run with the x2 reward."
     }
   },

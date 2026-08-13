@@ -1,14 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { addAchievements, getBonusRunAchievementIds, getNewAchievementIds } from "./achievementModel";
+import { addAchievements, getBonusRunAchievementIds, getIslandCompletionAchievementIds, getNewAchievementIds } from "./achievementModel";
 
 describe("Bonus achievements", () => {
   it.each([
     ["training", "bonus-perfect-training"],
-    ["difference", "bonus-perfect-difference"],
-    ["videos", "bonus-perfect-videos"],
-    ["decisions", "bonus-perfect-decisions"]
+    ["difference", "bonus-perfect-difference"]
   ] as const)("unlocks the island achievement for a perfect %s run", (islandKey, achievementId) => {
     expect(getBonusRunAchievementIds({ islandKey, actualMistakeCount: 0, reward: "none" })).toEqual([achievementId]);
+  });
+
+  it("reserves Videos and Deciding achievements for their first island completion", () => {
+    expect(getBonusRunAchievementIds({ islandKey: "videos", actualMistakeCount: 0, reward: "none" })).toEqual([]);
+    expect(getBonusRunAchievementIds({ islandKey: "decisions", actualMistakeCount: 0, reward: "none" })).toEqual([]);
+    expect(getIslandCompletionAchievementIds("videos")).toEqual(["bonus-perfect-videos"]);
+    expect(getIslandCompletionAchievementIds("decisions")).toEqual(["bonus-perfect-decisions"]);
+    expect(getIslandCompletionAchievementIds("training")).toEqual([]);
   });
 
   it("never treats a shielded or other real error as perfect", () => {

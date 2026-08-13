@@ -123,6 +123,8 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
   }
 
   const round = pack.rounds[state.roundIndex];
+  const usesVideoLabels = round.media.kind === "video";
+  const questionKey = usesVideoLabels ? "videoSingleQuestion" : round.promptKey;
   const isCorrect = state.selectedChoiceId === round.answer;
   const isFinalRound = round.order === totalRounds;
   const feedbackBlocks = getFeedbackBlocks(round);
@@ -133,8 +135,8 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
    * which is the exact opposite of the lesson.
    */
   const answers = [
-    { id: "ai-generated", labelKey: "answerAi", Icon: Sparkles },
-    { id: "camera-captured", labelKey: "answerCamera", Icon: Camera },
+    { id: "ai-generated", labelKey: usesVideoLabels ? "videoAnswerAi" : "answerAi", Icon: Sparkles },
+    { id: "camera-captured", labelKey: usesVideoLabels ? "videoAnswerCamera" : "answerCamera", Icon: Camera },
     ...(pack.allowsUncertain ? [{ id: "unknown", labelKey: "answerUnknown", Icon: HelpCircle } as const] : [])
   ] as const;
 
@@ -155,7 +157,7 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
       <div className={styles.board} key={round.id}>
         <p className={styles.missionChip}>{chipLabel}</p>
         <h1 className={styles.question} id="single-question">
-          {t(round.promptKey)}
+          {t(questionKey)}
         </h1>
 
         {/*
@@ -164,7 +166,7 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
          */}
         <Narrator
           lines={[
-            t(round.promptKey),
+            t(questionKey),
             pack.allowsUncertain ? t("uncertainHint") : t("singleHint"),
             ...answers.map(({ labelKey }) => t(labelKey))
           ]}

@@ -33,6 +33,7 @@ describe("the pool of images", () => {
     expect(sports.length).toBeGreaterThan(0);
     expect(animals.every((item) => item.src.includes("/animals/"))).toBe(true);
     expect(sports.every((item) => item.src.includes("/sports/"))).toBe(true);
+    expect(buildCategoryRushPool("clips", contentPacks, singlePacks)).toEqual([]);
   });
 
   it("builds every Bonus hunt from its whole island, regardless of the section ticket", () => {
@@ -46,15 +47,14 @@ describe("the pool of images", () => {
     expect(fromSports).toEqual(fromAnimals);
     expect(difference.every((item) => /\/(animals|sports)\//.test(item.src))).toBe(true);
 
-    const videos = buildIslandRushPool("videos", contentPacks, singlePacks);
-    expect(videos.length).toBeGreaterThan(0);
-    expect(videos.every((item) => item.src.includes("/videos/"))).toBe(true);
+    expect(buildIslandRushPool("videos", contentPacks, singlePacks)).toEqual([]);
   });
 
-  it("has nothing to run for an island made of decisions, and says so before a Bonus is given", () => {
-    // Nothing to look at means nothing to time. The Bonus is withheld on this answer.
+  it("keeps the third and fourth islands out of Rush before any Bonus can be offered", () => {
     expect(buildIslandRushPool("decisions", contentPacks, singlePacks)).toEqual([]);
+    expect(islandHasRush("videos")).toBe(false);
     expect(islandHasRush("decisions")).toBe(false);
+    expect(islandHasRush("training")).toBe(true);
     expect(islandHasRush("difference")).toBe(true);
   });
   it("takes only authored images with a definite binary answer, from both kinds of pack", () => {

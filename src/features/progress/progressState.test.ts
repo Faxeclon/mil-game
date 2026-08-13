@@ -260,6 +260,33 @@ describe("results", () => {
     expect(failedReplay.lastResult).toMatchObject({ passed: false });
   });
 
+  it("awards the Videos island achievement once on first completion, without a Bonus ticket or Rush unlock", () => {
+    const completed = completeLevel(initialProgressState, "clips-1", completedAttempt);
+    const replayed = completeLevel(completed, "clips-1", { ...completedAttempt, attemptId: "attempt_223e4567-e89b-12d3-a456-426614174000" });
+
+    expect(completed.achievementIds).toEqual(["bonus-perfect-videos"]);
+    expect(completed.pendingAchievementCelebrationIds).toEqual(["bonus-perfect-videos"]);
+    expect(completed.bonusOpportunities).toEqual([]);
+    expect(completed.rushUnlockedIslands).not.toContain("videos");
+    expect(replayed.achievementIds).toEqual(["bonus-perfect-videos"]);
+    expect(replayed.pendingAchievementCelebrationIds).toEqual(["bonus-perfect-videos"]);
+  });
+
+  it("awards only the Deciding island achievement when its final mission completes", () => {
+    let state = initialProgressState;
+    for (const [index, levelId] of (["checking-1", "influence-1", "limits-1", "sharing-1"] as const).entries()) {
+      state = completeLevel(state, levelId, {
+        ...completedAttempt,
+        attemptId: `attempt_${index + 3}23e4567-e89b-12d3-a456-426614174000`
+      });
+    }
+
+    expect(state.achievementIds).toEqual(["bonus-perfect-decisions"]);
+    expect(state.pendingAchievementCelebrationIds).toEqual(["bonus-perfect-decisions"]);
+    expect(state.bonusOpportunities).toEqual([]);
+    expect(state.rushUnlockedIslands).not.toContain("decisions");
+  });
+
   it("stores the actual completed level id in the result", () => {
     const state = completeLevel(initialProgressState, "animals-1", completedAttempt);
 

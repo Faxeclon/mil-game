@@ -1,5 +1,5 @@
 import type { SinglePack, TutorialPack } from "@/content/schemas/tutorial";
-import type { CategoryKey, IslandKey } from "@/features/levels/levelModel";
+import { getIslandOfCategory, islandSupportsBonus, type CategoryKey, type IslandKey } from "@/features/levels/levelModel";
 import { getPlayableCategories, getPlayableMissions } from "@/features/levels/levelProgress";
 import type { BonusWheelReward } from "@/features/bonus/bonusOpportunity";
 
@@ -145,6 +145,7 @@ export function buildIslandRushPool(
   comparePacks: Readonly<Record<string, TutorialPack>>,
   singlePacks: Readonly<Record<string, SinglePack>>
 ): RushItem[] {
+  if (!islandHasRush(island)) return [];
   const packIds = getPlayableCategories(island)
     .flatMap((category) => getPlayableMissions(category.key))
     .map((mission) => mission.packId)
@@ -159,15 +160,15 @@ export function buildIslandRushPool(
 /**
  * Whether an island has anything to run against a clock.
  *
- * The deciding island does not: its missions ask what a child would do about a situation
- * and there is no picture in them, so its pool comes out empty. Awarding its Bonus would
- * hand out a ticket to a Rush with nothing to show.
+ * Videos and Deciding do not: their learning goals should not be turned into a speed
+ * challenge. This is authored in the island model, rather than guessed from whether a
+ * mission happens to contain media.
  *
  * Answered from the catalog rather than from the packs, so a caller does not have to pull
  * every image manifest into its bundle to ask a question about the map.
  */
 export function islandHasRush(island: IslandKey): boolean {
-  return getPlayableCategories(island)
+  return islandSupportsBonus(island) && getPlayableCategories(island)
     .flatMap((category) => getPlayableMissions(category.key))
     .some((mission) => mission.mode !== "decision");
 }
@@ -181,6 +182,8 @@ export function buildCategoryRushPool(
   comparePacks: Readonly<Record<string, TutorialPack>>,
   singlePacks: Readonly<Record<string, SinglePack>>
 ): RushItem[] {
+  const island = getIslandOfCategory(category);
+  if (!island || !islandHasRush(island)) return [];
   const packIds = getPlayableMissions(category)
     .map((mission) => mission.packId)
     .filter((packId): packId is string => Boolean(packId));
