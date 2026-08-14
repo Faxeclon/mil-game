@@ -112,7 +112,8 @@ describe("tutorial interface messages", () => {
     "stepCompleted",
     "completionTitle",
     "completionDescription",
-    "replay"
+    "replay",
+    "singleOriginFraming"
   ];
 
   it("provides every briefing, answer-state and completion string in both languages", () => {
@@ -120,6 +121,15 @@ describe("tutorial interface messages", () => {
       expect(hasNestedKey(spanishMessages.tutorial, key)).toBe(true);
       expect(hasNestedKey(englishMessages.tutorial, key)).toBe(true);
     }
+  });
+
+  it("frames each single-media mission with the localized source reminder", () => {
+    expect(spanishMessages.tutorial.singleOriginFraming).toBe(
+      "Solo mirar no siempre basta. En Kikiria sabemos de dónde salió cada imagen o video."
+    );
+    expect(englishMessages.tutorial.singleOriginFraming).toBe(
+      "Looking alone isn't always enough. In Kikiria, we know where each image or video came from."
+    );
   });
 
   it("uses singular, plural, warning, and expiry countdown copy in both languages", () => {

@@ -56,6 +56,29 @@ describe("final level feedback", () => {
     }
   });
 
+  it("keeps feedback tied to the current final-media scenes", () => {
+    const spanishFeedback = JSON.stringify({ packs: spanishMessages.tutorial.packs, rounds: spanishMessages.tutorial.rounds });
+    const englishFeedback = JSON.stringify({ packs: englishMessages.tutorial.packs, rounds: englishMessages.tutorial.rounds });
+
+    expect(spanishFeedback).toContain("Una imagen de una emergencia necesita contexto.");
+    expect(spanishFeedback).toContain("Mira qué sostiene la ardilla y dónde está.");
+    expect(spanishFeedback).toContain("Fíjate en el salto y en los obstáculos.");
+    expect(spanishFeedback).toContain("Esta escena es poco común. ¿Habrá ocurrido de verdad?");
+    expect(spanishFeedback).not.toContain("Un sello visible no confirma el origen.");
+    expect(spanishFeedback).not.toContain("Que sea viral no la vuelve verdadera.");
+    expect(spanishFeedback).not.toContain("Que Messi aparezca ahí no prueba que ese momento ocurrió.");
+    expect(spanishFeedback).not.toContain("Mira la acción y los balones en toda la escena.");
+
+    expect(englishFeedback).toContain("An emergency image needs context.");
+    expect(englishFeedback).toContain("Look at what the squirrel is holding and where it is.");
+    expect(englishFeedback).toContain("Look at the jump and the obstacles.");
+    expect(englishFeedback).toContain("This scene is unusual. Did it really happen?");
+    expect(englishFeedback).not.toContain("A visible stamp does not confirm the origin.");
+    expect(englishFeedback).not.toContain("Being viral does not make it true.");
+    expect(englishFeedback).not.toContain("Seeing Messi there does not prove that moment happened.");
+    expect(englishFeedback).not.toContain("Look at the action and balls across the whole scene.");
+  });
+
   it("uses the localized Settings label and icon in the desktop header", async () => {
     expect(spanishMessages.header.settings).toBe("Configuración");
     expect(englishMessages.header.settings).toBe("Settings");

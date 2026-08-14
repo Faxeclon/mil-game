@@ -154,6 +154,7 @@
     "videoAnswerCamera": "Recorded with a camera",
     "answerUnknown": "You cannot tell",
     "singleHint": "There is nothing to compare it with. Take your time.",
+    "singleOriginFraming": "Looking alone isn't always enough. In Kikiria, we know where each image or video came from.",
     "uncertainHint": "Careful: sometimes the right answer is that looking is not enough to know.",
     "singleCorrect": "Well spotted!",
     "singleWrong": "Close. Look again.",
@@ -245,12 +246,12 @@
     "packs": {
       "cityTimed": {
         "r1": {
-          "observation": "Seeing someone famous does not make the image real.",
-          "remember": "Find out where it came from."
+          "observation": "The scene may surprise you, but that proves nothing.",
+          "remember": "Check the context before deciding."
         },
         "r2": {
-          "question": "Being viral does not make it true.",
-          "remember": "Check who posted the meme and why."
+          "question": "A strange scene can make you wonder.",
+          "remember": "Looking strange isn't enough. Check its source."
         },
         "r3": {
           "verification": "A scene looking possible does not prove it happened.",
@@ -259,12 +260,12 @@
       },
       "animalsCompare": {
         "r1": {
-          "observation": "Compare how the animal and setting fit together.",
-          "remember": "A visual clue needs more context."
+          "observation": "Does anything about the sheep's face stand out?",
+          "remember": "An odd detail can be a clue, not proof."
         },
         "r2": {
-          "question": "Look at how the animal and objects interact.",
-          "remember": "Coherence helps, but it is not enough alone."
+          "question": "Look at what the squirrel is holding and where it is.",
+          "remember": "Even if everything fits, that doesn't confirm the source."
         },
         "r3": {
           "verification": "Check the background, water, and pose together.",
@@ -277,7 +278,7 @@
           "remember": "The whole scene matters more than one detail."
         },
         "r2": {
-          "question": "Do the landscape and pose fit together?",
+          "question": "Look at the jump and the obstacles.",
           "remember": "Check the image source too."
         },
         "r3": {
@@ -301,30 +302,30 @@
       },
       "sportsCompare": {
         "r1": {
-          "observation": "Seeing Messi there does not prove that moment happened.",
-          "remember": "Look for other evidence."
+          "observation": "This scene is unusual. Did it really happen?",
+          "remember": "If you're unsure, look for something that confirms the moment."
         },
         "r2": {
-          "question": "Recognizing someone in an image is not enough.",
-          "remember": "Check whether person, sport, and context fit."
+          "question": "Check whether the uniform, team and scene fit together.",
+          "remember": "Then check whether that moment really happened."
         },
         "r3": {
-          "verification": "Look at the action and balls across the whole scene.",
-          "remember": "That mismatch is a clue, not proof."
+          "verification": "Check whether the players, action and scene fit together.",
+          "remember": "An inconsistency is a clue, not proof."
         }
       },
       "sportsSingle": {
         "r1": {
-          "observation": "Look at the whole scene, not only the runner.",
-          "remember": "A detail that does not fit can raise questions, but AI images can look correct too. Check the source."
+          "observation": "Not every real image has an obvious clue.",
+          "remember": "Looking alone isn't always enough to know its origin."
         },
         "r2": {
-          "question": "Why would this be shown to you?",
-          "remember": "An image always comes from someone with a purpose."
+          "question": "Look at the board and body position during the trick.",
+          "remember": "If something looks odd, it's a clue, not proof. Check the source."
         },
         "r3": {
-          "verification": "Before sharing it, find who published it first.",
-          "remember": "Sharing without checking is part of the problem too."
+          "verification": "An incredible scene can still be real.",
+          "remember": "Check its source before deciding."
         }
       },
       "clipsSingle": {
@@ -349,8 +350,8 @@
         "remember": "Look for more than one clue before deciding."
       },
       "round2": {
-        "question": "A visible stamp does not confirm the origin.",
-        "remember": "Check who posted the image and when."
+        "question": "An emergency image needs context.",
+        "remember": "Check where and when it appeared."
       },
       "round3": {
         "verification": "An everyday scene can also be made with AI.",

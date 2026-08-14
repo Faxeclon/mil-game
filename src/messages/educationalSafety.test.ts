@@ -104,15 +104,13 @@ describe("active educational feedback", () => {
   it("teaches that a visually ordinary or correct image can still be AI-generated", () => {
     expect(english.tutorial.rounds.round3.verification).toContain("can also be made with AI");
     expect(spanish.tutorial.rounds.round3.verification).toContain("tambi\u00e9n puede ser creada con IA");
-    expect(english.tutorial.packs.sportsSingle.r1.remember).toContain("can look correct too");
-    expect(spanish.tutorial.packs.sportsSingle.r1.remember).toContain("puede verse correcta");
   });
 
   it("points children to evidence beyond appearance where those checks are available", () => {
     expect(english.tutorial.packs.cityTimed.r3.remember).toContain("evidence beyond the image");
     expect(spanish.tutorial.packs.cityTimed.r3.remember).toContain("evidencia fuera de la imagen");
-    expect(english.tutorial.packs.sportsSingle.r1.remember).toContain("Check the source");
-    expect(spanish.tutorial.packs.sportsSingle.r1.remember).toContain("Revisa la fuente");
+    expect(english.tutorial.packs.sportsSingle.r1.remember).toContain("isn't always enough");
+    expect(spanish.tutorial.packs.sportsSingle.r1.remember).toContain("no siempre basta");
   });
 
   it("keeps the zoom hint as a clue rather than a visual verdict", () => {

@@ -55,14 +55,18 @@ export default async function LevelPage({ params }: LevelPageProps) {
   if (!mission || (!pack && !singlePack && !decisionPack)) notFound();
 
   const t = await getTranslations("islands");
+  const tutorial = await getTranslations("tutorial");
   const chipLabel = `${t(`categories.${mission.category}.title`)} · ${t("missionNumber", { number: mission.order })}`;
   const entryTitle = t(`modes.${mission.mode}`);
-  const entryMeta = [
-    t(`difficulty.${getLevelDifficulty(mission.mode)}`),
-    isTimedMode(mission.mode) ? t("secondsPerRound", { seconds: mission.secondsPerRound ?? 0 }) : null
-  ]
-    .filter(Boolean)
-    .join(" · ");
+  const entryMeta =
+    mission.mode === "single"
+      ? tutorial("singleOriginFraming")
+      : [
+          t(`difficulty.${getLevelDifficulty(mission.mode)}`),
+          isTimedMode(mission.mode) ? t("secondsPerRound", { seconds: mission.secondsPerRound ?? 0 }) : null
+        ]
+          .filter(Boolean)
+          .join(" · ");
 
   return (
     <main id="main-content">

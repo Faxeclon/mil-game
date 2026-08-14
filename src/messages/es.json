@@ -154,6 +154,7 @@
     "videoAnswerCamera": "Grabado con cámara",
     "answerUnknown": "No se puede saber",
     "singleHint": "Aquí no hay con qué compararla. Mírala con calma.",
+    "singleOriginFraming": "Solo mirar no siempre basta. En Kikiria sabemos de dónde salió cada imagen o video.",
     "uncertainHint": "Ojo: a veces la respuesta correcta es que no se puede saber solo mirando.",
     "singleCorrect": "¡Bien visto!",
     "singleWrong": "Casi. Mira otra vez.",
@@ -245,12 +246,12 @@
     "packs": {
       "cityTimed": {
         "r1": {
-          "observation": "Que aparezca alguien famoso no hace real la imagen.",
-          "remember": "Busca de dónde salió."
+          "observation": "La escena puede sorprenderte, pero eso no prueba nada.",
+          "remember": "Busca el contexto antes de decidir."
         },
         "r2": {
-          "question": "Que sea viral no la vuelve verdadera.",
-          "remember": "Revisa quién publicó el meme y por qué."
+          "question": "Una escena rara puede hacerte dudar.",
+          "remember": "Que parezca extraña no basta: busca su origen."
         },
         "r3": {
           "verification": "Que una escena parezca posible no demuestra que ocurrió.",
@@ -259,12 +260,12 @@
       },
       "animalsCompare": {
         "r1": {
-          "observation": "Compara cómo encajan el animal y el entorno.",
-          "remember": "Una pista visual necesita más contexto."
+          "observation": "¿Algo en la cara de la oveja te llama la atención?",
+          "remember": "Un detalle raro puede ser una pista, no una prueba."
         },
         "r2": {
-          "question": "Mira cómo interactúan el animal y los objetos.",
-          "remember": "La coherencia ayuda, pero no basta sola."
+          "question": "Mira qué sostiene la ardilla y dónde está.",
+          "remember": "Que todo encaje ayuda, pero no confirma el origen."
         },
         "r3": {
           "verification": "Revisa fondo, agua y postura como conjunto.",
@@ -277,7 +278,7 @@
           "remember": "El conjunto cuenta más que un detalle."
         },
         "r2": {
-          "question": "¿El paisaje y la postura encajan juntos?",
+          "question": "Fíjate en el salto y en los obstáculos.",
           "remember": "Busca también la fuente de la imagen."
         },
         "r3": {
@@ -301,30 +302,30 @@
       },
       "sportsCompare": {
         "r1": {
-          "observation": "Que Messi aparezca ahí no prueba que ese momento ocurrió.",
-          "remember": "Busca otra evidencia."
+          "observation": "Esta escena es poco común. ¿Habrá ocurrido de verdad?",
+          "remember": "Si dudas, busca algo que confirme el momento."
         },
         "r2": {
-          "question": "No basta reconocer a alguien en la imagen.",
-          "remember": "Revisa si persona, deporte y contexto encajan."
+          "question": "Mira si el uniforme, el equipo y la escena encajan.",
+          "remember": "Después, comprueba si ese momento ocurrió."
         },
         "r3": {
-          "verification": "Mira la acción y los balones en toda la escena.",
-          "remember": "Esa incoherencia es una pista, no una prueba."
+          "verification": "Mira si los jugadores, la acción y la escena encajan.",
+          "remember": "Una incoherencia es una pista, no una prueba."
         }
       },
       "sportsSingle": {
         "r1": {
-          "observation": "Fíjate en toda la escena, no solo en la persona que corre.",
-          "remember": "Un detalle que no encaja puede hacerte dudar, pero una imagen de IA también puede verse correcta. Revisa la fuente."
+          "observation": "No todas las imágenes reales tienen una pista evidente.",
+          "remember": "Solo mirar no siempre basta para saber su origen."
         },
         "r2": {
-          "question": "¿Por qué te la estarían mostrando a ti?",
-          "remember": "Una imagen siempre viene de alguien con una intención."
+          "question": "Fíjate en la posición de la tabla y del cuerpo durante el truco.",
+          "remember": "Si algo se ve raro, es una pista, no una prueba. Revisa el origen."
         },
         "r3": {
-          "verification": "Antes de compartirla, busca quién la publicó primero.",
-          "remember": "Compartir sin comprobar también es parte del problema."
+          "verification": "Una escena increíble también puede ser real.",
+          "remember": "Busca su origen antes de decidir."
         }
       },
       "clipsSingle": {
@@ -349,8 +350,8 @@
         "remember": "Busca más de una pista antes de decidir."
       },
       "round2": {
-        "question": "Un sello visible no confirma el origen.",
-        "remember": "Busca quién publicó la imagen y cuándo."
+        "question": "Una imagen de una emergencia necesita contexto.",
+        "remember": "Busca dónde y cuándo apareció."
       },
       "round3": {
         "verification": "Una escena cotidiana también puede ser creada con IA.",
