@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronLeft, Lightbulb, MessageSquareWarning, Sparkles, X } from "lucide-react";
+import { Check, ChevronLeft, Lightbulb, MessageSquareWarning, X } from "lucide-react";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { playSound } from "@/features/audio/soundEffects";
@@ -15,6 +15,7 @@ import { useProgress } from "@/features/progress/ProgressProvider";
 import { getResultsAttemptPath } from "@/features/results/resultNavigation";
 import { calculateLevelScore, type RoundOutcome } from "@/features/scoring/levelScore";
 import { Link, useRouter } from "@/i18n/navigation";
+import { preloadFeedbackRoqui } from "@/features/mascot/feedbackRoqui";
 import styles from "./DecisionClient.module.css";
 
 type DecisionClientProps = {
@@ -92,6 +93,10 @@ export function DecisionClient({ pack, levelId, chipLabel, showBriefing = false 
     completeLevel(levelId, attempt);
     router.replace(getResultsAttemptPath(attempt.attemptId));
   }, [completeLevel, correctCount, finished, levelId, outcomes, responseTimer, router, total]);
+
+  useEffect(() => {
+    preloadFeedbackRoqui();
+  }, []);
 
   if (finished) {
     return (
@@ -263,6 +268,7 @@ export function DecisionClient({ pack, levelId, chipLabel, showBriefing = false 
                     styles.option,
                     isChosen ? styles.optionChosen : "",
                     answered && isAnswer ? styles.optionRight : "",
+                    answered && isRight && isAnswer ? styles.optionSuccess : "",
                     answered && isChosen && !isAnswer ? styles.optionMiss : ""
                   ]
                     .filter(Boolean)
@@ -311,12 +317,16 @@ export function DecisionClient({ pack, levelId, chipLabel, showBriefing = false 
           </button>
         ) : (
           <div className={`${styles.feedback} ${isRight ? styles.feedbackRight : styles.feedbackMiss}`} role="status">
-            <p className={styles.verdict}>
-              <span aria-hidden="true" className={styles.verdictMark}>
-                {isRight ? <Sparkles size={16} strokeWidth={2.6} /> : <X size={16} strokeWidth={3} />}
-              </span>
-              {isRight ? t("right") : t("wrong")}
-            </p>
+            <header className={styles.feedbackHeader}>
+              <Image
+                alt=""
+                className={styles.feedbackRoqui}
+                height={64}
+                src={isRight ? "/media/ui/roqui-feedback/roqui-success.png" : "/media/ui/roqui-feedback/roqui-oops.png"}
+                width={64}
+              />
+              <p className={styles.verdict}>{isRight ? t("right") : t("wrong")}</p>
+            </header>
             {!isRight && answer && <p className={styles.best}>{t(answer.labelKey)}</p>}
             <p className={styles.remember}>
               <Lightbulb aria-hidden="true" size={15} />

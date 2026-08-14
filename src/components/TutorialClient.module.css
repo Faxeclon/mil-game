@@ -621,6 +621,12 @@
   animation: cardPulse 420ms var(--t-ease) 1;
 }
 
+.cardSuccess {
+  border-color: var(--t-mint);
+  box-shadow: var(--t-shadow), 0 0 0 3px color-mix(in srgb, var(--t-mint) 25%, transparent);
+  animation: cardSuccessPop 420ms var(--t-ease) 1;
+}
+
 .cardMistake {
   border-color: var(--t-coral);
   box-shadow: var(--t-shadow), 0 0 0 2px var(--t-coral);
@@ -752,17 +758,6 @@
   font-weight: 600;
 }
 
-.confirmedStatus {
-  width: fit-content;
-  margin: 1.1rem auto 0;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  color: var(--t-ink-soft);
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
 /* ---------------------------------------------------------- Feedback panel */
 
 .gameplayFeedback .board {
@@ -803,28 +798,33 @@
   gap: 0.55rem;
 }
 
-/* Roqui reacts to the answer; the ring colour reinforces the mood. */
-.reaction {
-  width: 2.7rem;
+/* The feedback pose gives the result a consistent, compact visual cue. */
+.feedbackRoqui {
+  width: 3.25rem;
+  height: 3.25rem;
   flex: 0 0 auto;
-  border: 2px solid transparent;
-  box-shadow: 0 0 0 2px var(--t-paper);
-}
-
-.reactionCorrect {
-  border-color: var(--t-mint);
-}
-
-.reactionRetry {
-  border-color: var(--t-amber);
+  object-fit: contain;
 }
 
 .panelTitle {
   min-width: 0;
   margin: 0;
+  color: var(--t-ink);
   font-size: 1.08rem;
   font-weight: 800;
   letter-spacing: -0.02em;
+}
+
+.panelCorrect .panelTitle {
+  animation: feedbackTitleCorrect 680ms var(--t-ease) 1;
+}
+
+.panelRetry .panelTitle {
+  animation: feedbackTitleRetry 680ms var(--t-ease) 1;
+}
+
+.panelCorrect .feedbackRoqui {
+  animation: feedbackRoquiSuccess 420ms var(--t-ease) 1;
 }
 
 .panel > ol {
@@ -1066,6 +1066,57 @@
   }
 }
 
+@keyframes cardSuccessPop {
+  0% {
+    transform: scale(1);
+  }
+  48% {
+    transform: scale(1.025);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes feedbackTitleCorrect {
+  0%,
+  90% {
+    color: var(--t-mint);
+    text-shadow: 0 0 0.75rem color-mix(in srgb, var(--t-mint) 42%, transparent);
+    transform: scale(1.025);
+  }
+  100% {
+    color: var(--t-ink);
+    text-shadow: none;
+    transform: scale(1);
+  }
+}
+
+@keyframes feedbackTitleRetry {
+  0%,
+  90% {
+    color: var(--t-coral);
+    text-shadow: 0 0 0.75rem color-mix(in srgb, var(--t-coral) 38%, transparent);
+    transform: scale(1.02);
+  }
+  100% {
+    color: var(--t-ink);
+    text-shadow: none;
+    transform: scale(1);
+  }
+}
+
+@keyframes feedbackRoquiSuccess {
+  from {
+    opacity: 0.7;
+    transform: translateY(0.15rem) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @keyframes badgeIn {
   from {
     opacity: 0;
@@ -1172,10 +1223,16 @@
 @media (prefers-reduced-motion: reduce) {
   .board,
   .cardAi,
+  .cardSuccess,
   .cardMistake,
   .selectedMark,
   .panel,
   .completionBadge {
+    animation: none;
+  }
+
+  .panelTitle,
+  .feedbackRoqui {
     animation: none;
   }
 

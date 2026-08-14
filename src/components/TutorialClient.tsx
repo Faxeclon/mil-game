@@ -8,6 +8,7 @@ import { playSound } from "@/features/audio/soundEffects";
 import { Narrator } from "@/components/Narrator";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
+import { preloadFeedbackRoqui } from "@/features/mascot/feedbackRoqui";
 import { ActiveResponseTimer } from "@/features/game/activeResponseTimer";
 import {
   createRoundDeadline,
@@ -239,6 +240,10 @@ export function TutorialClient({
     router.replace(getResultsAttemptPath(attempt.attemptId));
   }, [attemptScore, completeLevel, correctRounds, isFinished, levelId, responseTimer, router, totalRounds]);
 
+  useEffect(() => {
+    preloadFeedbackRoqui();
+  }, []);
+
   if (state.status === "intro" && !showBriefing) {
     /*
      * Every mission announces itself before it starts, so a child always knows what they
@@ -333,6 +338,7 @@ export function TutorialClient({
   const round = pack.rounds[state.roundIndex];
   const selectedChoice = round.choices.find((choice) => choice.id === state.selectedChoiceId);
   const selectedIsCorrect = selectedChoice?.id === round.correctChoiceId;
+
   const isFinalRound = round.order === pack.rounds.length;
   const feedbackBlocks = getFeedbackBlocks(round);
   const countdownForRound = countdown?.roundId === round.id ? countdown : null;
@@ -436,6 +442,7 @@ export function TutorialClient({
               const className = [
                 styles.card,
                 cardStateClass[presentation.state],
+                state.answerSubmitted && selectedIsCorrect && isAiChoice ? styles.cardSuccess : "",
                 state.answerSubmitted ? styles.cardLocked : ""
               ]
                 .filter(Boolean)
@@ -530,12 +537,7 @@ export function TutorialClient({
             })}
           </div>
 
-          {state.answerSubmitted ? (
-            <p className={styles.confirmedStatus}>
-              <Check aria-hidden="true" size={15} strokeWidth={3} />
-              {t("answerConfirmed")}
-            </p>
-          ) : (
+          {!state.answerSubmitted && (
             <div className={styles.actions}>
               <p>{state.selectedChoiceId === null ? t("selectPrompt") : t("selectedHint")}</p>
               <button
@@ -573,13 +575,20 @@ export function TutorialClient({
 
         {state.answerSubmitted && (
           <div className={styles.panelDock}>
-            <section aria-labelledby="feedback-title" aria-live="polite" className={styles.panel} ref={feedbackRef} tabIndex={-1}>
+            <section
+              aria-labelledby="feedback-title"
+              aria-live="polite"
+              className={`${styles.panel} ${selectedIsCorrect ? styles.panelCorrect : styles.panelRetry}`}
+              ref={feedbackRef}
+              tabIndex={-1}
+            >
               <header className={styles.panelHeader}>
-                <MascotSlot
+                <Image
                   alt=""
-                  className={`${styles.reaction} ${selectedIsCorrect ? styles.reactionCorrect : styles.reactionRetry}`}
-                  mood={selectedIsCorrect ? "encouraging" : "thinking"}
-                  size={96}
+                  className={styles.feedbackRoqui}
+                  height={64}
+                  src={selectedIsCorrect ? "/media/ui/roqui-feedback/roqui-success.png" : "/media/ui/roqui-feedback/roqui-oops.png"}
+                  width={64}
                 />
                 <p className={styles.panelTitle} id="feedback-title">
                   {selectedIsCorrect ? t("correct") : t("tryAgain")}

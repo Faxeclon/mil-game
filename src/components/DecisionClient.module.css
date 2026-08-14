@@ -447,6 +447,11 @@
   color: #fff;
 }
 
+.optionSuccess {
+  box-shadow: var(--d-shadow), 0 0 0 3px color-mix(in srgb, var(--d-right) 25%, transparent);
+  animation: option-success-pop 420ms ease-out 1;
+}
+
 .optionMiss {
   border-color: var(--d-miss);
   background: var(--d-miss-soft);
@@ -546,6 +551,19 @@
   border-color: var(--d-miss);
 }
 
+.feedbackHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.feedbackRoqui {
+  width: 3.25rem;
+  height: 3.25rem;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
 .verdict {
   margin: 0;
   display: flex;
@@ -555,23 +573,67 @@
   font-weight: 800;
 }
 
-.verdictMark {
-  width: 1.7rem;
-  height: 1.7rem;
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  color: #fff;
+.feedbackRight .verdict {
+  animation: feedback-title-right 680ms ease-out 1;
 }
 
-.feedbackRight .verdictMark {
-  background: var(--d-right);
+.feedbackMiss .verdict {
+  animation: feedback-title-miss 680ms ease-out 1;
 }
 
-.feedbackMiss .verdictMark {
-  background: var(--d-miss);
+.feedbackRight .feedbackRoqui {
+  animation: feedback-roqui-success 420ms ease-out 1;
+}
+
+@keyframes feedback-title-right {
+  0%,
+  90% {
+    color: var(--d-right);
+    text-shadow: 0 0 0.75rem color-mix(in srgb, var(--d-right) 42%, transparent);
+    transform: scale(1.025);
+  }
+  100% {
+    color: var(--d-ink);
+    text-shadow: none;
+    transform: scale(1);
+  }
+}
+
+@keyframes feedback-title-miss {
+  0%,
+  90% {
+    color: var(--d-miss);
+    text-shadow: 0 0 0.75rem color-mix(in srgb, var(--d-miss) 38%, transparent);
+    transform: scale(1.02);
+  }
+  100% {
+    color: var(--d-ink);
+    text-shadow: none;
+    transform: scale(1);
+  }
+}
+
+@keyframes option-success-pop {
+  0% {
+    transform: scale(1);
+  }
+  48% {
+    transform: scale(1.025);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes feedback-roqui-success {
+  from {
+    opacity: 0.7;
+    transform: translateY(0.15rem) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .best {
@@ -627,7 +689,14 @@
   .feedback,
   .optionWhy,
   .bubble,
-  .mascot {
+  .mascot,
+  .optionSuccess,
+  .verdict,
+  .feedbackRoqui {
+    animation: none;
+  }
+
+  .verdict {
     animation: none;
   }
 

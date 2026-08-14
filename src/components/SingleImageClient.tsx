@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useReducer, useRef, useState } from "react";
 import { Camera, Check, ChevronLeft, HelpCircle, Sparkles, Target } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -8,6 +9,7 @@ import { Narrator } from "@/components/Narrator";
 import { RoundMedia } from "@/components/RoundMedia";
 import { LookAskCheck } from "@/components/LookAskCheck";
 import { MascotSlot } from "@/features/mascot/MascotSlot";
+import { preloadFeedbackRoqui } from "@/features/mascot/feedbackRoqui";
 import type { SinglePack } from "@/content/schemas/tutorial";
 import { ActiveResponseTimer } from "@/features/game/activeResponseTimer";
 import { createInitialTutorialState, tutorialReducer } from "@/features/game/tutorialState";
@@ -64,6 +66,10 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
   const isPlaying = state.status === "playing";
   const activeRoundId = isPlaying ? pack.rounds[state.roundIndex].id : null;
   const answerSubmitted = isPlaying ? state.answerSubmitted : false;
+
+  useEffect(() => {
+    preloadFeedbackRoqui();
+  }, []);
 
   useEffect(() => {
     if (!answerSubmitted || !feedbackRef.current) return;
@@ -192,20 +198,7 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
           <ImageZoom alt={t(round.media.altKey)} kind={round.media.kind} src={round.media.src} />
         </figure>
 
-        {state.answerSubmitted ? (
-          <p className={isCorrect ? styles.verdictRight : styles.verdictWrong}>
-            {isCorrect ? <Check aria-hidden="true" size={15} strokeWidth={3} /> : <Target aria-hidden="true" size={15} />}
-            {/* Getting an unknowable image right deserves its own praise: saying "you
-                cannot tell" is the hardest answer to give, not a lucky guess. */}
-            {round.answer === "unknown"
-              ? isCorrect
-                ? t("uncertainCorrect")
-                : t("uncertainMissed")
-              : isCorrect
-                ? t("singleCorrect")
-                : t("singleWrong")}
-          </p>
-        ) : (
+        {!state.answerSubmitted && (
           <p className={styles.hint}>{pack.allowsUncertain ? t("uncertainHint") : t("singleHint")}</p>
         )}
 
@@ -218,6 +211,7 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
               styles.answer,
               selected && !revealed ? styles.answerSelected : "",
               revealed && isTruth ? styles.answerTruth : "",
+              revealed && isCorrect && isTruth ? styles.answerSuccess : "",
               revealed && selected && !isTruth ? styles.answerMistake : ""
             ]
               .filter(Boolean)
@@ -241,10 +235,25 @@ export function SingleImageClient({ pack, levelId, chipLabel, entryTitle, entryM
         </div>
 
         {state.answerSubmitted ? (
-          <section aria-labelledby="single-feedback" aria-live="polite" className={styles.panel} ref={feedbackRef} tabIndex={-1}>
-            <p className={styles.panelTitle} id="single-feedback">
+          <section
+            aria-labelledby="single-feedback"
+            aria-live="polite"
+            className={`${styles.panel} ${isCorrect ? styles.panelCorrect : styles.panelRetry}`}
+            ref={feedbackRef}
+            tabIndex={-1}
+          >
+            <header className={styles.panelHeader}>
+              <Image
+                alt=""
+                className={styles.feedbackRoqui}
+                height={64}
+                src={isCorrect ? "/media/ui/roqui-feedback/roqui-success.png" : "/media/ui/roqui-feedback/roqui-oops.png"}
+                width={64}
+              />
+              <p className={styles.panelTitle} id="single-feedback">
               {isCorrect ? t("correct") : t("tryAgain")}
-            </p>
+              </p>
+            </header>
             <LookAskCheck compact states={getLearningStepStates(round.learningGoal)} />
             <div className={styles.panelBody}>
               {feedbackBlocks.map((block) => (

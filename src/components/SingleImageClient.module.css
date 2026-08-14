@@ -123,28 +123,6 @@
   line-height: 1.35;
 }
 
-.verdictRight,
-.verdictWrong {
-  margin: 0;
-  padding: 0.3rem 0.85rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  border-radius: 999px;
-  font-size: 0.88rem;
-  font-weight: 800;
-}
-
-.verdictRight {
-  background: var(--g-mint-soft);
-  color: var(--g-mint);
-}
-
-.verdictWrong {
-  background: var(--g-accent-soft);
-  color: var(--g-accent-ink);
-}
-
 /* ---------------------------------------------------------------- Answers */
 
 /* Two answers sit side by side; a third stretches across, so none is ever cramped. */
@@ -198,6 +176,11 @@
   color: var(--g-mint);
 }
 
+.answerSuccess {
+  animation: answerSuccessPop 420ms var(--g-ease) 1;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--g-mint) 25%, transparent);
+}
+
 /* Dashed, so being wrong is legible without depending on the red. */
 .answerMistake {
   border-style: dashed;
@@ -221,10 +204,36 @@
   scroll-margin-block: 1rem;
 }
 
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.feedbackRoqui {
+  width: 3.25rem;
+  height: 3.25rem;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
 .panelTitle {
   margin: 0;
+  color: var(--g-ink);
   font-size: 1.05rem;
   font-weight: 800;
+}
+
+.panelCorrect .panelTitle {
+  animation: feedbackTitleCorrect 680ms var(--g-ease) 1;
+}
+
+.panelRetry .panelTitle {
+  animation: feedbackTitleRetry 680ms var(--g-ease) 1;
+}
+
+.panelCorrect .feedbackRoqui {
+  animation: feedbackRoquiSuccess 420ms var(--g-ease) 1;
 }
 
 .panelBody {
@@ -277,6 +286,57 @@
 .primaryButton:focus-visible {
   outline: 3px solid var(--g-accent-strong);
   outline-offset: 3px;
+}
+
+@keyframes feedbackTitleCorrect {
+  0%,
+  90% {
+    color: var(--g-mint);
+    text-shadow: 0 0 0.75rem color-mix(in srgb, var(--g-mint) 42%, transparent);
+    transform: scale(1.025);
+  }
+  100% {
+    color: var(--g-ink);
+    text-shadow: none;
+    transform: scale(1);
+  }
+}
+
+@keyframes feedbackTitleRetry {
+  0%,
+  90% {
+    color: var(--g-accent-ink);
+    text-shadow: 0 0 0.75rem color-mix(in srgb, var(--g-accent) 38%, transparent);
+    transform: scale(1.02);
+  }
+  100% {
+    color: var(--g-ink);
+    text-shadow: none;
+    transform: scale(1);
+  }
+}
+
+@keyframes answerSuccessPop {
+  0% {
+    transform: scale(1);
+  }
+  48% {
+    transform: scale(1.025);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes feedbackRoquiSuccess {
+  from {
+    opacity: 0.7;
+    transform: translateY(0.15rem) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* ------------------------------------------------------------------ Entry */
@@ -358,9 +418,13 @@
 
 @media (prefers-reduced-motion: reduce) {
   .answer,
+  .answerSuccess,
   .primaryButton,
-  .progressTrack span {
+  .progressTrack span,
+  .panelTitle,
+  .feedbackRoqui {
     transition: none;
+    animation: none;
   }
 
   .answer:hover:not(:disabled),
