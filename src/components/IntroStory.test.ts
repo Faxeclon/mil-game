@@ -12,9 +12,13 @@ describe("IntroStory", () => {
     const component = await readFile(componentPath, "utf8");
 
     expect(component).toContain('className={styles.skip}');
-    expect(component).toContain('onClick={onComplete}');
+    expect(component).toContain("event.stopPropagation(); onComplete();");
     expect(component).toContain('className={styles.finish}');
     expect(component).toContain('onClick={advance}');
+    expect(component).toContain("new window.Image()");
+    expect(component).toContain("loadingNextScene");
+    expect(component).toContain("onClick={advanceFromStorySurface}");
+    expect(component).toContain("isFinalBeat ? (");
   });
 
   it("keeps the story copy complete in Spanish and English", () => {
@@ -24,6 +28,7 @@ describe("IntroStory", () => {
       expect(messages.introStory.scene5Question).toBeTruthy();
       expect(messages.introStory.scene5Ask).toBeTruthy();
       expect(messages.introStory.finish).toBeTruthy();
+      expect(messages.introStory.loading).toBeTruthy();
     }
   });
 

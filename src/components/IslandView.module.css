@@ -17,7 +17,7 @@
 
   width: min(100%, 40rem);
   margin: 0 auto;
-  padding-bottom: 3rem;
+  padding-bottom: calc(3rem + env(safe-area-inset-bottom));
   color: var(--i-ink);
 }
 .island::before {

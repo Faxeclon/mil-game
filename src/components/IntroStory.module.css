@@ -17,6 +17,27 @@
   pointer-events: none;
 }
 
+.loading {
+  position: absolute;
+  right: 1rem;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  left: 1rem;
+  margin: 0 auto;
+  color: rgb(255 255 255 / 88%);
+  font-size: .9rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.transition {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background: #10182a;
+  animation: transitionIn 160ms ease-out both;
+  pointer-events: none;
+}
+
 .visual {
   z-index: -3;
   background: var(--story-image) center center / cover no-repeat;
@@ -86,8 +107,12 @@
 .continueMark { flex: 0 0 auto; color: #d64716; font-size: 0.72rem; animation: nudge 1.2s ease-in-out infinite; }
 
 .finish {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   min-height: 2.9rem;
-  margin-top: 0.9rem;
+  width: fit-content;
+  margin: 0.9rem auto 0;
   padding: 0.55rem 1.2rem;
   border: 0;
   border-radius: 999px;
@@ -99,6 +124,8 @@
   letter-spacing: 0.04em;
 }
 
+@keyframes transitionIn { from { opacity: 0; } to { opacity: 1; } }
+
 .skip:focus-visible,
 .dialogueAdvance:focus-visible,
 .finish:focus-visible { outline: 3px solid #ffca46; outline-offset: 3px; }
@@ -108,7 +135,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .visual,
-  .continueMark { animation: none; }
+  .continueMark,
+  .transition { animation: none; }
 }
 
 @media (min-width: 48rem) {

@@ -7,4 +7,25 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.videoReady { opacity: 1; }
+
+.loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(110deg, #ece7e6 20%, #f8f5f3 38%, #ece7e6 56%);
+  background-size: 220% 100%;
+  animation: loadingSweep 1.1s ease-in-out infinite;
+}
+
+@keyframes loadingSweep { to { background-position: -220% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .video { transition: none; }
+  .loading { animation: none; }
 }

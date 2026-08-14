@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import type { TutorialMediaKind } from "@/content/schemas/tutorial";
 import styles from "./RoundMedia.module.css";
 
@@ -26,19 +27,26 @@ type RoundMediaProps = {
  * front of the actual task. Silent because two of these sit side by side.
  */
 export function RoundMedia({ src, alt, kind = "image", sizes, priority = false }: RoundMediaProps) {
+  const [readyVideoSrc, setReadyVideoSrc] = useState<string | null>(null);
+  const videoReady = readyVideoSrc === src;
+
   if (kind === "video") {
     return (
-      <video
-        aria-label={alt}
-        autoPlay
-        className={styles.video}
-        loop
-        muted
-        playsInline
-        preload="metadata"
-        /* Poster-less on purpose: the first frame appears as soon as metadata arrives. */
-        src={src}
-      />
+      <>
+        <video
+          aria-busy={!videoReady}
+          aria-label={alt}
+          autoPlay
+          className={`${styles.video} ${videoReady ? styles.videoReady : ""}`}
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          src={src}
+          onLoadedData={() => setReadyVideoSrc(src)}
+        />
+        {!videoReady && <span aria-hidden="true" className={styles.loading} />}
+      </>
     );
   }
 

@@ -31,14 +31,16 @@ export function OnboardingSpotlight({ active, targetSelector, title, instruction
     document.addEventListener("pointerdown", block, true);
     window.addEventListener("resize", update);
     window.addEventListener("scroll", update, true);
-    document.addEventListener("keydown", (event) => {
+    const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Tab") block(event);
-    }, true);
+    };
+    document.addEventListener("keydown", onKeyDown, true);
     return () => {
       document.removeEventListener("click", block, true);
       document.removeEventListener("pointerdown", block, true);
       window.removeEventListener("resize", update);
       window.removeEventListener("scroll", update, true);
+      document.removeEventListener("keydown", onKeyDown, true);
     };
   }, [active, targetSelector]);
 
