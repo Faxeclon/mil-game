@@ -1225,6 +1225,13 @@
     "viewSource": "View source",
     "viewLicense": "View license",
     "projectCreated": "Created for Kikiria",
+    "groups": {
+      "music": "Music"
+    },
+    "app": {
+      "backgroundMusic": "Kikiria background music",
+      "createdWithTool": "Created for Kikiria with {tool}"
+    },
     "packs": {
       "basics1": "Getting started · Mission 1",
       "basics2": "Getting started · Mission 2",

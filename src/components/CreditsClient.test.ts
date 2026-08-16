@@ -3,11 +3,13 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import englishMessages from "@/messages/en.json";
 import spanishMessages from "@/messages/es.json";
+import { applicationCredits } from "@/content/appCredits";
 
 describe("credits screen", () => {
   it("uses centralized audited media metadata without game thumbnails or answer data", async () => {
     const source = await readFile(join(process.cwd(), "src", "components", "CreditsClient.tsx"), "utf8");
     expect(source).toContain("getCreditedMedia()");
+    expect(source).toContain("applicationCredits");
     expect(source).not.toContain("<Image");
     expect(source).not.toContain("correctChoiceId");
     expect(source).not.toContain('packId === "introductory-tutorial-v1"');
@@ -30,12 +32,27 @@ describe("credits screen", () => {
       expect(messages.credits.projectGenerated).toBeTruthy();
       expect(messages.credits.projectCreated).toBeTruthy();
       expect(messages.credits.basedOnImage).toBeTruthy();
+      expect(messages.credits.groups.music).toBeTruthy();
+      expect(messages.credits.app.backgroundMusic).toBeTruthy();
+      expect(messages.credits.app.createdWithTool).toBeTruthy();
       expect(messages.credits.packs.basics1).toBeTruthy();
       expect(messages.credits.packs.basics2).toBeTruthy();
       expect(messages.credits.packs.sports1).toBeTruthy();
       expect(messages.credits.packs.sports2).toBeTruthy();
       expect(messages.credits.packs.videos1).toBeTruthy();
     }
+  });
+
+  it("models the active background music as an app-level Suno credit without a licence claim", () => {
+    expect(applicationCredits).toEqual([
+      expect.objectContaining({
+        id: "kikiria-background-music",
+        groupKey: "music",
+        creationMethod: "ai-generated",
+        tool: { name: "Suno", url: "https://suno.com/" }
+      })
+    ]);
+    expect(applicationCredits[0]).not.toHaveProperty("license");
   });
 
   it("does not repeat a generic heading above AI-generated credits", async () => {
